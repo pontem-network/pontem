@@ -1,0 +1,8 @@
+max_width = 98
+edition = "2018"
+
+# automatically replace R { x: x } with R { x }
+use_field_init_shorthand = true
+
+# disable alphabetical import reordering within groups
+reorder_imports = false
