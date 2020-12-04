@@ -1,0 +1,169 @@
+name: Tests
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+
+env:
+  RUSTUP_MAX_RETRIES: 10
+  CARGO_INCREMENTAL: 1
+  CARGO_NET_RETRY: 10
+  CARGO_TERM_COLOR: always
+  # RUSTFLAGS: -D warnings
+
+jobs:
+  test:
+    name: Tests
+    runs-on: ${{ matrix.os }}
+    if: "!contains(github.event.head_commit.message, 'ci skip') && !contains(github.event.head_commit.message, 'skip ci')"
+
+    defaults:
+      run:
+        shell: bash
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - macos-latest
+          - ubuntu-latest
+          # - windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - id: rust
+        name: use required Rust version
+        run: |
+          echo "WASM_BUILD_TOOLCHAIN=$(cat rust-toolchain)" >> $GITHUB_ENV
+          echo ::set-output name=version::$(cat rust-toolchain)
+
+      - name: Install Rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: ${{ steps.rust.outputs.version }}
+          profile: minimal
+          components: rustfmt
+          override: false
+
+      # Install LLVM needed for rocksdb-sys (dep)
+      - name: Cache LLVM and Clang
+        if: matrix.os == 'windows-latest'
+        id: cache-llvm
+        uses: actions/cache@v2
+        with:
+          path: ${{ runner.temp }}/llvm
+          key: llvm-10.0
+      - name: Install LLVM and Clang
+        if: matrix.os == 'windows-latest'
+        uses: KyleMayes/install-llvm-action@v1
+        with:
+          version: "10.0"
+          directory: ${{ runner.temp }}/llvm
+          cached: ${{ steps.cache-llvm.outputs.cache-hit }}
+      # Not entirely sure why, but llvm-config doesn't seem to be included in the pre-build binaries for Windows: https://stackoverflow.com/a/60024490
+      # The "solution" seems to be to build LLVM from source. :/
+      - name: set LLVM extra env
+        if: matrix.os == 'windows-latest'
+        run: echo "LLVM_CONFIG_PATH=${{ runner.temp }}/llvm/bin/llvm-config" >> $GITHUB_ENV
+
+      - name: Check formatting
+        run: cargo fmt -- --check
+
+      - name: Tests
+        run: cargo +${{ steps.rust.outputs.version }} test --all --no-fail-fast
+        env: { SKIP_WASM_BUILD: 1 }
+
+  clippy:
+    name: Clippy
+    runs-on: ${{ matrix.os }}
+    if: "!contains(github.event.head_commit.message, 'ci skip') && !contains(github.event.head_commit.message, 'skip ci')"
+
+    defaults:
+      run:
+        shell: bash
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - id: rust
+        name: use required Rust version
+        run: |
+          echo "WASM_BUILD_TOOLCHAIN=$(cat rust-toolchain)" >> $GITHUB_ENV
+          echo ::set-output name=version::$(cat rust-toolchain)
+
+      - name: Install Rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: ${{ steps.rust.outputs.version }}
+          profile: minimal
+          components: clippy
+          override: false
+
+      - name: Clippy
+        uses: actions-rs/clippy-check@v1
+        with:
+          name: Clippy report
+          toolchain: ${{ steps.rust.outputs.version }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          args: --all --all-features
+        env: { SKIP_WASM_BUILD: 1 }
+
+  build:
+    name: Build
+    runs-on: ${{ matrix.os }}
+    if: "!contains(github.event.head_commit.message, 'ci skip') && !contains(github.event.head_commit.message, 'skip ci')"
+
+    defaults:
+      run:
+        shell: bash
+
+    strategy:
+      fail-fast: true
+      matrix:
+        os:
+          - macos-latest
+          - ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - id: rust
+        name: use required Rust version
+        run: |
+          echo "WASM_BUILD_TOOLCHAIN=$(cat rust-toolchain)" >> $GITHUB_ENV
+          echo ::set-output name=version::$(cat rust-toolchain)
+
+      - name: Install Rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: ${{ steps.rust.outputs.version }}
+          profile: minimal
+          target: wasm32-unknown-unknown
+          override: false
+
+      - name: Build
+        run: cargo +${{ steps.rust.outputs.version }} build --all
+
+  audit:
+    name: Audit
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: cargo-audit
+        uses: actions-rs/audit-check@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
