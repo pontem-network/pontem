@@ -8,7 +8,7 @@ check:
 
 .PHONY: test
 test:
-	SKIP_WASM_BUILD=1 cargo test --all
+	SKIP_WASM_BUILD=1 cargo test --all --no-fail-fast -- --nocapture
 
 .PHONY: run
 run:
