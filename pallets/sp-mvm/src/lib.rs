@@ -22,6 +22,7 @@ pub use move_vm::*;
 use move_vm::dvm::Dvm;
 use move_core_types::account_address::AccountAddress;
 use sp_runtime::print;
+use frame_support::debug;
 
 #[cfg(test)]
 mod mock;
@@ -30,39 +31,11 @@ mod mock;
 mod tests;
 
 /// Create or get cached VM
-fn get_vm() -> Dvm<StorageImpl<VMStorage>> {
-    // fn get_vm() -> impl move_vm::Vm {
+// fn get_vm() -> Dvm<StorageImpl<VMStorage>> {
+    fn get_vm() -> impl move_vm::Vm {
     let store: StorageImpl<VMStorage> = Default::default();
     move_vm::dvm::Dvm::new(store)
 }
-
-// fn execute(vm: &impl move_vm::Vm) {
-//     let max_gas_amount = u64::MAX - 1;
-//     let gas_unit_price = 1;
-//     let gas = Gas::new(max_gas_amount, gas_unit_price).unwrap();
-
-//     let tx = {
-//         let code: Vec<u8> = Default::default();
-//         let args: Vec<Value> = Default::default();
-//         let type_args: Vec<TypeTag> = Default::default();
-//         let senders: Vec<AccountAddress> = vec![AccountAddress::new(0_u128.to_be_bytes())];
-
-//         ScriptTx::new(code, args, type_args, senders).unwrap()
-//     };
-//     let res = vm.execute_script(gas, tx);
-
-//     {
-//         // use sp_runtime::print;
-//         // use  frame_support::debug::info;
-//         use frame_support::debug;
-
-//         // Print a message
-//         // print(format!("result: {:?}", res));
-//         // Inspecting variables
-//         debug::info!("result: {:?}", res);
-//         // debug::info!(target: "test_events", "TEST: Request sent by: {:?}", caller);
-//     }
-// }
 
 /// Configure the pallet by specifying the parameters and types on which it depends.
 pub trait Trait: frame_system::Trait {
@@ -210,7 +183,6 @@ decl_module! {
 
                   let sender = T::account_as_bytes(&who);
                   {
-                      use frame_support::debug;
                       debug::info!("converted sender: {:?}", sender);
                       #[cfg(feature = "std")]
                       eprintln!("converted sender: {:?}", sender);
@@ -231,7 +203,6 @@ decl_module! {
               eprintln!("result: {:?}", res);
 
               {
-                  use frame_support::debug;
                   debug::info!("execution result: {:?}", res);
                   #[cfg(feature = "std")]
                   eprintln!("execution result: {:?}", res);
@@ -249,26 +220,6 @@ decl_module! {
               // Self::deposit_event(RawEvent::ResourceMoved(unwrapped_res, who));
 
               // Return a successful DispatchResult
-              Ok(())
-          }
-
-          #[weight = 10_000]
-          pub fn say_hello(origin) -> DispatchResult {
-              use sp_runtime::print;
-              // use  frame_support::debug::info;
-              use  frame_support::debug;
-              // Ensure that the caller is a regular keypair account
-              let caller = ensure_signed(origin)?;
-
-              // Print a message
-              print("Hello World");
-              // Inspecting variables
-              debug::info!("Request sent by: {:?}", caller);
-
-
-              debug::info!(target: "test_events", "TEST: Request sent by: {:?}", caller);
-
-              // Indicate that this call succeeded
               Ok(())
           }
 
