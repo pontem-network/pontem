@@ -32,7 +32,7 @@ mod tests;
 
 /// Create or get cached VM
 // fn get_vm() -> Dvm<StorageImpl<VMStorage>> {
-    fn get_vm() -> impl move_vm::Vm {
+fn get_vm() -> impl move_vm::Vm {
     let store: StorageImpl<VMStorage> = Default::default();
     move_vm::dvm::Dvm::new(store)
 }
