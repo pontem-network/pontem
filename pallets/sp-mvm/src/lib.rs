@@ -102,19 +102,13 @@ where
     fn account_as_bytes(acc: &T::AccountId) -> [u8; AccountAddress::LENGTH] {
         use core::convert::TryInto;
         const LENGTH: usize = AccountAddress::LENGTH;
+        let mut result = [0_u8; LENGTH];
+        let bytes = acc.encode();
 
-        let mut bytes = acc.encode();
-        // add zero-padding
-        while bytes.len() < LENGTH {
-            bytes.push(0);
-        }
-        // convert to array
-        let boxed_slice = bytes.into_boxed_slice();
-        let boxed_array: Box<[u8; LENGTH]> = match boxed_slice.try_into() {
-            Ok(ba) => ba,
-            Err(o) => panic!("Expected a Vec of length {} but it was {}", LENGTH, o.len()),
-        };
-        *boxed_array
+        result.iter_mut().enumerate().for_each(|(i, v)| {
+            *v = bytes.get(i).map(|v| *v).unwrap_or(0);
+        });
+        result
     }
 }
 
@@ -139,8 +133,8 @@ decl_error! {
           /// Errors should have helpful documentation associated with them.
           StorageOverflow,
 
-          ScriptTxValidationError,
-          ScriptTxExecutionError,
+          MoveScriptTxValidationError,
+          MoveScriptTxExecutionError,
      }
 }
 
@@ -193,8 +187,8 @@ decl_module! {
                   ];
 
                   ScriptTx::new(code, args, type_args, senders).map_err(|err|{
-                      // Error::<T>::ScriptTxValidationError(err.to_string())
-                      Error::<T>::ScriptTxValidationError
+                      // Error::<T>::MoveScriptTxValidationError(err.to_string())
+                      Error::<T>::MoveScriptTxValidationError
                   })?
               };
 
@@ -210,7 +204,7 @@ decl_module! {
 
               res.map_err(|err|{
                 // TODO: unwrap error
-                Error::<T>::ScriptTxExecutionError
+                Error::<T>::MoveScriptTxExecutionError
               })?;
 
               // TODO: update storage:
