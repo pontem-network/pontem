@@ -73,7 +73,7 @@ jobs:
         run: cargo fmt -- --check
 
       - name: Tests
-        run: cargo +${{ steps.rust.outputs.version }} test --all --no-fail-fast
+        run: cargo +${{ steps.rust.outputs.version }} test --all --no-fail-fast -- --nocapture
         env: { SKIP_WASM_BUILD: 1 }
 
   clippy:

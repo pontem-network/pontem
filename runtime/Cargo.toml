@@ -25,6 +25,7 @@ serde = { features = ['derive'], optional = true, version = '1.0.101' }
 
 # local dependencies
 sp-mvm = { path = '../pallets/sp-mvm', default-features = false, version = '0.1.0' }
+# vm = { path = '../../vm/language/vm', default-features = false }
 
 # Substrate dependencies
 frame-benchmarking = { default-features = false, optional = true, version = '2.0.0' }
@@ -66,6 +67,7 @@ runtime-benchmarks = [
     'sp-runtime/runtime-benchmarks',
 ]
 std = [
+    # 'vm/std',
     'codec/std',
     'serde',
     'frame-executive/std',
