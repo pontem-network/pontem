@@ -1,17 +1,18 @@
 # Substrate Move VM
 
-Substrate node template with Move VM pallet on board. 
+Substrate node template with Move VM pallet on board.
 
-**It's PoC. Work in progress, so use at your own risk.**
+**It's PoC. Work in progress, so use it at your own risk.**
 
 Current status:
 
-* Run Move scripts by executing transactions.
-* Use pre-deployed Move modules in your scripts.
-* Storage/events doesn't work yet, but in progress, so you just run your scripts in dry-run mode.
-* Polkadot SS58 addresses not supported yet, but in progress already.
-* A script can accept one U64 argument.
-* Users can publish modules in dry-run mode.
+- [X] Run Move scripts by executing transactions
+- [X] Use pre-deployed Move modules in your scripts
+- [X] A script can accept one U64 argument
+- [X] Users can publish modules in dry-run mode
+- [ ] Polkadot SS58 addresses doesn't work yet
+- [ ] Storage/events also doesn't work yet, so you just run your scripts in dry-run mode
+
 
 ## Installation
 
@@ -100,9 +101,9 @@ Send transaction contains scripts:
 
 1. Navigate to **Developer -> Extrinsics**.
 2. Choose `mvm` module.
-3. Choose `script_bc` field and click 'file upload'.
+3. Choose `script_bc` field and click `file upload`.
 4. Drag&Drop `./target/scripts/0_main.mv` file there.
 5. Choose the `args` field and put there `0x0000000000000001`.
 6. Submit a new transaction!
 
-Wait once transaction executed.
+Wait until transaction executed
