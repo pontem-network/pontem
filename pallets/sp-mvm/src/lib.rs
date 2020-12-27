@@ -1,20 +1,18 @@
 #![cfg_attr(not(feature = "std"), no_std)]
+#![recursion_limit = "256"]
 #![allow(unused_imports)]
 #![allow(dead_code)]
 
 #[macro_use]
 extern crate log;
 
-/// Edit this file to define custom logic or remove it if it is not needed.
-/// Learn more about FRAME and the core library of Substrate FRAME pallets:
-/// https://substrate.dev/docs/en/knowledgebase/runtime/frame
 use frame_support::{decl_module, decl_storage, decl_event, decl_error, dispatch, traits::Get};
 use frame_system::ensure_signed;
 use codec::{Encode, Decode};
-
 use move_core_types::value::MoveKind;
 use move_core_types::value::MoveKindInfo;
 use move_core_types::value::MoveTypeLayout;
+use move_vm::data::EventHandler;
 use move_vm_types::values::values_impl::Value;
 use move_core_types::language_storage::TypeTag;
 use move_vm::types::Gas;
@@ -22,17 +20,22 @@ use move_vm::types::ScriptTx;
 use sp_std::prelude::*;
 use move_vm::Vm;
 use move_core_types::account_address::AccountAddress;
+use move_core_types::vm_status::StatusCode;
 
 #[cfg(test)]
 mod mock;
-
 #[cfg(test)]
 mod tests;
 
+pub mod event;
 pub mod mvm;
+pub mod result;
 pub mod storage;
-// pub mod error;
-// use error::*;
+
+use result::Error;
+
+pub use event::Event;
+use event::EventWriter;
 
 /// Configure the pallet by specifying the parameters and types on which it depends.
 pub trait Trait: frame_system::Trait {
@@ -80,6 +83,8 @@ where
         let mut result = [0_u8; LENGTH];
         let bytes = acc.encode();
 
+        debug!("acc bytes: {:?}", bytes);
+
         let skip = if bytes.len() < LENGTH {
             LENGTH - bytes.len()
         } else {
@@ -103,39 +108,6 @@ impl<T: Trait> Module<T> {
     }
 }
 
-// Pallets use events to inform users when important changes are made.
-// https://substrate.dev/docs/en/knowledgebase/runtime/events
-decl_event!(
-    pub enum Event<T>
-    where
-        AccountId = <T as frame_system::Trait>::AccountId,
-    {
-        // Event documentation should end with an array that provides descriptive names for event parameters.
-        /// [unwrapped_res, who]
-        ResourceMoved(u128, AccountId),
-    }
-);
-
-// Errors inform users that something went wrong.
-decl_error! {
-     pub enum Error for Module<T: Trait> {
-          /// Error names should be descriptive.
-        //   NoneValue,
-          /// Errors should have helpful documentation associated with them.
-          StorageOverflow,
-
-          MoveScriptTxValidationError,
-          MoveScriptTxExecutionError,
-          MoveModuleDeployError,
-     }
-}
-
-// impl<T: Trait> From<VMError> for Error<T> {
-//     fn from(_: VMError) -> Self {
-//         todo!()
-//     }
-// }
-
 // Dispatchable functions allows users to interact with the pallet and invoke state changes.
 // These functions materialize as "extrinsics", which are often compared to transactions.
 // Dispatchable functions must be annotated with a weight and must return a DispatchResult.
@@ -155,9 +127,10 @@ decl_module! {
             let who = ensure_signed(origin)?;
             debug!("executing `execute` with signed {:?}", who);
             // TODO: enable logger for tests
-            #[cfg(test)] eprintln!("executing `execute` with signed {:?}", who);
+            #[cfg(feature = "std")] eprintln!("executing `execute` with signed {:?}", who);
 
-            let vm = mvm::default_vm::<VMStorage>();
+            let event_handler = event::EventWriter::new(Self::deposit_event);
+            let vm = mvm::default_vm::<VMStorage, _>(event_handler);
             // TODO: gas-table & min-max values shoud be in genesis/config
             let max_gas_amount = (u64::MAX / 1000) - 42;
             // TODO: get native value
@@ -175,30 +148,22 @@ decl_module! {
 
                 let sender = T::account_as_bytes(&who);
                 debug!("converted sender: {:?}", sender);
-                #[cfg(test)] eprintln!("converted sender: {:?}", sender);
+                #[cfg(feature = "std")] eprintln!("converted sender: {:?}", sender);
 
                 let senders: Vec<AccountAddress> = vec![
                     AccountAddress::new(sender),
                 ];
 
-                ScriptTx::new(code, args, type_args, senders).map_err(|err|{
-                    Error::<T>::MoveScriptTxValidationError
+                ScriptTx::new(code, args, type_args, senders).map_err(|_|{
+                    Error::<T>::ScriptValidationError
                 })?
             };
 
             let res = vm.execute_script(gas, tx);
             debug!("execution result: {:?}", res);
-            #[cfg(test)] eprintln!("execution result: {:?}", res);
+            #[cfg(feature = "std")] eprintln!("execution result: {:?}", res);
 
-            res.map_err(|err|{
-            // TODO: unwrap error
-            Error::<T>::MoveScriptTxExecutionError
-            })?;
-
-            // Emit an event:
-            // Self::deposit_event(RawEvent::ResourceMoved(unwrapped_res, who));
-
-            // Return a successful DispatchResult
+            result::from_status_code::<T>(res)?;
             Ok(())
         }
 
@@ -208,7 +173,8 @@ decl_module! {
             debug!("executing `publish` with signed {:?}", who);
             #[cfg(test)] eprintln!("executing `publish` with signed {:?}", who);
 
-            let vm = mvm::default_vm::<VMStorage>();
+            let event_handler = event::EventWriter::new(Self::deposit_event);
+            let vm = mvm::default_vm::<VMStorage, _>(event_handler);
             // TODO: gas-table & min-max values shoud be in genesis/config
             let max_gas_amount = (u64::MAX / 1000) - 42;
             // TODO: get native value
@@ -230,7 +196,10 @@ decl_module! {
             debug!("publish result: {:?}", res);
             #[cfg(test)] eprintln!("publish result: {:?}", res);
 
-            res.map_err(|err| Error::<T>::MoveModuleDeployError)?;
+            result::from_status_code::<T>(res)?;
+
+            // Emit an event:
+            Self::deposit_event(event::RawEvent::ModulePublished(who));
 
             Ok(())
         }
