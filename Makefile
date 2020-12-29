@@ -12,7 +12,7 @@ test:
 
 .PHONY: run
 run:
-	WASM_BUILD_TOOLCHAIN=`cat rust-toolchain` cargo run --release -- --dev --tmp
+	WASM_BUILD_TOOLCHAIN=`cat rust-toolchain` cargo run --release -- --dev --tmp -lsp_mvm=trace
 
 .PHONY: build
 build:
