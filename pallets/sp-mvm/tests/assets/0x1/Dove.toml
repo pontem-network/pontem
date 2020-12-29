@@ -1,0 +1,5 @@
+[package]
+name = "assets"
+dialect = "polkadot"
+account_address = "0x00000000000000000000000000000000000000000000000000000000000000000001"
+dependencies = []
