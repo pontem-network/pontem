@@ -15,11 +15,11 @@ pub mod mock;
 use mock::*;
 
 fn store_module_bc() -> Vec<u8> {
-    include_bytes!("../tests/assets/target/modules/1_Store.mv").to_vec()
+    include_bytes!("assets/0x1/target/modules/1_Store.mv").to_vec()
 }
 
 fn script_bc() -> Vec<u8> {
-    include_bytes!("../tests/assets/target/scripts/1_store_u64.mv").to_vec()
+    include_bytes!("assets/0x1/target/scripts/1_store_u64.mv").to_vec()
 }
 
 #[derive(Deserialize)]
@@ -44,9 +44,10 @@ fn call_execute_script(origin: Origin) {
     const TEST_VALUE: u64 = 13;
 
     // prepare arguments:
-    let args = vec![ScriptArg::U64(TEST_VALUE)];
+    // let args = vec![ScriptArg::U64(TEST_VALUE)];
+    let args = vec![TEST_VALUE];
 
-    let result = Mvm::execute(origin, script_bc(), args);
+    let result = Mvm::execute(origin, script_bc(), Some(args));
     eprintln!("execute_script result: {:?}", result);
     assert_ok!(result);
 

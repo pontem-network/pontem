@@ -1,3 +1,4 @@
+use move_core_types::account_address::AccountAddress;
 use sp_mvm::{Module, Trait};
 use sp_core::H256;
 use sp_core::U256;
@@ -5,6 +6,7 @@ use frame_system as system;
 use frame_support::{impl_outer_origin, parameter_types, weights::Weight};
 use sp_runtime::traits::{BlakeTwo256, IdentityLookup};
 use sp_runtime::{testing::Header, Perbill};
+use sp_mvm::addr::AccountIdAsBytes;
 
 impl_outer_origin! {
     pub enum Origin for Test {}
@@ -52,6 +54,9 @@ impl system::Trait for Test {
 impl Trait for Test {
     type Event = ();
 }
+
+// type LibraAccountAddress = [u8; AccountAddress::LENGTH];
+// impl AccountIdAsBytes<<Test as system::Trait>::AccountId, LibraAccountAddress> for Test {}
 
 #[allow(dead_code)]
 pub type Mvm = Module<Test>;

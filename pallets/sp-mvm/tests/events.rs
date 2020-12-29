@@ -13,11 +13,11 @@ mod mock;
 use mock::*;
 
 fn store_module_bc() -> Vec<u8> {
-    include_bytes!("../tests/assets/target/modules/0_Event.mv").to_vec()
+    include_bytes!("../tests/assets/0x1/target/modules/0_Event.mv").to_vec()
 }
 
 fn script_bc() -> Vec<u8> {
-    include_bytes!("../tests/assets/target/scripts/0_emit_event.mv").to_vec()
+    include_bytes!("../tests/assets/0x1/target/scripts/0_emit_event.mv").to_vec()
 }
 
 fn call_publish_module(origin: Origin, bc: Vec<u8>, mod_name: &str) {
@@ -37,10 +37,11 @@ fn call_execute_script(origin: Origin) {
     const TEST_VALUE: u64 = 42;
 
     // prepare arguments:
-    let args = vec![ScriptArg::U64(TEST_VALUE)];
+    // let args = vec![ScriptArg::U64(TEST_VALUE)];
+    let args = vec![TEST_VALUE];
 
     // execute VM tx:
-    let result = Mvm::execute(origin, script_bc(), args);
+    let result = Mvm::execute(origin, script_bc(), Some(args));
     eprintln!("result: {:?}", result);
     assert_ok!(result);
 
