@@ -1,11 +1,9 @@
-use move_vm::data::EventHandler;
 use sp_std::prelude::*;
-use codec::FullCodec;
-use codec::FullEncode;
-use move_vm::mvm::Mvm;
+use codec::{FullCodec, FullEncode};
 use frame_support::storage::StorageMap;
+use move_vm::mvm::Mvm;
+use move_vm::data::EventHandler;
 
-use crate::event::*;
 use crate::storage::*;
 
 /// Default type of Move VM implementation
@@ -22,23 +20,24 @@ where
     Mvm::new(store, event_handler)
 }
 
-// /// Move VM builder/getter trait
-// trait MoveVm<T: frame_system::Trait, K: FullEncode, V: FullCodec> {
-//     type Vm: move_vm::Vm;
-//     fn move_vm() -> Self::Vm;
-// }
+/// Move VM builder/getter trait
+trait MoveVm<T: frame_system::Trait, K: FullEncode, V: FullCodec, E: EventHandler> {
+    type Vm: move_vm::Vm;
+    fn move_vm(event_handler: E) -> Self::Vm;
+}
 
-// // default impl
-// impl<T, K, V> MoveVm<T, K, V> for T
-// where
-//     T: frame_system::Trait,
-//     T: StorageMap<Vec<u8>, Vec<u8>, Query = Option<Vec<u8>>>,
-//     K: FullEncode,
-//     V: FullCodec,
-// {
-//     type Vm = Mvm<VmStorageAdapter<T, Vec<u8>, Vec<u8>>>;
+// default impl
+impl<T, K, V, E> MoveVm<T, K, V, E> for T
+where
+    T: frame_system::Trait,
+    T: StorageMap<Vec<u8>, Vec<u8>, Query = Option<Vec<u8>>>,
+    K: FullEncode,
+    V: FullCodec,
+    E: EventHandler,
+{
+    type Vm = Mvm<VmStorageAdapter<T, Vec<u8>, Vec<u8>>, E>;
 
-//     fn move_vm() -> Self::Vm {
-//         Mvm::new(Default::default())
-//     }
-// }
+    fn move_vm(event_handler: E) -> Self::Vm {
+        Mvm::new(Default::default(), event_handler)
+    }
+}

@@ -8,3 +8,6 @@
 .cargo
 # The cache for chain data in container
 .local
+
+# Dove temp cache/lock-file
+.Dove.man

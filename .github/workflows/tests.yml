@@ -115,7 +115,7 @@ jobs:
           name: Clippy report
           toolchain: ${{ steps.rust.outputs.version }}
           token: ${{ secrets.GITHUB_TOKEN }}
-          args: --all --all-features
+          args: -p=sp-mvm --all-features
         env: { SKIP_WASM_BUILD: 1 }
 
   build:
