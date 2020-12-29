@@ -1,5 +1,4 @@
 use sp_std::prelude::*;
-use sp_core::U256;
 use codec::Encode;
 use move_core_types::account_address::AccountAddress;
 
@@ -23,12 +22,12 @@ where
     T::AccountId: Encode,
 {
     fn account_to_bytes(acc: &T::AccountId) -> [u8; AccountAddress::LENGTH] {
-        debug!("converting account: {:?}", acc);
+        trace!("converting account: {:?}", acc);
         const LENGTH: usize = AccountAddress::LENGTH;
-        let mut result = [0_u8; LENGTH];
+        let mut result = [0; LENGTH];
         let bytes = acc.encode();
 
-        debug!("  acc bytes: {:?}", bytes);
+        trace!("  account (pk) bytes: {:?}", bytes);
 
         let skip = if bytes.len() < LENGTH {
             LENGTH - bytes.len()
@@ -36,13 +35,9 @@ where
             0
         };
 
-        debug!("  skip bytes: {:?}", skip);
+        (&mut result[skip..]).copy_from_slice(&bytes);
 
-        let u256 = U256::from_little_endian(&bytes[..]);
-        debug!("  u256: {:?}", u256);
-        u256.to_big_endian(&mut result[skip..]);
-
-        debug!("  result bytes: {:?}", result);
+        trace!("  result bytes: (skip bytes: {}) {:?}", skip, result);
         result
     }
 }

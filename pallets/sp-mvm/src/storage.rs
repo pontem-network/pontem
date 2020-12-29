@@ -35,6 +35,9 @@ impl<T: StorageMap<Vec<u8>, Vec<u8>, Query = Option<Vec<u8>>>> Storage
 
     fn insert(&self, key: &[u8], value: &[u8]) {
         debug!("storage::set {:?} <= {} bytes", key, value.len());
+        let mut key: Vec<u8> = key.to_owned();
+        key[0] = 0;
+        key[1] = 0;
         T::insert(key, value)
     }
 
