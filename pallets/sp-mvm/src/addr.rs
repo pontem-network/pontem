@@ -16,28 +16,69 @@ where
     }
 }
 
+pub fn account_to_bytes<AccountId: Encode>(acc: &AccountId) -> [u8; AccountAddress::LENGTH] {
+    const LENGTH: usize = AccountAddress::LENGTH;
+    let mut result = [0; LENGTH];
+    let bytes = acc.encode();
+
+    let skip = if bytes.len() < LENGTH {
+        LENGTH - bytes.len()
+    } else {
+        0
+    };
+
+    (&mut result[skip..]).copy_from_slice(&bytes);
+
+    trace!(
+        "converted: (with skip: {})\n\t{:?}\n\tto {:?}",
+        skip,
+        bytes,
+        result
+    );
+
+    result
+}
+
+pub fn account_to_account_address<AccountId: Encode>(acc: &AccountId) -> AccountAddress {
+    AccountAddress::new(account_to_bytes(acc))
+}
+
 impl<T> AccountIdAsBytes<T::AccountId, [u8; AccountAddress::LENGTH]> for T
 where
     T: frame_system::Trait,
     T::AccountId: Encode,
 {
     fn account_to_bytes(acc: &T::AccountId) -> [u8; AccountAddress::LENGTH] {
-        trace!("converting account: {:?}", acc);
-        const LENGTH: usize = AccountAddress::LENGTH;
-        let mut result = [0; LENGTH];
-        let bytes = acc.encode();
+        account_to_bytes(acc)
+    }
+}
 
-        trace!("  account (pk) bytes: {:?}", bytes);
+#[cfg(test)]
+mod tests {
+    use super::account_to_account_address;
+    use sp_core::sr25519::Public;
+    use sp_core::crypto::Ss58Codec;
 
-        let skip = if bytes.len() < LENGTH {
-            LENGTH - bytes.len()
-        } else {
-            0
-        };
+    #[test]
+    fn convert_address() {
+        //Alice
+        let pk =
+            Public::from_ss58check("5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY").unwrap();
+        let addr = account_to_account_address(&pk);
+        assert_eq!(
+            // TODO: remove starting two zero-bytes when migr. 34-32-bytes addr
+            "0000D43593C715FDD31C61141ABD04A99FD6822C8558854CCDE39A5684E7A56DA27D",
+            addr.to_string()
+        );
 
-        (&mut result[skip..]).copy_from_slice(&bytes);
-
-        trace!("  result bytes: (skip bytes: {}) {:?}", skip, result);
-        result
+        //Bob
+        let pk =
+            Public::from_ss58check("5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty").unwrap();
+        let addr = account_to_account_address(&pk);
+        assert_eq!(
+            // TODO: remove starting two zero-bytes when migr. 34-32-bytes addr
+            "00008EAF04151687736326C9FEA17E25FC5287613693C912909CB226AA4794F26A48",
+            addr.to_string()
+        );
     }
 }

@@ -26,23 +26,25 @@ impl<T: StorageMap<Vec<u8>, Vec<u8>, Query = Option<Vec<u8>>>> Storage
 {
     fn get(&self, key: &[u8]) -> Option<Vec<u8>> {
         #[cfg(feature = "std")]
-        debug!("storage::get {:?}", key);
+        trace!("storage::get {:?}", key);
         let mut key: Vec<u8> = key.to_owned();
+        // TODO: remove starting two zero-bytes when migr. 34-32-bytes addr
         key[0] = 0;
         key[1] = 0;
         T::get(key)
     }
 
     fn insert(&self, key: &[u8], value: &[u8]) {
-        debug!("storage::set {:?} <= {} bytes", key, value.len());
+        trace!("storage::set {:?} <= {} bytes", key, value.len());
         let mut key: Vec<u8> = key.to_owned();
+        // TODO: remove starting two zero-bytes when migr. 34-32-bytes addr
         key[0] = 0;
         key[1] = 0;
         T::insert(key, value)
     }
 
     fn remove(&self, key: &[u8]) {
-        debug!("storage::rem {:?}", key);
+        trace!("storage::rem {:?}", key);
         T::remove(key)
     }
 }

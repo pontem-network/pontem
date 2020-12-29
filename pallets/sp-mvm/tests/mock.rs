@@ -1,12 +1,9 @@
-use move_core_types::account_address::AccountAddress;
 use sp_mvm::{Module, Trait};
 use sp_core::H256;
-use sp_core::U256;
 use frame_system as system;
 use frame_support::{impl_outer_origin, parameter_types, weights::Weight};
 use sp_runtime::traits::{BlakeTwo256, IdentityLookup};
 use sp_runtime::{testing::Header, Perbill};
-use sp_mvm::addr::AccountIdAsBytes;
 
 impl_outer_origin! {
     pub enum Origin for Test {}
@@ -31,7 +28,7 @@ impl system::Trait for Test {
     type BlockNumber = u64;
     type Hash = H256;
     type Hashing = BlakeTwo256;
-    type AccountId = U256;
+    type AccountId = sp_core::sr25519::Public;
     type Lookup = IdentityLookup<Self::AccountId>;
     type Header = Header;
     type Event = ();
