@@ -13,7 +13,7 @@ mod consts;
 use consts::*;
 
 fn store_module_bc() -> Vec<u8> {
-    include_bytes!("assets/target/modules/1_Store.mv").to_vec()
+    include_bytes!("assets/target/modules/2_Store.mv").to_vec()
 }
 
 fn script_bc() -> Vec<u8> {
@@ -35,7 +35,7 @@ fn call_publish_module(origin: Origin, bc: Vec<u8>, mod_name: &str) {
     let store_module_id = ModuleId::new(origin_move_addr(), Identifier::new(mod_name).unwrap());
     let store = Mvm::get_vm_storage();
     let state = State::new(store);
-    assert_eq!(bc, state.get_module(&store_module_id).unwrap().unwrap(),);
+    assert_eq!(bc, state.get_module(&store_module_id).unwrap().unwrap());
 }
 
 fn call_execute_script(origin: Origin) {

@@ -13,8 +13,11 @@ use mock::*;
 mod consts;
 use consts::*;
 
-fn store_module_bc() -> Vec<u8> {
+fn event_module_bc() -> Vec<u8> {
     include_bytes!("assets/target/modules/0_Event.mv").to_vec()
+}
+fn vec_module_bc() -> Vec<u8> {
+    include_bytes!("assets/target/modules/1_Vector.mv").to_vec()
 }
 
 fn script_bc() -> Vec<u8> {
@@ -28,10 +31,10 @@ fn call_publish_module(origin: Origin, bc: Vec<u8>, mod_name: &str) {
     assert_ok!(result);
 
     // check storage:
-    let store_module_id = ModuleId::new(origin_move_addr(), Identifier::new(mod_name).unwrap());
+    let store_module_id = ModuleId::new(std_move_addr(), Identifier::new(mod_name).unwrap());
     let store = Mvm::get_vm_storage();
     let state = State::new(store);
-    assert_eq!(bc, state.get_module(&store_module_id).unwrap().unwrap(),);
+    assert_eq!(bc, state.get_module(&store_module_id).unwrap().unwrap());
 }
 
 fn call_execute_script(origin: Origin) {
@@ -52,18 +55,21 @@ fn call_execute_script(origin: Origin) {
 #[test]
 fn publish_module() {
     new_test_ext().execute_with(|| {
-        let origin = Origin::signed(origin_ps_acc());
+        let root = Origin::signed(std_ps_acc());
 
-        call_publish_module(origin, store_module_bc(), "Event")
+        call_publish_module(root.clone(), vec_module_bc(), "Vector");
+        call_publish_module(root, event_module_bc(), "Event");
     });
 }
 
 #[test]
 fn execute_script() {
     new_test_ext().execute_with(|| {
+        let root = Origin::signed(std_ps_acc());
         let origin = Origin::signed(origin_ps_acc());
 
-        call_publish_module(origin.clone(), store_module_bc(), "Event");
+        call_publish_module(root.clone(), vec_module_bc(), "Vector");
+        call_publish_module(root.clone(), event_module_bc(), "Event");
         call_execute_script(origin);
     });
 }

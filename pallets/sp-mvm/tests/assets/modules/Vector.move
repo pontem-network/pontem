@@ -1,4 +1,4 @@
-address 0x8eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a48 {
+address 0x1 {
 
 /// A variable-sized container that can hold any type. Indexing is 0-based, and
 /// vectors are growable. This module has many native functions.

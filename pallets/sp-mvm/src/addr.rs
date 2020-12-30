@@ -66,8 +66,7 @@ mod tests {
             Public::from_ss58check("5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY").unwrap();
         let addr = account_to_account_address(&pk);
         assert_eq!(
-            // TODO: remove starting two zero-bytes when migr. 34-32-bytes addr
-            "0000D43593C715FDD31C61141ABD04A99FD6822C8558854CCDE39A5684E7A56DA27D",
+            "D43593C715FDD31C61141ABD04A99FD6822C8558854CCDE39A5684E7A56DA27D",
             addr.to_string()
         );
 
@@ -76,8 +75,7 @@ mod tests {
             Public::from_ss58check("5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty").unwrap();
         let addr = account_to_account_address(&pk);
         assert_eq!(
-            // TODO: remove starting two zero-bytes when migr. 34-32-bytes addr
-            "00008EAF04151687736326C9FEA17E25FC5287613693C912909CB226AA4794F26A48",
+            "8EAF04151687736326C9FEA17E25FC5287613693C912909CB226AA4794F26A48",
             addr.to_string()
         );
     }
