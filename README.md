@@ -6,12 +6,11 @@ Substrate node template with Move VM pallet on board.
 
 Current status:
 
-- [X] Run Move scripts by executing transactions
-- [X] Use pre-deployed Move modules in your scripts
-- [X] A script can accept only U64 arguments currently
-- [X] Users can publish modules in dry-run mode
-- [X] Polkadot SS58 addresses support
-- [x] Storage/events alpha version currently, so you just run your scripts in dry-run mode
+- [X] Run Move scripts by executing transactions.
+- [X] A script can accept only U64 arguments currently.
+- [X] Users can publish modules under their addresses.
+- [X] Polkadot SS58 addresses support.
+- [X] Alpha storage/events support (modules store resources).
 
 ## Installation
 
