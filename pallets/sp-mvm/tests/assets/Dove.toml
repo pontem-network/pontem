@@ -1,7 +1,12 @@
 [package]
 name = "assets"
 dialect = "polkadot"
+# account_address = "0x1"
 # account_address = "5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY"
-account_address = "0x1"
+
+# //Bob : 5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty
+# account_address = "0x8eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a48"
+account_address = "5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty"
+
 dependencies = [
 ]

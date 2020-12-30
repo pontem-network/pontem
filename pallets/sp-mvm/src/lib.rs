@@ -62,7 +62,9 @@ decl_module! {
         fn deposit_event() = default;
 
         #[weight = 10_000]
-        pub fn execute(origin, script_bc: Vec<u8>, args: Vec<ScriptArg>) -> dispatch::DispatchResultWithPostInfo {
+        // Temprorally args changed to just u64 numbers because of troubles with codec & web-client...
+        // They should be this: Option<Vec<ScriptArg>> ,ty_args: Vec<TypeTag>
+        pub fn execute(origin, script_bc: Vec<u8>, args: Option<Vec<u64>>) -> dispatch::DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
             debug!("executing `execute` with signed {:?}", who);
             // TODO: enable logger for tests
@@ -78,12 +80,12 @@ decl_module! {
 
             let tx = {
                 let code: Vec<u8> = script_bc;
-                // let args = Value::simple_deserialize(
-                //     &args,
-                //     &MoveKindInfo::Base(MoveKind::Copyable),
-                //     &MoveTypeLayout::U64).map(|v|vec![v]).unwrap_or(vec!()
-                // );
                 let type_args: Vec<TypeTag> = Default::default();
+
+                let args = args.map(|vec|
+                        vec.into_iter().map(|v|ScriptArg::U64(v)
+                    ).collect()
+                ).unwrap_or_else(||vec![]);
 
                 let sender = T::account_to_bytes(&who);
                 debug!("converted sender: {:?}", sender);
