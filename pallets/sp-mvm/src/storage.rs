@@ -1,5 +1,4 @@
 use sp_std::prelude::*;
-use sp_std::borrow::ToOwned;
 use codec::FullCodec;
 use codec::FullEncode;
 use move_vm::data::Storage;
