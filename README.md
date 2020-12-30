@@ -103,7 +103,7 @@ script {
 }
 ```
 
-Replace `<ss58 address>` with your Polkadot SS58 address.
+Replace `<ss58 address>` with your Polkadot SS58 address, e.g. use `5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty::Store;`
 
 Compile both module and script:
 
@@ -116,24 +116,26 @@ Now see compiled binary at `./target/scripts/0_main.mv` and `./target/modules/0_
 Deploy the module via UI:
 
 1. Navigate to **Developer -> Extrinsics**.
-2. Choose `mvm` module.
-3. Choose `publishModule` transaction.
-4. Choose `module_bc` field and enable `file upload`.
-5. Upload `./target/modules/0_Store.mv`.
-6. Submit a new transaction!
-7. Wait until transaction confirmed.
+2. Choose correct account.
+3. Choose `mvm` module.
+4. Choose `publishModule` transaction.
+5. Choose `module_bc` field and enable `file upload`.
+6. Upload `./target/modules/0_Store.mv`.
+7. Submit a new transaction!
+8. Wait until transaction confirmed.
 
 The module deployed, it's time to execute the script:
 
 1. Choose `mvm` module.
-2. Choose `execute` transaction.
-3. Choose `script_bc` field and enable `file upload`.
-4. Upload `./target/scripts/0_main.mv`.
-5. Choose `args` field and enable `include option`.
-6. Click `Add item`.
-7. Put value into a new field, e.g. `1000`.
-8. Submit a new transaction!
-9. Wait until transaction confirmed.
+2. Choose correct account. 
+3. Choose `execute` transaction.
+4. Choose `script_bc` field and enable `file upload`.
+5. Upload `./target/scripts/0_main.mv`.
+6. Choose `args` field and enable `include option`.
+7. Click `Add item`.
+8. Put value into a new field, e.g. `1000`.
+9. Submit a new transaction!
+10. Wait until transaction confirmed.
 
 Congrats! You deployed first module, executed script and stored a value.
 
