@@ -8,11 +8,10 @@ Current status:
 
 - [X] Run Move scripts by executing transactions
 - [X] Use pre-deployed Move modules in your scripts
-- [X] A script can accept one U64 argument
+- [X] A script can accept only U64 arguments currently
 - [X] Users can publish modules in dry-run mode
-- [ ] Polkadot SS58 addresses doesn't work yet
-- [ ] Storage/events also doesn't work yet, so you just run your scripts in dry-run mode
-
+- [X] Polkadot SS58 addresses support
+- [x] Storage/events alpha version currently, so you just run your scripts in dry-run mode
 
 ## Installation
 
@@ -35,7 +34,9 @@ Run local node:
 make run
 ```
 
-## Send script transactions
+## Move VM
+
+To finish next steps you need Polkadot address.
 
 Configure UI:
 
@@ -50,60 +51,90 @@ Configure UI:
 ```
 4. Save configuration.
 
-Install **Dove** from [move-tools](https://github.com/dfinance/move-tools) repository, it's Move package-manager, also it contains compiler:
+Install **dove** (**Polkadot** version) from [move-tools](https://github.com/dfinance/move-tools) repository, it's Move package-manager and compiler.
+
+Create first project and store module:
 
 ```sh
-git clone git@github.com:dfinance/move-tools.git
-cd ./move-tools
-cargo install --path dove
-```
-
-Create first project and script:
-
-```sh
-dove new first_project --dialect polkadot
+dove new first_project --dialect polkadot --address <ss58 address>
 cd ./first_project
-touch ./scripts/run.move
 ```
 
-Put next code inside `run.move`:
+Replace `<ss58 address>` with your Polkadot address.
+
+Create `Store` module:
+
+```sh
+touch ./modules/store.move
+```
+
+Put next code inside `./modules/store.move`:
 
 ```rs
-script {
-    fun main(a: u64) {
-        // A+B
-        let b = a + 5;
-        let _ = a + b;
+module Store {
+    resource struct U64 {val: u64}
 
-        // Loop.
-        let i = 0;
-        loop {
-            i = i + 1;
-            if (i == 100) {
-                break
-            }
-        };
+    public fun store_u64(account: &signer, val: u64) {
+        let foo = U64 {val: val};
+        move_to<U64>(account, foo);
     }
 }
 ```
 
-The script will do basic math (A + B) and launch loop, then exit.
+The module stores U64 number as resource under sender account.
 
-Compile script:
+Now create script:
+
+```sh
+touch ./scripts/main.move
+```
+
+The script will store U64 value under sender account.
+
+Put next code inside `./scripts/main.move`:
+
+```rs
+script {
+    use <ss58 address>::Store;
+
+    fun main(account: &signer, val: u64) {
+        Store::store_u64(account, val);
+    }
+}
+```
+
+Replace `<ss58 address>` with your Polkadot SS58 address.
+
+Compile both module and script:
 
 ```sh
 dove build
 ```
 
-Now see compiled binary at `./target/scripts/0_main.mv`.
+Now see compiled binary at `./target/scripts/0_main.mv` and `./target/modules/0_Store.mv`.
 
-Send transaction contains scripts:
+Deploy the module via UI:
 
 1. Navigate to **Developer -> Extrinsics**.
 2. Choose `mvm` module.
-3. Choose `script_bc` field and click `file upload`.
-4. Drag&Drop `./target/scripts/0_main.mv` file there.
-5. Choose the `args` field and put there `0x0000000000000001`.
+3. Choose `publishModule` transaction.
+4. Choose `module_bc` field and enable `file upload`.
+5. Upload `./target/modules/0_Store.mv`.
 6. Submit a new transaction!
+7. Wait until transaction confirmed.
 
-Wait until transaction executed
+The module deployed, it's time to execute the script:
+
+1. Choose `mvm` module.
+2. Choose `execute` transaction.
+3. Choose `script_bc` field and enable `file upload`.
+4. Upload `./target/scripts/0_main.mv`.
+5. Choose `args` field and enable `include option`.
+6. Click `Add item`.
+7. Put value into a new field, e.g. `1000`.
+8. Submit a new transaction!
+9. Wait until transaction confirmed.
+
+Congrats! You deployed first module, executed script and stored a value.
+
+Look at more examples in [tests](pallets/sp-mvm/tests/).
