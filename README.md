@@ -139,3 +139,7 @@ The module deployed, it's time to execute the script:
 Congrats! You deployed first module, executed script and stored a value.
 
 Look at more examples in [tests](pallets/sp-mvm/tests/).
+
+## LICENSE
+
+See [LICENSE](/LICENSE).
