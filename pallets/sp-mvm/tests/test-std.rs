@@ -4,6 +4,7 @@ use move_core_types::identifier::Identifier;
 use move_core_types::language_storage::ModuleId;
 use move_vm::data::*;
 use move_vm_runtime::data_cache::RemoteCache;
+use sp_mvm::storage::MoveVmStorage;
 
 mod mock;
 use mock::*;
@@ -31,7 +32,7 @@ fn call_publish_module(signer: <Test as system::Trait>::AccountId, bc: Vec<u8>, 
 
     // check storage:
     let module_id = ModuleId::new(to_move_addr(signer), Identifier::new(mod_name).unwrap());
-    let storage = Mvm::get_vm_storage();
+    let storage = Mvm::move_vm_storage();
     let state = State::new(storage);
     assert_eq!(bc, state.get_module(&module_id).unwrap().unwrap());
 }

@@ -6715,6 +6715,7 @@ dependencies = [
  "move-vm-runtime",
  "move-vm-types",
  "mvm",
+ "once_cell 1.5.2",
  "parity-scale-codec",
  "sp-core",
  "sp-io",

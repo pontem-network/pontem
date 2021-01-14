@@ -4,6 +4,12 @@
 #[macro_use]
 extern crate log;
 
+use codec::FullCodec;
+use codec::FullEncode;
+use move_vm::mvm::Mvm;
+use mvm::CreateMoveVm;
+use mvm::GetStaticMoveVm;
+use mvm::VmWrapperTy;
 use sp_std::prelude::*;
 use frame_support::{decl_module, decl_storage, dispatch};
 use frame_system::ensure_signed;
@@ -23,6 +29,10 @@ pub mod storage;
 use result::Error;
 use addr::AccountIdAsBytes;
 pub use event::Event;
+use event::*;
+
+use storage::MoveVmStorage;
+use storage::VmStorageAdapter;
 
 /// Configure the pallet by specifying the parameters and types on which it depends.
 pub trait Trait: frame_system::Trait {
@@ -45,12 +55,6 @@ decl_storage! {
      }
 }
 
-impl<T: Trait> Module<T> {
-    pub fn get_vm_storage() -> storage::VmStorageAdapter<VMStorage> {
-        Default::default()
-    }
-}
-
 // Dispatchable functions allows users to interact with the pallet and invoke state changes.
 // These functions materialize as "extrinsics", which are often compared to transactions.
 // Dispatchable functions must be annotated with a weight and must return a DispatchResult.
@@ -70,8 +74,7 @@ decl_module! {
             // TODO: enable logger for tests
             #[cfg(feature = "std")] eprintln!("executing `execute` with signed {:?}", who);
 
-            let event_handler = event::EventWriter::new(Self::deposit_event);
-            let vm = mvm::default_vm::<VMStorage, _>(event_handler);
+            let vm = Self::get_move_vm();
             // TODO: gas-table & min-max values shoud be in genesis/config
             let max_gas_amount = (u64::MAX / 1000) - 42;
             // TODO: get native value
@@ -115,8 +118,7 @@ decl_module! {
             debug!("executing `publish` with signed {:?}", who);
             #[cfg(test)] eprintln!("executing `publish` with signed {:?}", who);
 
-            let event_handler = event::EventWriter::new(Self::deposit_event);
-            let vm = mvm::default_vm::<VMStorage, _>(event_handler);
+            let vm = Self::get_move_vm();
             // TODO: gas-table & min-max values shoud be in genesis/config
             let max_gas_amount = (u64::MAX / 1000) - 42;
             // TODO: get native value
@@ -142,9 +144,62 @@ decl_module! {
             let result = result::from_vm_result::<T>(res)?;
 
             // Emit an event:
-            Self::deposit_event(event::RawEvent::ModulePublished(who));
+            Self::deposit_event(RawEvent::ModulePublished(who));
 
             Ok(result)
         }
+
+        /*
+        fn on_finalize(_n: BlockNumber) {
+            // TODO: fix mutability and call clear
+            // Self::get_move_vm_mut().clear();
+            debug!("MoveVM cleared");
+        }
+        */
      }
+}
+
+/// Get storage adapter ready for the VM
+impl<T: Trait, K, V> MoveVmStorage<T, K, V> for Module<T>
+where
+    K: FullEncode,
+    V: FullCodec,
+{
+    type VmStorage = VMStorage;
+}
+
+impl<T: Trait> CreateMoveVm<T> for Module<T> {
+    type Vm = Mvm<VmStorageAdapter<VMStorage>, DefaultEventHandler>;
+
+    fn create_move_vm() -> Self::Vm {
+        trace!("MoveVM created");
+        Mvm::new(Self::move_vm_storage(), Self::create_move_event_handler())
+    }
+}
+
+impl<T: Trait> GetStaticMoveVm<DefaultEventHandler> for Module<T> {
+    type Vm = VmWrapperTy<VMStorage>;
+
+    fn get_move_vm() -> &'static Self::Vm {
+        #[cfg(not(feature = "std"))]
+        use once_cell::race::OnceBox as OnceCell;
+        #[cfg(feature = "std")]
+        use once_cell::sync::OnceCell;
+
+        static VM: OnceCell<VmWrapperTy<VMStorage>> = OnceCell::new();
+        // there .into() needed one-cell's OnceBox to into Box implicitly convertion
+        VM.get_or_init(|| Self::create_move_vm_wrapped().into())
+    }
+}
+
+impl<T: Trait> DepositMoveEvent for Module<T> {
+    fn deposit_move_event(e: MoveEventArguments) {
+        debug!(
+            "MoveVM Event: {:?} {:?} {:?} {:?}",
+            e.guid, e.seq_num, e.ty_tag, e.message
+        );
+
+        // Emit an event:
+        Self::deposit_event(RawEvent::MvmEvent(e.guid, e.seq_num, e.message));
+    }
 }
