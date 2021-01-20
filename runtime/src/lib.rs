@@ -7,6 +7,7 @@
 include!(concat!(env!("OUT_DIR"), "/wasm_binary.rs"));
 
 use sp_std::prelude::*;
+use sp_std::convert::TryFrom;
 use sp_core::{crypto::KeyTypeId, OpaqueMetadata};
 use sp_runtime::{
     ApplyExtrinsicResult, generic, create_runtime_str, impl_opaque_keys, MultiSignature,
@@ -42,6 +43,7 @@ pub use frame_support::{
 
 /// Import the template pallet.
 pub use sp_mvm;
+pub use sp_mvm::gas;
 
 /// An index to a block.
 pub type BlockNumber = u32;
@@ -263,9 +265,36 @@ impl pallet_sudo::Trait for Runtime {
     type Call = Call;
 }
 
+/// TODO: make calculations and choose optimal gas price for Move VM.
+/// Replace Ethereum GAS_PER_SECOND with optimal gas price.
+
+/// Current approximation of the gas/s consumption considering
+/// Move VM execution over compiled WASM (on 2.5Ghz CPU).
+/// Given the 500ms Weight, from which 75% only are used for transactions,
+/// the total Move VM execution gas limit is: GAS_PER_SECOND * 0.500 * 0.75 => 3_000_000.
+pub const GAS_PER_SECOND: u64 = 8_000_000;
+
+/// Approximate ratio of the amount of Weight per Gas.
+/// u64 works for approximations because Weight is a very small unit compared to gas.
+pub const WEIGHT_PER_GAS: u64 = WEIGHT_PER_SECOND / GAS_PER_SECOND;
+
+pub struct MoveVMGasWeightMapping;
+
+// Just use provided gas.
+impl gas::GasWeightMapping for MoveVMGasWeightMapping {
+    fn gas_to_weight(gas: u64) -> Weight {
+		Weight::try_from((gas).saturating_mul(WEIGHT_PER_GAS)).unwrap_or(Weight::MAX)
+    }
+
+    fn weight_to_gas(weight: Weight) -> u64 {
+		u64::try_from(weight.wrapping_div(WEIGHT_PER_GAS)).unwrap_or(u64::MAX)
+    }
+}
+
 /// Configure the template pallet in pallets/sp-mvm.
 impl sp_mvm::Trait for Runtime {
     type Event = Event;
+    type GasWeightMapping = MoveVMGasWeightMapping;
 }
 
 // Create the runtime by composing the FRAME pallets that were previously configured.

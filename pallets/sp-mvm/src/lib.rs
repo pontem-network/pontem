@@ -19,15 +19,22 @@ pub mod event;
 pub mod mvm;
 pub mod result;
 pub mod storage;
+pub mod gas;
 
 use result::Error;
 use addr::AccountIdAsBytes;
+use crate::gas::GasWeightMapping;
 pub use event::Event;
+
+const GAS_UNIT_PRICE : u64 = 1;
 
 /// Configure the pallet by specifying the parameters and types on which it depends.
 pub trait Trait: frame_system::Trait {
     /// Because this pallet emits events, it depends on the runtime's definition of an event.
     type Event: From<Event<Self>> + Into<<Self as frame_system::Trait>::Event>;
+
+    // Gas settings.
+    type GasWeightMapping: gas::GasWeightMapping;
 }
 
 // The pallet's runtime storage items.
@@ -61,10 +68,10 @@ decl_module! {
 
         fn deposit_event() = default;
 
-        #[weight = 10_000]
         // Temprorally args changed to just u64 numbers because of troubles with codec & web-client...
         // They should be this: Option<Vec<ScriptArg>> ,ty_args: Vec<TypeTag>
-        pub fn execute(origin, script_bc: Vec<u8>, args: Option<Vec<u64>>) -> dispatch::DispatchResultWithPostInfo {
+        #[weight = T::GasWeightMapping::gas_to_weight(*gas_limit)]
+        pub fn execute(origin, script_bc: Vec<u8>, args: Option<Vec<u64>>, gas_limit: u64) -> dispatch::DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
             debug!("executing `execute` with signed {:?}", who);
             // TODO: enable logger for tests
@@ -72,11 +79,8 @@ decl_module! {
 
             let event_handler = event::EventWriter::new(Self::deposit_event);
             let vm = mvm::default_vm::<VMStorage, _>(event_handler);
-            // TODO: gas-table & min-max values shoud be in genesis/config
-            let max_gas_amount = (u64::MAX / 1000) - 42;
-            // TODO: get native value
-            let gas_unit_price = 1;
-            let gas = Gas::new(max_gas_amount, gas_unit_price).unwrap();
+            
+            let gas = Gas::new(gas_limit, GAS_UNIT_PRICE).unwrap();
 
             let tx = {
                 let code: Vec<u8> = script_bc;
@@ -109,19 +113,17 @@ decl_module! {
             Ok(result)
         }
 
-        #[weight = 10_000]
-        pub fn publish_module(origin, module_bc: Vec<u8>) -> dispatch::DispatchResultWithPostInfo {
+        #[weight = T::GasWeightMapping::gas_to_weight(*gas_limit)]
+        pub fn publish_module(origin, module_bc: Vec<u8>, gas_limit: u64) -> dispatch::DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
             debug!("executing `publish` with signed {:?}", who);
             #[cfg(test)] eprintln!("executing `publish` with signed {:?}", who);
 
             let event_handler = event::EventWriter::new(Self::deposit_event);
             let vm = mvm::default_vm::<VMStorage, _>(event_handler);
-            // TODO: gas-table & min-max values shoud be in genesis/config
-            let max_gas_amount = (u64::MAX / 1000) - 42;
-            // TODO: get native value
-            let gas_unit_price = 1;
-            let gas = Gas::new(max_gas_amount, gas_unit_price).unwrap();
+
+            // TODO: gas-table & min-max values shoud be in config
+            let gas = Gas::new(gas_limit, GAS_UNIT_PRICE).unwrap();
 
             let tx = {
                 use move_vm::types::ModuleTx;
