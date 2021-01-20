@@ -54,7 +54,7 @@ where
     }
 
     #[inline]
-    fn clear(&mut self) {
+    fn clear(&self) {
         self.0.clear()
     }
 }
@@ -62,6 +62,7 @@ where
 pub trait GetStaticMoveVm<E: EventHandler> {
     type Vm: move_vm::Vm;
 
+    /// Get or create and get the VM
     fn get_move_vm() -> &'static Self::Vm;
 }
 

@@ -149,13 +149,10 @@ decl_module! {
             Ok(result)
         }
 
-        /*
-        fn on_finalize(_n: BlockNumber) {
-            // TODO: fix mutability and call clear
-            // Self::get_move_vm_mut().clear();
-            debug!("MoveVM cleared");
+        fn on_finalize(n: T::BlockNumber) {
+            Self::get_move_vm().clear();
+            trace!("MoveVM cleared on {:?}", n);
         }
-        */
      }
 }
 
