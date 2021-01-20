@@ -16,17 +16,17 @@ use move_core_types::account_address::AccountAddress;
 
 pub mod addr;
 pub mod event;
+pub mod gas;
 pub mod mvm;
 pub mod result;
 pub mod storage;
-pub mod gas;
 
 use result::Error;
 use addr::AccountIdAsBytes;
 use crate::gas::GasWeightMapping;
 pub use event::Event;
 
-const GAS_UNIT_PRICE : u64 = 1;
+const GAS_UNIT_PRICE: u64 = 1;
 
 /// Configure the pallet by specifying the parameters and types on which it depends.
 pub trait Trait: frame_system::Trait {
@@ -79,7 +79,7 @@ decl_module! {
 
             let event_handler = event::EventWriter::new(Self::deposit_event);
             let vm = mvm::default_vm::<VMStorage, _>(event_handler);
-            
+
             let gas = Gas::new(gas_limit, GAS_UNIT_PRICE).unwrap();
 
             let tx = {
