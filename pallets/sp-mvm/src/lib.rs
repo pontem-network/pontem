@@ -71,8 +71,6 @@ decl_module! {
         pub fn execute(origin, script_bc: Vec<u8>, args: Option<Vec<u64>>) -> dispatch::DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
             debug!("executing `execute` with signed {:?}", who);
-            // TODO: enable logger for tests
-            #[cfg(feature = "std")] eprintln!("executing `execute` with signed {:?}", who);
 
             let vm = Self::get_move_vm();
             // TODO: gas-table & min-max values shoud be in genesis/config
@@ -92,7 +90,6 @@ decl_module! {
 
                 let sender = T::account_to_bytes(&who);
                 debug!("converted sender: {:?}", sender);
-                #[cfg(feature = "std")] eprintln!("converted sender: {:?}", sender);
 
                 let senders: Vec<AccountAddress> = vec![
                     AccountAddress::new(sender),
@@ -105,7 +102,6 @@ decl_module! {
 
             let res = vm.execute_script(gas, tx);
             debug!("execution result: {:?}", res);
-            #[cfg(feature = "std")] eprintln!("execution result: {:?}", res);
 
             // produce result with spended gas:
             let result = result::from_vm_result::<T>(res)?;
@@ -116,7 +112,6 @@ decl_module! {
         pub fn publish_module(origin, module_bc: Vec<u8>) -> dispatch::DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
             debug!("executing `publish` with signed {:?}", who);
-            #[cfg(test)] eprintln!("executing `publish` with signed {:?}", who);
 
             let vm = Self::get_move_vm();
             // TODO: gas-table & min-max values shoud be in genesis/config
@@ -131,14 +126,12 @@ decl_module! {
                 let code: Vec<u8> = module_bc;
                 let sender = T::account_to_bytes(&who);
                 debug!("converted sender: {:?}", sender);
-                #[cfg(test)] eprintln!("converted sender: {:?}", sender);
 
                 ModuleTx::new(code, AccountAddress::new(sender))
             };
 
             let res = vm.publish_module(gas, tx);
             debug!("publish result: {:?}", res);
-            #[cfg(test)] eprintln!("publish result: {:?}", res);
 
             // produce result with spended gas:
             let result = result::from_vm_result::<T>(res)?;
