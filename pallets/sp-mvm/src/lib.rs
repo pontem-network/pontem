@@ -84,9 +84,8 @@ decl_module! {
                 let type_args: Vec<TypeTag> = Default::default();
 
                 let args = args.map(|vec|
-                        vec.into_iter().map(|v|ScriptArg::U64(v)
-                    ).collect()
-                ).unwrap_or_else(||vec![]);
+                        vec.into_iter().map(ScriptArg::U64).collect()
+                ).unwrap_or_default();
 
                 let sender = T::account_to_bytes(&who);
                 debug!("converted sender: {:?}", sender);
@@ -177,7 +176,10 @@ impl<T: Trait> GetStaticMoveVm<DefaultEventHandler> for Module<T> {
         use once_cell::sync::OnceCell;
 
         static VM: OnceCell<VmWrapperTy<VMStorage>> = OnceCell::new();
-        // there .into() needed one-cell's OnceBox to into Box implicitly convertion
+        // there .into() needed one-cell's OnceBox to
+        // into Box implicitly convertion for no-std
+        // into itself (noop) for std/test
+        #[allow(clippy::useless_conversion)]
         VM.get_or_init(|| Self::create_move_vm_wrapped().into())
     }
 }

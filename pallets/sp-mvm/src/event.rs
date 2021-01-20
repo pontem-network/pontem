@@ -53,10 +53,10 @@ impl<F> EventWriter<F> {
 }
 
 /// Default EventWriter
-pub type DefaultEventHandler = EventWriter<Box<dyn Fn(MoveEventArguments) -> ()>>;
+pub type DefaultEventHandler = EventWriter<Box<dyn Fn(MoveEventArguments)>>;
 
 /// Boxed fn ptr to something looks like `DepositMoveEvent::deposit_move_event`
-pub type DepositMoveEventFnPtr = Box<dyn Fn(MoveEventArguments) -> ()>;
+pub type DepositMoveEventFnPtr = Box<dyn Fn(MoveEventArguments)>;
 
 pub trait GetDepositMoveEventFn<T: DepositMoveEvent + 'static> {
     fn get_deposit_move_event_fn() -> DepositMoveEventFnPtr {
