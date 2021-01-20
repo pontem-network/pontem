@@ -75,7 +75,7 @@ fn publish_module() {
     new_test_ext().execute_with(|| {
         let origin = origin_ps_acc();
 
-        call_publish_module(origin, store_module_bc(), "Store")
+        call_publish_module(origin, store_module_bc(), "Store");
     });
 }
 

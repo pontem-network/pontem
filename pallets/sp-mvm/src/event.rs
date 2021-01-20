@@ -2,6 +2,7 @@ use sp_std::prelude::*;
 use frame_support::decl_event;
 use move_vm::data::EventHandler;
 use move_core_types::language_storage::TypeTag;
+pub use self::RawEvent as MoveRawEvent;
 
 decl_event!(
     pub enum Event<T>

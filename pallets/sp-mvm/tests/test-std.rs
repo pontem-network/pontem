@@ -4,7 +4,9 @@ use move_core_types::identifier::Identifier;
 use move_core_types::language_storage::ModuleId;
 use move_vm::data::*;
 use move_vm_runtime::data_cache::RemoteCache;
+
 use sp_mvm::storage::MoveVmStorage;
+use sp_mvm::event::MoveRawEvent as RawEvent;
 
 mod mock;
 use mock::*;
@@ -70,6 +72,20 @@ fn execute_script() {
 
         call_publish_module(root, vec_module_bc(), "Vector");
         call_publish_module(root, event_module_bc(), "Event");
+
+        // we need next block because events are not populated on genesis:
+        roll_next_block();
+
+        assert!(Sys::events().is_empty());
+
         call_execute_script(origin);
+
+        // construct event that should be emitted in the method call directly above
+        let expected =
+            // TODO: another way to construct event, more understandable instead of LCS/BCS
+            RawEvent::MvmEvent(vec![71, 85, 73, 68], 1, vec![42, 0, 0, 0, 0, 0, 0, 0]).into();
+
+        // iterate through array of `EventRecord`s
+        assert!(Sys::events().iter().any(|rec| rec.event == expected));
     });
 }
