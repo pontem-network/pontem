@@ -6,6 +6,7 @@ use move_core_types::language_storage::StructTag;
 use move_vm::data::*;
 use move_vm_runtime::data_cache::RemoteCache;
 use serde::Deserialize;
+use sp_mvm::storage::MoveVmStorage;
 
 mod mock;
 use mock::*;
@@ -35,7 +36,7 @@ fn call_publish_module(signer: <Test as system::Trait>::AccountId, bc: Vec<u8>, 
 
     // check storage:
     let module_id = ModuleId::new(to_move_addr(signer), Identifier::new(mod_name).unwrap());
-    let storage = Mvm::get_vm_storage();
+    let storage = Mvm::move_vm_storage();
     let state = State::new(storage);
     assert_eq!(bc, state.get_module(&module_id).unwrap().unwrap());
 }
@@ -53,7 +54,7 @@ fn call_execute_script(origin: Origin) {
     assert_ok!(result);
 
     // check storage:
-    let store = Mvm::get_vm_storage();
+    let store = Mvm::move_vm_storage();
     let state = State::new(store);
     let tag = StructTag {
         address: origin_move_addr(),
@@ -74,7 +75,7 @@ fn publish_module() {
     new_test_ext().execute_with(|| {
         let origin = origin_ps_acc();
 
-        call_publish_module(origin, store_module_bc(), "Store")
+        call_publish_module(origin, store_module_bc(), "Store");
     });
 }
 

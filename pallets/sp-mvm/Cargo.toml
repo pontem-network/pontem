@@ -45,6 +45,8 @@ sp-core = { default-features = false, version = '2.0.0' }
 sp-runtime = { default-features = false, version = '2.0.0' }
 # sp-io = { default-features = false, version = '2.0.0' }
 
+once_cell = { default-features = false, version = '1.5.2' }
+
 
 [dev-dependencies]
 sp-core = { default-features = false, version = '2.0.0' }
@@ -64,7 +66,7 @@ branch = "master"
 default = ['std']
 std = [
     "log/std",
-    # "once_cell/std",
+    "once_cell/std",
     "vm/std",
     "move-vm/std",
     "move-vm-runtime/std",
