@@ -30,7 +30,7 @@ struct StoreU64 {
 fn call_publish_module(signer: <Test as system::Trait>::AccountId, bc: Vec<u8>, mod_name: &str) {
     let origin = Origin::signed(signer);
     // execute VM for publish module:
-    let result = Mvm::publish_module(origin, bc.clone());
+    let result = Mvm::publish(origin, bc.clone());
     eprintln!("publish_module result: {:?}", result);
     assert_ok!(result);
 
