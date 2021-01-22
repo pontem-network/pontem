@@ -2,6 +2,8 @@ use frame_system as system;
 use frame_support::assert_ok;
 use move_core_types::identifier::Identifier;
 use move_core_types::language_storage::ModuleId;
+use move_core_types::language_storage::StructTag;
+use move_core_types::language_storage::TypeTag;
 use move_vm::data::*;
 use move_vm_runtime::data_cache::RemoteCache;
 
@@ -81,9 +83,18 @@ fn execute_script() {
         call_execute_script(origin);
 
         // construct event that should be emitted in the method call directly above
-        let expected =
-            // TODO: another way to construct event, more understandable instead of LCS/BCS
-            RawEvent::MvmEvent(vec![71, 85, 73, 68], 1, vec![42, 0, 0, 0, 0, 0, 0, 0]).into();
+        let expected = RawEvent::MoveEvent(
+            vec![71, 85, 73, 68],
+            1,
+            TypeTag::Struct(StructTag {
+                address: root_move_addr(),
+                module: Identifier::new("Event").unwrap(),
+                name: Identifier::new("U64").unwrap(),
+                type_params: Vec::with_capacity(0),
+            }),
+            42u64.to_le_bytes().to_vec(),
+        )
+        .into();
 
         // iterate through array of `EventRecord`s
         assert!(Sys::events().iter().any(|rec| rec.event == expected));
