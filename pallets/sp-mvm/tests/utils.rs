@@ -31,7 +31,7 @@ pub fn root_ps_acc() -> Public {
 
 /// Returns `AccountAddress` for Bob
 pub fn root_move_addr() -> AccountAddress {
-    let pk = origin_ps_acc();
+    let pk = root_ps_acc();
     let vec = pk.encode();
     let mut arr = [0; AccountAddress::LENGTH];
     arr.copy_from_slice(&vec);
