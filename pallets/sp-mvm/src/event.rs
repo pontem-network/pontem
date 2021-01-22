@@ -11,10 +11,9 @@ decl_event!(
     {
         // Event documentation should end with an array that provides descriptive names for event parameters.
         /// Event provided by Move VM
-        /// [guid, seq_num, message]
-        MvmEvent(Vec<u8>, u64, Vec<u8>),
-        // / [guid, seq_num, ty_tag, message]
-        // Event(Vec<u8>, u64, TypeTag, Vec<u8>),
+        /// [guid, seq_num, ty_tag, message]
+        MoveEvent(Vec<u8>, u64, TypeTag, Vec<u8>),
+
         /// Event about successful move-module publishing
         /// [account]
         ModulePublished(AccountId),
