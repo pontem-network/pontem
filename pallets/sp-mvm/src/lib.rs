@@ -13,11 +13,14 @@ use mvm::VmWrapperTy;
 use sp_std::prelude::*;
 use frame_support::{decl_module, decl_storage, dispatch};
 use frame_system::ensure_signed;
+use frame_system::ensure_root;
 use move_vm::Vm;
 use move_vm::types::Gas;
+use move_vm::types::ModuleTx;
 use move_vm::types::ScriptTx;
 use move_vm::types::ScriptArg;
 use move_core_types::language_storage::TypeTag;
+use move_core_types::language_storage::CORE_CODE_ADDRESS;
 use move_core_types::account_address::AccountAddress;
 
 pub mod addr;
@@ -27,7 +30,6 @@ pub mod result;
 pub mod storage;
 
 use result::Error;
-use addr::AccountIdAsBytes;
 pub use event::Event;
 use event::*;
 
@@ -73,28 +75,23 @@ decl_module! {
             debug!("executing `execute` with signed {:?}", who);
 
             let vm = Self::get_move_vm();
-            // TODO: gas-table & min-max values shoud be in genesis/config
-            let max_gas_amount = (u64::MAX / 1000) - 42;
-            // TODO: get native value
-            let gas_unit_price = 1;
-            let gas = Gas::new(max_gas_amount, gas_unit_price).unwrap();
+            let gas = Self::get_move_gas_limit()?;
 
             let tx = {
-                let code: Vec<u8> = script_bc;
                 let type_args: Vec<TypeTag> = Default::default();
 
                 let args = args.map(|vec|
                         vec.into_iter().map(ScriptArg::U64).collect()
                 ).unwrap_or_default();
 
-                let sender = T::account_to_bytes(&who);
+                let sender = addr::account_to_bytes(&who);
                 debug!("converted sender: {:?}", sender);
 
                 let senders: Vec<AccountAddress> = vec![
                     AccountAddress::new(sender),
                 ];
 
-                ScriptTx::new(code, args, type_args, senders).map_err(|_|{
+                ScriptTx::new(script_bc, args, type_args, senders).map_err(|_|{
                     Error::<T>::ScriptValidationError
                 })?
             };
@@ -108,25 +105,18 @@ decl_module! {
         }
 
         #[weight = 10_000]
-        pub fn publish_module(origin, module_bc: Vec<u8>) -> dispatch::DispatchResultWithPostInfo {
+        pub fn publish(origin, module_bc: Vec<u8>) -> dispatch::DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
             debug!("executing `publish` with signed {:?}", who);
 
             let vm = Self::get_move_vm();
-            // TODO: gas-table & min-max values shoud be in genesis/config
-            let max_gas_amount = (u64::MAX / 1000) - 42;
-            // TODO: get native value
-            let gas_unit_price = 1;
-            let gas = Gas::new(max_gas_amount, gas_unit_price).unwrap();
+            let gas = Self::get_move_gas_limit()?;
 
             let tx = {
-                use move_vm::types::ModuleTx;
-
-                let code: Vec<u8> = module_bc;
-                let sender = T::account_to_bytes(&who);
+                let sender = addr::account_to_bytes(&who);
                 debug!("converted sender: {:?}", sender);
 
-                ModuleTx::new(code, AccountAddress::new(sender))
+                ModuleTx::new(module_bc, AccountAddress::new(sender))
             };
 
             let res = vm.publish_module(gas, tx);
@@ -141,11 +131,41 @@ decl_module! {
             Ok(result)
         }
 
+        #[weight = 10_000]
+        pub fn publish_std(origin, module_bc: Vec<u8>) -> dispatch::DispatchResultWithPostInfo {
+            ensure_root(origin)?;
+            debug!("executing `publish STD` with root");
+
+            let vm = Self::get_move_vm();
+            let gas = Self::get_move_gas_limit()?;
+            let tx = ModuleTx::new(module_bc, CORE_CODE_ADDRESS);
+            let res = vm.publish_module(gas, tx);
+            debug!("publish result: {:?}", res);
+
+            // produce result with spended gas:
+            let result = result::from_vm_result::<T>(res)?;
+
+            // Emit an event:
+            Self::deposit_event(RawEvent::StdModulePublished);
+
+            Ok(result)
+        }
+
         fn on_finalize(n: T::BlockNumber) {
             Self::get_move_vm().clear();
             trace!("MoveVM cleared on {:?}", n);
         }
      }
+}
+
+impl<T: Trait> Module<T> {
+    fn get_move_gas_limit() -> Result<Gas, Error<T>> {
+        // TODO: gas-table & min-max values shoud be in genesis/config
+        let max_gas_amount = (u64::MAX / 1000) - 42;
+        // TODO: get native value
+        let gas_unit_price = 1;
+        Gas::new(max_gas_amount, gas_unit_price).map_err(|_| Error::InvalidGasAmountMaxValue)
+    }
 }
 
 /// Get storage adapter ready for the VM
@@ -192,6 +212,6 @@ impl<T: Trait> DepositMoveEvent for Module<T> {
         );
 
         // Emit an event:
-        Self::deposit_event(RawEvent::MoveEvent(e.guid, e.seq_num, e.ty_tag, e.message));
+        Self::deposit_event(RawEvent::Event(e.guid, e.seq_num, e.ty_tag, e.message));
     }
 }

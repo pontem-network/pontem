@@ -250,8 +250,12 @@ impl<T: Trait> From<StatusCode> for Error<T> {
     }
 }
 
+
 decl_error! {
     pub enum Error for Module<T: Trait> {
+        /// `max_gas_amount` value must be in the range from 0 to `u64::MAX / 1000`.
+        /// Causes for invalid configuration.
+        InvalidGasAmountMaxValue,
         /// Script senders should not be empty
         ScriptValidationError,
 
