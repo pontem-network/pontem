@@ -4,6 +4,7 @@ use codec::Encode;
 use sp_core::sr25519::Public;
 use sp_core::crypto::Ss58Codec;
 use move_core_types::account_address::AccountAddress;
+pub use move_core_types::language_storage::CORE_CODE_ADDRESS;
 use sp_mvm::addr::account_to_account_address;
 
 pub const BOB_SS58: &str = "5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty";
@@ -24,14 +25,14 @@ pub fn origin_move_addr() -> AccountAddress {
 }
 
 pub fn root_ps_acc() -> Public {
-    let addr = AccountAddress::from_hex_literal("0x1").unwrap();
+    let addr = CORE_CODE_ADDRESS;
     let pk = Public(addr.to_u8());
     pk
 }
 
 /// Returns `AccountAddress` for Bob
 pub fn root_move_addr() -> AccountAddress {
-    let pk = origin_ps_acc();
+    let pk = root_ps_acc();
     let vec = pk.encode();
     let mut arr = [0; AccountAddress::LENGTH];
     arr.copy_from_slice(&vec);
