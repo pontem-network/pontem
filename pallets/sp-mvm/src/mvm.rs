@@ -26,9 +26,7 @@ pub trait TryCreateMoveVm<T> {
     fn try_create_move_vm() -> Result<Self::Vm, Self::Error>;
 }
 
-#[cfg(not(feature = "no-vm-static"))]
 pub use vm_static::*;
-#[cfg(not(feature = "no-vm-static"))]
 mod vm_static {
     use super::*;
 

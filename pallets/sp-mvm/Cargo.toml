@@ -63,7 +63,6 @@ branch = "release-1.1"
 
 
 [features]
-no-vm-static = []
 default = [ 'std' ]
 std = [
     "log/std",
