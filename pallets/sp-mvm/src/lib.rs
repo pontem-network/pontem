@@ -202,10 +202,12 @@ impl<T: Trait> TryGetStaticMoveVm<DefaultEventHandler> for Module<T> {
 
         static VM: OnceCell<VmWrapperTy<VMStorage>> = OnceCell::new();
         VM.get_or_try_init(|| {
-            let res = Self::try_create_move_vm_wrapped();
+            #[cfg(feature = "std")]
+            {
+                Self::try_create_move_vm_wrapped()
+            }
             #[cfg(not(feature = "std"))]
-            let res = res.map(Box::from);
-            res
+            Self::try_create_move_vm_wrapped().map(Box::from)
         })
     }
 }
