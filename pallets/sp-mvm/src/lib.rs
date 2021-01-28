@@ -4,24 +4,19 @@
 #[macro_use]
 extern crate log;
 
-use codec::FullCodec;
-use codec::FullEncode;
-use move_vm::mvm::Mvm;
-use mvm::CreateMoveVm;
-use mvm::GetStaticMoveVm;
-use mvm::VmWrapperTy;
 use sp_std::prelude::*;
+use codec::{FullCodec, FullEncode};
 use frame_support::{decl_module, decl_storage, dispatch};
-use frame_system::ensure_signed;
-use frame_system::ensure_root;
+use frame_system::{ensure_signed, ensure_root};
+use move_vm::mvm::Mvm;
 use move_vm::Vm;
 use move_vm::types::Gas;
 use move_vm::types::ModuleTx;
 use move_vm::types::ScriptTx;
 use move_vm::types::ScriptArg;
 use move_core_types::language_storage::TypeTag;
-use move_core_types::language_storage::CORE_CODE_ADDRESS;
 use move_core_types::account_address::AccountAddress;
+use move_core_types::language_storage::CORE_CODE_ADDRESS;
 
 pub mod addr;
 pub mod event;
@@ -35,6 +30,11 @@ use event::*;
 
 use storage::MoveVmStorage;
 use storage::VmStorageAdapter;
+
+use mvm::TryCreateMoveVm;
+use mvm::TryGetStaticMoveVm;
+use mvm::TryCreateMoveVmWrapped;
+use mvm::VmWrapperTy;
 
 /// Configure the pallet by specifying the parameters and types on which it depends.
 pub trait Trait: frame_system::Trait {
@@ -53,7 +53,7 @@ decl_storage! {
          // https://substrate.dev/docs/en/knowledgebase/runtime/storage#declaring-storage-items
 
          /// Storage for move- write-sets contains code & resources
-         pub VMStorage get(fn vmstorage): map hasher(blake2_128_concat) Vec<u8> => Option<Vec<u8>>;
+         pub VMStorage: map hasher(blake2_128_concat) Vec<u8> => Option<Vec<u8>>;
      }
 }
 
@@ -74,7 +74,7 @@ decl_module! {
             let who = ensure_signed(origin)?;
             debug!("executing `execute` with signed {:?}", who);
 
-            let vm = Self::get_move_vm();
+            let vm = Self::try_get_or_create_move_vm()?;
             let gas = Self::get_move_gas_limit()?;
 
             let tx = {
@@ -109,7 +109,7 @@ decl_module! {
             let who = ensure_signed(origin)?;
             debug!("executing `publish` with signed {:?}", who);
 
-            let vm = Self::get_move_vm();
+            let vm = Self::try_get_or_create_move_vm()?;
             let gas = Self::get_move_gas_limit()?;
 
             let tx = {
@@ -136,7 +136,7 @@ decl_module! {
             ensure_root(origin)?;
             debug!("executing `publish STD` with root");
 
-            let vm = Self::get_move_vm();
+            let vm = Self::try_get_or_create_move_vm()?;
             let gas = Self::get_move_gas_limit()?;
             let tx = ModuleTx::new(module_bc, CORE_CODE_ADDRESS);
             let res = vm.publish_module(gas, tx);
@@ -152,7 +152,7 @@ decl_module! {
         }
 
         fn on_finalize(n: T::BlockNumber) {
-            Self::get_move_vm().clear();
+            Self::try_get_or_create_move_vm().unwrap().clear();
             trace!("MoveVM cleared on {:?}", n);
         }
      }
@@ -177,30 +177,38 @@ where
     type VmStorage = VMStorage;
 }
 
-impl<T: Trait> CreateMoveVm<T> for Module<T> {
+impl<T: Trait> TryCreateMoveVm<T> for Module<T> {
     type Vm = Mvm<VmStorageAdapter<VMStorage>, DefaultEventHandler>;
+    type Error = Error<T>;
 
-    fn create_move_vm() -> Self::Vm {
+    fn try_create_move_vm() -> Result<Self::Vm, Self::Error> {
         trace!("MoveVM created");
-        Mvm::new(Self::move_vm_storage(), Self::create_move_event_handler())
+        Mvm::new(Self::move_vm_storage(), Self::create_move_event_handler()).map_err(|err| {
+            error!("{}", err);
+            Error::InvalidVMConfig
+        })
     }
 }
 
-impl<T: Trait> GetStaticMoveVm<DefaultEventHandler> for Module<T> {
+impl<T: Trait> TryGetStaticMoveVm<DefaultEventHandler> for Module<T> {
     type Vm = VmWrapperTy<VMStorage>;
+    type Error = Error<T>;
 
-    fn get_move_vm() -> &'static Self::Vm {
+    fn try_get_or_create_move_vm() -> Result<&'static Self::Vm, Self::Error> {
         #[cfg(not(feature = "std"))]
         use once_cell::race::OnceBox as OnceCell;
         #[cfg(feature = "std")]
         use once_cell::sync::OnceCell;
 
         static VM: OnceCell<VmWrapperTy<VMStorage>> = OnceCell::new();
-        // there .into() needed one-cell's OnceBox to
-        // into Box implicitly convertion for no-std
-        // into itself (noop) for std/test
-        #[allow(clippy::useless_conversion)]
-        VM.get_or_init(|| Self::create_move_vm_wrapped().into())
+        VM.get_or_try_init(|| {
+            #[cfg(feature = "std")]
+            {
+                Self::try_create_move_vm_wrapped()
+            }
+            #[cfg(not(feature = "std"))]
+            Self::try_create_move_vm_wrapped().map(Box::from)
+        })
     }
 }
 

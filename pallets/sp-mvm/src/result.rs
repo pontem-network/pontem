@@ -60,6 +60,7 @@ impl<T: Trait> From<StatusCode> for Error<T> {
             StatusCode::INVALID_AUTH_KEY => Self::InvalidAuthKey,
             StatusCode::SEQUENCE_NUMBER_TOO_OLD => Self::SequenceNumberTooOld,
             StatusCode::SEQUENCE_NUMBER_TOO_NEW => Self::SequenceNumberTooNew,
+            StatusCode::SEQUENCE_NUMBER_TOO_BIG => Self::SequenceNumberTooBig,
             StatusCode::INSUFFICIENT_BALANCE_FOR_TRANSACTION_FEE => {
                 Self::InsufficientBalanceForTransactionFee
             }
@@ -252,8 +253,10 @@ impl<T: Trait> From<StatusCode> for Error<T> {
 
 decl_error! {
     pub enum Error for Module<T: Trait> {
+        /// Failed to read or decode VM configuration
+        InvalidVMConfig,
         /// `max_gas_amount` value must be in the range from 0 to `u64::MAX / 1000`.
-        /// Causes for invalid configuration.
+        /// Causes for invalid gas configuration.
         InvalidGasAmountMaxValue,
         /// Script senders should not be empty
         ScriptValidationError,
@@ -268,6 +271,8 @@ decl_error! {
         SequenceNumberTooOld,
         /// Sequence number is too new
         SequenceNumberTooNew,
+        /// The sequence number is too large and would overflow if the transaction were executed
+        SequenceNumberTooBig,
         /// Insufficient balance to pay minimum transaction fee
         InsufficientBalanceForTransactionFee,
         /// The transaction has expired
