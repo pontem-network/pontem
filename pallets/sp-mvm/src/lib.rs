@@ -26,7 +26,6 @@ pub mod result;
 pub mod storage;
 
 use result::Error;
-use addr::AccountIdAsBytes;
 use crate::gas::GasWeightMapping;
 pub use event::Event;
 use event::*;
@@ -82,15 +81,8 @@ decl_module! {
             let who = ensure_signed(origin)?;
             debug!("executing `execute` with signed {:?}", who);
 
-<<<<<<< HEAD
-            let event_handler = event::EventWriter::new(Self::deposit_event);
-            let vm = mvm::default_vm::<VMStorage, _>(event_handler);
-
-            let gas = Gas::new(gas_limit, GAS_UNIT_PRICE).unwrap();
-=======
             let vm = Self::try_get_or_create_move_vm()?;
-            let gas = Self::get_move_gas_limit()?;
->>>>>>> 33f4348ce769623de5aec252b1613f20263c7430
+            let gas = Self::get_move_gas_limit(gas_limit)?;
 
             let tx = {
                 let type_args: Vec<TypeTag> = Default::default();
@@ -119,26 +111,13 @@ decl_module! {
             Ok(result)
         }
 
-<<<<<<< HEAD
         #[weight = T::GasWeightMapping::gas_to_weight(*gas_limit)]
         pub fn publish_module(origin, module_bc: Vec<u8>, gas_limit: u64) -> dispatch::DispatchResultWithPostInfo {
-=======
-        #[weight = 10_000]
-        pub fn publish(origin, module_bc: Vec<u8>) -> dispatch::DispatchResultWithPostInfo {
->>>>>>> 33f4348ce769623de5aec252b1613f20263c7430
             let who = ensure_signed(origin)?;
             debug!("executing `publish` with signed {:?}", who);
 
-<<<<<<< HEAD
-            let event_handler = event::EventWriter::new(Self::deposit_event);
-            let vm = mvm::default_vm::<VMStorage, _>(event_handler);
-
-            // TODO: gas-table & min-max values shoud be in config
-            let gas = Gas::new(gas_limit, GAS_UNIT_PRICE).unwrap();
-=======
             let vm = Self::try_get_or_create_move_vm()?;
-            let gas = Self::get_move_gas_limit()?;
->>>>>>> 33f4348ce769623de5aec252b1613f20263c7430
+            let gas = Self::get_move_gas_limit(gas_limit)?;
 
             let tx = {
                 let sender = addr::account_to_bytes(&who);
@@ -159,13 +138,13 @@ decl_module! {
             Ok(result)
         }
 
-        #[weight = 10_000]
-        pub fn publish_std(origin, module_bc: Vec<u8>) -> dispatch::DispatchResultWithPostInfo {
+        #[weight = T::GasWeightMapping::gas_to_weight(*gas_limit)]
+        pub fn publish_std(origin, module_bc: Vec<u8>, gas_limit: u64) -> dispatch::DispatchResultWithPostInfo {
             ensure_root(origin)?;
             debug!("executing `publish STD` with root");
 
             let vm = Self::try_get_or_create_move_vm()?;
-            let gas = Self::get_move_gas_limit()?;
+            let gas = Self::get_move_gas_limit(gas_limit)?;
             let tx = ModuleTx::new(module_bc, CORE_CODE_ADDRESS);
             let res = vm.publish_module(gas, tx);
             debug!("publish result: {:?}", res);
@@ -187,12 +166,8 @@ decl_module! {
 }
 
 impl<T: Trait> Module<T> {
-    fn get_move_gas_limit() -> Result<Gas, Error<T>> {
-        // TODO: gas-table & min-max values shoud be in genesis/config
-        let max_gas_amount = (u64::MAX / 1000) - 42;
-        // TODO: get native value
-        let gas_unit_price = 1;
-        Gas::new(max_gas_amount, gas_unit_price).map_err(|_| Error::InvalidGasAmountMaxValue)
+    fn get_move_gas_limit(gas_limit: u64) -> Result<Gas, Error<T>> {
+        Gas::new(gas_limit, GAS_UNIT_PRICE).map_err(|_| Error::InvalidGasAmountMaxValue)
     }
 }
 
