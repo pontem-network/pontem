@@ -29,8 +29,10 @@ fn script_bc() -> Vec<u8> {
 }
 
 fn call_publish_module_with_origin(origin: Origin, bc: Vec<u8>) {
+    const GAS_LIMIT: u64 = 1_000_000;
+
     // execute VM for publish module:
-    let result = Mvm::publish(origin, bc);
+    let result = Mvm::publish_module(origin, bc, GAS_LIMIT);
     eprintln!("publish_module result: {:?}", result);
     assert_ok!(result);
 }
@@ -61,13 +63,14 @@ fn check_storage_with_addr(signer: AccountAddress, bc: Vec<u8>, mod_name: &str) 
 
 fn call_execute_script(origin: Origin) {
     const TEST_VALUE: u64 = 42;
+    const GAS_LIMIT: u64 = 1_000_000;
 
     // prepare arguments:
     // let args = vec![ScriptArg::U64(TEST_VALUE)];
     let args = vec![TEST_VALUE];
 
     // execute VM tx:
-    let result = Mvm::execute(origin, script_bc(), Some(args));
+    let result = Mvm::execute(origin, script_bc(), Some(args), GAS_LIMIT);
     eprintln!("result: {:?}", result);
     assert_ok!(result);
 
