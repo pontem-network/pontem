@@ -1,15 +1,24 @@
+#![allow(dead_code)]
+
 use sp_mvm::{Module, Trait};
 use sp_core::H256;
 use frame_system as system;
-use frame_support::{impl_outer_origin, parameter_types, weights::Weight};
+use frame_support::{impl_outer_origin, impl_outer_event, parameter_types, weights::Weight};
+use frame_support::traits::{OnInitialize, OnFinalize};
 use sp_runtime::traits::{BlakeTwo256, IdentityLookup};
 use sp_runtime::{testing::Header, Perbill};
 
 impl_outer_origin! {
     pub enum Origin for Test {}
+    // pub enum Origin for Test where system = frame_system {}
 }
 
-// Configure a mock runtime to test the pallet.
+impl_outer_event! {
+    pub enum TestEvent for Test {
+        sp_mvm<T>,
+        system<T>,
+    }
+}
 
 #[derive(Clone, Eq, PartialEq)]
 pub struct Test;
@@ -31,7 +40,7 @@ impl system::Trait for Test {
     type AccountId = sp_core::sr25519::Public;
     type Lookup = IdentityLookup<Self::AccountId>;
     type Header = Header;
-    type Event = ();
+    type Event = TestEvent;
     type BlockHashCount = BlockHashCount;
     type MaximumBlockWeight = MaximumBlockWeight;
     type DbWeight = ();
@@ -49,20 +58,48 @@ impl system::Trait for Test {
 }
 
 impl Trait for Test {
-    type Event = ();
+    type Event = TestEvent;
 }
 
-// type LibraAccountAddress = [u8; AccountAddress::LENGTH];
-// impl AccountIdAsBytes<<Test as system::Trait>::AccountId, LibraAccountAddress> for Test {}
-
-#[allow(dead_code)]
 pub type Mvm = Module<Test>;
+pub type Sys = system::Module<Test>;
+pub type MoveEvent = sp_mvm::Event<Test>;
 
-#[allow(dead_code)]
 /// Build genesis storage according to the mock runtime.
 pub fn new_test_ext() -> sp_io::TestExternalities {
     system::GenesisConfig::default()
         .build_storage::<Test>()
         .unwrap()
         .into()
+}
+
+pub fn roll_next_block() {
+    // Stake::on_finalize(Sys::block_number());
+    // Balances::on_finalize(Sys::block_number());
+    Mvm::on_finalize(Sys::block_number());
+    Sys::on_finalize(Sys::block_number());
+    Sys::set_block_number(Sys::block_number() + 1);
+    Sys::on_initialize(Sys::block_number());
+    Mvm::on_initialize(Sys::block_number());
+    // Balances::on_initialize(Sys::block_number());
+    // Stake::on_initialize(Sys::block_number());
+    println!("current block number: {}", Sys::block_number());
+}
+
+pub fn roll_block_to(n: u64) {
+    while Sys::block_number() < n {
+        roll_next_block()
+    }
+}
+
+pub fn last_event() -> TestEvent {
+    {
+        let events = Sys::events();
+        println!("events: {:?}", events);
+    }
+    Sys::events().pop().expect("Event expected").event
+}
+
+pub fn have_no_events() -> bool {
+    Sys::events().is_empty()
 }

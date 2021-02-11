@@ -5,9 +5,16 @@ use move_vm::data::Storage;
 use frame_support::storage::StorageMap;
 
 pub trait MoveVmStorage<T, K: FullEncode, V: FullCodec> {
-    type VmStorage: StorageMap<K, V>;
+    type VmStorage;
 
-    fn move_vm_storage() -> VmStorageAdapter<Self::VmStorage, K, V>;
+    fn move_vm_storage() -> VmStorageAdapter<Self::VmStorage, K, V>
+    where
+        // TODO: simplify to
+        // Self::VmStorage: StorageMap<K, V>,
+        Self::VmStorage: StorageMap<K, V, Query = Option<V>>,
+    {
+        Default::default()
+    }
 }
 
 /// Vm storage adapter for native storage

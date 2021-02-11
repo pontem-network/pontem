@@ -4,7 +4,11 @@ init:
 
 .PHONY: check
 check:
-	SKIP_WASM_BUILD=1 cargo check
+	SKIP_WASM_BUILD=1 cargo check --all
+
+.PHONY: clippy
+clippy:
+	SKIP_WASM_BUILD=1 cargo clippy -p=sp-mvm
 
 .PHONY: test
 test:
