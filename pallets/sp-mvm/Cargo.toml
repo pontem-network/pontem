@@ -28,34 +28,34 @@ version = '1.3.4'
 [dependencies.move-vm]
 package = "mvm"
 git = "https://github.com/pontem-network/sp-move-vm.git"
-rev = "ad0075005369470f7a509345b456647432670905"
+rev = "e0dfd57f588358aaf84e2019fd01d730d9fad9ae"
 default-features = false
 
 [dependencies.vm]
 git = "https://github.com/pontem-network/sp-move-vm.git"
-rev = "ad0075005369470f7a509345b456647432670905"
+rev = "e0dfd57f588358aaf84e2019fd01d730d9fad9ae"
 default-features = false
 
 [dependencies.move-vm-runtime]
 git = "https://github.com/pontem-network/sp-move-vm.git"
-rev = "ad0075005369470f7a509345b456647432670905"
+rev = "e0dfd57f588358aaf84e2019fd01d730d9fad9ae"
 default-features = false
 
 [dependencies.move-core-types]
 git = "https://github.com/pontem-network/sp-move-vm.git"
-rev = "ad0075005369470f7a509345b456647432670905"
+rev = "e0dfd57f588358aaf84e2019fd01d730d9fad9ae"
 default-features = false
 
 [dependencies.move-vm-types]
 git = "https://github.com/pontem-network/sp-move-vm.git"
-rev = "ad0075005369470f7a509345b456647432670905"
+rev = "e0dfd57f588358aaf84e2019fd01d730d9fad9ae"
 default-features = false
 
 [dev-dependencies.lcs]
 package = "bcs"
 default-features = false
 git = "https://github.com/pontem-network/sp-move-vm.git"
-rev = "ad0075005369470f7a509345b456647432670905"
+rev = "e0dfd57f588358aaf84e2019fd01d730d9fad9ae"
 
 [dependencies]
 frame-support = { default-features = false, version = '2.0.0' }
