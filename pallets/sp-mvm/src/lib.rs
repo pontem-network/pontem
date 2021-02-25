@@ -84,6 +84,7 @@ decl_module! {
                 ];
 
                 if transaction.signers_count() as usize != senders.len() {
+                    error!("Transaction signers num isn't eq signers: {} != {}", transaction.signers_count(), senders.len());
                     return Err(Error::<T>::TransactionSignersNumError.into());
                 }
 

@@ -18,8 +18,8 @@ fn store_module_bc() -> Vec<u8> {
     include_bytes!("assets/target/modules/2_Store.mv").to_vec()
 }
 
-fn script_bc() -> Vec<u8> {
-    include_bytes!("assets/target/scripts/1_store_u64.mv").to_vec()
+fn script_tx() -> Vec<u8> {
+    include_bytes!("assets/target/transactions/store_u64.mvt").to_vec()
 }
 
 #[derive(Deserialize)]
@@ -42,14 +42,10 @@ fn call_publish_module(signer: <Test as system::Trait>::AccountId, bc: Vec<u8>, 
 }
 
 fn call_execute_script(origin: Origin) {
-    const TEST_VALUE: u64 = 13;
-
-    // prepare arguments:
-    // let args = vec![ScriptArg::U64(TEST_VALUE)];
-    let args = vec![TEST_VALUE];
+    let txbc = script_tx();
 
     // execute VM tx:
-    let result = Mvm::execute(origin, script_bc(), Some(args));
+    let result = Mvm::execute(origin, txbc);
     eprintln!("execute_script result: {:?}", result);
     assert_ok!(result);
 
@@ -67,7 +63,7 @@ fn call_execute_script(origin: Origin) {
         .unwrap()
         .unwrap();
     let store: StoreU64 = lcs::from_bytes(&blob).unwrap();
-    assert_eq!(TEST_VALUE, store.val);
+    assert_eq!(42, store.val);
 }
 
 #[test]
