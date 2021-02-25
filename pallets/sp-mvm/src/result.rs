@@ -260,6 +260,10 @@ decl_error! {
         InvalidGasAmountMaxValue,
         /// Script senders should not be empty
         ScriptValidationError,
+        /// Transaction deserialization & validation error
+        TransactionValidationError,
+        /// Transaction signers num isn't eq signers
+        TransactionSignersNumError,
 
         /// Unknown validation status
         UnknownValidationStatus,

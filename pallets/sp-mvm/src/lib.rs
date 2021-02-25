@@ -4,6 +4,7 @@
 #[macro_use]
 extern crate log;
 
+use core::convert::TryFrom;
 use sp_std::prelude::*;
 use codec::{FullCodec, FullEncode};
 use frame_support::{decl_module, decl_storage, dispatch};
@@ -12,9 +13,7 @@ use move_vm::mvm::Mvm;
 use move_vm::Vm;
 use move_vm::types::Gas;
 use move_vm::types::ModuleTx;
-use move_vm::types::ScriptTx;
-use move_vm::types::ScriptArg;
-use move_core_types::language_storage::TypeTag;
+use move_vm::types::Transaction;
 use move_core_types::account_address::AccountAddress;
 use move_core_types::language_storage::CORE_CODE_ADDRESS;
 
@@ -68,22 +67,15 @@ decl_module! {
         fn deposit_event() = default;
 
         #[weight = 10_000]
-        // Temprorally args changed to just u64 numbers because of troubles with codec & web-client...
-        // They should be this: Option<Vec<ScriptArg>> ,ty_args: Vec<TypeTag>
-        pub fn execute(origin, script_bc: Vec<u8>, args: Option<Vec<u64>>) -> dispatch::DispatchResultWithPostInfo {
+        pub fn execute(origin, tx_bc: Vec<u8>) -> dispatch::DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
             debug!("executing `execute` with signed {:?}", who);
 
+            let transaction = Transaction::try_from(&tx_bc[..]).map_err(|_| Error::<T>::TransactionValidationError)?;
             let vm = Self::try_get_or_create_move_vm()?;
             let gas = Self::get_move_gas_limit()?;
 
             let tx = {
-                let type_args: Vec<TypeTag> = Default::default();
-
-                let args = args.map(|vec|
-                        vec.into_iter().map(ScriptArg::U64).collect()
-                ).unwrap_or_default();
-
                 let sender = addr::account_to_bytes(&who);
                 debug!("converted sender: {:?}", sender);
 
@@ -91,9 +83,11 @@ decl_module! {
                     AccountAddress::new(sender),
                 ];
 
-                ScriptTx::new(script_bc, args, type_args, senders).map_err(|_|{
-                    Error::<T>::ScriptValidationError
-                })?
+                if transaction.signers_count() as usize != senders.len() {
+                    return Err(Error::<T>::TransactionSignersNumError.into());
+                }
+
+                transaction.into_script(senders).map_err(|_| Error::<T>::TransactionValidationError)?
             };
 
             let res = vm.execute_script(gas, tx);
