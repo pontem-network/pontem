@@ -68,27 +68,29 @@ decl_module! {
 
         #[weight = 10_000]
         pub fn execute(origin, tx_bc: Vec<u8>) -> dispatch::DispatchResultWithPostInfo {
-            let who = ensure_signed(origin)?;
-            debug!("executing `execute` with signed {:?}", who);
-
             let transaction = Transaction::try_from(&tx_bc[..]).map_err(|_| Error::<T>::TransactionValidationError)?;
             let vm = Self::try_get_or_create_move_vm()?;
             let gas = Self::get_move_gas_limit()?;
 
             let tx = {
-                let sender = addr::account_to_bytes(&who);
-                debug!("converted sender: {:?}", sender);
+                let signers = if transaction.signers_count() == 0 {
+                    Vec::with_capacity(0)
+                } else if let Ok(account) = ensure_signed(origin) {
+                    debug!("executing `execute` with signed {:?}", account);
+                    let sender = addr::account_to_bytes(&account);
+                    debug!("converted sender: {:?}", sender);
+                    vec![AccountAddress::new(sender)]
+                } else {
+                    // TODO: support multiple signers
+                    Vec::with_capacity(0)
+                };
 
-                let senders: Vec<AccountAddress> = vec![
-                    AccountAddress::new(sender),
-                ];
-
-                if transaction.signers_count() as usize != senders.len() {
-                    error!("Transaction signers num isn't eq signers: {} != {}", transaction.signers_count(), senders.len());
+                if transaction.signers_count() as usize != signers.len() {
+                    error!("Transaction signers num isn't eq signers: {} != {}", transaction.signers_count(), signers.len());
                     return Err(Error::<T>::TransactionSignersNumError.into());
                 }
 
-                transaction.into_script(senders).map_err(|_| Error::<T>::TransactionValidationError)?
+                transaction.into_script(signers).map_err(|_| Error::<T>::TransactionValidationError)?
             };
 
             let res = vm.execute_script(gas, tx);
