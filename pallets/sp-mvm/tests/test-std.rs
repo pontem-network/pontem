@@ -5,8 +5,8 @@ use move_core_types::identifier::Identifier;
 use move_core_types::language_storage::ModuleId;
 use move_core_types::language_storage::StructTag;
 use move_core_types::language_storage::TypeTag;
-use move_vm::data::*;
 use move_vm_runtime::data_cache::RemoteCache;
+use move_vm::data::*;
 
 use sp_mvm::storage::MoveVmStorage;
 use sp_mvm::event::MoveRawEvent as RawEvent;
@@ -24,8 +24,8 @@ fn vec_module_bc() -> Vec<u8> {
     include_bytes!("assets/target/modules/1_Vector.mv").to_vec()
 }
 
-fn script_bc() -> Vec<u8> {
-    include_bytes!("assets/target/scripts/0_emit_event.mv").to_vec()
+fn script_tx() -> Vec<u8> {
+    include_bytes!("assets/target/transactions/emit_event.mvt").to_vec()
 }
 
 fn call_publish_module_with_origin(origin: Origin, bc: Vec<u8>) {
@@ -60,14 +60,8 @@ fn check_storage_with_addr(signer: AccountAddress, bc: Vec<u8>, mod_name: &str) 
 }
 
 fn call_execute_script(origin: Origin) {
-    const TEST_VALUE: u64 = 42;
-
-    // prepare arguments:
-    // let args = vec![ScriptArg::U64(TEST_VALUE)];
-    let args = vec![TEST_VALUE];
-
     // execute VM tx:
-    let result = Mvm::execute(origin, script_bc(), Some(args));
+    let result = Mvm::execute(origin, script_tx());
     eprintln!("result: {:?}", result);
     assert_ok!(result);
 

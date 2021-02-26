@@ -27,29 +27,35 @@ version = '1.3.4'
 
 [dependencies.move-vm]
 package = "mvm"
-git = "https://github.com/dfinance/sp-move-vm.git"
-rev = "d5be4ba6a2782bdf87ffe136376999f24334d33b"
+git = "https://github.com/pontem-network/sp-move-vm.git"
+rev = "e0dfd57f588358aaf84e2019fd01d730d9fad9ae"
 default-features = false
 
 [dependencies.vm]
-git = "https://github.com/dfinance/sp-move-vm.git"
-rev = "d5be4ba6a2782bdf87ffe136376999f24334d33b"
+git = "https://github.com/pontem-network/sp-move-vm.git"
+rev = "e0dfd57f588358aaf84e2019fd01d730d9fad9ae"
 default-features = false
 
 [dependencies.move-vm-runtime]
-git = "https://github.com/dfinance/sp-move-vm.git"
-rev = "d5be4ba6a2782bdf87ffe136376999f24334d33b"
+git = "https://github.com/pontem-network/sp-move-vm.git"
+rev = "e0dfd57f588358aaf84e2019fd01d730d9fad9ae"
 default-features = false
 
 [dependencies.move-core-types]
-git = "https://github.com/dfinance/sp-move-vm.git"
-rev = "d5be4ba6a2782bdf87ffe136376999f24334d33b"
+git = "https://github.com/pontem-network/sp-move-vm.git"
+rev = "e0dfd57f588358aaf84e2019fd01d730d9fad9ae"
 default-features = false
 
 [dependencies.move-vm-types]
-git = "https://github.com/dfinance/sp-move-vm.git"
-rev = "d5be4ba6a2782bdf87ffe136376999f24334d33b"
+git = "https://github.com/pontem-network/sp-move-vm.git"
+rev = "e0dfd57f588358aaf84e2019fd01d730d9fad9ae"
 default-features = false
+
+[dev-dependencies.lcs]
+package = "bcs"
+default-features = false
+git = "https://github.com/pontem-network/sp-move-vm.git"
+rev = "e0dfd57f588358aaf84e2019fd01d730d9fad9ae"
 
 [dependencies]
 frame-support = { default-features = false, version = '2.0.0' }
@@ -71,12 +77,6 @@ sp-core = { default-features = false, version = '2.0.0' }
 sp-runtime = { default-features = false, version = '2.0.0' }
 # serde is for lcs only
 serde = { version = "1", default-features = false, package = "alt_serde", features = ["derive", "alloc"] }
-
-[dev-dependencies.lcs]
-package = "bcs"
-default-features = false
-git = "https://github.com/dfinance/sp-move-vm.git"
-rev = "d5be4ba6a2782bdf87ffe136376999f24334d33b"
 
 
 [features]
