@@ -10,7 +10,7 @@ env:
   CARGO_INCREMENTAL: 1
   CARGO_NET_RETRY: 10
   CARGO_TERM_COLOR: always
-  # RUSTFLAGS: -D warnings
+  RUSTFLAGS: -D warnings
 
 jobs:
   test:
@@ -28,13 +28,12 @@ jobs:
         os:
           - macos-latest
           - ubuntu-latest
-          # - windows-latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - id: rust
+      - id: rust # MSRV
         name: use required Rust version
         run: |
           echo "WASM_BUILD_TOOLCHAIN=$(cat rust-toolchain)" >> $GITHUB_ENV
@@ -47,27 +46,6 @@ jobs:
           profile: minimal
           components: rustfmt
           override: false
-
-      # Install LLVM needed for rocksdb-sys (dep)
-      - name: Cache LLVM and Clang
-        if: matrix.os == 'windows-latest'
-        id: cache-llvm
-        uses: actions/cache@v2
-        with:
-          path: ${{ runner.temp }}/llvm
-          key: llvm-10.0
-      - name: Install LLVM and Clang
-        if: matrix.os == 'windows-latest'
-        uses: KyleMayes/install-llvm-action@v1
-        with:
-          version: "10.0"
-          directory: ${{ runner.temp }}/llvm
-          cached: ${{ steps.cache-llvm.outputs.cache-hit }}
-      # Not entirely sure why, but llvm-config doesn't seem to be included in the pre-build binaries for Windows: https://stackoverflow.com/a/60024490
-      # The "solution" seems to be to build LLVM from source. :/
-      - name: set LLVM extra env
-        if: matrix.os == 'windows-latest'
-        run: echo "LLVM_CONFIG_PATH=${{ runner.temp }}/llvm/bin/llvm-config" >> $GITHUB_ENV
 
       - name: Check formatting
         run: cargo fmt -- --check
@@ -95,7 +73,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - id: rust
+      - id: rust # MSRV
         name: use required Rust version
         run: |
           echo "WASM_BUILD_TOOLCHAIN=$(cat rust-toolchain)" >> $GITHUB_ENV
@@ -138,7 +116,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - id: rust
+      - id: rust # MSRV
         name: use required Rust version
         run: |
           echo "WASM_BUILD_TOOLCHAIN=$(cat rust-toolchain)" >> $GITHUB_ENV
@@ -155,16 +133,61 @@ jobs:
       - name: Build
         run: cargo +${{ steps.rust.outputs.version }} build --all
 
-  audit:
-    name: Audit
-    runs-on: ubuntu-latest
-    if: "contains(github.event.head_commit.message, 'ci audit') || contains(github.event.head_commit.message, 'audit ci')"
+  coverage:
+    name: "Coverage"
+    runs-on: ${{ matrix.os }}
+    if: "!contains(github.event.head_commit.message, 'ci skip') && !contains(github.event.head_commit.message, 'skip ci')"
+
+    defaults:
+      run:
+        shell: bash
+
+    strategy:
+      fail-fast: true
+      matrix:
+        os:
+          - macos-latest
+          - ubuntu-latest
 
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: cargo-audit
-        uses: actions-rs/audit-check@v1
+      - name: Install Rust toolchain
+        uses: actions-rs/toolchain@v1
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          toolchain: nightly
+          profile: minimal
+          override: true
+
+      - name: cargo clean
+        run: cargo clean
+
+      - name: cargo build tests +profile
+        uses: actions-rs/cargo@v1
+        with:
+          command: test
+          args: -p=sp-mvm --all-features --no-fail-fast
+        env:
+          SKIP_WASM_BUILD: 1
+          CARGO_INCREMENTAL: 0
+          RUSTFLAGS: "-Zprofile -Ccodegen-units=1 -Cinline-threshold=0 -Clink-dead-code -Coverflow-checks=off -Cpanic=abort -Zpanic_abort_tests"
+          RUSTDOCFLAGS: "-Zprofile -Ccodegen-units=1 -Cinline-threshold=0 -Clink-dead-code -Coverflow-checks=off -Cpanic=abort -Zpanic_abort_tests"
+
+      - id: coverage
+        name: coverage grcov
+        uses: actions-rs/grcov@v0.1
+        with:
+          config: .github/grcov.yml
+
+      - name: make artifact
+        uses: actions/upload-artifact@v1
+        with:
+          name: code-coverage-report
+          path: ${{ steps.coverage.outputs.report }}
+
+      - name: upload to Coveralls
+        uses: coverallsapp/github-action@v1.1.2
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path-to-lcov: ${{ steps.coverage.outputs.report }}
