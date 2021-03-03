@@ -7,6 +7,7 @@ use frame_support::{impl_outer_origin, impl_outer_event, parameter_types, weight
 use frame_support::traits::{OnInitialize, OnFinalize};
 use sp_runtime::traits::{BlakeTwo256, IdentityLookup};
 use sp_runtime::{testing::Header, Perbill};
+use move_vm::data::Oracle;
 
 impl_outer_origin! {
     pub enum Origin for Test {}
@@ -64,6 +65,15 @@ impl Trait for Test {
 pub type Mvm = Module<Test>;
 pub type Sys = system::Module<Test>;
 pub type MoveEvent = sp_mvm::Event<Test>;
+
+#[derive(Clone, Copy, Default)]
+pub struct MockOracle(pub Option<u128>);
+
+impl Oracle for MockOracle {
+    fn get_price(&self, _ticker: &str) -> Option<u128> {
+        self.0
+    }
+}
 
 /// Build genesis storage according to the mock runtime.
 pub fn new_test_ext() -> sp_io::TestExternalities {

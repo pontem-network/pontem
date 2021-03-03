@@ -4,7 +4,9 @@
 #[macro_use]
 extern crate log;
 
+use core::convert::TryInto;
 use core::convert::TryFrom;
+use move_vm::data::ExecutionContext;
 use sp_std::prelude::*;
 use codec::{FullCodec, FullEncode};
 use frame_support::{decl_module, decl_storage, dispatch};
@@ -20,6 +22,7 @@ use move_core_types::language_storage::CORE_CODE_ADDRESS;
 pub mod addr;
 pub mod event;
 pub mod mvm;
+pub mod oracle;
 pub mod result;
 pub mod storage;
 
@@ -39,6 +42,7 @@ use mvm::VmWrapperTy;
 pub trait Trait: frame_system::Trait {
     /// Because this pallet emits events, it depends on the runtime's definition of an event.
     type Event: From<Event<Self>> + Into<<Self as frame_system::Trait>::Event>;
+    // type BlockNumber: Into<u64>;
 }
 
 // The pallet's runtime storage items.
@@ -60,7 +64,10 @@ decl_storage! {
 // These functions materialize as "extrinsics", which are often compared to transactions.
 // Dispatchable functions must be annotated with a weight and must return a DispatchResult.
 decl_module! {
-     pub struct Module<T: Trait> for enum Call where origin: T::Origin {
+     pub struct Module<T: Trait> for enum Call
+        where origin: T::Origin,
+              T::BlockNumber: TryInto<u64>,
+              {
         // Errors must be initialized if they are used by the pallet.
         type Error = Error<T>;
 
@@ -93,7 +100,13 @@ decl_module! {
                 transaction.into_script(signers).map_err(|_| Error::<T>::TransactionValidationError)?
             };
 
-            let res = vm.execute_script(gas, tx);
+            let ctx = {
+                // TODO: get block, then convert to u64 needed for VM
+                // let height = frame_system::Module::<T>::block_number().try_into()?;
+                // ExecutionContext::new(height, height)
+                ExecutionContext::new(42, 42)
+            };
+            let res = vm.execute_script(gas, ctx, tx);
             debug!("execution result: {:?}", res);
 
             // produce result with spended gas:
@@ -175,12 +188,18 @@ where
 }
 
 impl<T: Trait> TryCreateMoveVm<T> for Module<T> {
-    type Vm = Mvm<VmStorageAdapter<VMStorage>, DefaultEventHandler>;
+    type Vm = Mvm<VmStorageAdapter<VMStorage>, DefaultEventHandler, oracle::DummyOracle>;
     type Error = Error<T>;
 
     fn try_create_move_vm() -> Result<Self::Vm, Self::Error> {
         trace!("MoveVM created");
-        Mvm::new(Self::move_vm_storage(), Self::create_move_event_handler()).map_err(|err| {
+        let oracle = Default::default();
+        Mvm::new(
+            Self::move_vm_storage(),
+            Self::create_move_event_handler(),
+            oracle,
+        )
+        .map_err(|err| {
             error!("{}", err);
             Error::InvalidVMConfig
         })
@@ -213,10 +232,10 @@ impl<T: Trait> DepositMoveEvent for Module<T> {
     fn deposit_move_event(e: MoveEventArguments) {
         debug!(
             "MoveVM Event: {:?} {:?} {:?} {:?}",
-            e.guid, e.seq_num, e.ty_tag, e.message
+            e.addr, e.caller, e.ty_tag, e.message
         );
 
         // Emit an event:
-        Self::deposit_event(RawEvent::Event(e.guid, e.seq_num, e.ty_tag, e.message));
+        Self::deposit_event(RawEvent::Event(e.addr, e.ty_tag, e.message, e.caller));
     }
 }

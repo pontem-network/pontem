@@ -1,10 +1,13 @@
 [package]
 name = "assets"
 dialect = "polkadot"
+
 # account_address = "0x0" # dev/null
 # account_address = "0x1" # std
 # account_address = "5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY" # Alice
 account_address = "5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty" # Bob
 # account_address = "0x8eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a48" # Bob
 
-dependencies = [ ]
+dependencies = [
+    { git = "https://github.com/pontem-network/move-stdlib.git" }
+]

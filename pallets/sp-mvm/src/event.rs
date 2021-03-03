@@ -1,3 +1,5 @@
+use move_core_types::account_address::AccountAddress;
+use move_core_types::language_storage::ModuleId;
 use sp_std::prelude::*;
 use frame_support::decl_event;
 use move_vm::data::EventHandler;
@@ -11,8 +13,8 @@ decl_event!(
     {
         // Event documentation should end with an array that provides descriptive names for event parameters.
         /// Event provided by Move VM
-        /// [guid, seq_num, ty_tag, message]
-        Event(Vec<u8>, u64, TypeTag, Vec<u8>),
+        /// [account, ty_tag, message, module]
+        Event(AccountAddress, TypeTag, Vec<u8>, Option<ModuleId>),
 
         /// Event about successful move-module publishing
         /// [account]
@@ -31,20 +33,31 @@ pub trait DepositMoveEvent {
 pub struct EventWriter<F>(F);
 
 pub struct MoveEventArguments {
-    pub guid: Vec<u8>,
-    pub seq_num: u64,
+    // pub guid: Vec<u8>,
+    // pub seq_num: u64,
+    // pub ty_tag: TypeTag,
+    // pub message: Vec<u8>,
+    pub addr: AccountAddress,
     pub ty_tag: TypeTag,
     pub message: Vec<u8>,
+    pub caller: Option<ModuleId>,
 }
 
 impl<F: Fn(MoveEventArguments)> EventHandler for EventWriter<F> {
     #[inline]
-    fn on_event(&self, guid: Vec<u8>, seq_num: u64, ty_tag: TypeTag, message: Vec<u8>) {
+    // fn on_event(&self, guid: Vec<u8>, seq_num: u64, ty_tag: TypeTag, message: Vec<u8>) {
+    fn on_event(
+        &self,
+        addr: AccountAddress,
+        ty_tag: TypeTag,
+        message: Vec<u8>,
+        caller: Option<ModuleId>,
+    ) {
         self.0(MoveEventArguments {
-            guid,
-            seq_num,
+            addr,
             ty_tag,
             message,
+            caller,
         })
     }
 }
