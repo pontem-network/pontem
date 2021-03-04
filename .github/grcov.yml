@@ -1,0 +1,14 @@
+ignore-not-existing: true
+branch: true
+llvm: true
+filter: covered
+output-type: lcov
+ignore:
+  - "/*"
+  - "../*"
+  - "C:/*"
+  - ".cargo/*"
+  - ".git/*"
+  - ".github/*"
+# doc: https://github.com/mozilla/grcov#usage
+# example: https://github.com/actions-rs/grcov/blob/master/README.md#example
