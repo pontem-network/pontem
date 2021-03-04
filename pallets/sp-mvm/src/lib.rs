@@ -39,7 +39,7 @@ use mvm::TryCreateMoveVmWrapped;
 use mvm::VmWrapperTy;
 
 /// Configure the pallet by specifying the parameters and types on which it depends.
-pub trait Trait: frame_system::Trait {
+pub trait Trait: frame_system::Trait + timestamp::Trait {
     /// Because this pallet emits events, it depends on the runtime's definition of an event.
     type Event: From<Event<Self>> + Into<<Self as frame_system::Trait>::Event>;
     // type BlockNumber: Into<u64>;
@@ -102,9 +102,10 @@ decl_module! {
             };
 
             let ctx = {
-                // TODO: get block, then convert to u64 needed for VM
-                let height = frame_system::Module::<T>::block_number().try_into().map_err(|_|()).unwrap();
-                ExecutionContext::new(height, height)
+                let height = frame_system::Module::<T>::block_number().try_into().map_err(|_|Error::<T>::NumConversionError)?;
+                let time = <timestamp::Module<T>>::get().try_into().map_err(|_|Error::<T>::NumConversionError)?
+                                                        .try_into().map_err(|_|Error::<T>::NumConversionError)?;
+                ExecutionContext::new(time, height)
             };
             let res = vm.execute_script(gas, ctx, tx);
             debug!("execution result: {:?}", res);

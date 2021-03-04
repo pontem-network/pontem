@@ -253,6 +253,9 @@ impl<T: Trait> From<StatusCode> for Error<T> {
 
 decl_error! {
     pub enum Error for Module<T: Trait> {
+        /// Internal: numeric convertion error, overflow
+        NumConversionError,
+
         /// Failed to read or decode VM configuration
         InvalidVMConfig,
         /// `max_gas_amount` value must be in the range from 0 to `u64::MAX / 1000`.
