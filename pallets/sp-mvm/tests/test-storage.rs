@@ -10,12 +10,8 @@ use sp_mvm::storage::MoveVmStorage;
 
 mod common;
 use common::assets::*;
-
-mod mock;
-use mock::*;
-
-mod utils;
-use utils::*;
+use common::mock::*;
+use common::utils::*;
 
 #[derive(Deserialize)]
 struct StoreU64 {

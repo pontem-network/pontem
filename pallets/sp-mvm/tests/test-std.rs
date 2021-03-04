@@ -13,12 +13,8 @@ use sp_mvm::event::MoveRawEvent as RawEvent;
 
 mod common;
 use common::assets::*;
-
-mod mock;
-use mock::*;
-
-mod utils;
-use utils::*;
+use common::mock::*;
+use common::utils::*;
 
 fn call_publish_module_with_origin(origin: Origin, bc: Vec<u8>) {
     // execute VM for publish module:
