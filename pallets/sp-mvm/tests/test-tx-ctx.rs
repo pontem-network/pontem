@@ -37,15 +37,15 @@ fn call_publish_module(signer: <Test as system::Trait>::AccountId, bc: Vec<u8>, 
     assert_eq!(bc, state.get_module(&module_id).unwrap().unwrap());
 }
 
-fn call_execute_script(origin: Origin) {
-    let txbc = UserTx::StoreU64.bc().to_vec();
+fn call_execute_script_tx_block(origin: Origin, tx: UserTx) {
+    let txbc = tx.bc().to_vec();
 
-    // execute VM tx:
     let result = Mvm::execute(origin, txbc);
     eprintln!("execute_script result: {:?}", result);
     assert_ok!(result);
+}
 
-    // check storage:
+fn check_storage_block(expected: u64) {
     let store = Mvm::move_vm_storage();
     let oracle = MockOracle(None);
     let state = State::new(store, oracle);
@@ -60,27 +60,47 @@ fn call_execute_script(origin: Origin) {
         .unwrap()
         .unwrap();
     let store: StoreU64 = lcs::from_bytes(&blob).unwrap();
-    assert_eq!(42, store.val);
+    assert_eq!(expected, store.val);
 }
 
 #[test]
-fn publish_module() {
+fn execute_store_block() {
     new_test_ext().execute_with(|| {
+        let root = root_ps_acc();
         let origin = origin_ps_acc();
-        let module = UserMod::Store;
+        let signer = Origin::signed(origin);
+        let block = StdMod::Block;
+        let store = UserMod::Store;
 
-        call_publish_module(origin, module.bc().to_vec(), module.name());
+        call_publish_module(root, block.bc().to_vec(), block.name());
+        call_publish_module(origin, store.bc().to_vec(), store.name());
+
+        const EXPECTED: u64 = 3;
+        for _ in 0..EXPECTED {
+            roll_next_block();
+        }
+        call_execute_script_tx_block(signer, UserTx::StoreSysBlock);
+        check_storage_block(EXPECTED);
     });
 }
 
 #[test]
-fn execute_script() {
+fn execute_store_time() {
     new_test_ext().execute_with(|| {
+        let root = root_ps_acc();
         let origin = origin_ps_acc();
         let signer = Origin::signed(origin);
-        let module = UserMod::Store;
+        let time = StdMod::Time;
+        let store = UserMod::Store;
 
-        call_publish_module(origin, module.bc().to_vec(), module.name());
-        call_execute_script(signer);
+        call_publish_module(root, time.bc().to_vec(), time.name());
+        call_publish_module(origin, store.bc().to_vec(), store.name());
+
+        const EXPECTED: u64 = 3;
+        for _ in 0..EXPECTED {
+            roll_next_block();
+        }
+        call_execute_script_tx_block(signer, UserTx::StoreSysTime);
+        check_storage_block(EXPECTED);
     });
 }

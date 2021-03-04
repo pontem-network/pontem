@@ -67,6 +67,7 @@ decl_module! {
      pub struct Module<T: Trait> for enum Call
         where origin: T::Origin,
               T::BlockNumber: TryInto<u64>,
+              // <<T as frame_system::Trait>::BlockNumber as TryInto<u64>>::Error: std::fmt::Debug
               {
         // Errors must be initialized if they are used by the pallet.
         type Error = Error<T>;
@@ -102,9 +103,8 @@ decl_module! {
 
             let ctx = {
                 // TODO: get block, then convert to u64 needed for VM
-                // let height = frame_system::Module::<T>::block_number().try_into()?;
-                // ExecutionContext::new(height, height)
-                ExecutionContext::new(42, 42)
+                let height = frame_system::Module::<T>::block_number().try_into().map_err(|_|()).unwrap();
+                ExecutionContext::new(height, height)
             };
             let res = vm.execute_script(gas, ctx, tx);
             debug!("execution result: {:?}", res);

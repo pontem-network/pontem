@@ -11,22 +11,14 @@ use move_vm::data::*;
 use sp_mvm::storage::MoveVmStorage;
 use sp_mvm::event::MoveRawEvent as RawEvent;
 
+mod common;
+use common::assets::*;
+
 mod mock;
 use mock::*;
 
 mod utils;
 use utils::*;
-
-fn event_module_bc() -> Vec<u8> {
-    include_bytes!("assets/target/modules/0_Event.mv").to_vec()
-}
-fn event_proxy_module_bc() -> Vec<u8> {
-    include_bytes!("assets/target/modules/2_EventProxy.mv").to_vec()
-}
-
-fn script_tx() -> Vec<u8> {
-    include_bytes!("assets/target/transactions/emit_event.mvt").to_vec()
-}
 
 fn call_publish_module_with_origin(origin: Origin, bc: Vec<u8>) {
     // execute VM for publish module:
@@ -63,8 +55,8 @@ fn check_storage_with_addr(signer: AccountAddress, bc: Vec<u8>, mod_name: &str) 
 
 fn call_execute_script(origin: Origin) {
     // execute VM tx:
-    let result = Mvm::execute(origin, script_tx());
-    eprintln!("result: {:?}", result);
+    let result = Mvm::execute(origin, UserTx::EmitEvent.bc().to_vec());
+    eprintln!("tx result: {:?}", result);
     assert_ok!(result);
 }
 
@@ -73,7 +65,8 @@ fn call_execute_script(origin: Origin) {
 fn publish_module() {
     new_test_ext().execute_with(|| {
         let root = root_ps_acc();
-        call_publish_module(root, event_module_bc(), "Event");
+        let module = StdMod::Event;
+        call_publish_module(root, module.bc().to_vec(), module.name());
     });
 }
 
@@ -82,11 +75,14 @@ fn publish_module() {
 /// publish std modules as root
 fn publish_module_as_root() {
     new_test_ext().execute_with(|| {
-        call_publish_module_with_origin(Origin::root(), event_module_bc());
-        check_storage_with_addr(CORE_CODE_ADDRESS, event_module_bc(), "Event");
+        let event = StdMod::Event;
+        let proxy = UserMod::EventProxy;
 
-        call_publish_module_with_origin(Origin::root(), event_proxy_module_bc());
-        check_storage_with_addr(CORE_CODE_ADDRESS, event_proxy_module_bc(), "EventProxy");
+        call_publish_module_with_origin(Origin::root(), event.bc().to_vec());
+        check_storage_with_addr(CORE_CODE_ADDRESS, event.bc().to_vec(), event.name());
+
+        call_publish_module_with_origin(Origin::root(), proxy.bc().to_vec());
+        check_storage_with_addr(CORE_CODE_ADDRESS, proxy.bc().to_vec(), proxy.name());
     });
 }
 
@@ -95,9 +91,11 @@ fn execute_script() {
     new_test_ext().execute_with(|| {
         let root = root_ps_acc();
         let origin = origin_ps_acc();
+        let event = StdMod::Event;
+        let proxy = UserMod::EventProxy;
 
-        call_publish_module(root, event_module_bc(), "Event");
-        call_publish_module(origin, event_proxy_module_bc(), "EventProxy");
+        call_publish_module(root, event.bc().to_vec(), event.name());
+        call_publish_module(origin, proxy.bc().to_vec(), proxy.name());
 
         // we need next block because events are not populated on genesis:
         roll_next_block();
@@ -113,7 +111,7 @@ fn execute_script() {
                 to_move_addr(origin),
                 TypeTag::Struct(StructTag {
                     address: to_move_addr(origin),
-                    module: Identifier::new("EventProxy").unwrap(),
+                    module: Identifier::new(proxy.name()).unwrap(),
                     name: Identifier::new("U64").unwrap(),
                     type_params: Vec::with_capacity(0),
                 }),
@@ -126,14 +124,14 @@ fn execute_script() {
                 to_move_addr(origin),
                 TypeTag::Struct(StructTag {
                     address: to_move_addr(origin),
-                    module: Identifier::new("EventProxy").unwrap(),
+                    module: Identifier::new(proxy.name()).unwrap(),
                     name: Identifier::new("U64").unwrap(),
                     type_params: Vec::with_capacity(0),
                 }),
                 42u64.to_le_bytes().to_vec(),
                 Some(ModuleId::new(
                     to_move_addr(origin),
-                    Identifier::new("EventProxy").unwrap(),
+                    Identifier::new(proxy.name()).unwrap(),
                 )),
             )
             .into(),
