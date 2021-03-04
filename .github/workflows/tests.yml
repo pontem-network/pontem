@@ -146,10 +146,10 @@ jobs:
       fail-fast: true
       matrix:
         cfg:
-          - os: macos-latest
-            grcov: grcov-linux-x86_64.tar.bz2
           - os: ubuntu-latest
-            grcov: grcov-osx-x86_64.tar.bz2
+            grcov: grcov-linux-x86_64.tar.bz2
+          # - os: macos-latest
+          #   grcov: grcov-osx-x86_64.tar.bz2
 
     env:
       SKIP_WASM_BUILD: 1
