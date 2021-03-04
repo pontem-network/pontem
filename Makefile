@@ -12,7 +12,7 @@ clippy:
 
 .PHONY: test
 test:
-	SKIP_WASM_BUILD=1 cargo test --all --no-fail-fast -- --nocapture
+	SKIP_WASM_BUILD=1 cargo test --all --no-fail-fast -- --nocapture --test-threads=1
 
 .PHONY: run
 run:

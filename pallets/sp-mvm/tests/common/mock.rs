@@ -58,12 +58,26 @@ impl system::Trait for Test {
     type SystemWeightInfo = ();
 }
 
+// --- timestamp --- //
+parameter_types! {
+    pub const MinimumPeriod: u64 = 5;
+}
+impl timestamp::Trait for Test {
+    /// A timestamp: milliseconds since the unix epoch.
+    type Moment = u64;
+    type OnTimestampSet = ();
+    type MinimumPeriod = MinimumPeriod;
+    type WeightInfo = ();
+}
+// ----------------- //
+
 impl Trait for Test {
     type Event = TestEvent;
 }
 
 pub type Mvm = Module<Test>;
 pub type Sys = system::Module<Test>;
+pub type Time = timestamp::Module<Test>;
 pub type MoveEvent = sp_mvm::Event<Test>;
 
 #[derive(Clone, Copy, Default)]
@@ -83,6 +97,7 @@ pub fn new_test_ext() -> sp_io::TestExternalities {
         .into()
 }
 
+pub const TIME_BLOCK_MULTIPLIER: u64 = 100;
 pub fn roll_next_block() {
     // Stake::on_finalize(Sys::block_number());
     // Balances::on_finalize(Sys::block_number());
@@ -93,7 +108,11 @@ pub fn roll_next_block() {
     Mvm::on_initialize(Sys::block_number());
     // Balances::on_initialize(Sys::block_number());
     // Stake::on_initialize(Sys::block_number());
-    println!("current block number: {}", Sys::block_number());
+
+    // set time with multiplier `*MULTIPLIER` by block:
+    Time::set_timestamp(Sys::block_number() * TIME_BLOCK_MULTIPLIER);
+
+    println!("now block: {}, time: {}", Sys::block_number(), Time::get());
 }
 
 pub fn roll_block_to(n: u64) {

@@ -97,6 +97,6 @@ fn execute_store_time() {
             roll_next_block();
         }
         call_execute_script_tx_block(signer, UserTx::StoreSysTime);
-        check_storage_block(EXPECTED);
+        check_storage_block(EXPECTED * TIME_BLOCK_MULTIPLIER);
     });
 }
