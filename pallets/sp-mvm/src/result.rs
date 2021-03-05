@@ -9,10 +9,7 @@ use move_vm::types::VmResult;
 use move_core_types::vm_status::StatusCode;
 
 pub fn is_ok(vm_result: &VmResult) -> bool {
-    match vm_result.status_code {
-        StatusCode::EXECUTED => true,
-        _ => false,
-    }
+    matches!(vm_result.status_code, StatusCode::EXECUTED)
 }
 
 pub fn from_status_code<T: Trait>(code: StatusCode) -> Result<(), Error<T>> {
