@@ -85,7 +85,8 @@ jobs:
           toolchain: ${{ steps.rust.outputs.version }}
           profile: minimal
           components: clippy
-          override: false
+          target: wasm32-unknown-unknown
+          override: true
 
       - name: Clippy
         # uses: actions-rs/clippy-check@v1
