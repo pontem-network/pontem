@@ -54,48 +54,51 @@ jobs:
         run: cargo +${{ steps.rust.outputs.version }} test --all --no-fail-fast -- --nocapture --test-threads=1
         env: { SKIP_WASM_BUILD: 1 }
 
-  # temporarly disabled because strange error when build "under clippy".
-  # clippy:
-  #   name: Clippy
-  #   runs-on: ${{ matrix.os }}
-  #   if: "!contains(github.event.head_commit.message, 'ci skip') && !contains(github.event.head_commit.message, 'skip ci')"
+  clippy:
+    name: Clippy
+    runs-on: ${{ matrix.os }}
+    if: "!contains(github.event.head_commit.message, 'ci skip') && !contains(github.event.head_commit.message, 'skip ci')"
 
-  #   defaults:
-  #     run:
-  #       shell: bash
+    defaults:
+      run:
+        shell: bash
 
-  #   strategy:
-  #     fail-fast: false
-  #     matrix:
-  #       os:
-  #         - ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
 
-  #   steps:
-  #     - name: Checkout repository
-  #       uses: actions/checkout@v2
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
 
-  #     - id: rust # MSRV
-  #       name: use required Rust version
-  #       run: |
-  #         echo "WASM_BUILD_TOOLCHAIN=$(cat rust-toolchain)" >> $GITHUB_ENV
-  #         echo ::set-output name=version::$(cat rust-toolchain)
+      - id: rust # MSRV
+        name: use required Rust version
+        run: |
+          echo "WASM_BUILD_TOOLCHAIN=$(cat rust-toolchain)" >> $GITHUB_ENV
+          echo ::set-output name=version::$(cat rust-toolchain)
 
-  #     - name: Install Rust toolchain
-  #       uses: actions-rs/toolchain@v1
-  #       with:
-  #         toolchain: ${{ steps.rust.outputs.version }}
-  #         profile: minimal
-  #         components: clippy
-  #         override: false
+      - name: Install Rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: ${{ steps.rust.outputs.version }}
+          profile: minimal
+          components: clippy
+          override: false
 
-  #     - name: Clippy
-  #       uses: actions-rs/clippy-check@v1
-  #       with:
-  #         name: Clippy report
-  #         toolchain: ${{ steps.rust.outputs.version }}
-  #         token: ${{ secrets.GITHUB_TOKEN }}
-  #         args: -p=sp-mvm --all-features
-  #       env: { SKIP_WASM_BUILD: 1 }
+      - name: Clippy
+        # uses: actions-rs/clippy-check@v1
+        # with:
+        #   name: Clippy report
+        #   toolchain: ${{ steps.rust.outputs.version }}
+        #   token: ${{ secrets.GITHUB_TOKEN }}
+        #   args: -p=sp-mvm --target=wasm32-unknown-unknown --no-default-features
+        run: |
+          pushd pallets/sp-mvm
+          cargo clippy -p=sp-mvm --target=wasm32-unknown-unknown --no-default-features
+          popd
+        env: { SKIP_WASM_BUILD: 1 }
 
   build:
     name: Build
@@ -147,6 +150,7 @@ jobs:
   #       uses: actions-rs/audit-check@v1
   #       with:
   #         token: ${{ secrets.GITHUB_TOKEN }}
+
   coverage:
     name: "Coverage"
     runs-on: ${{ matrix.cfg.os }}
