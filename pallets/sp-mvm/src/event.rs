@@ -13,8 +13,8 @@ decl_event!(
     {
         // Event documentation should end with an array that provides descriptive names for event parameters.
         /// Event provided by Move VM
-        /// [account, ty_tag, message, module]
-        Event(AccountAddress, TypeTag, Vec<u8>, Option<ModuleId>),
+        /// [account, message, module]
+        Event(AccountAddress, /* TODO: TypeTag, */ Vec<u8>, Option<ModuleId>),
 
         /// Event about successful move-module publishing
         /// [account]

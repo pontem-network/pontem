@@ -249,6 +249,6 @@ impl<T: Trait> DepositMoveEvent for Module<T> {
         );
 
         // Emit an event:
-        Self::deposit_event(RawEvent::Event(e.addr, e.ty_tag, e.message, e.caller));
+        Self::deposit_event(RawEvent::Event(e.addr, /* TODO: e.ty_tag, */ e.message, e.caller));
     }
 }
