@@ -142,22 +142,34 @@ decl_module! {
             Ok(result)
         }
 
-        #[weight = 10_000]
-        pub fn publish_std(origin, module_bc: Vec<u8>) -> dispatch::DispatchResultWithPostInfo {
+        #[weight = 100_000]
+        /// Batch publish std-modules by root account only
+        pub fn publish_std(origin, modules: Vec<Vec<u8>>) -> dispatch::DispatchResultWithPostInfo {
             ensure_root(origin)?;
             debug!("executing `publish STD` with root");
 
             let vm = Self::try_get_or_create_move_vm()?;
-            let gas = Self::get_move_gas_limit()?;
-            let tx = ModuleTx::new(module_bc, CORE_CODE_ADDRESS);
-            let res = vm.publish_module(gas, tx);
-            debug!("publish result: {:?}", res);
+            let mut _gas_used = 0;
+            let mut results = Vec::with_capacity(modules.len());
+            'deploy: for module in modules.into_iter() {
+                let gas = Self::get_move_gas_limit(/* TODO: - gas_used */)?;
+                let tx = ModuleTx::new(module, CORE_CODE_ADDRESS);
+                let res = vm.publish_module(gas, tx);
+                debug!("publish result: {:?}", res);
+
+                let is_ok = result::is_ok(&res);
+                _gas_used += res.gas_used;
+                results.push(res);
+                if !is_ok {
+                    break 'deploy;
+                }
+
+                // Emit an event:
+                Self::deposit_event(RawEvent::StdModulePublished);
+            }
 
             // produce result with spended gas:
-            let result = result::from_vm_result::<T>(res)?;
-
-            // Emit an event:
-            Self::deposit_event(RawEvent::StdModulePublished);
+            let result = result::from_vm_results::<T>(&results)?;
 
             Ok(result)
         }
