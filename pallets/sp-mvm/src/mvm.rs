@@ -9,7 +9,7 @@ use crate::event::DefaultEventHandler;
 use crate::storage::*;
 
 /// Default type of Move VM implementation
-pub type DefaultVm<S, E> = Mvm<VmStorageAdapter<S>, E>;
+pub type DefaultVm<S, E, O> = Mvm<VmStorageAdapter<S>, E, O>;
 
 pub trait CreateMoveVm<T> {
     type Vm: move_vm::Vm;
@@ -28,9 +28,14 @@ pub trait TryCreateMoveVm<T> {
 
 pub use vm_static::*;
 mod vm_static {
+    use move_vm::data::ExecutionContext;
+
+    use crate::oracle::DummyOracle;
+
     use super::*;
 
-    pub type VmWrapperTy<Storage> = VmWrapper<DefaultVm<Storage, DefaultEventHandler>>;
+    pub type VmWrapperTy<Storage> =
+        VmWrapper<DefaultVm<Storage, DefaultEventHandler, DummyOracle>>;
 
     /// New-type with unsafe impl Send + Sync.
     /// This is just wrapper around VM without Pin or ref-counting,
@@ -72,8 +77,13 @@ mod vm_static {
         }
 
         #[inline]
-        fn execute_script(&self, gas: Gas, tx: ScriptTx) -> move_vm::types::VmResult {
-            self.0.execute_script(gas, tx)
+        fn execute_script(
+            &self,
+            gas: Gas,
+            ctx: ExecutionContext,
+            tx: ScriptTx,
+        ) -> move_vm::types::VmResult {
+            self.0.execute_script(gas, ctx, tx)
         }
 
         #[inline]

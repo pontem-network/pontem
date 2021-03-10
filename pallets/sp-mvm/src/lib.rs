@@ -4,7 +4,9 @@
 #[macro_use]
 extern crate log;
 
+use core::convert::TryInto;
 use core::convert::TryFrom;
+use move_vm::data::ExecutionContext;
 use sp_std::prelude::*;
 use codec::{FullCodec, FullEncode};
 use frame_support::{decl_module, decl_storage, dispatch};
@@ -20,6 +22,7 @@ use move_core_types::language_storage::CORE_CODE_ADDRESS;
 pub mod addr;
 pub mod event;
 pub mod mvm;
+pub mod oracle;
 pub mod result;
 pub mod storage;
 
@@ -36,9 +39,10 @@ use mvm::TryCreateMoveVmWrapped;
 use mvm::VmWrapperTy;
 
 /// Configure the pallet by specifying the parameters and types on which it depends.
-pub trait Trait: frame_system::Trait {
+pub trait Trait: frame_system::Trait + timestamp::Trait {
     /// Because this pallet emits events, it depends on the runtime's definition of an event.
     type Event: From<Event<Self>> + Into<<Self as frame_system::Trait>::Event>;
+    // type BlockNumber: Into<u64>;
 }
 
 // The pallet's runtime storage items.
@@ -60,7 +64,11 @@ decl_storage! {
 // These functions materialize as "extrinsics", which are often compared to transactions.
 // Dispatchable functions must be annotated with a weight and must return a DispatchResult.
 decl_module! {
-     pub struct Module<T: Trait> for enum Call where origin: T::Origin {
+     pub struct Module<T: Trait> for enum Call
+        where origin: T::Origin,
+              T::BlockNumber: TryInto<u64>,
+              // <<T as frame_system::Trait>::BlockNumber as TryInto<u64>>::Error: std::fmt::Debug
+              {
         // Errors must be initialized if they are used by the pallet.
         type Error = Error<T>;
 
@@ -93,7 +101,13 @@ decl_module! {
                 transaction.into_script(signers).map_err(|_| Error::<T>::TransactionValidationError)?
             };
 
-            let res = vm.execute_script(gas, tx);
+            let ctx = {
+                let height = frame_system::Module::<T>::block_number().try_into().map_err(|_|Error::<T>::NumConversionError)?;
+                let time = <timestamp::Module<T>>::get().try_into().map_err(|_|Error::<T>::NumConversionError)?
+                                                        .try_into().map_err(|_|Error::<T>::NumConversionError)?;
+                ExecutionContext::new(time, height)
+            };
+            let res = vm.execute_script(gas, ctx, tx);
             debug!("execution result: {:?}", res);
 
             // produce result with spended gas:
@@ -128,22 +142,34 @@ decl_module! {
             Ok(result)
         }
 
-        #[weight = 10_000]
-        pub fn publish_std(origin, module_bc: Vec<u8>) -> dispatch::DispatchResultWithPostInfo {
+        #[weight = 100_000]
+        /// Batch publish std-modules by root account only
+        pub fn publish_std(origin, modules: Vec<Vec<u8>>) -> dispatch::DispatchResultWithPostInfo {
             ensure_root(origin)?;
             debug!("executing `publish STD` with root");
 
             let vm = Self::try_get_or_create_move_vm()?;
-            let gas = Self::get_move_gas_limit()?;
-            let tx = ModuleTx::new(module_bc, CORE_CODE_ADDRESS);
-            let res = vm.publish_module(gas, tx);
-            debug!("publish result: {:?}", res);
+            let mut _gas_used = 0;
+            let mut results = Vec::with_capacity(modules.len());
+            'deploy: for module in modules.into_iter() {
+                let gas = Self::get_move_gas_limit(/* TODO: - gas_used */)?;
+                let tx = ModuleTx::new(module, CORE_CODE_ADDRESS);
+                let res = vm.publish_module(gas, tx);
+                debug!("publish result: {:?}", res);
+
+                let is_ok = result::is_ok(&res);
+                _gas_used += res.gas_used;
+                results.push(res);
+                if !is_ok {
+                    break 'deploy;
+                }
+
+                // Emit an event:
+                Self::deposit_event(RawEvent::StdModulePublished);
+            }
 
             // produce result with spended gas:
-            let result = result::from_vm_result::<T>(res)?;
-
-            // Emit an event:
-            Self::deposit_event(RawEvent::StdModulePublished);
+            let result = result::from_vm_results::<T>(&results)?;
 
             Ok(result)
         }
@@ -175,12 +201,18 @@ where
 }
 
 impl<T: Trait> TryCreateMoveVm<T> for Module<T> {
-    type Vm = Mvm<VmStorageAdapter<VMStorage>, DefaultEventHandler>;
+    type Vm = Mvm<VmStorageAdapter<VMStorage>, DefaultEventHandler, oracle::DummyOracle>;
     type Error = Error<T>;
 
     fn try_create_move_vm() -> Result<Self::Vm, Self::Error> {
         trace!("MoveVM created");
-        Mvm::new(Self::move_vm_storage(), Self::create_move_event_handler()).map_err(|err| {
+        let oracle = Default::default();
+        Mvm::new(
+            Self::move_vm_storage(),
+            Self::create_move_event_handler(),
+            oracle,
+        )
+        .map_err(|err| {
             error!("{}", err);
             Error::InvalidVMConfig
         })
@@ -213,10 +245,12 @@ impl<T: Trait> DepositMoveEvent for Module<T> {
     fn deposit_move_event(e: MoveEventArguments) {
         debug!(
             "MoveVM Event: {:?} {:?} {:?} {:?}",
-            e.guid, e.seq_num, e.ty_tag, e.message
+            e.addr, e.caller, e.ty_tag, e.message
         );
 
         // Emit an event:
-        Self::deposit_event(RawEvent::Event(e.guid, e.seq_num, e.ty_tag, e.message));
+        Self::deposit_event(RawEvent::Event(
+            e.addr, /* TODO: e.ty_tag, */ e.message, e.caller,
+        ));
     }
 }

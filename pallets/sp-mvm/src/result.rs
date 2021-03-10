@@ -8,6 +8,10 @@ use frame_support::decl_error;
 use move_vm::types::VmResult;
 use move_core_types::vm_status::StatusCode;
 
+pub fn is_ok(vm_result: &VmResult) -> bool {
+    matches!(vm_result.status_code, StatusCode::EXECUTED)
+}
+
 pub fn from_status_code<T: Trait>(code: StatusCode) -> Result<(), Error<T>> {
     match code {
         StatusCode::EXECUTED => Ok(()),
@@ -50,6 +54,36 @@ pub fn from_vm_result<T: Trait>(vm_result: VmResult) -> DispatchResultWithPostIn
             }
         }),
     }
+}
+
+pub fn from_vm_results<T: Trait>(vm_results: &[VmResult]) -> DispatchResultWithPostInfo {
+    let mut gas_total = 0;
+    for vm_result in vm_results {
+        gas_total += vm_result.gas_used;
+
+        match vm_result.status_code {
+            StatusCode::EXECUTED => {}
+            status_code => {
+                let gas = PostDispatchInfo {
+                    actual_weight: Some(gas_total),
+                    pays_fee: Pays::Yes,
+                };
+                return Err({
+                    DispatchErrorWithPostInfo {
+                        post_info: gas,
+                        error: Error::<T>::from(status_code).into(),
+                    }
+                });
+            }
+        }
+    }
+
+    let gas = PostDispatchInfo {
+        actual_weight: Some(gas_total),
+        pays_fee: Pays::Yes,
+    };
+
+    Ok(gas)
 }
 
 impl<T: Trait> From<StatusCode> for Error<T> {
@@ -253,6 +287,9 @@ impl<T: Trait> From<StatusCode> for Error<T> {
 
 decl_error! {
     pub enum Error for Module<T: Trait> {
+        /// Internal: numeric convertion error, overflow
+        NumConversionError,
+
         /// Failed to read or decode VM configuration
         InvalidVMConfig,
         /// `max_gas_amount` value must be in the range from 0 to `u64::MAX / 1000`.
