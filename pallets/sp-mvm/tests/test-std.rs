@@ -3,8 +3,6 @@ use frame_support::assert_ok;
 use move_core_types::account_address::AccountAddress;
 use move_core_types::identifier::Identifier;
 use move_core_types::language_storage::ModuleId;
-use move_core_types::language_storage::StructTag;
-use move_core_types::language_storage::TypeTag;
 use move_vm_runtime::data_cache::RemoteCache;
 use move_vm::data::*;
 
