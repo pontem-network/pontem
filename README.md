@@ -17,10 +17,12 @@ Current status:
 
 ## Installation
 
+We recommend to use [rust toolchain](/rust-toolchain) that we use during development.
+
 Clone current repository:
 
 ```sh
-git clone git@github.com:dfinance/sp-move.git
+git clone git@github.com:pontem-network/sp-move.git
 ```
 
 Navigate to cloned repository and launch init script:
@@ -85,7 +87,7 @@ Configure UI:
 ```
 4. Save configuration.
 
-Install **dove** (**Polkadot** version) from [move-tools](https://github.com/dfinance/move-tools) repository, it's Move package-manager and compiler.
+Install **dove** (**Polkadot** version) from [move-tools](https://github.com/pontem-network/move-tools) repository, it's Move package-manager and compiler.
 
 ### Deploy standard library.
 
@@ -233,7 +235,7 @@ Time to view resources we generated during the latest script. It will get balanc
 First of all let's install `move-resource-viewer`:
 
 ```sh
-cargo install --git https://github.com/dfinance/move-tools.git move-resource-viewer \
+cargo install --git https://github.com/pontem-network/move-tools.git move-resource-viewer \
     --no-default-features \                                               
     --features="json-schema, ps_address"
 ```
@@ -247,6 +249,7 @@ move-resource-viewer help
 The command prints documentation, and if all fine, you will see options. Also, you can look at resource viewer documentation on [Github](https://github.com/pontem-network/move-tools/tree/master/resource-viewer).
 
 // Look at user's balance or block height for exaample.
+
 Query user balance:
 
 // Сommand to query.
