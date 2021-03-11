@@ -248,16 +248,238 @@ move-resource-viewer help
 
 The command prints documentation, and if all fine, you will see options. Also, you can look at resource viewer documentation on [Github](https://github.com/pontem-network/move-tools/tree/master/resource-viewer).
 
-// Look at user's balance or block height for exaample.
+Query user balance (replace address with yours):
 
-Query user balance:
+```sh
+move-resource-viewer -a 5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty -q "0x1::Account::Balance<0x1::PONT::T>" --api="ws://127.0.0.1:9944"  -o=output.json
+cat ./output.json
+```
 
-// Сommand to query.
+You will get something like (showing your PONT token balance and other related information):
+
+```json
+{
+  "height": "0xc8d0a7ed6995aa3172002d65336ea969dd10e5855a64db4c9e4dd00c6b2c469f",
+  "result": {
+    "is_resource": true,
+    "type": {
+      "address": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1
+      ],
+      "module": "Account",
+      "name": "Balance",
+      "type_params": [
+        {
+          "Struct": {
+            "address": "0000000000000000000000000000000000000000000000000000000000000001",
+            "module": "PONT",
+            "name": "T",
+            "type_params": []
+          }
+        }
+      ]
+    },
+    "value": [
+      {
+        "id": "coin",
+        "value": {
+          "Struct": {
+            "is_resource": true,
+            "type": {
+              "address": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                1
+              ],
+              "module": "Pontem",
+              "name": "T",
+              "type_params": [
+                {
+                  "Struct": {
+                    "address": "0000000000000000000000000000000000000000000000000000000000000001",
+                    "module": "PONT",
+                    "name": "T",
+                    "type_params": []
+                  }
+                }
+              ]
+            },
+            "value": [
+              {
+                "id": "value",
+                "value": {
+                  "U128": 200000000000000000000
+                }
+              }
+            ]
+          }
+        }
+      }
+    ]
+  }
+}
+```
+
+Same here you can do with any other resource, for example you can deploy a new module:
+
+```rs
+module Store {
+    resource struct U64 {val: u64}
+    resource struct Address {val: address}
+    resource struct VectorU8 {val: vector<u8>}
+
+    public fun store_u64(account: &signer, val: u64) {
+        let foo = U64 {val: val};
+        move_to<U64>(account, foo);
+    }
+
+    public fun store_address(account: &signer, val: address) {
+        let addr = Address {val: val};
+        move_to<Address>(account, addr);
+    }
+
+    public fun store_vector_u8(account: &signer, val: vector<u8>) {
+        let vec = VectorU8 {val: val};
+        move_to<VectorU8>(account, vec);
+    }
+}
+```
+
+Store U64 number inside resource using script (replace dependency address with yours):
+
+```rs
+script {
+    use 5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty::Store;
+    
+    fun store_num(account: &signer, a: u64) {
+        Store::store_u64(account, a);
+    }
+}
+```
+
+Query stored resource:
+
+```sh
+move-resource-viewer -a 5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty -q "5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty::Store::U64" --api="ws://127.0.0.1:9944"  -o=output.json
+```
 
 You will get something like:
 
-// Resource explanation.
-
+```json
+{
+  "height": "0xc02a5689b6120fa495e6a5606b279c7a4b200f2fb5e4d0edec6969578d81ecef",
+  "result": {
+    "is_resource": true,
+    "type": {
+      "address": [
+        142,
+        175,
+        4,
+        21,
+        22,
+        135,
+        115,
+        99,
+        38,
+        201,
+        254,
+        161,
+        126,
+        37,
+        252,
+        82,
+        135,
+        97,
+        54,
+        147,
+        201,
+        18,
+        144,
+        156,
+        178,
+        38,
+        170,
+        71,
+        148,
+        242,
+        106,
+        72
+      ],
+      "module": "Store",
+      "name": "U64",
+      "type_params": []
+    },
+    "value": [
+      {
+        "id": "val",
+        "value": {
+          "U64": 10
+        }
+      }
+    ]
+  }
+}
+```
 
 ### Fetch block height.
 
@@ -297,7 +519,7 @@ Send script transaction:
 7. Submit a new transaction!
 8. Wait until the transaction is confirmed.
 
-Once the transaction successfully executed, check 'Explorer', there will be latest events generated by our transactions. Block height data encoded in [LCS (Libra Canonical Serialization)](https://github.com/librastartup/libra-canonical-serialization/blob/master/DOCUMENTATION.md), it's u64 number, little endian, 8 bytes. 
+Once the transaction successfully executed, check 'Explorer', there will be latest events generated by our transactions. 
 
 Look at more examples in [tests](pallets/sp-mvm/tests/).
 Also, read our [Move Book](https://move.pontem.network) to learn Move language and find more examples.
