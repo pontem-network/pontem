@@ -11,6 +11,7 @@ use frame_support::{
 use frame_support::traits::{OnInitialize, OnFinalize};
 use sp_runtime::traits::{BlakeTwo256, IdentityLookup};
 use sp_runtime::{testing::Header, Perbill};
+use move_vm::data::Oracle;
 
 impl_outer_origin! {
     pub enum Origin for Test {}
@@ -61,6 +62,7 @@ impl system::Trait for Test {
     type SystemWeightInfo = ();
 }
 
+// --- gas --- //
 pub const GAS_PER_SECOND: u64 = 8_000_000;
 
 /// Approximate ratio of the amount of Weight per Gas.
@@ -79,6 +81,20 @@ impl gas::GasWeightMapping for MoveVMGasWeightMapping {
         u64::try_from(weight.wrapping_div(WEIGHT_PER_GAS)).unwrap_or(u64::MAX)
     }
 }
+// ----------------- //
+
+// --- timestamp --- //
+parameter_types! {
+    pub const MinimumPeriod: u64 = 5;
+}
+impl timestamp::Trait for Test {
+    /// A timestamp: milliseconds since the unix epoch.
+    type Moment = u64;
+    type OnTimestampSet = ();
+    type MinimumPeriod = MinimumPeriod;
+    type WeightInfo = ();
+}
+// ----------------- //
 
 impl Trait for Test {
     type Event = TestEvent;
@@ -87,7 +103,17 @@ impl Trait for Test {
 
 pub type Mvm = Module<Test>;
 pub type Sys = system::Module<Test>;
+pub type Time = timestamp::Module<Test>;
 pub type MoveEvent = sp_mvm::Event<Test>;
+
+#[derive(Clone, Copy, Default)]
+pub struct MockOracle(pub Option<u128>);
+
+impl Oracle for MockOracle {
+    fn get_price(&self, _ticker: &str) -> Option<u128> {
+        self.0
+    }
+}
 
 /// Build genesis storage according to the mock runtime.
 pub fn new_test_ext() -> sp_io::TestExternalities {
@@ -97,6 +123,7 @@ pub fn new_test_ext() -> sp_io::TestExternalities {
         .into()
 }
 
+pub const TIME_BLOCK_MULTIPLIER: u64 = 100;
 pub fn roll_next_block() {
     // Stake::on_finalize(Sys::block_number());
     // Balances::on_finalize(Sys::block_number());
@@ -107,7 +134,11 @@ pub fn roll_next_block() {
     Mvm::on_initialize(Sys::block_number());
     // Balances::on_initialize(Sys::block_number());
     // Stake::on_initialize(Sys::block_number());
-    println!("current block number: {}", Sys::block_number());
+
+    // set time with multiplier `*MULTIPLIER` by block:
+    Time::set_timestamp(Sys::block_number() * TIME_BLOCK_MULTIPLIER);
+
+    println!("now block: {}, time: {}", Sys::block_number(), Time::get());
 }
 
 pub fn roll_block_to(n: u64) {

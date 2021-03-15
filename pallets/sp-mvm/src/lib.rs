@@ -4,6 +4,9 @@
 #[macro_use]
 extern crate log;
 
+use core::convert::TryInto;
+use core::convert::TryFrom;
+use move_vm::data::ExecutionContext;
 use sp_std::prelude::*;
 use codec::{FullCodec, FullEncode};
 use frame_support::{decl_module, decl_storage, dispatch};
@@ -12,9 +15,7 @@ use move_vm::mvm::Mvm;
 use move_vm::Vm;
 use move_vm::types::Gas;
 use move_vm::types::ModuleTx;
-use move_vm::types::ScriptTx;
-use move_vm::types::ScriptArg;
-use move_core_types::language_storage::TypeTag;
+use move_vm::types::Transaction;
 use move_core_types::account_address::AccountAddress;
 use move_core_types::language_storage::CORE_CODE_ADDRESS;
 
@@ -22,6 +23,7 @@ pub mod addr;
 pub mod event;
 pub mod gas;
 pub mod mvm;
+pub mod oracle;
 pub mod result;
 pub mod storage;
 
@@ -41,7 +43,7 @@ use mvm::VmWrapperTy;
 const GAS_UNIT_PRICE: u64 = 1;
 
 /// Configure the pallet by specifying the parameters and types on which it depends.
-pub trait Trait: frame_system::Trait {
+pub trait Trait: frame_system::Trait + timestamp::Trait {
     /// Because this pallet emits events, it depends on the runtime's definition of an event.
     type Event: From<Event<Self>> + Into<<Self as frame_system::Trait>::Event>;
 
@@ -68,42 +70,51 @@ decl_storage! {
 // These functions materialize as "extrinsics", which are often compared to transactions.
 // Dispatchable functions must be annotated with a weight and must return a DispatchResult.
 decl_module! {
-     pub struct Module<T: Trait> for enum Call where origin: T::Origin {
+     pub struct Module<T: Trait> for enum Call
+        where origin: T::Origin,
+              T::BlockNumber: TryInto<u64>,
+              // <<T as frame_system::Trait>::BlockNumber as TryInto<u64>>::Error: std::fmt::Debug
+              {
         // Errors must be initialized if they are used by the pallet.
         type Error = Error<T>;
 
         fn deposit_event() = default;
 
-        // Temprorally args changed to just u64 numbers because of troubles with codec & web-client...
-        // They should be this: Option<Vec<ScriptArg>> ,ty_args: Vec<TypeTag>
         #[weight = T::GasWeightMapping::gas_to_weight(*gas_limit)]
-        pub fn execute(origin, script_bc: Vec<u8>, args: Option<Vec<u64>>, gas_limit: u64) -> dispatch::DispatchResultWithPostInfo {
-            let who = ensure_signed(origin)?;
-            debug!("executing `execute` with signed {:?}", who);
+        pub fn execute(origin, tx_bc: Vec<u8>, gas_limit: u64) -> dispatch::DispatchResultWithPostInfo {
+            let transaction = Transaction::try_from(&tx_bc[..]).map_err(|_| Error::<T>::TransactionValidationError)?;
 
             let vm = Self::try_get_or_create_move_vm()?;
             let gas = Self::get_move_gas_limit(gas_limit)?;
 
             let tx = {
-                let type_args: Vec<TypeTag> = Default::default();
+                let signers = if transaction.signers_count() == 0 {
+                    Vec::with_capacity(0)
+                } else if let Ok(account) = ensure_signed(origin) {
+                    debug!("executing `execute` with signed {:?}", account);
+                    let sender = addr::account_to_bytes(&account);
+                    debug!("converted sender: {:?}", sender);
+                    vec![AccountAddress::new(sender)]
+                } else {
+                    // TODO: support multiple signers
+                    Vec::with_capacity(0)
+                };
 
-                let args = args.map(|vec|
-                        vec.into_iter().map(ScriptArg::U64).collect()
-                ).unwrap_or_default();
+                if transaction.signers_count() as usize != signers.len() {
+                    error!("Transaction signers num isn't eq signers: {} != {}", transaction.signers_count(), signers.len());
+                    return Err(Error::<T>::TransactionSignersNumError.into());
+                }
 
-                let sender = addr::account_to_bytes(&who);
-                debug!("converted sender: {:?}", sender);
-
-                let senders: Vec<AccountAddress> = vec![
-                    AccountAddress::new(sender),
-                ];
-
-                ScriptTx::new(script_bc, args, type_args, senders).map_err(|_|{
-                    Error::<T>::ScriptValidationError
-                })?
+                transaction.into_script(signers).map_err(|_| Error::<T>::TransactionValidationError)?
             };
 
-            let res = vm.execute_script(gas, tx);
+            let ctx = {
+                let height = frame_system::Module::<T>::block_number().try_into().map_err(|_|Error::<T>::NumConversionError)?;
+                let time = <timestamp::Module<T>>::get().try_into().map_err(|_|Error::<T>::NumConversionError)?
+                                                        .try_into().map_err(|_|Error::<T>::NumConversionError)?;
+                ExecutionContext::new(time, height)
+            };
+            let res = vm.execute_script(gas, ctx, tx);
             debug!("execution result: {:?}", res);
 
             // produce result with spended gas:
@@ -138,22 +149,37 @@ decl_module! {
             Ok(result)
         }
 
+        /// Batch publish std-modules by root account only
         #[weight = T::GasWeightMapping::gas_to_weight(*gas_limit)]
-        pub fn publish_std(origin, module_bc: Vec<u8>, gas_limit: u64) -> dispatch::DispatchResultWithPostInfo {
+        pub fn publish_std(origin, modules: Vec<Vec<u8>>, gas_limit: u64) -> dispatch::DispatchResultWithPostInfo {
             ensure_root(origin)?;
             debug!("executing `publish STD` with root");
 
             let vm = Self::try_get_or_create_move_vm()?;
-            let gas = Self::get_move_gas_limit(gas_limit)?;
-            let tx = ModuleTx::new(module_bc, CORE_CODE_ADDRESS);
-            let res = vm.publish_module(gas, tx);
-            debug!("publish result: {:?}", res);
+            let mut _gas_used = 0;
+            let mut results = Vec::with_capacity(modules.len());
+            'deploy: for module in modules.into_iter() {
+                // Overflow shound't happen.
+                // As gas_limit always large or equal to used, otherwise getting out of gas error.
+                let gas = Self::get_move_gas_limit(gas_limit - _gas_used)?;
+
+                let tx = ModuleTx::new(module, CORE_CODE_ADDRESS);
+                let res = vm.publish_module(gas, tx);
+                debug!("publish result: {:?}", res);
+
+                let is_ok = result::is_ok(&res);
+                _gas_used += res.gas_used;
+                results.push(res);
+                if !is_ok {
+                    break 'deploy;
+                }
+
+                // Emit an event:
+                Self::deposit_event(RawEvent::StdModulePublished);
+            }
 
             // produce result with spended gas:
-            let result = result::from_vm_result::<T>(res)?;
-
-            // Emit an event:
-            Self::deposit_event(RawEvent::StdModulePublished);
+            let result = result::from_vm_results::<T>(&results)?;
 
             Ok(result)
         }
@@ -181,12 +207,18 @@ where
 }
 
 impl<T: Trait> TryCreateMoveVm<T> for Module<T> {
-    type Vm = Mvm<VmStorageAdapter<VMStorage>, DefaultEventHandler>;
+    type Vm = Mvm<VmStorageAdapter<VMStorage>, DefaultEventHandler, oracle::DummyOracle>;
     type Error = Error<T>;
 
     fn try_create_move_vm() -> Result<Self::Vm, Self::Error> {
         trace!("MoveVM created");
-        Mvm::new(Self::move_vm_storage(), Self::create_move_event_handler()).map_err(|err| {
+        let oracle = Default::default();
+        Mvm::new(
+            Self::move_vm_storage(),
+            Self::create_move_event_handler(),
+            oracle,
+        )
+        .map_err(|err| {
             error!("{}", err);
             Error::InvalidVMConfig
         })
@@ -219,10 +251,12 @@ impl<T: Trait> DepositMoveEvent for Module<T> {
     fn deposit_move_event(e: MoveEventArguments) {
         debug!(
             "MoveVM Event: {:?} {:?} {:?} {:?}",
-            e.guid, e.seq_num, e.ty_tag, e.message
+            e.addr, e.caller, e.ty_tag, e.message
         );
 
         // Emit an event:
-        Self::deposit_event(RawEvent::Event(e.guid, e.seq_num, e.ty_tag, e.message));
+        Self::deposit_event(RawEvent::Event(
+            e.addr, /* TODO: e.ty_tag, */ e.message, e.caller,
+        ));
     }
 }
