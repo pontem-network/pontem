@@ -1,5 +1,3 @@
-#![cfg_attr(not(feature = "std"), no_std)]
-
 use frame_support::weights::Weight;
 
 /// A mapping function that converts Move VM gas to Substrate weight
