@@ -49,40 +49,40 @@ Configure UI:
 3. Go to **Settings -> Developer** and put there next JSON (see [issue#78](https://github.com/substrate-developer-hub/substrate-node-template/issues/78) and it also contains types for Move VM events/results):
 ```json
 {
-    "Address": "AccountId",
-    "LookupSource": "AccountId",
-    "RawAccountAddress": "[u8;32]",
-    "AccountAddress": "[u8;32]",
-    "ModuleId": {
-        "address": "AccountAddress",
-        "name": "Text"
-    },
-    "TypeTag": {
-        "_enum": [
-            "Bool",
-            "U8",
-            "U64",
-            "U128",
-            "Address",
-            "Signer",
-            "Vector",
-            "Struct"
-        ],
-        "Bool": null,
-        "U8": null,
-        "U64": null,
-        "U128": null,
-        "Address": null,
-        "Signer": null,
-        "Vector": "TypeTag",
-        "Struct": "StructTag"
-    },
-    "StructTag": {
-        "address": "AccountAddress",
-        "module": "Text",
-        "name": "Text",
-        "type_params": "Vec<TypeTag>"
-    }
+  "Address": "AccountId",
+  "LookupSource": "AccountId",
+  "RawAccountAddress": "[u8;32]",
+  "AccountAddress": "[u8;32]",
+  "ModuleId": {
+    "address": "AccountAddress",
+    "name": "Text"
+  },
+  "TypeTag": {
+    "_enum": [
+      "Bool",
+      "U8",
+      "U64",
+      "U128",
+      "Address",
+      "Signer",
+      "Vector",
+      "Struct"
+    ],
+    "Bool": null,
+    "U8": null,
+    "U64": null,
+    "U128": null,
+    "Address": null,
+    "Signer": null,
+    "Vector": "Vec<TypeTag>",
+    "Struct": "StructTag"
+  },
+  "StructTag": {
+    "address": "AccountAddress",
+    "module": "Text",
+    "name": "Text",
+    "type_params": "Vec<TypeTag>"
+  }
 }
 ```
 4. Save configuration.
