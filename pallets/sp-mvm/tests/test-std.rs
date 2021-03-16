@@ -1,9 +1,12 @@
+use codec::Encode;
 use frame_system as system;
 use frame_support::assert_ok;
 use move_core_types::account_address::AccountAddress;
 use move_core_types::identifier::Identifier;
 use move_core_types::language_storage::ModuleId;
 use move_vm_runtime::data_cache::RemoteCache;
+use move_core_types::language_storage::TypeTag;
+use move_core_types::language_storage::StructTag;
 use move_vm::data::*;
 
 use sp_mvm::storage::MoveVmStorage;
@@ -103,16 +106,17 @@ fn execute_script() {
         call_execute_script(Origin::signed(origin));
 
         // construct event: that should be emitted in the method call directly above
+        let tt = TypeTag::Struct(StructTag {
+            address: to_move_addr(origin),
+            module: Identifier::new(proxy.name()).unwrap(),
+            name: Identifier::new("U64").unwrap(),
+            type_params: Vec::with_capacity(0),
+        });
         let expected = vec![
             // one for user::Proxy -> std::Event (`Event::emit`)
             RawEvent::Event(
                 to_move_addr(origin),
-                /* TODO: TypeTag::Struct(StructTag {
-                    address: to_move_addr(origin),
-                    module: Identifier::new(proxy.name()).unwrap(),
-                    name: Identifier::new("U64").unwrap(),
-                    type_params: Vec::with_capacity(0),
-                }), */
+                tt.encode(),
                 42u64.to_le_bytes().to_vec(),
                 None,
             )
@@ -120,12 +124,7 @@ fn execute_script() {
             // and one for user::Proxy -> std::Event (`EventProxy::emit_event`)
             RawEvent::Event(
                 to_move_addr(origin),
-                /* TODO: TypeTag::Struct(StructTag {
-                    address: to_move_addr(origin),
-                    module: Identifier::new(proxy.name()).unwrap(),
-                    name: Identifier::new("U64").unwrap(),
-                    type_params: Vec::with_capacity(0),
-                }), */
+                tt.encode(),
                 42u64.to_le_bytes().to_vec(),
                 Some(ModuleId::new(
                     to_move_addr(origin),

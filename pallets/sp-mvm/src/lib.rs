@@ -256,8 +256,12 @@ impl<T: Trait> DepositMoveEvent for Module<T> {
         );
 
         // Emit an event:
+        use codec::Encode;
         Self::deposit_event(RawEvent::Event(
-            e.addr, /* TODO: e.ty_tag, */ e.message, e.caller,
+            e.addr,
+            e.ty_tag.encode(),
+            e.message,
+            e.caller,
         ));
     }
 }
