@@ -19,9 +19,10 @@ use common::utils::*;
 
 fn call_publish_module_with_origin(origin: Origin, bc: Vec<u8>) {
     const GAS_LIMIT: u64 = 1_000_000;
+    const GAS_PRICE: u64 = 1;
 
     // execute VM for publish module:
-    let result = Mvm::publish_module(origin, bc, GAS_LIMIT);
+    let result = Mvm::publish_module(origin, bc, GAS_LIMIT, GAS_PRICE);
     eprintln!("publish_module result: {:?}", result);
     assert_ok!(result);
 }
@@ -54,9 +55,10 @@ fn check_storage_with_addr(signer: AccountAddress, bc: Vec<u8>, mod_name: &str) 
 
 fn call_execute_script(origin: Origin) {
     const GAS_LIMIT: u64 = 1_000_000;
+    const GAS_PRICE: u64 = 1;
 
     // execute VM tx:
-    let result = Mvm::execute(origin, UserTx::EmitEvent.bc().to_vec(), GAS_LIMIT);
+    let result = Mvm::execute(origin, UserTx::EmitEvent.bc().to_vec(), GAS_LIMIT, GAS_PRICE);
     eprintln!("tx result: {:?}", result);
     assert_ok!(result);
 }
