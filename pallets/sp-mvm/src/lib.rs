@@ -82,6 +82,7 @@ decl_module! {
 
         #[weight = T::GasWeightMapping::gas_to_weight(*gas_limit)]
         pub fn execute(origin, tx_bc: Vec<u8>, gas_limit: u64) -> dispatch::DispatchResultWithPostInfo {
+            // TODO: some minimum gas for processing transaction from bytes?
             let transaction = Transaction::try_from(&tx_bc[..]).map_err(|_| Error::<T>::TransactionValidationError)?;
 
             let vm = Self::try_get_or_create_move_vm()?;
