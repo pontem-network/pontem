@@ -58,7 +58,12 @@ fn call_execute_script(origin: Origin) {
     const GAS_PRICE: u64 = 1;
 
     // execute VM tx:
-    let result = Mvm::execute(origin, UserTx::EmitEvent.bc().to_vec(), GAS_LIMIT, GAS_PRICE);
+    let result = Mvm::execute(
+        origin,
+        UserTx::EmitEvent.bc().to_vec(),
+        GAS_LIMIT,
+        GAS_PRICE,
+    );
     eprintln!("tx result: {:?}", result);
     assert_ok!(result);
 }
