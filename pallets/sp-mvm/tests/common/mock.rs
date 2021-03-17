@@ -63,7 +63,10 @@ impl system::Trait for Test {
 }
 
 // --- gas --- //
-pub const GAS_PER_SECOND: u64 = 8_000_000;
+/// By inheritance from Moonbeam and from Dfinance (based on validators statistic), we believe max 4125000 gas is currently enough for block.
+/// In the same time we use same 500ms Weight as Max Block Weight, from which 75% only are used for transactions.
+/// So our max gas is GAS_PER_SECOND * 0.500 * 0.65 => 4125000.
+pub const GAS_PER_SECOND: u64 = 11_000_000;
 
 /// Approximate ratio of the amount of Weight per Gas.
 /// u64 works for approximations because Weight is a very small unit compared to gas.
@@ -74,11 +77,11 @@ pub struct MoveVMGasWeightMapping;
 // Just use provided gas.
 impl gas::GasWeightMapping for MoveVMGasWeightMapping {
     fn gas_to_weight(gas: u64) -> Weight {
-        Weight::try_from((gas).saturating_mul(WEIGHT_PER_GAS)).unwrap_or(Weight::MAX)
+        gas.saturating_mul(WEIGHT_PER_GAS)
     }
 
     fn weight_to_gas(weight: Weight) -> u64 {
-        u64::try_from(weight.wrapping_div(WEIGHT_PER_GAS)).unwrap_or(u64::MAX)
+        u64::try_from(weight.wrapping_div(WEIGHT_PER_GAS)).unwrap_or(u32::MAX as u64)
     }
 }
 // ----------------- //

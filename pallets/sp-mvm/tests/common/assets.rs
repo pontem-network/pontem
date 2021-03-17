@@ -16,12 +16,14 @@ const TX_NAMES: &[&str] = &[
     "emit_event",
     "store_system_block",
     "store_system_timestamp",
+    "inf_loop",
 ];
 const TX_BYTECODE: &[&[u8]] = &[
     include_bytes!("../assets/target/transactions/store_u64.mvt"),
     include_bytes!("../assets/target/transactions/emit_event.mvt"),
     include_bytes!("../assets/target/transactions/store_system_block.mvt"),
     include_bytes!("../assets/target/transactions/store_system_timestamp.mvt"),
+    include_bytes!("../assets/target/transactions/inf_loop.mvt"),
 ];
 
 pub trait BinAsset: Sized + Copy + Into<usize> {
@@ -60,6 +62,7 @@ pub enum UserTx {
     EmitEvent = 1,
     StoreSysBlock = 2,
     StoreSysTime = 3,
+    InfLoop = 4,
 }
 
 impl Into<usize> for StdMod {
@@ -108,6 +111,7 @@ impl BinAsset for UserTx {
             Self::EmitEvent,
             Self::StoreSysBlock,
             Self::StoreSysTime,
+            Self::InfLoop,
         ]
     }
 }

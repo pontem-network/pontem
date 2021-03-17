@@ -20,11 +20,10 @@ struct StoreU64 {
 
 fn call_publish_module(signer: <Test as system::Trait>::AccountId, bc: Vec<u8>, mod_name: &str) {
     const GAS_LIMIT: u64 = 1_000_000;
-    const GAS_PRICE: u64 = 1;
     let origin = Origin::signed(signer);
 
     // execute VM for publish module:
-    let result = Mvm::publish_module(origin, bc.clone(), GAS_LIMIT, GAS_PRICE);
+    let result = Mvm::publish_module(origin, bc.clone(), GAS_LIMIT);
     eprintln!("publish_module result: {:?}", result);
     assert_ok!(result);
 
@@ -38,10 +37,9 @@ fn call_publish_module(signer: <Test as system::Trait>::AccountId, bc: Vec<u8>, 
 
 fn call_execute_script_tx_block(origin: Origin, tx: UserTx) {
     const GAS_LIMIT: u64 = 1_000_000;
-    const GAS_PRICE: u64 = 1;
     let txbc = tx.bc().to_vec();
 
-    let result = Mvm::execute(origin, txbc, GAS_LIMIT, GAS_PRICE);
+    let result = Mvm::execute(origin, txbc, GAS_LIMIT);
     eprintln!("execute_script result: {:?}", result);
     assert_ok!(result);
 }
