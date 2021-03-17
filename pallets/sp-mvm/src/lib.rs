@@ -40,6 +40,8 @@ use mvm::TryGetStaticMoveVm;
 use mvm::TryCreateMoveVmWrapped;
 use mvm::VmWrapperTy;
 
+const GAS_UNIT_PRICE: u64 = 1;
+
 /// Configure the pallet by specifying the parameters and types on which it depends.
 pub trait Trait: frame_system::Trait + timestamp::Trait {
     /// Because this pallet emits events, it depends on the runtime's definition of an event.
@@ -79,12 +81,12 @@ decl_module! {
         fn deposit_event() = default;
 
         #[weight = T::GasWeightMapping::gas_to_weight(*gas_limit)]
-        pub fn execute(origin, tx_bc: Vec<u8>, gas_limit: u64, gas_price: u64) -> dispatch::DispatchResultWithPostInfo {
+        pub fn execute(origin, tx_bc: Vec<u8>, gas_limit: u64) -> dispatch::DispatchResultWithPostInfo {
             // TODO: some minimum gas for processing transaction from bytes?
             let transaction = Transaction::try_from(&tx_bc[..]).map_err(|_| Error::<T>::TransactionValidationError)?;
 
             let vm = Self::try_get_or_create_move_vm()?;
-            let gas = Self::get_move_gas_limit(gas_limit, gas_price)?;
+            let gas = Self::get_move_gas_limit(gas_limit)?;
 
             let tx = {
                 let signers = if transaction.signers_count() == 0 {
@@ -122,12 +124,12 @@ decl_module! {
         }
 
         #[weight = T::GasWeightMapping::gas_to_weight(*gas_limit)]
-        pub fn publish_module(origin, module_bc: Vec<u8>, gas_limit: u64, gas_price: u64) -> dispatch::DispatchResultWithPostInfo {
+        pub fn publish_module(origin, module_bc: Vec<u8>, gas_limit: u64) -> dispatch::DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
             debug!("executing `publish` with signed {:?}", who);
 
             let vm = Self::try_get_or_create_move_vm()?;
-            let gas = Self::get_move_gas_limit(gas_limit, gas_price)?;
+            let gas = Self::get_move_gas_limit(gas_limit)?;
 
             let tx = {
                 let sender = addr::account_to_bytes(&who);
@@ -150,7 +152,7 @@ decl_module! {
 
         /// Batch publish std-modules by root account only
         #[weight = T::GasWeightMapping::gas_to_weight(*gas_limit)]
-        pub fn publish_std(origin, modules: Vec<Vec<u8>>, gas_limit: u64, gas_price: u64) -> dispatch::DispatchResultWithPostInfo {
+        pub fn publish_std(origin, modules: Vec<Vec<u8>>, gas_limit: u64) -> dispatch::DispatchResultWithPostInfo {
             ensure_root(origin)?;
             debug!("executing `publish STD` with root");
 
@@ -160,7 +162,7 @@ decl_module! {
             'deploy: for module in modules.into_iter() {
                 // Overflow shound't happen.
                 // As gas_limit always large or equal to used, otherwise getting out of gas error.
-                let gas = Self::get_move_gas_limit(gas_limit - _gas_used, gas_price)?;
+                let gas = Self::get_move_gas_limit(gas_limit - _gas_used)?;
 
                 let tx = ModuleTx::new(module, CORE_CODE_ADDRESS);
                 let res = vm.publish_module(gas, tx);
@@ -191,8 +193,8 @@ decl_module! {
 }
 
 impl<T: Trait> Module<T> {
-    fn get_move_gas_limit(gas_limit: u64, gas_price: u64) -> Result<Gas, Error<T>> {
-        Gas::new(gas_limit, gas_price).map_err(|_| Error::InvalidGasAmountMaxValue)
+    fn get_move_gas_limit(gas_limit: u64) -> Result<Gas, Error<T>> {
+        Gas::new(gas_limit, GAS_UNIT_PRICE).map_err(|_| Error::InvalidGasAmountMaxValue)
     }
 }
 
