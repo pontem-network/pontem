@@ -18,6 +18,7 @@ COPY ./ ./
 RUN --mount=type=cache,target=/usr/local/cargo/registry \
 	--mount=type=cache,target=/usr/local/cargo/git \
 	--mount=type=cache,target=/opt/build/target \
+	rustup target add wasm32-unknown-unknown && \
 	make test && make build && \
 	mkdir -p release && \
 	cp target/release/mv-node release/
