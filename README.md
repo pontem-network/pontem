@@ -105,13 +105,13 @@ See built modules:
 ls -la ./target/modules
 ```
 
-Now let's deploy modules:
+Now let's deploy modules (**in the same ordering!**):
 
 * `0_Block.mv`
 * `5_PONT.mv`
 * `7_Signer.mv`
-* `8_Pontem.mv`
-* `9_Event.mv`
+* `8_Event.mv`
+* `9_Pontem.mv`
 * `10_Account.mv`
 
 Standard library is modules that developers can use by default in Move VM. Usually deploying of standard modules restricted by origin account or by governance. 
