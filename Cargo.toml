@@ -1,15 +1,14 @@
-[profile.release]
-panic = 'unwind'
-# opt size:
-# lto = "thin"
-# opt-level = 's'
-codegen-units = 6
-rpath = false
-
-
 [workspace]
 members = [
     'node',
     'pallets/*',
     'runtime',
 ]
+
+
+[profile.release]
+panic = 'unwind'
+rpath = false
+# opt size:
+# lto = "thin"
+# opt-level = 's'
