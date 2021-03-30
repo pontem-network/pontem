@@ -52,26 +52,19 @@ jobs:
       - name: Check formatting
         run: cargo fmt -- --check
 
-      # prepare tests resources
-      # - name: get dove
-      #   uses: andy-v-h/get-release-asset-action@v1.1.0
-      #   with:
-      #     release: "1.1.1"
-      #     repo: pontem-network/move-tools
-      #     match: "dove-${{ matrix.cfg.dove }}"
-      #     rename: dove
-
-      - name: get dove
+      - name: get Dove
         run: |
           curl -sL --fail \
             -H "Accept: application/octet-stream" \
             -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
             -o "dove" \
             "https://github.com/pontem-network/move-tools/releases/download/1.1.1/dove-1.1.0-${{ matrix.cfg.dove }}"
-      - name: set executable permissions
-        run: sudo chown runner ./dove && chmod +x ./dove
-      - name: move dove to bins dir
-        run: mv ./dove ~/.cargo/bin/dove
+          sudo chown runner ./dove && chmod +x ./dove
+          mv ./dove ~/.cargo/bin/dove
+          dove -V
+
+      - name: Build test resources
+        run: pushd pallets/sp-mvm/tests/assets; ./build_assets.sh
 
       - name: Tests
         run: cargo +${{ steps.rust.outputs.version }} test --all --no-fail-fast -- --nocapture --test-threads=1
