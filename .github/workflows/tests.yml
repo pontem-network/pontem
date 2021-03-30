@@ -27,9 +27,9 @@ jobs:
       matrix:
         cfg:
           - os: macos-latest
-            dove: linux-x86_64
-          - os: ubuntu-latest
             dove: mac-x86_64
+          - os: ubuntu-latest
+            dove: linux-x86_64
 
     steps:
       - name: Checkout repository
