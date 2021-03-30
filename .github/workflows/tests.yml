@@ -15,7 +15,7 @@ env:
 jobs:
   test:
     name: Tests
-    runs-on: ${{ matrix.os }}
+    runs-on: ${{ matrix.cfg.os }}
     if: "!contains(github.event.head_commit.message, 'ci skip') && !contains(github.event.head_commit.message, 'skip ci')"
 
     defaults:
@@ -25,9 +25,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os:
-          - macos-latest
-          - ubuntu-latest
+        cfg:
+          - os: macos-latest
+            dove: linux-x86_64
+          - os: ubuntu-latest
+            dove: mac-x86_64
 
     steps:
       - name: Checkout repository
@@ -49,6 +51,19 @@ jobs:
 
       - name: Check formatting
         run: cargo fmt -- --check
+
+      # prepare tests resources
+      - name: get dove
+        uses: andy-v-h/get-release-asset-action@v1.1.0
+        with:
+          release: "1.1.1"
+          repo: pontem-network/move-tools
+          match: "dove.+${{ matrix.cfg.dove }}.*$"
+          rename: dove
+      - name: set executable permissions
+        run: sudo chown runner ./dove && chmod +x ./dove
+      - name: move dove to bins dir
+        run: mv ./dove ~/.cargo/bin/dove
 
       - name: Tests
         run: cargo +${{ steps.rust.outputs.version }} test --all --no-fail-fast -- --nocapture --test-threads=1
