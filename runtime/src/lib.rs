@@ -7,6 +7,7 @@
 include!(concat!(env!("OUT_DIR"), "/wasm_binary.rs"));
 
 use sp_std::prelude::*;
+use sp_std::convert::TryFrom;
 use sp_core::{crypto::KeyTypeId, OpaqueMetadata};
 use sp_runtime::{
     ApplyExtrinsicResult, generic, create_runtime_str, impl_opaque_keys, MultiSignature,
@@ -42,6 +43,7 @@ pub use frame_support::{
 
 /// Import the template pallet.
 pub use sp_mvm;
+pub use sp_mvm::gas;
 
 /// An index to a block.
 pub type BlockNumber = u32;
@@ -123,13 +125,13 @@ pub fn native_version() -> NativeVersion {
 
 parameter_types! {
     pub const BlockHashCount: BlockNumber = 2400;
-    /// We allow for 2 seconds of compute with a 6 second average block time.
-    pub const MaximumBlockWeight: Weight = 2 * WEIGHT_PER_SECOND;
+    /// We allow for 0.5 second of compute with a 6 second average block time.
+    pub const MaximumBlockWeight: Weight = WEIGHT_PER_SECOND / 2;
     pub const AvailableBlockRatio: Perbill = Perbill::from_percent(75);
     /// Assume 10% of weight for average on_initialize calls.
     pub MaximumExtrinsicWeight: Weight = AvailableBlockRatio::get()
         .saturating_sub(Perbill::from_percent(10)) * MaximumBlockWeight::get();
-    pub const MaximumBlockLength: u32 = 5 * 1024 * 1024;
+    pub const MaximumBlockLength: u32 = 5 * 1024 * 1024; // 5 mb block.
     pub const Version: RuntimeVersion = VERSION;
 }
 
@@ -263,9 +265,32 @@ impl pallet_sudo::Trait for Runtime {
     type Call = Call;
 }
 
+/// By inheritance from Moonbeam and from Dfinance (based on validators statistic), we believe max 4125000 gas is currently enough for block.
+/// In the same time we use same 500ms Weight as Max Block Weight, from which 75% only are used for transactions.
+/// So our max gas is GAS_PER_SECOND * 0.500 * 0.65 => 4125000.
+pub const GAS_PER_SECOND: u64 = 11_000_000;
+
+/// Approximate ratio of the amount of Weight per Gas.
+/// u64 works for approximations because Weight is a very small unit compared to gas.
+pub const WEIGHT_PER_GAS: u64 = WEIGHT_PER_SECOND / GAS_PER_SECOND;
+
+pub struct MoveVMGasWeightMapping;
+
+// Just use provided gas.
+impl gas::GasWeightMapping for MoveVMGasWeightMapping {
+    fn gas_to_weight(gas: u64) -> Weight {
+        gas.saturating_mul(WEIGHT_PER_GAS)
+    }
+
+    fn weight_to_gas(weight: Weight) -> u64 {
+        u64::try_from(weight.wrapping_div(WEIGHT_PER_GAS)).unwrap_or(u32::MAX as u64)
+    }
+}
+
 /// Configure the template pallet in pallets/sp-mvm.
 impl sp_mvm::Trait for Runtime {
     type Event = Event;
+    type GasWeightMapping = MoveVMGasWeightMapping;
 }
 
 // Create the runtime by composing the FRAME pallets that were previously configured.

@@ -7,6 +7,7 @@ use frame_support::weights::Pays;
 use frame_support::decl_error;
 use move_vm::types::VmResult;
 use move_core_types::vm_status::StatusCode;
+use crate::gas::GasWeightMapping;
 
 pub fn is_ok(vm_result: &VmResult) -> bool {
     matches!(vm_result.status_code, StatusCode::EXECUTED)
@@ -65,7 +66,7 @@ pub fn from_vm_results<T: Trait>(vm_results: &[VmResult]) -> DispatchResultWithP
             StatusCode::EXECUTED => {}
             status_code => {
                 let gas = PostDispatchInfo {
-                    actual_weight: Some(gas_total),
+                    actual_weight: Some(T::GasWeightMapping::gas_to_weight(gas_total)),
                     pays_fee: Pays::Yes,
                 };
                 return Err({

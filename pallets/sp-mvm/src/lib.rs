@@ -21,12 +21,14 @@ use move_core_types::language_storage::CORE_CODE_ADDRESS;
 
 pub mod addr;
 pub mod event;
+pub mod gas;
 pub mod mvm;
 pub mod oracle;
 pub mod result;
 pub mod storage;
 
 use result::Error;
+use crate::gas::GasWeightMapping;
 pub use event::Event;
 use event::*;
 
@@ -38,11 +40,15 @@ use mvm::TryGetStaticMoveVm;
 use mvm::TryCreateMoveVmWrapped;
 use mvm::VmWrapperTy;
 
+const GAS_UNIT_PRICE: u64 = 1;
+
 /// Configure the pallet by specifying the parameters and types on which it depends.
 pub trait Trait: frame_system::Trait + timestamp::Trait {
     /// Because this pallet emits events, it depends on the runtime's definition of an event.
     type Event: From<Event<Self>> + Into<<Self as frame_system::Trait>::Event>;
-    // type BlockNumber: Into<u64>;
+
+    // Gas settings.
+    type GasWeightMapping: gas::GasWeightMapping;
 }
 
 // The pallet's runtime storage items.
@@ -74,11 +80,13 @@ decl_module! {
 
         fn deposit_event() = default;
 
-        #[weight = 10_000]
-        pub fn execute(origin, tx_bc: Vec<u8>) -> dispatch::DispatchResultWithPostInfo {
+        #[weight = T::GasWeightMapping::gas_to_weight(*gas_limit)]
+        pub fn execute(origin, tx_bc: Vec<u8>, gas_limit: u64) -> dispatch::DispatchResultWithPostInfo {
+            // TODO: some minimum gas for processing transaction from bytes?
             let transaction = Transaction::try_from(&tx_bc[..]).map_err(|_| Error::<T>::TransactionValidationError)?;
+
             let vm = Self::try_get_or_create_move_vm()?;
-            let gas = Self::get_move_gas_limit()?;
+            let gas = Self::get_move_gas_limit(gas_limit)?;
 
             let tx = {
                 let signers = if transaction.signers_count() == 0 {
@@ -115,13 +123,13 @@ decl_module! {
             Ok(result)
         }
 
-        #[weight = 10_000]
-        pub fn publish(origin, module_bc: Vec<u8>) -> dispatch::DispatchResultWithPostInfo {
+        #[weight = T::GasWeightMapping::gas_to_weight(*gas_limit)]
+        pub fn publish_module(origin, module_bc: Vec<u8>, gas_limit: u64) -> dispatch::DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
             debug!("executing `publish` with signed {:?}", who);
 
             let vm = Self::try_get_or_create_move_vm()?;
-            let gas = Self::get_move_gas_limit()?;
+            let gas = Self::get_move_gas_limit(gas_limit)?;
 
             let tx = {
                 let sender = addr::account_to_bytes(&who);
@@ -142,9 +150,9 @@ decl_module! {
             Ok(result)
         }
 
-        #[weight = 100_000]
         /// Batch publish std-modules by root account only
-        pub fn publish_std(origin, modules: Vec<Vec<u8>>) -> dispatch::DispatchResultWithPostInfo {
+        #[weight = T::GasWeightMapping::gas_to_weight(*gas_limit)]
+        pub fn publish_std(origin, modules: Vec<Vec<u8>>, gas_limit: u64) -> dispatch::DispatchResultWithPostInfo {
             ensure_root(origin)?;
             debug!("executing `publish STD` with root");
 
@@ -152,7 +160,10 @@ decl_module! {
             let mut _gas_used = 0;
             let mut results = Vec::with_capacity(modules.len());
             'deploy: for module in modules.into_iter() {
-                let gas = Self::get_move_gas_limit(/* TODO: - gas_used */)?;
+                // Overflow shound't happen.
+                // As gas_limit always large or equal to used, otherwise getting out of gas error.
+                let gas = Self::get_move_gas_limit(gas_limit - _gas_used)?;
+
                 let tx = ModuleTx::new(module, CORE_CODE_ADDRESS);
                 let res = vm.publish_module(gas, tx);
                 debug!("publish result: {:?}", res);
@@ -182,12 +193,8 @@ decl_module! {
 }
 
 impl<T: Trait> Module<T> {
-    fn get_move_gas_limit() -> Result<Gas, Error<T>> {
-        // TODO: gas-table & min-max values shoud be in genesis/config
-        let max_gas_amount = (u64::MAX / 1000) - 42;
-        // TODO: get native value
-        let gas_unit_price = 1;
-        Gas::new(max_gas_amount, gas_unit_price).map_err(|_| Error::InvalidGasAmountMaxValue)
+    fn get_move_gas_limit(gas_limit: u64) -> Result<Gas, Error<T>> {
+        Gas::new(gas_limit, GAS_UNIT_PRICE).map_err(|_| Error::InvalidGasAmountMaxValue)
     }
 }
 

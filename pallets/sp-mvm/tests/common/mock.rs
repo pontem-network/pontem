@@ -1,9 +1,13 @@
 #![allow(dead_code)]
 
-use sp_mvm::{Module, Trait};
+use sp_mvm::{Module, Trait, gas};
 use sp_core::H256;
+use sp_std::convert::TryFrom;
 use frame_system as system;
-use frame_support::{impl_outer_origin, impl_outer_event, parameter_types, weights::Weight};
+use frame_support::{
+    impl_outer_origin, impl_outer_event, parameter_types,
+    weights::{Weight, constants::WEIGHT_PER_SECOND},
+};
 use frame_support::traits::{OnInitialize, OnFinalize};
 use sp_runtime::traits::{BlakeTwo256, IdentityLookup};
 use sp_runtime::{testing::Header, Perbill};
@@ -58,6 +62,30 @@ impl system::Trait for Test {
     type SystemWeightInfo = ();
 }
 
+// --- gas --- //
+/// By inheritance from Moonbeam and from Dfinance (based on validators statistic), we believe max 4125000 gas is currently enough for block.
+/// In the same time we use same 500ms Weight as Max Block Weight, from which 75% only are used for transactions.
+/// So our max gas is GAS_PER_SECOND * 0.500 * 0.65 => 4125000.
+pub const GAS_PER_SECOND: u64 = 11_000_000;
+
+/// Approximate ratio of the amount of Weight per Gas.
+/// u64 works for approximations because Weight is a very small unit compared to gas.
+pub const WEIGHT_PER_GAS: u64 = WEIGHT_PER_SECOND / GAS_PER_SECOND;
+
+pub struct MoveVMGasWeightMapping;
+
+// Just use provided gas.
+impl gas::GasWeightMapping for MoveVMGasWeightMapping {
+    fn gas_to_weight(gas: u64) -> Weight {
+        gas.saturating_mul(WEIGHT_PER_GAS)
+    }
+
+    fn weight_to_gas(weight: Weight) -> u64 {
+        u64::try_from(weight.wrapping_div(WEIGHT_PER_GAS)).unwrap_or(u32::MAX as u64)
+    }
+}
+// ----------------- //
+
 // --- timestamp --- //
 parameter_types! {
     pub const MinimumPeriod: u64 = 5;
@@ -73,6 +101,7 @@ impl timestamp::Trait for Test {
 
 impl Trait for Test {
     type Event = TestEvent;
+    type GasWeightMapping = MoveVMGasWeightMapping;
 }
 
 pub type Mvm = Module<Test>;
