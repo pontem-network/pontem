@@ -1,8 +1,8 @@
 use sp_std::prelude::*;
 use codec::FullCodec;
 use codec::FullEncode;
-use move_vm::data::Storage;
 use frame_support::storage::StorageMap;
+use move_vm::data::Storage;
 
 // TODO: mb. use StoredMap
 

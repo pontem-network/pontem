@@ -1,9 +1,9 @@
-use move_vm::types::Gas;
-use move_vm::types::ScriptTx;
 use sp_std::prelude::*;
 use frame_support::storage::StorageMap;
-use move_vm::mvm::Mvm;
+use move_vm::types::Gas;
+use move_vm::types::ScriptTx;
 use move_vm::data::EventHandler;
+use move_vm::mvm::Mvm;
 
 use crate::event::DefaultEventHandler;
 use crate::storage::*;

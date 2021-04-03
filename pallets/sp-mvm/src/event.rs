@@ -1,35 +1,9 @@
+use crate::{Event, Config};
+use sp_std::prelude::*;
 use move_core_types::account_address::AccountAddress;
 use move_core_types::language_storage::ModuleId;
-use sp_std::prelude::*;
-use frame_support::decl_event;
-use move_vm::data::EventHandler;
 use move_core_types::language_storage::TypeTag;
-pub use self::RawEvent as MoveRawEvent;
-
-decl_event!(
-    pub enum Event<T>
-    where
-        AccountId = <T as frame_system::Trait>::AccountId,
-    {
-        // Event documentation should end with an array that provides descriptive names for event parameters.
-        /// Event provided by Move VM
-        /// [account, type_tag, message, module]
-        Event(
-            AccountAddress,
-            Vec<u8>, /* encoded TypeTag */
-            Vec<u8>, /* encoded String */
-            Option<ModuleId>,
-        ),
-
-        /// Event about successful move-module publishing
-        /// [account]
-        ModulePublished(AccountId),
-
-        /// Event about successful move-module publishing
-        /// [account]
-        StdModulePublished,
-    }
-);
+use move_vm::data::EventHandler;
 
 pub trait DepositMoveEvent {
     fn deposit_move_event(e: MoveEventArguments);
@@ -44,10 +18,10 @@ pub struct MoveEventArguments {
     pub caller: Option<ModuleId>,
 }
 
-impl<T> Into<RawEvent<T>> for MoveEventArguments {
-    fn into(self) -> RawEvent<T> {
+impl<T: Config> Into<Event<T>> for MoveEventArguments {
+    fn into(self) -> Event<T> {
         use codec::Encode;
-        RawEvent::Event(self.addr, self.ty_tag.encode(), self.message, self.caller)
+        Event::Event(self.addr, self.ty_tag.encode(), self.message, self.caller)
     }
 }
 

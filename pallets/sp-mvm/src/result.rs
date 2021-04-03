@@ -1,4 +1,5 @@
-use super::{Config, Pallet};
+use super::{Config, Pallet, Error};
+use crate::gas::GasWeightMapping;
 use frame_support::dispatch::DispatchErrorWithPostInfo;
 use frame_support::dispatch::DispatchResultWithPostInfo;
 use frame_support::dispatch::PostDispatchInfo;
@@ -7,8 +8,6 @@ use frame_support::weights::Pays;
 use frame_support::decl_error;
 use move_vm::types::VmResult;
 use move_core_types::vm_status::StatusCode;
-use crate::gas::GasWeightMapping;
-use crate::Error;
 
 pub fn is_ok(vm_result: &VmResult) -> bool {
     matches!(vm_result.status_code, StatusCode::EXECUTED)

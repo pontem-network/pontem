@@ -8,7 +8,10 @@ extern crate log;
 /// <https://substrate.dev/docs/en/knowledgebase/runtime/frame>
 pub use pallet::*;
 pub mod addr;
+pub mod event;
 pub mod gas;
+pub mod mvm;
+pub mod oracle;
 pub mod result;
 pub mod storage;
 
@@ -22,11 +25,18 @@ mod benchmarking;
 
 #[frame_support::pallet]
 pub mod pallet {
+    use super::mvm;
     use super::gas;
     use super::addr;
+    use super::event;
+    use super::oracle;
     use super::result;
     use super::storage::MoveVmStorage;
+    use super::storage::VmStorageAdapter;
     use super::gas::GasWeightMapping;
+    use event::*;
+    // use mvm::vm_static::*;
+    use mvm::*;
 
     use core::convert::TryInto;
     use core::convert::TryFrom;
@@ -36,6 +46,7 @@ pub mod pallet {
     use support::pallet_prelude::*;
     use support::dispatch::DispatchResultWithPostInfo;
     use codec::{FullCodec, FullEncode};
+    use codec::Encode;
 
     use move_vm::Vm;
     use move_vm::mvm::Mvm;
@@ -46,6 +57,9 @@ pub mod pallet {
     use move_core_types::language_storage::ModuleId;
     use move_core_types::account_address::AccountAddress;
     use move_core_types::language_storage::CORE_CODE_ADDRESS;
+
+    // upshare
+    // pub(crate) use self::Error;
 
     /// Configure the pallet by specifying the parameters and types on which it depends.
     #[pallet::config]
@@ -454,7 +468,8 @@ pub mod pallet {
             let transaction = Transaction::try_from(&tx_bc[..])
                 .map_err(|_| Error::<T>::TransactionValidationError)?;
 
-            let vm = Self::try_get_or_create_move_vm()?;
+            // TODO: let vm = Self::try_get_or_create_move_vm()?;
+            let vm = Self::try_create_move_vm()?;
             let gas = Self::get_move_gas_limit(gas_limit)?;
 
             let tx = {
@@ -512,7 +527,8 @@ pub mod pallet {
             let who = ensure_signed(origin)?;
             debug!("executing `publish` with signed {:?}", who);
 
-            let vm = Self::try_get_or_create_move_vm()?;
+            // TODO: let vm = Self::try_get_or_create_move_vm()?;
+            let vm = Self::try_create_move_vm()?;
             let gas = Self::get_move_gas_limit(gas_limit)?;
 
             let tx = {
@@ -545,7 +561,8 @@ pub mod pallet {
             ensure_root(origin)?;
             debug!("executing `publish STD` with root");
 
-            let vm = Self::try_get_or_create_move_vm()?;
+            // TODO: let vm = Self::try_get_or_create_move_vm()?;
+            let vm = Self::try_create_move_vm()?;
             // TODO: use gas_used
             let mut _gas_used = 0;
             let mut results = Vec::with_capacity(modules.len());
@@ -574,6 +591,8 @@ pub mod pallet {
 
             Ok(result)
         }
+
+        // TODO: on_finalize
     }
 
     const GAS_UNIT_PRICE: u64 = 1;
@@ -592,4 +611,64 @@ pub mod pallet {
     {
         type VmStorage = VMStorage<T>;
     }
+
+    impl<T: Config> event::DepositMoveEvent for Pallet<T> {
+        fn deposit_move_event(e: MoveEventArguments) {
+            debug!(
+                "MoveVM Event: {:?} {:?} {:?} {:?}",
+                e.addr, e.caller, e.ty_tag, e.message
+            );
+
+            // Emit an event:
+            use codec::Encode;
+            Self::deposit_event(Event::Event(e.addr, e.ty_tag.encode(), e.message, e.caller));
+        }
+    }
+
+
+    impl<T: Config> mvm::TryCreateMoveVm<T> for Pallet<T> {
+        type Vm =
+            Mvm<VmStorageAdapter<VMStorage<T>>, event::DefaultEventHandler, oracle::DummyOracle>;
+        type Error = Error<T>;
+
+        fn try_create_move_vm() -> Result<Self::Vm, Self::Error> {
+            use oracle::*;
+
+            trace!("MoveVM created");
+            let oracle = Default::default();
+            Mvm::new(
+                Self::move_vm_storage(),
+                Self::create_move_event_handler(),
+                oracle,
+            )
+            .map_err(|err| {
+                error!("{}", err);
+                Error::InvalidVMConfig
+            })
+        }
+    }
+
+    // TODO: FIXME: rewrite static VM init
+    // impl<T: Config> mvm::TryGetStaticMoveVm<event::DefaultEventHandler> for Pallet<T> {
+    //     type Vm = mvm::VmWrapperTy<VMStorage<T>>;
+    //     type Error = Error<T>;
+
+    //     fn try_get_or_create_move_vm() -> Result<&'static Self::Vm, Self::Error> {
+    //         #[cfg(not(feature = "std"))]
+    //         use once_cell::race::OnceBox as OnceCell;
+    //         #[cfg(feature = "std")]
+    //         use once_cell::sync::OnceCell;
+
+    //         static VM: OnceCell<mvm::VmWrapperTy<VMStorage<T>>> = OnceCell::new();
+    //         // static VM: OnceCell<Self::Vm> = OnceCell::new();
+    //         VM.get_or_try_init(|| {
+    //             #[cfg(feature = "std")]
+    //             {
+    //                 Self::try_create_move_vm_wrapped()
+    //             }
+    //             #[cfg(not(feature = "std"))]
+    //             Self::try_create_move_vm_wrapped().map(Box::from)
+    //         })
+    //     }
+    // }
 }
