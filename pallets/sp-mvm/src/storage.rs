@@ -4,6 +4,8 @@ use codec::FullEncode;
 use move_vm::data::Storage;
 use frame_support::storage::StorageMap;
 
+// TODO: mb. use StoredMap
+
 pub trait MoveVmStorage<T, K: FullEncode, V: FullCodec> {
     type VmStorage;
 

@@ -1,3 +1,4 @@
+use frame_system as system;
 use sp_std::prelude::*;
 use codec::Encode;
 use move_core_types::account_address::AccountAddress;
@@ -8,7 +9,7 @@ pub trait AccountIdAsBytes<AccountId, T: Sized> {
 
 impl<T> AccountIdAsBytes<T::AccountId, Vec<u8>> for T
 where
-    T: frame_system::Trait,
+    T: system::Config,
     T::AccountId: Encode,
 {
     fn account_to_bytes(acc: &T::AccountId) -> Vec<u8> {
@@ -45,7 +46,7 @@ pub fn account_to_account_address<AccountId: Encode>(acc: &AccountId) -> Account
 
 impl<T> AccountIdAsBytes<T::AccountId, [u8; AccountAddress::LENGTH]> for T
 where
-    T: frame_system::Trait,
+    T: system::Config,
     T::AccountId: Encode,
 {
     fn account_to_bytes(acc: &T::AccountId) -> [u8; AccountAddress::LENGTH] {
