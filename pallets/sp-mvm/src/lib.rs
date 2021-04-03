@@ -86,10 +86,10 @@ pub mod pallet {
     /// Move VM storage. Map with already encoded key-values pairs:
     /// - Key: `AccessPath` as bytes
     /// - Value: `WriteSet` as bytes
-    /// Experimentally used hasher [Identity][frame_support::Identity]
-    ///                      because key are already encoded - hashes.
+    // TODO: Experimentally try hasher [Identity][frame_support::Identity]
+    //                           because key are already encoded - hashes.
     #[pallet::storage]
-    pub type VMStorage<T> = StorageMap<_, Identity, Vec<u8>, Vec<u8>>;
+    pub type VMStorage<T> = StorageMap<_, Blake2_128Concat, Vec<u8>, Vec<u8>>;
 
     // Pallets use events to inform users when important changes are made.
     // https://substrate.dev/docs/en/knowledgebase/runtime/events
@@ -105,10 +105,10 @@ pub mod pallet {
         /// Event provided by Move VM
         /// [account, type_tag, message, module]
         Event(
-            AccountAddress,
+            Vec<u8>, /* AccountAddress */
             Vec<u8>, /* encoded TypeTag */
             Vec<u8>, /* encoded String */
-            Option<ModuleId>,
+            Option<()>,
         ),
 
         /// Event about successful move-module publishing
@@ -120,7 +120,234 @@ pub mod pallet {
         StdModulePublished,
     }
 
-    // Errors inform users that something went wrong.
+    #[pallet::hooks]
+    impl<T: Config> Hooks<BlockNumberFor<T>> for Pallet<T> {}
+
+    // Dispatchable functions allows users to interact with the pallet and invoke state changes.
+    // These functions materialize as "extrinsics", which are often compared to transactions.
+    // Dispatchable functions must be annotated with a weight and must return a DispatchResult.
+    #[pallet::call]
+    impl<T: Config> Pallet<T> {
+        // #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
+        #[pallet::weight(T::GasWeightMapping::gas_to_weight(*gas_limit))]
+        pub fn execute(
+            origin: OriginFor<T>,
+            tx_bc: Vec<u8>,
+            gas_limit: u64,
+        ) -> DispatchResultWithPostInfo {
+            // TODO: some minimum gas for processing transaction from bytes?
+            let transaction = Transaction::try_from(&tx_bc[..])
+                .map_err(|_| Error::<T>::TransactionValidationError)?;
+
+            // TODO: let vm = Self::try_get_or_create_move_vm()?;
+            let vm = Self::try_create_move_vm()?;
+            let gas = Self::get_move_gas_limit(gas_limit)?;
+
+            let tx = {
+                let signers = if transaction.signers_count() == 0 {
+                    Vec::with_capacity(0)
+                } else if let Ok(account) = ensure_signed(origin) {
+                    debug!("executing `execute` with signed {:?}", account);
+                    let sender = addr::account_to_bytes(&account);
+                    debug!("converted sender: {:?}", sender);
+                    vec![AccountAddress::new(sender)]
+                } else {
+                    // TODO: support multiple signers
+                    Vec::with_capacity(0)
+                };
+
+                if transaction.signers_count() as usize != signers.len() {
+                    error!(
+                        "Transaction signers num isn't eq signers: {} != {}",
+                        transaction.signers_count(),
+                        signers.len()
+                    );
+                    return Err(Error::<T>::TransactionSignersNumError.into());
+                }
+
+                transaction
+                    .into_script(signers)
+                    .map_err(|_| Error::<T>::TransactionValidationError)?
+            };
+
+            let ctx = {
+                let height = frame_system::Module::<T>::block_number()
+                    .try_into()
+                    .map_err(|_| Error::<T>::NumConversionError)?;
+                let time = <timestamp::Module<T>>::get()
+                    .try_into()
+                    .map_err(|_| Error::<T>::NumConversionError)?
+                    .try_into()
+                    .map_err(|_| Error::<T>::NumConversionError)?;
+                ExecutionContext::new(time, height as u64)
+            };
+            let res = vm.execute_script(gas, ctx, tx);
+            debug!("execution result: {:?}", res);
+
+            // produce result with spended gas:
+            let result = result::from_vm_result::<T>(res)?;
+            Ok(result)
+        }
+
+        #[pallet::weight(T::GasWeightMapping::gas_to_weight(*gas_limit))]
+        pub fn publish_module(
+            origin: OriginFor<T>,
+            module_bc: Vec<u8>,
+            gas_limit: u64,
+        ) -> DispatchResultWithPostInfo {
+            let who = ensure_signed(origin)?;
+            debug!("executing `publish` with signed {:?}", who);
+
+            // TODO: let vm = Self::try_get_or_create_move_vm()?;
+            let vm = Self::try_create_move_vm()?;
+            let gas = Self::get_move_gas_limit(gas_limit)?;
+
+            let tx = {
+                let sender = addr::account_to_bytes(&who);
+                debug!("converted sender: {:?}", sender);
+
+                ModuleTx::new(module_bc, AccountAddress::new(sender))
+            };
+
+            let res = vm.publish_module(gas, tx);
+            debug!("publish result: {:?}", res);
+
+            // produce result with spended gas:
+            let result = result::from_vm_result::<T>(res)?;
+
+            // Emit an event:
+            Self::deposit_event(Event::ModulePublished(who));
+
+            Ok(result)
+        }
+
+        /// Batch publish std-modules by root account only
+        // #[pallet::weight(T::GasWeightMapping::gas_to_weight(*gas_limit) * modules.len().into())]
+        #[pallet::weight(T::GasWeightMapping::gas_to_weight(*gas_limit))]
+        pub fn publish_std(
+            origin: OriginFor<T>,
+            modules: Vec<Vec<u8>>,
+            gas_limit: u64,
+        ) -> DispatchResultWithPostInfo {
+            ensure_root(origin)?;
+            debug!("executing `publish STD` with root");
+
+            // TODO: let vm = Self::try_get_or_create_move_vm()?;
+            let vm = Self::try_create_move_vm()?;
+            // TODO: use gas_used
+            let mut _gas_used = 0;
+            let mut results = Vec::with_capacity(modules.len());
+            'deploy: for module in modules.into_iter() {
+                // Overflow shound't happen.
+                // As gas_limit always large or equal to used, otherwise getting out of gas error.
+                let gas = Self::get_move_gas_limit(gas_limit - _gas_used)?;
+
+                let tx = ModuleTx::new(module, CORE_CODE_ADDRESS);
+                let res = vm.publish_module(gas, tx);
+                debug!("publish result: {:?}", res);
+
+                let is_ok = result::is_ok(&res);
+                _gas_used += res.gas_used;
+                results.push(res);
+                if !is_ok {
+                    break 'deploy;
+                }
+
+                // Emit an event:
+                Self::deposit_event(Event::StdModulePublished);
+            }
+
+            // produce result with spended gas:
+            let result = result::from_vm_results::<T>(&results)?;
+
+            Ok(result)
+        }
+
+        // TODO: on_finalize
+    }
+
+    const GAS_UNIT_PRICE: u64 = 1;
+
+    impl<T: Config> Pallet<T> {
+        fn get_move_gas_limit(gas_limit: u64) -> Result<Gas, Error<T>> {
+            Gas::new(gas_limit, GAS_UNIT_PRICE).map_err(|_| Error::InvalidGasAmountMaxValue)
+        }
+    }
+
+    /// Get storage adapter ready for the VM
+    impl<T: Config, K, V> super::storage::MoveVmStorage<T, K, V> for Pallet<T>
+    where
+        K: FullEncode,
+        V: FullCodec,
+    {
+        type VmStorage = VMStorage<T>;
+    }
+
+    impl<T: Config> event::DepositMoveEvent for Pallet<T> {
+        fn deposit_move_event(e: MoveEventArguments) {
+            debug!(
+                "MoveVM Event: {:?} {:?} {:?} {:?}",
+                e.addr, e.caller, e.ty_tag, e.message
+            );
+
+            // Emit an event:
+            use codec::Encode;
+            // Self::deposit_event(Event::Event(e.addr, e.ty_tag.encode(), e.message, e.caller));
+            Self::deposit_event(Event::Event(
+                e.addr.to_vec(),
+                vec![],
+                e.message,
+                e.caller.map(|_| ()),
+            ));
+        }
+    }
+
+    impl<T: Config> mvm::TryCreateMoveVm<T> for Pallet<T> {
+        type Vm =
+            Mvm<VmStorageAdapter<VMStorage<T>>, event::DefaultEventHandler, oracle::DummyOracle>;
+        type Error = Error<T>;
+
+        fn try_create_move_vm() -> Result<Self::Vm, Self::Error> {
+            use oracle::*;
+
+            trace!("MoveVM created");
+            let oracle = Default::default();
+            Mvm::new(
+                Self::move_vm_storage(),
+                Self::create_move_event_handler(),
+                oracle,
+            )
+            .map_err(|err| {
+                error!("{}", err);
+                Error::InvalidVMConfig
+            })
+        }
+    }
+
+    // TODO: FIXME: rewrite static VM init
+    // impl<T: Config> mvm::TryGetStaticMoveVm<event::DefaultEventHandler> for Pallet<T> {
+    //     type Vm = mvm::VmWrapperTy<VMStorage<T>>;
+    //     type Error = Error<T>;
+
+    //     fn try_get_or_create_move_vm() -> Result<&'static Self::Vm, Self::Error> {
+    //         #[cfg(not(feature = "std"))]
+    //         use once_cell::race::OnceBox as OnceCell;
+    //         #[cfg(feature = "std")]
+    //         use once_cell::sync::OnceCell;
+
+    //         static VM: OnceCell<mvm::VmWrapperTy<VMStorage<T>>> = OnceCell::new();
+    //         // static VM: OnceCell<Self::Vm> = OnceCell::new();
+    //         VM.get_or_try_init(|| {
+    //             #[cfg(feature = "std")]
+    //             {
+    //                 Self::try_create_move_vm_wrapped()
+    //             }
+    //             #[cfg(not(feature = "std"))]
+    //             Self::try_create_move_vm_wrapped().map(Box::from)
+    //         })
+    //     }
+    // }
+
     #[pallet::error]
     pub enum Error<T> {
         /// Internal: numeric convertion error, overflow
@@ -448,227 +675,4 @@ pub mod pallet {
         /// Unknown status.
         UnknownStatus,
     }
-
-    #[pallet::hooks]
-    impl<T: Config> Hooks<BlockNumberFor<T>> for Pallet<T> {}
-
-    // Dispatchable functions allows users to interact with the pallet and invoke state changes.
-    // These functions materialize as "extrinsics", which are often compared to transactions.
-    // Dispatchable functions must be annotated with a weight and must return a DispatchResult.
-    #[pallet::call]
-    impl<T: Config> Pallet<T> {
-        // #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
-        #[pallet::weight(T::GasWeightMapping::gas_to_weight(*gas_limit))]
-        pub fn execute(
-            origin: OriginFor<T>,
-            tx_bc: Vec<u8>,
-            gas_limit: u64,
-        ) -> DispatchResultWithPostInfo {
-            // TODO: some minimum gas for processing transaction from bytes?
-            let transaction = Transaction::try_from(&tx_bc[..])
-                .map_err(|_| Error::<T>::TransactionValidationError)?;
-
-            // TODO: let vm = Self::try_get_or_create_move_vm()?;
-            let vm = Self::try_create_move_vm()?;
-            let gas = Self::get_move_gas_limit(gas_limit)?;
-
-            let tx = {
-                let signers = if transaction.signers_count() == 0 {
-                    Vec::with_capacity(0)
-                } else if let Ok(account) = ensure_signed(origin) {
-                    debug!("executing `execute` with signed {:?}", account);
-                    let sender = addr::account_to_bytes(&account);
-                    debug!("converted sender: {:?}", sender);
-                    vec![AccountAddress::new(sender)]
-                } else {
-                    // TODO: support multiple signers
-                    Vec::with_capacity(0)
-                };
-
-                if transaction.signers_count() as usize != signers.len() {
-                    error!(
-                        "Transaction signers num isn't eq signers: {} != {}",
-                        transaction.signers_count(),
-                        signers.len()
-                    );
-                    return Err(Error::<T>::TransactionSignersNumError.into());
-                }
-
-                transaction
-                    .into_script(signers)
-                    .map_err(|_| Error::<T>::TransactionValidationError)?
-            };
-
-            let ctx = {
-                let height = frame_system::Module::<T>::block_number()
-                    .try_into()
-                    .map_err(|_| Error::<T>::NumConversionError)?;
-                let time = <timestamp::Module<T>>::get()
-                    .try_into()
-                    .map_err(|_| Error::<T>::NumConversionError)?
-                    .try_into()
-                    .map_err(|_| Error::<T>::NumConversionError)?;
-                ExecutionContext::new(time, height as u64)
-            };
-            let res = vm.execute_script(gas, ctx, tx);
-            debug!("execution result: {:?}", res);
-
-            // produce result with spended gas:
-            let result = result::from_vm_result::<T>(res)?;
-            Ok(result)
-        }
-
-        #[pallet::weight(T::GasWeightMapping::gas_to_weight(*gas_limit))]
-        pub fn publish_module(
-            origin: OriginFor<T>,
-            module_bc: Vec<u8>,
-            gas_limit: u64,
-        ) -> DispatchResultWithPostInfo {
-            let who = ensure_signed(origin)?;
-            debug!("executing `publish` with signed {:?}", who);
-
-            // TODO: let vm = Self::try_get_or_create_move_vm()?;
-            let vm = Self::try_create_move_vm()?;
-            let gas = Self::get_move_gas_limit(gas_limit)?;
-
-            let tx = {
-                let sender = addr::account_to_bytes(&who);
-                debug!("converted sender: {:?}", sender);
-
-                ModuleTx::new(module_bc, AccountAddress::new(sender))
-            };
-
-            let res = vm.publish_module(gas, tx);
-            debug!("publish result: {:?}", res);
-
-            // produce result with spended gas:
-            let result = result::from_vm_result::<T>(res)?;
-
-            // Emit an event:
-            Self::deposit_event(Event::ModulePublished(who));
-
-            Ok(result)
-        }
-
-        /// Batch publish std-modules by root account only
-        // #[pallet::weight(T::GasWeightMapping::gas_to_weight(*gas_limit) * modules.len().into())]
-        #[pallet::weight(T::GasWeightMapping::gas_to_weight(*gas_limit))]
-        pub fn publish_std(
-            origin: OriginFor<T>,
-            modules: Vec<Vec<u8>>,
-            gas_limit: u64,
-        ) -> DispatchResultWithPostInfo {
-            ensure_root(origin)?;
-            debug!("executing `publish STD` with root");
-
-            // TODO: let vm = Self::try_get_or_create_move_vm()?;
-            let vm = Self::try_create_move_vm()?;
-            // TODO: use gas_used
-            let mut _gas_used = 0;
-            let mut results = Vec::with_capacity(modules.len());
-            'deploy: for module in modules.into_iter() {
-                // Overflow shound't happen.
-                // As gas_limit always large or equal to used, otherwise getting out of gas error.
-                let gas = Self::get_move_gas_limit(gas_limit - _gas_used)?;
-
-                let tx = ModuleTx::new(module, CORE_CODE_ADDRESS);
-                let res = vm.publish_module(gas, tx);
-                debug!("publish result: {:?}", res);
-
-                let is_ok = result::is_ok(&res);
-                _gas_used += res.gas_used;
-                results.push(res);
-                if !is_ok {
-                    break 'deploy;
-                }
-
-                // Emit an event:
-                Self::deposit_event(Event::StdModulePublished);
-            }
-
-            // produce result with spended gas:
-            let result = result::from_vm_results::<T>(&results)?;
-
-            Ok(result)
-        }
-
-        // TODO: on_finalize
-    }
-
-    const GAS_UNIT_PRICE: u64 = 1;
-
-    impl<T: Config> Pallet<T> {
-        fn get_move_gas_limit(gas_limit: u64) -> Result<Gas, Error<T>> {
-            Gas::new(gas_limit, GAS_UNIT_PRICE).map_err(|_| Error::InvalidGasAmountMaxValue)
-        }
-    }
-
-    /// Get storage adapter ready for the VM
-    impl<T: Config, K, V> super::storage::MoveVmStorage<T, K, V> for Pallet<T>
-    where
-        K: FullEncode,
-        V: FullCodec,
-    {
-        type VmStorage = VMStorage<T>;
-    }
-
-    impl<T: Config> event::DepositMoveEvent for Pallet<T> {
-        fn deposit_move_event(e: MoveEventArguments) {
-            debug!(
-                "MoveVM Event: {:?} {:?} {:?} {:?}",
-                e.addr, e.caller, e.ty_tag, e.message
-            );
-
-            // Emit an event:
-            use codec::Encode;
-            Self::deposit_event(Event::Event(e.addr, e.ty_tag.encode(), e.message, e.caller));
-        }
-    }
-
-
-    impl<T: Config> mvm::TryCreateMoveVm<T> for Pallet<T> {
-        type Vm =
-            Mvm<VmStorageAdapter<VMStorage<T>>, event::DefaultEventHandler, oracle::DummyOracle>;
-        type Error = Error<T>;
-
-        fn try_create_move_vm() -> Result<Self::Vm, Self::Error> {
-            use oracle::*;
-
-            trace!("MoveVM created");
-            let oracle = Default::default();
-            Mvm::new(
-                Self::move_vm_storage(),
-                Self::create_move_event_handler(),
-                oracle,
-            )
-            .map_err(|err| {
-                error!("{}", err);
-                Error::InvalidVMConfig
-            })
-        }
-    }
-
-    // TODO: FIXME: rewrite static VM init
-    // impl<T: Config> mvm::TryGetStaticMoveVm<event::DefaultEventHandler> for Pallet<T> {
-    //     type Vm = mvm::VmWrapperTy<VMStorage<T>>;
-    //     type Error = Error<T>;
-
-    //     fn try_get_or_create_move_vm() -> Result<&'static Self::Vm, Self::Error> {
-    //         #[cfg(not(feature = "std"))]
-    //         use once_cell::race::OnceBox as OnceCell;
-    //         #[cfg(feature = "std")]
-    //         use once_cell::sync::OnceCell;
-
-    //         static VM: OnceCell<mvm::VmWrapperTy<VMStorage<T>>> = OnceCell::new();
-    //         // static VM: OnceCell<Self::Vm> = OnceCell::new();
-    //         VM.get_or_try_init(|| {
-    //             #[cfg(feature = "std")]
-    //             {
-    //                 Self::try_create_move_vm_wrapped()
-    //             }
-    //             #[cfg(not(feature = "std"))]
-    //             Self::try_create_move_vm_wrapped().map(Box::from)
-    //         })
-    //     }
-    // }
 }

@@ -18,12 +18,12 @@ pub struct MoveEventArguments {
     pub caller: Option<ModuleId>,
 }
 
-impl<T: Config> Into<Event<T>> for MoveEventArguments {
-    fn into(self) -> Event<T> {
-        use codec::Encode;
-        Event::Event(self.addr, self.ty_tag.encode(), self.message, self.caller)
-    }
-}
+// impl<T: Config> Into<Event<T>> for MoveEventArguments {
+//     fn into(self) -> Event<T> {
+//         use codec::Encode;
+//         Event::Event(self.addr, self.ty_tag.encode(), self.message, self.caller)
+//     }
+// }
 
 impl<F: Fn(MoveEventArguments)> EventHandler for EventWriter<F> {
     #[inline]
