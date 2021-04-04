@@ -14,6 +14,8 @@ clippy:
 
 .PHONY: bench
 bench:
+	# This is just an example about how to run benchmarks for the pallet
+	mkdir -p ./target/sp-bench
 	pushd node && \
 	cargo run --release --features=runtime-benchmarks -- \
 		benchmark \
@@ -24,7 +26,7 @@ bench:
 		--execution=wasm \
 		--wasm-execution=compiled \
 		--steps=20 --repeat=10 \
-		--output=./target/sp-bench/
+		--output=../target/sp-bench
 
 .PHONY: test
 test:
