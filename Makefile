@@ -8,7 +8,23 @@ check:
 
 .PHONY: clippy
 clippy:
-	SKIP_WASM_BUILD=1 cargo clippy -p=sp-mvm
+	# Build with target=wasm32 as workaround for substrate issue
+	pushd pallets/sp-mvm && \
+	cargo clippy -p=sp-mvm --target=wasm32-unknown-unknown --no-default-features
+
+.PHONY: bench
+bench:
+	pushd node && \
+	cargo run --features=runtime-benchmarks -- \
+		benchmark \
+		--dev \
+		-lsp_mvm=trace \
+		--pallet=sp_mvm \
+		--extrinsic='*' \
+		--execution=wasm \
+		--wasm-execution=compiled \
+		--steps=20 --repeat=10 \
+		--output=./target/sp-bench/
 
 .PHONY: test
 test:

@@ -25,6 +25,9 @@ mod benchmarking;
 
 #[frame_support::pallet]
 pub mod pallet {
+    // Clippy didn't love sp- macros
+    #![allow(clippy::unused_unit)]
+
     use super::mvm;
     use super::gas;
     use super::addr;
@@ -35,7 +38,6 @@ pub mod pallet {
     use super::storage::VmStorageAdapter;
     use super::gas::GasWeightMapping;
     use event::*;
-    // use mvm::vm_static::*;
     use mvm::*;
 
     use core::convert::TryInto;
