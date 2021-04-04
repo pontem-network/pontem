@@ -1,11 +1,10 @@
-use super::{Config, Pallet, Error};
+use super::{Config, Error};
 use crate::gas::GasWeightMapping;
 use frame_support::dispatch::DispatchErrorWithPostInfo;
 use frame_support::dispatch::DispatchResultWithPostInfo;
 use frame_support::dispatch::PostDispatchInfo;
 use frame_support::dispatch::Weight;
 use frame_support::weights::Pays;
-use frame_support::decl_error;
 use move_vm::types::VmResult;
 use move_core_types::vm_status::StatusCode;
 

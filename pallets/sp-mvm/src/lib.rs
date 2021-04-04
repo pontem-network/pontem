@@ -41,12 +41,13 @@ pub mod pallet {
     use core::convert::TryInto;
     use core::convert::TryFrom;
 
+    use sp_std::prelude::*;
     use frame_system::pallet_prelude::*;
     use frame_support as support;
     use support::pallet_prelude::*;
     use support::dispatch::DispatchResultWithPostInfo;
     use codec::{FullCodec, FullEncode};
-    use codec::Encode;
+    // use codec::Encode;
 
     use move_vm::Vm;
     use move_vm::mvm::Mvm;
@@ -54,12 +55,9 @@ pub mod pallet {
     use move_vm::types::Gas;
     use move_vm::types::ModuleTx;
     use move_vm::types::Transaction;
-    use move_core_types::language_storage::ModuleId;
+    // use move_core_types::language_storage::ModuleId;
     use move_core_types::account_address::AccountAddress;
     use move_core_types::language_storage::CORE_CODE_ADDRESS;
-
-    // upshare
-    // pub(crate) use self::Error;
 
     /// Configure the pallet by specifying the parameters and types on which it depends.
     #[pallet::config]
@@ -128,6 +126,24 @@ pub mod pallet {
     // Dispatchable functions must be annotated with a weight and must return a DispatchResult.
     #[pallet::call]
     impl<T: Config> Pallet<T> {
+        /// TODO: remove me with storage (`Something<T>`) and event (`SomethingStored`).
+        /// Currently used for initall benchmarking impl.
+        #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
+        pub fn do_something(origin: OriginFor<T>, something: u32) -> DispatchResultWithPostInfo {
+            // Check that the extrinsic was signed and get the signer.
+            // This function will return an error if the extrinsic is not signed.
+            // https://substrate.dev/docs/en/knowledgebase/runtime/origin
+            let who = ensure_signed(origin)?;
+
+            // Update storage.
+            <Something<T>>::put(something);
+
+            // Emit an event.
+            Self::deposit_event(Event::SomethingStored(something, who));
+            // Return a successful DispatchResultWithPostInfo
+            Ok(().into())
+        }
+
         // #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
         #[pallet::weight(T::GasWeightMapping::gas_to_weight(*gas_limit))]
         pub fn execute(
@@ -263,7 +279,7 @@ pub mod pallet {
             Ok(result)
         }
 
-        // TODO: on_finalize
+        // TODO: on_finalize after VM static init
     }
 
     const GAS_UNIT_PRICE: u64 = 1;
@@ -291,14 +307,7 @@ pub mod pallet {
             );
 
             // Emit an event:
-            use codec::Encode;
-            // Self::deposit_event(Event::Event(e.addr, e.ty_tag.encode(), e.message, e.caller));
-            Self::deposit_event(Event::Event(
-                e.addr.to_vec(),
-                vec![],
-                e.message,
-                e.caller.map(|_| ()),
-            ));
+            Self::deposit_event(e.into());
         }
     }
 
@@ -308,7 +317,7 @@ pub mod pallet {
         type Error = Error<T>;
 
         fn try_create_move_vm() -> Result<Self::Vm, Self::Error> {
-            use oracle::*;
+            // use oracle::*;
 
             trace!("MoveVM created");
             let oracle = Default::default();

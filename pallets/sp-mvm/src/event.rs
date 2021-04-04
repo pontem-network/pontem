@@ -6,6 +6,7 @@ use move_core_types::language_storage::TypeTag;
 use move_vm::data::EventHandler;
 
 pub trait DepositMoveEvent {
+    /// Emit a Move event with content of passed `MoveEventArguments`
     fn deposit_move_event(e: MoveEventArguments);
 }
 
@@ -18,12 +19,19 @@ pub struct MoveEventArguments {
     pub caller: Option<ModuleId>,
 }
 
-// impl<T: Config> Into<Event<T>> for MoveEventArguments {
-//     fn into(self) -> Event<T> {
-//         use codec::Encode;
-//         Event::Event(self.addr, self.ty_tag.encode(), self.message, self.caller)
-//     }
-// }
+impl<T: Config> Into<Event<T>> for MoveEventArguments {
+    fn into(self) -> Event<T> {
+        // TODO: return value back, encoding troubles again there.
+        // use codec::Encode;
+        // Event::Event(self.addr, self.ty_tag.encode(), self.message, self.caller)
+        Event::Event(
+            self.addr.to_vec(),
+            vec![],
+            self.message,
+            self.caller.map(|_| ()),
+        )
+    }
+}
 
 impl<F: Fn(MoveEventArguments)> EventHandler for EventWriter<F> {
     #[inline]

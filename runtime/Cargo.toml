@@ -51,7 +51,7 @@ sp-transaction-pool = { default-features = false, version = '3.0.0' }
 sp-version = { default-features = false, version = '3.0.0' }
 
 # local dependencies
-sp-mvm = { path = '../pallets/sp-mvm', default-features = false, version = '0' }
+sp-mvm = { path = '../pallets/sp-mvm', default-features = false, version = '0.2.2' }
 
 [features]
 default = ['std']
@@ -64,6 +64,7 @@ runtime-benchmarks = [
     'pallet-balances/runtime-benchmarks',
     'pallet-timestamp/runtime-benchmarks',
     'sp-runtime/runtime-benchmarks',
+    'sp-mvm/runtime-benchmarks',
 ]
 std = [
     'codec/std',
