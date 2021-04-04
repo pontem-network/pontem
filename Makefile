@@ -15,7 +15,7 @@ clippy:
 .PHONY: bench
 bench:
 	pushd node && \
-	cargo run --features=runtime-benchmarks -- \
+	cargo run --release --features=runtime-benchmarks -- \
 		benchmark \
 		--dev \
 		-lsp_mvm=trace \

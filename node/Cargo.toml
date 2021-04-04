@@ -56,7 +56,5 @@ mv-node-runtime = { path = '../runtime', version = '3.0.0' }
 
 
 [features]
-default = [
-    "runtime-benchmarks"
-]
+default = []
 runtime-benchmarks = ['mv-node-runtime/runtime-benchmarks']
