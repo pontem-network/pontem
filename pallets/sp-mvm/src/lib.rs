@@ -14,6 +14,7 @@ pub mod mvm;
 pub mod oracle;
 pub mod result;
 pub mod storage;
+pub mod types;
 
 // #[cfg(test)]
 // mod mock;
@@ -31,6 +32,7 @@ pub mod pallet {
     use super::mvm;
     use super::gas;
     use super::addr;
+    use super::types;
     use super::event;
     use super::oracle;
     use super::result;
@@ -105,10 +107,10 @@ pub mod pallet {
         /// Event provided by Move VM
         /// [account, type_tag, message, module]
         Event(
-            Vec<u8>, /* AccountAddress */
-            Vec<u8>, /* encoded TypeTag */
-            Vec<u8>, /* encoded String */
-            Option<()>,
+            T::AccountId, /* transcoded AccountAddress */
+            Vec<u8>,      /* encoded TypeTag, TODO: use `MoveTypeTag<T::AccountId>` instead */
+            Vec<u8>,      /* encoded String, use Text in web-UI */
+            Option<types::MoveModuleId<T::AccountId>>,
         ),
 
         /// Event about successful move-module publishing
@@ -309,7 +311,8 @@ pub mod pallet {
             );
 
             // Emit an event:
-            Self::deposit_event(e.into());
+            // TODO: dispatch up the error by TryInto. Error is almost impossible but who knows..
+            Self::deposit_event(e.try_into().expect("Cannot back-convert address"));
         }
     }
 

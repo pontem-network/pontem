@@ -1,9 +1,13 @@
-use crate::{Event, Config};
+use core::convert::TryInto;
 use sp_std::prelude::*;
+use codec::Encode;
 use move_core_types::account_address::AccountAddress;
 use move_core_types::language_storage::ModuleId;
 use move_core_types::language_storage::TypeTag;
 use move_vm::data::EventHandler;
+use crate::types;
+use crate::{Event, Config};
+use crate::addr::address_to_account;
 
 pub trait DepositMoveEvent {
     /// Emit a Move event with content of passed `MoveEventArguments`
@@ -19,17 +23,29 @@ pub struct MoveEventArguments {
     pub caller: Option<ModuleId>,
 }
 
-impl<T: Config> Into<Event<T>> for MoveEventArguments {
-    fn into(self) -> Event<T> {
-        // TODO: return value back, encoding troubles again there.
-        // use codec::Encode;
-        // Event::Event(self.addr, self.ty_tag.encode(), self.message, self.caller)
-        Event::Event(
-            self.addr.to_vec(),
-            vec![],
-            self.message,
-            self.caller.map(|_| ()),
-        )
+impl<T: Config> TryInto<Event<T>> for MoveEventArguments {
+    type Error = codec::Error;
+
+    fn try_into(self) -> Result<Event<T>, Self::Error> {
+        let account = address_to_account::<T::AccountId>(&self.addr)?;
+        let mut caller_error = None::<Self::Error>;
+        let caller: Option<types::MoveModuleId<T::AccountId>> = self
+            .caller
+            .map(|caller| {
+                caller
+                    .try_into()
+                    .map_err(|err| caller_error = Some(err))
+                    .ok()
+            })
+            .flatten();
+
+        if let Some(err) = caller_error {
+            return Err(err);
+        }
+
+        let ty_tag: types::MoveTypeTag<T::AccountId> = self.ty_tag.try_into()?;
+
+        Ok(Event::Event(account, ty_tag.encode(), self.message, caller))
     }
 }
 
