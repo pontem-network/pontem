@@ -1,13 +1,13 @@
 [package]
 name = "sp-mvm"
-authors = [ "Pontem Network Team <https://pontem.network>" ]
+authors = ["Pontem Network Team <https://pontem.network>"]
 description = "FRAME pallet adding Move-lang support."
 edition = "2018"
 repository = "https://github.com/pontem-network/sp-move"
 version = "0.2.2"
 
 [package.metadata.docs.rs]
-targets = [ "x86_64-unknown-linux-gnu" ]
+targets = ["x86_64-unknown-linux-gnu"]
 
 
 [dependencies.log]
@@ -17,7 +17,7 @@ default-features = false
 [dependencies.codec]
 version = "2.0.0"
 default-features = false
-features = [ "derive" ]
+features = ["derive"]
 package = "parity-scale-codec"
 
 
@@ -64,6 +64,15 @@ sp-runtime = { default-features = false, version = "3.0.0" }
 
 sp-io = { default-features = false, version = "3.0.0" }
 
+serde = { version = "1", default-features = false, package = "alt_serde", features = ["derive", "alloc"], optional = true }
+[dependencies.bcs]
+package = "bcs"
+default-features = false
+git = "https://github.com/pontem-network/sp-move-vm.git"
+branch = "milestone-3"
+optional = true
+
+
 [dev-dependencies]
 # serde is for lcs only
 # serde = "1.0.101"
@@ -77,7 +86,7 @@ sp-io = { default-features = false, version = "3.0.0" }
 
 
 [features]
-default = [ "std" ]
+default = ["std"]
 std = [
     "log/std",
     "once_cell/std",
@@ -107,6 +116,8 @@ runtime-benchmarks = [
     "timestamp/runtime-benchmarks",
     "sp-runtime/runtime-benchmarks",
     # "frame-system-benchmarking",
+    "serde",
+    "bcs"
 ]
 
 # Note: frame-support `try-runtime` feature is released after v3.
