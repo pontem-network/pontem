@@ -9,12 +9,19 @@ use frame_support::weights::Weight;
 
 #[rpc]
 pub trait MVMApiRpc<BlockHash> {
-	#[rpc(name = "mvm_gas_to_weight")]
+	#[rpc(name = "mvm_gasToWeight")]
 	fn gas_to_weight(
 		&self,
 		at: Option<BlockHash>,
 		gas: u64,
 	) -> Result<Weight>;
+
+	#[rpc(name = "mvm_weightToGas")]
+	fn weight_to_gas(
+		&self,
+		at: Option<BlockHash>,
+		weight: Weight,
+	) -> Result<u64>;
 }
 
 pub struct MVMApi<C, P> {
@@ -50,6 +57,26 @@ where
 		));
 
         let res = api.gas_to_weight(&at, gas);
+
+        res.map_err(|e| RpcError {
+			code: ErrorCode::ServerError(500),
+			message: "Something went wrong".into(),
+			data: Some(format!("{:?}", e).into()),
+		})
+    }
+
+	fn weight_to_gas(
+		&self,
+		at: Option<<Block as BlockT>::Hash>,
+		weight: Weight,
+	) -> Result<u64> {
+		let api = self.client.runtime_api();
+		let at = BlockId::hash(at.unwrap_or_else(||
+			// If the block hash is not supplied assume the best block.
+			self.client.info().best_hash
+		));
+
+        let res = api.weight_to_gas(&at, weight);
 
         res.map_err(|e| RpcError {
 			code: ErrorCode::ServerError(500),
