@@ -43,7 +43,7 @@ use pallet_transaction_payment::CurrencyAdapter;
 
 /// Import the Move-pallet.
 pub use sp_mvm;
-pub use sp_mvm::gas;
+pub use sp_mvm::gas::{GasWeightMapping};
 pub use sp_mvm_rpc_runtime;
 
 /// An index to a block.
@@ -281,7 +281,7 @@ pub const WEIGHT_PER_GAS: u64 = WEIGHT_PER_SECOND / GAS_PER_SECOND;
 pub struct MoveVMGasWeightMapping;
 
 // Just use provided gas.
-impl gas::GasWeightMapping for MoveVMGasWeightMapping {
+impl GasWeightMapping for MoveVMGasWeightMapping {
     fn gas_to_weight(gas: u64) -> Weight {
         gas.saturating_mul(WEIGHT_PER_GAS)
     }
@@ -480,9 +480,15 @@ impl_runtime_apis! {
         }
     }
 
-    impl sp_mvm_rpc_runtime::TestAPIRuntime<Block> for Runtime {
-        fn test() -> u64 {
-            15820 as u64
+    impl sp_mvm_rpc_runtime::MVMApiRuntime<Block> for Runtime {
+		// Convert Weight to Gas.
+        fn gas_to_weight(gas_limit: u64) -> Weight {
+             <Runtime as sp_mvm::Config>::GasWeightMapping::gas_to_weight(gas_limit)
+        }
+
+		// Convert Gas to Weight.
+		fn weight_to_gas(weight: Weight) -> u64 {
+            <Runtime as sp_mvm::Config>::GasWeightMapping::weight_to_gas(weight)
         }
     }
 

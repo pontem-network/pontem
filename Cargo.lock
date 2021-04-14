@@ -7007,6 +7007,7 @@ dependencies = [
 name = "sp-mvm-rpc"
 version = "0.2.2"
 dependencies = [
+ "frame-support",
  "jsonrpc-core",
  "jsonrpc-core-client",
  "jsonrpc-derive",
@@ -7021,6 +7022,7 @@ dependencies = [
 name = "sp-mvm-rpc-runtime"
 version = "0.2.2"
 dependencies = [
+ "frame-support",
  "sp-api",
 ]
 
