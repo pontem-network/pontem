@@ -52,6 +52,7 @@ sp-version = { default-features = false, version = '3.0.0' }
 
 # local dependencies
 sp-mvm = { path = '../pallets/sp-mvm', default-features = false, version = '0.2.2' }
+sp-mvm-rpc-runtime = { path = '../pallets/sp-mvm/rpc/runtime', default-features = false, version = '0.2.2' }
 
 [features]
 default = ['std']

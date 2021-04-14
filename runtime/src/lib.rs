@@ -44,6 +44,7 @@ use pallet_transaction_payment::CurrencyAdapter;
 /// Import the Move-pallet.
 pub use sp_mvm;
 pub use sp_mvm::gas;
+pub use sp_mvm_rpc_runtime;
 
 /// An index to a block.
 pub type BlockNumber = u32;
@@ -476,6 +477,12 @@ impl_runtime_apis! {
             len: u32,
         ) -> pallet_transaction_payment::FeeDetails<Balance> {
             TransactionPayment::query_fee_details(uxt, len)
+        }
+    }
+
+    impl sp_mvm_rpc_runtime::TestAPIRuntime<Block> for Runtime {
+        fn test() -> u64 {
+            15820 as u64
         }
     }
 

@@ -33,6 +33,7 @@ where
     C::Api: substrate_frame_rpc_system::AccountNonceApi<Block, AccountId, Index>,
     C::Api: pallet_transaction_payment_rpc::TransactionPaymentRuntimeApi<Block, Balance>,
     C::Api: BlockBuilder<Block>,
+    C::Api: sp_mvm_rpc_runtime::TestAPIRuntime<Block>,
     P: TransactionPool + 'static,
 {
     use substrate_frame_rpc_system::{FullSystem, SystemApi};
@@ -54,6 +55,8 @@ where
     io.extend_with(TransactionPaymentApi::to_delegate(TransactionPayment::new(
         client.clone(),
     )));
+
+    io.extend_with(sp_mvm_rpc::TestAPI::to_delegate(sp_mvm_rpc::Test::new(client.clone()),));
 
     // Extend this RPC with a custom API by using the following syntax.
     // `YourRpcStruct` should have a reference to a client, which is needed

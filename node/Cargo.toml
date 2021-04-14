@@ -53,7 +53,8 @@ substrate-frame-rpc-system = '3.0.0'
 
 # Local dependencies
 mv-node-runtime = { path = '../runtime', version = '3.0.0' }
-
+sp-mvm-rpc = { path = '../pallets/sp-mvm/rpc' , version = '0.2.2' }
+sp-mvm-rpc-runtime = { path = '../pallets/sp-mvm/rpc/runtime', version = '0.2.2' }
 
 [features]
 default = []

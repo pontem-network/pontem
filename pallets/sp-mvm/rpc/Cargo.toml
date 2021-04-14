@@ -1,0 +1,20 @@
+[package]
+name = "sp-mvm-rpc"
+authors = [ "Pontem Network Team <https://pontem.network>" ]
+description = "RPC for Move pallet."
+edition = "2018"
+repository = "https://github.com/pontem-network/sp-move"
+version = "0.2.2"
+
+[package.metadata.docs.rs]
+targets = ["x86_64-unknown-linux-gnu"]
+
+[dependencies]
+jsonrpc-core = "15.1.0"
+jsonrpc-core-client = "15.1.0"
+jsonrpc-derive = "15.1.0"
+sp-rpc = { version = "3.0.0" }
+sp-runtime = { version = "3.0.0" }
+sp-api = { version = "3.0.0" }
+sp-blockchain = { version = "3.0.0" }
+sp-mvm-rpc-runtime = { version = "0.2.2", path = "./runtime" }

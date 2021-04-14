@@ -3713,6 +3713,8 @@ dependencies = [
  "sp-core",
  "sp-finality-grandpa",
  "sp-inherents",
+ "sp-mvm-rpc",
+ "sp-mvm-rpc-runtime",
  "sp-runtime",
  "sp-transaction-pool",
  "structopt",
@@ -3747,6 +3749,7 @@ dependencies = [
  "sp-core",
  "sp-inherents",
  "sp-mvm",
+ "sp-mvm-rpc-runtime",
  "sp-offchain",
  "sp-runtime",
  "sp-session",
@@ -6998,6 +7001,27 @@ dependencies = [
  "sp-runtime",
  "sp-std",
  "vm",
+]
+
+[[package]]
+name = "sp-mvm-rpc"
+version = "0.2.2"
+dependencies = [
+ "jsonrpc-core",
+ "jsonrpc-core-client",
+ "jsonrpc-derive",
+ "sp-api",
+ "sp-blockchain",
+ "sp-mvm-rpc-runtime",
+ "sp-rpc",
+ "sp-runtime",
+]
+
+[[package]]
+name = "sp-mvm-rpc-runtime"
+version = "0.2.2"
+dependencies = [
+ "sp-api",
 ]
 
 [[package]]
