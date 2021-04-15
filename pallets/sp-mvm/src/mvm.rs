@@ -72,8 +72,9 @@ mod vm_static {
             &self,
             gas: Gas,
             module: move_vm::types::ModuleTx,
+            dry_run: bool,
         ) -> move_vm::types::VmResult {
-            self.0.publish_module(gas, module)
+            self.0.publish_module(gas, module, dry_run)
         }
 
         #[inline]
@@ -82,8 +83,9 @@ mod vm_static {
             gas: Gas,
             ctx: ExecutionContext,
             tx: ScriptTx,
+            dry_run: bool,
         ) -> move_vm::types::VmResult {
-            self.0.execute_script(gas, ctx, tx)
+            self.0.execute_script(gas, ctx, tx, dry_run)
         }
 
         #[inline]

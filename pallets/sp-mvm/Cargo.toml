@@ -25,27 +25,32 @@ package = "parity-scale-codec"
 
 [dependencies.move-vm]
 package = "mvm"
-git = "https://github.com/pontem-network/sp-move-vm.git"
+#git = "https://github.com/pontem-network/sp-move-vm.git"
+path = "/Volumes/boris-backup/Users/boris/Documents/sp-move-vm/mvm"
 branch = "milestone-3"
 default-features = false
 
 [dependencies.vm]
-git = "https://github.com/pontem-network/sp-move-vm.git"
+#git = "https://github.com/pontem-network/sp-move-vm.git"
+path = "/Volumes/boris-backup/Users/boris/Documents/sp-move-vm/language/vm"
 branch = "milestone-3"
 default-features = false
 
 [dependencies.move-vm-runtime]
-git = "https://github.com/pontem-network/sp-move-vm.git"
+#git = "https://github.com/pontem-network/sp-move-vm.git"
+path = "/Volumes/boris-backup/Users/boris/Documents/sp-move-vm/language/move-vm/runtime"
 branch = "milestone-3"
 default-features = false
 
 [dependencies.move-core-types]
-git = "https://github.com/pontem-network/sp-move-vm.git"
+#git = "https://github.com/pontem-network/sp-move-vm.git"
+path = "/Volumes/boris-backup/Users/boris/Documents/sp-move-vm/language/move-core/types"
 branch = "milestone-3"
 default-features = false
 
 [dependencies.move-vm-types]
-git = "https://github.com/pontem-network/sp-move-vm.git"
+#git = "https://github.com/pontem-network/sp-move-vm.git"
+path = "/Volumes/boris-backup/Users/boris/Documents/sp-move-vm/language/move-vm/types"
 branch = "milestone-3"
 default-features = false
 

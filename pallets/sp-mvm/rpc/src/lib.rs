@@ -22,6 +22,13 @@ pub trait MVMApiRpc<BlockHash> {
 		at: Option<BlockHash>,
 		weight: Weight,
 	) -> Result<u64>;
+
+	#[rpc(name= "mvm_estimateGasPublish")]
+	fn estimate_gas_publish(
+		&self,
+		at: Option<BlockHash>,
+		module_bc: Vec<u8>
+	) -> Result<u64>;
 }
 
 pub struct MVMApi<C, P> {
@@ -84,4 +91,28 @@ where
 			data: Some(format!("{:?}", e).into()),
 		})
     }
+
+	fn estimate_gas_publish(
+		&self,
+		at: Option<<Block as BlockT>::Hash>,
+		module_bc: Vec<u8>
+	) -> Result<u64> {
+		let api = self.client.runtime_api();
+		let at = BlockId::hash(at.unwrap_or_else(||
+			// If the block hash is not supplied assume the best block.
+			self.client.info().best_hash
+		));
+
+        let res = api.estimate_gas_publish(&at, module_bc).map_err(|e| RpcError {
+			code: ErrorCode::ServerError(500),
+			message: "Something went wrong".into(),
+			data: Some(format!("{:?}", e).into()),
+		})?;
+
+		res.map_err(|e| RpcError {
+			code: ErrorCode::ServerError(500),
+			message: "Something went wrong".into(),
+			data: Some(format!("{:?}", e).into()),
+		})
+	}
 }

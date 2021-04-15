@@ -490,6 +490,12 @@ impl_runtime_apis! {
 		fn weight_to_gas(weight: Weight) -> u64 {
             <Runtime as sp_mvm::Config>::GasWeightMapping::weight_to_gas(weight)
         }
+
+        // Estimate gas for publish module.
+        fn estimate_gas_publish(module_bc: Vec<u8>) -> Result<u64, sp_runtime::DispatchError> {
+            let vm_result = Mvm::raw_publish_module(module_bc, 1000000, true).map_err(|_| sp_runtime::DispatchError::Other("unknown"))?;
+            Ok(vm_result.gas_used)
+        }
     }
 
     #[cfg(feature = "runtime-benchmarks")]

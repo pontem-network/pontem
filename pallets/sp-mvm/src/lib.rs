@@ -50,7 +50,7 @@ pub mod pallet {
     use frame_support as support;
     use support::pallet_prelude::*;
     use support::dispatch::DispatchResultWithPostInfo;
-    use codec::{FullCodec, FullEncode};
+    use codec::{FullCodec, FullEncode, Encode};
     // use codec::Encode;
 
     use move_vm::Vm;
@@ -59,6 +59,7 @@ pub mod pallet {
     use move_vm::types::Gas;
     use move_vm::types::ModuleTx;
     use move_vm::types::Transaction;
+    use move_vm::types::VmResult;
     // use move_core_types::language_storage::ModuleId;
     use move_core_types::account_address::AccountAddress;
     use move_core_types::language_storage::CORE_CODE_ADDRESS;
@@ -201,7 +202,7 @@ pub mod pallet {
                     .map_err(|_| Error::<T>::NumConversionError)?;
                 ExecutionContext::new(time, height as u64)
             };
-            let res = vm.execute_script(gas, ctx, tx);
+            let res = vm.execute_script(gas, ctx, tx, false);
             debug!("execution result: {:?}", res);
 
             // produce result with spended gas:
@@ -219,17 +220,18 @@ pub mod pallet {
             debug!("executing `publish` with signed {:?}", who);
 
             // TODO: let vm = Self::try_get_or_create_move_vm()?;
-            let vm = Self::try_create_move_vm()?;
-            let gas = Self::get_move_gas_limit(gas_limit)?;
+            //let vm = Self::try_create_move_vm()?;
+            //let gas = Self::get_move_gas_limit(gas_limit)?;
 
-            let tx = {
-                let sender = addr::account_to_bytes(&who);
-                debug!("converted sender: {:?}", sender);
+            //let tx = {
+            //    let sender = addr::account_to_bytes(&who);
+            //    debug!("converted sender: {:?}", sender);
 
-                ModuleTx::new(module_bc, AccountAddress::new(sender))
-            };
+            //    ModuleTx::new(module_bc, AccountAddress::new(sender))
+            //};
 
-            let res = vm.publish_module(gas, tx);
+            //raw_publish_module<AccountId: Encode>(signer: &AccountId, module_bc: Vec<u8>, gas_limit: u64, dry_run: bool)
+            let res = Self::raw_publish_module(module_bc, gas_limit, false)?;
             debug!("publish result: {:?}", res);
 
             // produce result with spended gas:
@@ -263,7 +265,7 @@ pub mod pallet {
                 let gas = Self::get_move_gas_limit(gas_limit - _gas_used)?;
 
                 let tx = ModuleTx::new(module, CORE_CODE_ADDRESS);
-                let res = vm.publish_module(gas, tx);
+                let res = vm.publish_module(gas, tx, false);
                 debug!("publish result: {:?}", res);
 
                 let is_ok = result::is_ok(&res);
@@ -291,6 +293,20 @@ pub mod pallet {
     impl<T: Config> Pallet<T> {
         fn get_move_gas_limit(gas_limit: u64) -> Result<Gas, Error<T>> {
             Gas::new(gas_limit, GAS_UNIT_PRICE).map_err(|_| Error::InvalidGasAmountMaxValue)
+        }
+
+        pub fn raw_publish_module(module_bc: Vec<u8>, gas_limit: u64, dry_run: bool) -> Result<VmResult, Error<T>> {
+            let vm = Self::try_create_move_vm().map_err(|_| Error::InvalidVMConfig)?;
+            let gas = Self::get_move_gas_limit(gas_limit)?;
+
+            let tx = {
+                //let sender = addr::account_to_bytes(signer);
+                //debug!("converted sender: {:?}", sender);
+
+                ModuleTx::new(module_bc, CORE_CODE_ADDRESS) //AccountAddress::new(sender))
+            };
+
+            Ok(vm.publish_module(gas, tx, dry_run))
         }
     }
 

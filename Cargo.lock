@@ -428,7 +428,6 @@ checksum = "904dfeac50f3cdaba28fc6f57fdcddb75f49ed61346676a78c4ffe55877802fd"
 [[package]]
 name = "bcs"
 version = "0.1.1"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?branch=milestone-3#3ae571ffb46493d82a5d9ec5ca4c96920b28c6c3"
 dependencies = [
  "alt_serde",
 ]
@@ -616,7 +615,6 @@ dependencies = [
 [[package]]
 name = "borrow-graph"
 version = "0.0.1"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?branch=milestone-3#3ae571ffb46493d82a5d9ec5ca4c96920b28c6c3"
 dependencies = [
  "mirai-annotations",
 ]
@@ -672,7 +670,6 @@ checksum = "e3b5ca7a04898ad4bcd41c90c5285445ff5b791899bb1b0abdd2a2aa791211d7"
 [[package]]
 name = "bytecode-verifier"
 version = "0.1.0"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?branch=milestone-3#3ae571ffb46493d82a5d9ec5ca4c96920b28c6c3"
 dependencies = [
  "anyhow",
  "borrow-graph",
@@ -752,7 +749,6 @@ dependencies = [
 [[package]]
 name = "cell"
 version = "0.1.0"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?branch=milestone-3#3ae571ffb46493d82a5d9ec5ca4c96920b28c6c3"
 dependencies = [
  "once_cell",
 ]
@@ -1247,7 +1243,6 @@ dependencies = [
 [[package]]
 name = "diem-crypto"
 version = "0.1.0"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?branch=milestone-3#3ae571ffb46493d82a5d9ec5ca4c96920b28c6c3"
 dependencies = [
  "alt_serde",
  "anyhow",
@@ -1270,7 +1265,6 @@ dependencies = [
 [[package]]
 name = "diem-crypto-derive"
 version = "0.1.0"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?branch=milestone-3#3ae571ffb46493d82a5d9ec5ca4c96920b28c6c3"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -1280,7 +1274,6 @@ dependencies = [
 [[package]]
 name = "diem-nibble"
 version = "0.1.0"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?branch=milestone-3#3ae571ffb46493d82a5d9ec5ca4c96920b28c6c3"
 dependencies = [
  "alt_serde",
 ]
@@ -3534,7 +3527,6 @@ dependencies = [
 [[package]]
 name = "mirai-annotations"
 version = "0.1.0"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?branch=milestone-3#3ae571ffb46493d82a5d9ec5ca4c96920b28c6c3"
 
 [[package]]
 name = "more-asserts"
@@ -3545,7 +3537,6 @@ checksum = "0debeb9fcf88823ea64d64e4a815ab1643f33127d995978e099942ce38f25238"
 [[package]]
 name = "move-core-types"
 version = "0.1.0"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?branch=milestone-3#3ae571ffb46493d82a5d9ec5ca4c96920b28c6c3"
 dependencies = [
  "alt_serde",
  "anyhow",
@@ -3565,7 +3556,6 @@ dependencies = [
 [[package]]
 name = "move-lang"
 version = "0.0.1"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?branch=milestone-3#3ae571ffb46493d82a5d9ec5ca4c96920b28c6c3"
 dependencies = [
  "alt_serde",
  "hashbrown",
@@ -3576,7 +3566,6 @@ dependencies = [
 [[package]]
 name = "move-vm-natives"
 version = "0.1.0"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?branch=milestone-3#3ae571ffb46493d82a5d9ec5ca4c96920b28c6c3"
 dependencies = [
  "cell",
  "diem-crypto",
@@ -3591,7 +3580,6 @@ dependencies = [
 [[package]]
 name = "move-vm-runtime"
 version = "0.1.0"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?branch=milestone-3#3ae571ffb46493d82a5d9ec5ca4c96920b28c6c3"
 dependencies = [
  "anyhow",
  "bytecode-verifier",
@@ -3609,7 +3597,6 @@ dependencies = [
 [[package]]
 name = "move-vm-types"
 version = "0.1.0"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?branch=milestone-3#3ae571ffb46493d82a5d9ec5ca4c96920b28c6c3"
 dependencies = [
  "alt_serde",
  "bcs",
@@ -3762,7 +3749,6 @@ dependencies = [
 [[package]]
 name = "mvm"
 version = "0.1.0"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?branch=milestone-3#3ae571ffb46493d82a5d9ec5ca4c96920b28c6c3"
 dependencies = [
  "alt_serde",
  "anyhow",
@@ -3904,7 +3890,6 @@ dependencies = [
 [[package]]
 name = "num-variants"
 version = "0.1.0"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?branch=milestone-3#3ae571ffb46493d82a5d9ec5ca4c96920b28c6c3"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -6486,7 +6471,6 @@ checksum = "7fdf1b9db47230893d76faad238fd6097fd6d6a9245cd7a4d90dbd639536bbd2"
 [[package]]
 name = "short-hex-str"
 version = "0.1.0"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?branch=milestone-3#3ae571ffb46493d82a5d9ec5ca4c96920b28c6c3"
 dependencies = [
  "alt_serde",
  "mirai-annotations",
@@ -7024,6 +7008,9 @@ version = "0.2.2"
 dependencies = [
  "frame-support",
  "sp-api",
+ "sp-mvm",
+ "sp-runtime",
+ "sp-std",
 ]
 
 [[package]]
@@ -8239,7 +8226,6 @@ checksum = "5fecdca9a5291cc2b8dcf7dc02453fee791a280f3743cb0905f8822ae463b3fe"
 [[package]]
 name = "vm"
 version = "0.1.0"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?branch=milestone-3#3ae571ffb46493d82a5d9ec5ca4c96920b28c6c3"
 dependencies = [
  "anyhow",
  "diem-crypto",
