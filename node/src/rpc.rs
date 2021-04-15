@@ -35,7 +35,7 @@ where
     C::Api: substrate_frame_rpc_system::AccountNonceApi<Block, AccountId, Index>,
     C::Api: pallet_transaction_payment_rpc::TransactionPaymentRuntimeApi<Block, Balance>,
     C::Api: BlockBuilder<Block>,
-    C::Api: MVMApiRuntime<Block>,
+    C::Api: MVMApiRuntime<Block, AccountId>,
     P: TransactionPool + 'static,
 {
     use substrate_frame_rpc_system::{FullSystem, SystemApi};

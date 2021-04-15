@@ -1,14 +1,34 @@
 use std::sync::Arc;
+use std::convert::From;
+use codec::{self, Codec};
 use jsonrpc_core::{Error as RpcError, ErrorCode, Result};
 use jsonrpc_derive::rpc;
 use sp_blockchain::HeaderBackend;
 use sp_runtime::{generic::BlockId, traits::{Block as BlockT}};
 use sp_api::ProvideRuntimeApi;
-use sp_mvm_rpc_runtime::MVMApiRuntime;
+use sp_mvm_rpc_runtime::{MVMApiRuntime, types::MVMApiEstimation};
 use frame_support::weights::Weight;
+use serde::{Serialize, Deserialize};
 
+// Estimation struct with serde.
+#[derive(Serialize, Deserialize)]
+pub struct Estimation {
+    pub gas_used:    u64,
+    pub status_code: u64,
+}
+
+impl From<MVMApiEstimation> for Estimation {
+	fn from(e: MVMApiEstimation) -> Self {
+        Self {
+			gas_used: e.gas_used,
+			status_code: e.status_code,
+		}
+    }
+}
+
+// RPC calls.
 #[rpc]
-pub trait MVMApiRpc<BlockHash> {
+pub trait MVMApiRpc<BlockHash, AccountId> {
 	#[rpc(name = "mvm_gasToWeight")]
 	fn gas_to_weight(
 		&self,
@@ -27,8 +47,10 @@ pub trait MVMApiRpc<BlockHash> {
 	fn estimate_gas_publish(
 		&self,
 		at: Option<BlockHash>,
-		module_bc: Vec<u8>
-	) -> Result<u64>;
+		account: AccountId,
+		module_bc: Vec<u8>,
+		gas_limit: u64,
+	) -> Result<Estimation>;
 }
 
 pub struct MVMApi<C, P> {
@@ -42,14 +64,15 @@ impl<C, P> MVMApi<C, P> {
 	}
 }
 
-
-impl<C, Block> MVMApiRpc<
+impl<C, Block, AccountId> MVMApiRpc<
 	<Block as BlockT>::Hash,
+	AccountId,
 > for MVMApi<C, Block>
 where
 	Block: BlockT,
+	AccountId: Clone + std::fmt::Display + Codec,
 	C: 'static + ProvideRuntimeApi<Block> + HeaderBackend<Block>,
-	C::Api: MVMApiRuntime<Block>,
+	C::Api: MVMApiRuntime<Block, AccountId>,
 
 {
 	fn gas_to_weight(
@@ -67,7 +90,7 @@ where
 
         res.map_err(|e| RpcError {
 			code: ErrorCode::ServerError(500),
-			message: "Something went wrong".into(),
+			message: "Error during requesting Runtime API".into(),
 			data: Some(format!("{:?}", e).into()),
 		})
     }
@@ -87,7 +110,7 @@ where
 
         res.map_err(|e| RpcError {
 			code: ErrorCode::ServerError(500),
-			message: "Something went wrong".into(),
+			message: "Error during requesting Runtime API".into(),
 			data: Some(format!("{:?}", e).into()),
 		})
     }
@@ -95,24 +118,28 @@ where
 	fn estimate_gas_publish(
 		&self,
 		at: Option<<Block as BlockT>::Hash>,
-		module_bc: Vec<u8>
-	) -> Result<u64> {
+		account: AccountId,
+		module_bc: Vec<u8>,
+		gas_limit: u64,
+	) -> Result<Estimation> {
 		let api = self.client.runtime_api();
 		let at = BlockId::hash(at.unwrap_or_else(||
 			// If the block hash is not supplied assume the best block.
 			self.client.info().best_hash
 		));
 
-        let res = api.estimate_gas_publish(&at, module_bc).map_err(|e| RpcError {
+        let res = api.estimate_gas_publish(&at, account, module_bc, gas_limit).map_err(|e| RpcError {
 			code: ErrorCode::ServerError(500),
-			message: "Something went wrong".into(),
+			message: "Error during requesting Runtime API".into(),
 			data: Some(format!("{:?}", e).into()),
 		})?;
 
-		res.map_err(|e| RpcError {
+		let mvm_estimation = res.map_err(|e| RpcError {
 			code: ErrorCode::ServerError(500),
-			message: "Something went wrong".into(),
+			message: "Error during publishing module for estimation".into(),
 			data: Some(format!("{:?}", e).into()),
-		})
+		})?;
+
+		Ok(Estimation::from(mvm_estimation))
 	}
 }

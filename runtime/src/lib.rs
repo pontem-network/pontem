@@ -44,7 +44,7 @@ use pallet_transaction_payment::CurrencyAdapter;
 /// Import the Move-pallet.
 pub use sp_mvm;
 pub use sp_mvm::gas::{GasWeightMapping};
-pub use sp_mvm_rpc_runtime;
+pub use sp_mvm_rpc_runtime::types::MVMApiEstimation;
 
 /// An index to a block.
 pub type BlockNumber = u32;
@@ -480,7 +480,7 @@ impl_runtime_apis! {
         }
     }
 
-    impl sp_mvm_rpc_runtime::MVMApiRuntime<Block> for Runtime {
+    impl sp_mvm_rpc_runtime::MVMApiRuntime<Block, AccountId> for Runtime {
 		// Convert Weight to Gas.
         fn gas_to_weight(gas_limit: u64) -> Weight {
              <Runtime as sp_mvm::Config>::GasWeightMapping::gas_to_weight(gas_limit)
@@ -492,9 +492,13 @@ impl_runtime_apis! {
         }
 
         // Estimate gas for publish module.
-        fn estimate_gas_publish(module_bc: Vec<u8>) -> Result<u64, sp_runtime::DispatchError> {
-            let vm_result = Mvm::raw_publish_module(module_bc, 1000000, true).map_err(|_| sp_runtime::DispatchError::Other("unknown"))?;
-            Ok(vm_result.gas_used)
+        fn estimate_gas_publish(account: AccountId, module_bc: Vec<u8>, gas_limit: u64) -> Result<MVMApiEstimation, sp_runtime::DispatchError> {
+            let vm_result = Mvm::raw_publish_module(&account, module_bc, gas_limit, true).map_err(|_| sp_runtime::DispatchError::Other("error during VM execution"))?;
+
+            Ok(MVMApiEstimation {
+                gas_used: vm_result.gas_used,
+                status_code: vm_result.status_code as u64,
+            })
         }
     }
 

@@ -6995,6 +6995,8 @@ dependencies = [
  "jsonrpc-core",
  "jsonrpc-core-client",
  "jsonrpc-derive",
+ "parity-scale-codec 2.0.1",
+ "serde",
  "sp-api",
  "sp-blockchain",
  "sp-mvm-rpc-runtime",
@@ -7007,6 +7009,7 @@ name = "sp-mvm-rpc-runtime"
 version = "0.2.2"
 dependencies = [
  "frame-support",
+ "parity-scale-codec 2.0.1",
  "sp-api",
  "sp-mvm",
  "sp-runtime",

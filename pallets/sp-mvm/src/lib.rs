@@ -219,19 +219,8 @@ pub mod pallet {
             let who = ensure_signed(origin)?;
             debug!("executing `publish` with signed {:?}", who);
 
-            // TODO: let vm = Self::try_get_or_create_move_vm()?;
-            //let vm = Self::try_create_move_vm()?;
-            //let gas = Self::get_move_gas_limit(gas_limit)?;
-
-            //let tx = {
-            //    let sender = addr::account_to_bytes(&who);
-            //    debug!("converted sender: {:?}", sender);
-
-            //    ModuleTx::new(module_bc, AccountAddress::new(sender))
-            //};
-
-            //raw_publish_module<AccountId: Encode>(signer: &AccountId, module_bc: Vec<u8>, gas_limit: u64, dry_run: bool)
-            let res = Self::raw_publish_module(module_bc, gas_limit, false)?;
+            // Publish module.
+            let res = Self::raw_publish_module(&who, module_bc, gas_limit, false)?;
             debug!("publish result: {:?}", res);
 
             // produce result with spended gas:
@@ -291,19 +280,19 @@ pub mod pallet {
     const GAS_UNIT_PRICE: u64 = 1;
 
     impl<T: Config> Pallet<T> {
+        
         fn get_move_gas_limit(gas_limit: u64) -> Result<Gas, Error<T>> {
             Gas::new(gas_limit, GAS_UNIT_PRICE).map_err(|_| Error::InvalidGasAmountMaxValue)
         }
 
-        pub fn raw_publish_module(module_bc: Vec<u8>, gas_limit: u64, dry_run: bool) -> Result<VmResult, Error<T>> {
+        pub fn raw_publish_module(account: &T::AccountId, module_bc: Vec<u8>, gas_limit: u64, dry_run: bool) -> Result<VmResult, Error<T>> {
             let vm = Self::try_create_move_vm().map_err(|_| Error::InvalidVMConfig)?;
             let gas = Self::get_move_gas_limit(gas_limit)?;
 
             let tx = {
-                //let sender = addr::account_to_bytes(signer);
-                //debug!("converted sender: {:?}", sender);
-
-                ModuleTx::new(module_bc, CORE_CODE_ADDRESS) //AccountAddress::new(sender))
+                let sender = addr::account_to_bytes(account);
+                debug!("converted sender: {:?}", sender);
+                ModuleTx::new(module_bc, AccountAddress::new(sender))
             };
 
             Ok(vm.publish_module(gas, tx, dry_run))

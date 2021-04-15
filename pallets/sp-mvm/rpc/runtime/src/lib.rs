@@ -3,8 +3,12 @@
 use sp_std::prelude::*;
 use frame_support::weights::Weight;
 
+pub mod types;
+
 sp_api::decl_runtime_apis! {
-	pub trait MVMApiRuntime {
+	pub trait MVMApiRuntime<AccountId> where 
+		AccountId: codec::Codec,
+	{
 		// Convert Weight to Gas.
         fn gas_to_weight(gas_limit: u64) -> Weight;
 
@@ -12,6 +16,6 @@ sp_api::decl_runtime_apis! {
 		fn weight_to_gas(weight: Weight) -> u64;
 
 		// Estimate gas for publish module.
-		fn estimate_gas_publish(module_bc: Vec<u8>) -> Result<u64, sp_runtime::DispatchError>;
+		fn estimate_gas_publish(account: AccountId, module_bc: Vec<u8>, gas_limit: u64) -> Result<types::MVMApiEstimation, sp_runtime::DispatchError>;
 	}
 }
