@@ -39,3 +39,8 @@ run:
 .PHONY: build
 build:
 	WASM_BUILD_TOOLCHAIN=`cat rust-toolchain` cargo build --release
+
+.PHONY: assets
+assets:
+	pushd pallets/sp-mvm/tests/assets && ./build_assets.sh
+	pushd pallets/sp-mvm/tests/banchmark_assets && ./build_assets.sh
