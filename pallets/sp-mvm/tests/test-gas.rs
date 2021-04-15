@@ -33,7 +33,7 @@ fn call_execute_script(
 }
 
 // Check status == out of gas.
-fn check_out_of_gas(index: u8, error: u8, message: Option<&'static str>) {
+fn check_out_of_gas(error: u8, message: Option<&'static str>) {
     assert_eq!(error, 148); // OutOfGas.
     assert_eq!(message, Some("OutOfGas"));
 }
@@ -52,12 +52,12 @@ fn publish_std_gas_limit() {
         let err = res.unwrap_err();
 
         if let DispatchError::Module {
-            index,
+            index: _,
             error,
             message,
         } = err.error
         {
-            check_out_of_gas(index, error, message)
+            check_out_of_gas(error, message)
         } else {
             panic!("unknown error")
         }
@@ -78,12 +78,12 @@ fn publish_gas_limit() {
         let err = res.unwrap_err();
 
         if let DispatchError::Module {
-            index,
+            index: _,
             error,
             message,
         } = err.error
         {
-            check_out_of_gas(index, error, message)
+            check_out_of_gas(error, message)
         } else {
             panic!("unknown error")
         }
@@ -105,12 +105,12 @@ fn execute_gas_limit() {
         let err = res.unwrap_err();
 
         if let DispatchError::Module {
-            index,
+            index: _,
             error,
             message,
         } = err.error
         {
-            check_out_of_gas(index, error, message)
+            check_out_of_gas(error, message)
         } else {
             panic!("unknown error");
         }
