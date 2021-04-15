@@ -1,5 +1,5 @@
 [package]
-name = "banchmark_assets"
+name = "benchmark_assets"
 dependencies = [
     { git = "https://github.com/pontem-network/move-stdlib" }
 ]

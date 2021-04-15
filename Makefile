@@ -43,4 +43,4 @@ build:
 .PHONY: assets
 assets:
 	pushd pallets/sp-mvm/tests/assets && ./build_assets.sh
-	pushd pallets/sp-mvm/tests/banchmark_assets && ./build_assets.sh
+	pushd pallets/sp-mvm/tests/benchmark_assets && ./build_assets.sh
