@@ -34,7 +34,6 @@ fn call_execute_script(
 
 // Check status == out of gas.
 fn check_out_of_gas(index: u8, error: u8, message: Option<&'static str>) {
-    assert_eq!(index, 0);
     assert_eq!(error, 148); // OutOfGas.
     assert_eq!(message, Some("OutOfGas"));
 }
@@ -94,7 +93,7 @@ fn publish_gas_limit() {
 #[test]
 fn execute_gas_limit() {
     new_test_ext().execute_with(|| {
-        const GAS_LIMIT: u64 = 100_000;
+        const GAS_LIMIT: u64 = 500_000;
 
         let origin = origin_ps_acc();
         let signer = Origin::signed(origin);

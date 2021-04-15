@@ -1,43 +1,48 @@
 #![allow(dead_code)]
 
-use sp_mvm::{Module, Trait, gas};
+use sp_mvm::gas;
 use sp_core::H256;
 use sp_std::convert::TryFrom;
 use frame_system as system;
 use frame_support::{
-    impl_outer_origin, impl_outer_event, parameter_types,
+    parameter_types,
     weights::{Weight, constants::WEIGHT_PER_SECOND},
 };
 use frame_support::traits::{OnInitialize, OnFinalize};
 use sp_runtime::traits::{BlakeTwo256, IdentityLookup};
-use sp_runtime::{testing::Header, Perbill};
+use sp_runtime::{testing::Header};
 use move_vm::data::Oracle;
 
-impl_outer_origin! {
-    pub enum Origin for Test {}
-    // pub enum Origin for Test where system = frame_system {}
-}
+type UncheckedExtrinsic = frame_system::mocking::MockUncheckedExtrinsic<Test>;
+type Block = frame_system::mocking::MockBlock<Test>;
 
-impl_outer_event! {
-    pub enum TestEvent for Test {
-        sp_mvm<T>,
-        system<T>,
+// Configure a mock runtime to test the pallet.
+frame_support::construct_runtime!(
+    pub enum Test where
+        Block = Block,
+        NodeBlock = Block,
+        UncheckedExtrinsic = UncheckedExtrinsic,
+    {
+        System: frame_system::{Module, Call, Config, Storage, Event<T>},
+        Timestamp: timestamp::{Module, Call, Storage, Inherent},
+        Mvm: sp_mvm::{Module, Call, Storage, Event<T>},
+        // Balances: pallet_balances::{Module, Call, Storage, Config<T>, Event<T>},
+        // Sudo: pallet_sudo::{Module, Call, Config<T>, Storage, Event<T>},
     }
-}
+);
 
-#[derive(Clone, Eq, PartialEq)]
-pub struct Test;
 parameter_types! {
     pub const BlockHashCount: u64 = 250;
-    pub const MaximumBlockWeight: Weight = 1024;
-    pub const MaximumBlockLength: u32 = 2 * 1024;
-    pub const AvailableBlockRatio: Perbill = Perbill::from_percent(75);
+    pub const SS58Prefix: u8 = 42;
 }
 
-impl system::Trait for Test {
+impl system::Config for Test {
     type BaseCallFilter = ();
+    type BlockWeights = ();
+    type BlockLength = ();
+    type DbWeight = ();
     type Origin = Origin;
-    type Call = ();
+    type Call = Call;
     type Index = u64;
     type BlockNumber = u64;
     type Hash = H256;
@@ -45,21 +50,15 @@ impl system::Trait for Test {
     type AccountId = sp_core::sr25519::Public;
     type Lookup = IdentityLookup<Self::AccountId>;
     type Header = Header;
-    type Event = TestEvent;
+    type Event = Event;
     type BlockHashCount = BlockHashCount;
-    type MaximumBlockWeight = MaximumBlockWeight;
-    type DbWeight = ();
-    type BlockExecutionWeight = ();
-    type ExtrinsicBaseWeight = ();
-    type MaximumExtrinsicWeight = MaximumBlockWeight;
-    type MaximumBlockLength = MaximumBlockLength;
-    type AvailableBlockRatio = AvailableBlockRatio;
     type Version = ();
-    type PalletInfo = ();
+    type PalletInfo = PalletInfo;
     type AccountData = ();
     type OnNewAccount = ();
     type OnKilledAccount = ();
     type SystemWeightInfo = ();
+    type SS58Prefix = SS58Prefix;
 }
 
 // --- gas --- //
@@ -90,7 +89,7 @@ impl gas::GasWeightMapping for MoveVMGasWeightMapping {
 parameter_types! {
     pub const MinimumPeriod: u64 = 5;
 }
-impl timestamp::Trait for Test {
+impl timestamp::Config for Test {
     /// A timestamp: milliseconds since the unix epoch.
     type Moment = u64;
     type OnTimestampSet = ();
@@ -99,12 +98,12 @@ impl timestamp::Trait for Test {
 }
 // ----------------- //
 
-impl Trait for Test {
-    type Event = TestEvent;
+impl sp_mvm::Config for Test {
+    // type Event = TestEvent;
+    type Event = Event;
     type GasWeightMapping = MoveVMGasWeightMapping;
 }
 
-pub type Mvm = Module<Test>;
 pub type Sys = system::Module<Test>;
 pub type Time = timestamp::Module<Test>;
 pub type MoveEvent = sp_mvm::Event<Test>;
@@ -150,7 +149,7 @@ pub fn roll_block_to(n: u64) {
     }
 }
 
-pub fn last_event() -> TestEvent {
+pub fn last_event() -> Event {
     {
         let events = Sys::events();
         println!("events: {:?}", events);

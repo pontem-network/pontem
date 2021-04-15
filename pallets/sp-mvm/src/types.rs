@@ -1,4 +1,5 @@
 use core::convert::{TryInto, TryFrom};
+use move_core_types::identifier::Identifier;
 use sp_std::prelude::*;
 use codec::{Encode, Decode};
 use crate::addr::address_to_account;
@@ -76,6 +77,22 @@ pub struct MoveStructTag<AccountId: Decode /* TryFrom<AccountAddress> */> {
 
     // TODO: fix recursion on types (MoveTypeTag in MoveTypeTag)
     pub ty_params: Vec<()>,
+}
+
+impl<AccountId: Decode> MoveStructTag<AccountId> {
+    pub fn new(
+        owner: AccountId,
+        module: Identifier,
+        name: Identifier,
+        ty_params: Vec<()>,
+    ) -> Self {
+        Self {
+            owner,
+            module: module.into_string().as_bytes().to_vec(),
+            name: name.into_string().as_bytes().to_vec(),
+            ty_params,
+        }
+    }
 }
 
 impl<AccountId: Decode> TryFrom<InternalStructTag> for MoveStructTag<AccountId> {
