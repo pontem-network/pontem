@@ -481,13 +481,13 @@ impl_runtime_apis! {
     }
 
     impl sp_mvm_rpc_runtime::MVMApiRuntime<Block, AccountId> for Runtime {
-		// Convert Weight to Gas.
+        // Convert Weight to Gas.
         fn gas_to_weight(gas_limit: u64) -> Weight {
              <Runtime as sp_mvm::Config>::GasWeightMapping::gas_to_weight(gas_limit)
         }
 
-		// Convert Gas to Weight.
-		fn weight_to_gas(weight: Weight) -> u64 {
+        // Convert Gas to Weight.
+        fn weight_to_gas(weight: Weight) -> u64 {
             <Runtime as sp_mvm::Config>::GasWeightMapping::weight_to_gas(weight)
         }
 

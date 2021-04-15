@@ -240,7 +240,12 @@ pub mod pallet {
         }
 
         // TODO: support for multiplay signers.
-        pub fn raw_execute_script(account: &T::AccountId, tx_bc: Vec<u8>, gas_limit: u64, dry_run: bool) -> Result<VmResult, Error<T>> {
+        pub fn raw_execute_script(
+            account: &T::AccountId,
+            tx_bc: Vec<u8>,
+            gas_limit: u64,
+            dry_run: bool,
+        ) -> Result<VmResult, Error<T>> {
             // TODO: some minimum gas for processing transaction from bytes?
             let transaction = Transaction::try_from(&tx_bc[..])
                 .map_err(|_| Error::<T>::TransactionValidationError)?;
@@ -292,7 +297,12 @@ pub mod pallet {
             Ok(res)
         }
 
-        pub fn raw_publish_module(account: &T::AccountId, module_bc: Vec<u8>, gas_limit: u64, dry_run: bool) -> Result<VmResult, Error<T>> {
+        pub fn raw_publish_module(
+            account: &T::AccountId,
+            module_bc: Vec<u8>,
+            gas_limit: u64,
+            dry_run: bool,
+        ) -> Result<VmResult, Error<T>> {
             let vm = Self::try_create_move_vm().map_err(|_| Error::<T>::InvalidVMConfig)?;
             let gas = Self::get_move_gas_limit(gas_limit)?;
 
