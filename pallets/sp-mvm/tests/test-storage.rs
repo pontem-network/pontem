@@ -5,8 +5,8 @@ use move_core_types::language_storage::ModuleId;
 use move_core_types::language_storage::StructTag;
 use move_vm::data::*;
 use move_vm_runtime::data_cache::RemoteCache;
-use serde::Deserialize;
 use sp_mvm::storage::MoveVmStorage;
+use serde::Deserialize;
 
 mod common;
 use common::assets::*;
@@ -18,7 +18,7 @@ struct StoreU64 {
     pub val: u64,
 }
 
-fn call_publish_module(signer: <Test as system::Trait>::AccountId, bc: Vec<u8>, mod_name: &str) {
+fn call_publish_module(signer: <Test as system::Config>::AccountId, bc: Vec<u8>, mod_name: &str) {
     const GAS_LIMIT: u64 = 1_000_000;
 
     let origin = Origin::signed(signer);
@@ -58,7 +58,7 @@ fn call_execute_script(origin: Origin) {
         .get_resource(&origin_move_addr(), &tag)
         .unwrap()
         .unwrap();
-    let store: StoreU64 = lcs::from_bytes(&blob).unwrap();
+    let store: StoreU64 = bcs::from_bytes(&blob).unwrap();
     assert_eq!(42, store.val);
 }
 

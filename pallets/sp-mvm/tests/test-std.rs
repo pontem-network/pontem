@@ -1,3 +1,4 @@
+use std::convert::TryInto;
 use codec::Encode;
 use frame_system as system;
 use frame_support::assert_ok;
@@ -10,12 +11,15 @@ use move_core_types::language_storage::StructTag;
 use move_vm::data::*;
 
 use sp_mvm::storage::MoveVmStorage;
-use sp_mvm::event::MoveRawEvent as RawEvent;
+// use sp_mvm::event::MoveRawEvent as RawEvent;
+use sp_mvm::Event;
 
 mod common;
 use common::assets::*;
 use common::mock::*;
 use common::utils::*;
+use sp_mvm::types::MoveStructTag;
+use sp_mvm::types::MoveTypeTag;
 
 fn call_publish_module_with_origin(origin: Origin, bc: Vec<u8>) {
     const GAS_LIMIT: u64 = 1_000_000;
@@ -26,7 +30,7 @@ fn call_publish_module_with_origin(origin: Origin, bc: Vec<u8>) {
     assert_ok!(result);
 }
 
-fn call_publish_module(signer: <Test as system::Trait>::AccountId, bc: Vec<u8>, mod_name: &str) {
+fn call_publish_module(signer: <Test as system::Config>::AccountId, bc: Vec<u8>, mod_name: &str) {
     let origin = Origin::signed(signer);
     call_publish_module_with_origin(origin, bc.clone());
 
@@ -34,7 +38,7 @@ fn call_publish_module(signer: <Test as system::Trait>::AccountId, bc: Vec<u8>, 
     check_storage(signer, bc, mod_name);
 }
 
-fn check_storage(signer: <Test as system::Trait>::AccountId, bc: Vec<u8>, mod_name: &str) {
+fn check_storage(signer: <Test as system::Config>::AccountId, bc: Vec<u8>, mod_name: &str) {
     // check storage:
     let module_id = ModuleId::new(to_move_addr(signer), Identifier::new(mod_name).unwrap());
     let storage = Mvm::move_vm_storage();
@@ -106,37 +110,55 @@ fn execute_script() {
         call_execute_script(Origin::signed(origin));
 
         // construct event: that should be emitted in the method call directly above
-        let tt = TypeTag::Struct(StructTag {
-            address: to_move_addr(origin),
-            module: Identifier::new(proxy.name()).unwrap(),
-            name: Identifier::new("U64").unwrap(),
-            type_params: Vec::with_capacity(0),
-        });
+        // let ty_tag: types::MoveTypeTag<T::AccountId> = self.ty_tag.try_into()?;
+        // let tt: MoveTypeTag<_> = TypeTag::Struct(StructTag {
+        //     address: to_move_addr(origin),
+        //     module: Identifier::new(proxy.name()).unwrap(),
+        //     name: Identifier::new("U64").unwrap(),
+        //     type_params: Vec::with_capacity(0),
+        // })
+        // .try_into()
+        // .unwrap();
+        let tt = MoveTypeTag::Struct(MoveStructTag::new(
+            origin,
+            Identifier::new(proxy.name()).unwrap(),
+            Identifier::new("U64").unwrap(),
+            Vec::with_capacity(0),
+        ));
+
         let expected = vec![
             // one for user::Proxy -> std::Event (`Event::emit`)
-            RawEvent::Event(
-                to_move_addr(origin),
+            Event::Event(
+                origin,
+                // FIXME:
                 tt.encode(),
+                // vec![],
                 42u64.to_le_bytes().to_vec(),
                 None,
             )
             .into(),
             // and one for user::Proxy -> std::Event (`EventProxy::emit_event`)
-            RawEvent::Event(
-                to_move_addr(origin),
+            Event::Event(
+                origin,
+                // FIXME:
                 tt.encode(),
+                // vec![],
                 42u64.to_le_bytes().to_vec(),
-                Some(ModuleId::new(
-                    to_move_addr(origin),
-                    Identifier::new(proxy.name()).unwrap(),
-                )),
+                Some(
+                    ModuleId::new(to_move_addr(origin), Identifier::new(proxy.name()).unwrap())
+                        .try_into()
+                        .unwrap(),
+                ),
             )
             .into(),
         ];
 
         expected.into_iter().for_each(|expected| {
             // iterate through array of `EventRecord`s
-            assert!(Sys::events().iter().any(|rec| rec.event == expected))
+            assert!(Sys::events().iter().any(|rec| {
+                // TODO: compare only required fields
+                rec.event == expected
+            }))
         })
     });
 }
