@@ -51,6 +51,15 @@ pub trait MVMApiRpc<BlockHash, AccountId> {
 		module_bc: Vec<u8>,
 		gas_limit: u64,
 	) -> Result<Estimation>;
+
+	#[rpc(name= "mvm_estimateGasExecute")]
+	fn estimate_gas_execute(
+		&self,
+		at: Option<BlockHash>,
+		account: AccountId,
+		tx_bc: Vec<u8>,
+		gas_limit: u64,
+	) -> Result<Estimation>;
 }
 
 pub struct MVMApi<C, P> {
@@ -137,6 +146,34 @@ where
 		let mvm_estimation = res.map_err(|e| RpcError {
 			code: ErrorCode::ServerError(500),
 			message: "Error during publishing module for estimation".into(),
+			data: Some(format!("{:?}", e).into()),
+		})?;
+
+		Ok(Estimation::from(mvm_estimation))
+	}
+
+	fn estimate_gas_execute(
+		&self,
+		at: Option<<Block as BlockT>::Hash>,
+		account: AccountId,
+		tx_bc: Vec<u8>,
+		gas_limit: u64,
+	) -> Result<Estimation> {
+		let api = self.client.runtime_api();
+		let at = BlockId::hash(at.unwrap_or_else(||
+			// If the block hash is not supplied assume the best block.
+			self.client.info().best_hash
+		));
+
+        let res = api.estimate_gas_execute(&at, account, tx_bc, gas_limit).map_err(|e| RpcError {
+			code: ErrorCode::ServerError(500),
+			message: "Error during requesting Runtime API".into(),
+			data: Some(format!("{:?}", e).into()),
+		})?;
+
+		let mvm_estimation = res.map_err(|e| RpcError {
+			code: ErrorCode::ServerError(500),
+			message: "Error during script execution for estimation".into(),
 			data: Some(format!("{:?}", e).into()),
 		})?;
 
