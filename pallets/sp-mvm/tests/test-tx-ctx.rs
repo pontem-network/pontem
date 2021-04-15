@@ -1,3 +1,4 @@
+use serde::Deserialize;
 use frame_system as system;
 use frame_support::assert_ok;
 use move_core_types::identifier::Identifier;
@@ -5,7 +6,6 @@ use move_core_types::language_storage::ModuleId;
 use move_core_types::language_storage::StructTag;
 use move_vm::data::*;
 use move_vm_runtime::data_cache::RemoteCache;
-use serde::Deserialize;
 use sp_mvm::storage::MoveVmStorage;
 
 mod common;

@@ -1,32 +1,18 @@
 #![allow(dead_code)]
 
-// extern crate std_serde as serde;
-
 use sp_mvm::gas;
-use sp_mvm::pallet::{Pallet, Config};
 use sp_core::H256;
 use sp_std::convert::TryFrom;
 use frame_system as system;
 use frame_support::{
-    impl_outer_origin, impl_outer_event, parameter_types,
+    parameter_types,
     weights::{Weight, constants::WEIGHT_PER_SECOND},
 };
 use frame_support::traits::{OnInitialize, OnFinalize};
 use sp_runtime::traits::{BlakeTwo256, IdentityLookup};
-use sp_runtime::{testing::Header, Perbill};
+use sp_runtime::{testing::Header};
 use move_vm::data::Oracle;
 
-// impl_outer_origin! {
-//     pub enum Origin for Test {}
-//     // pub enum Origin for Test where system = frame_system {}
-// }
-
-// impl_outer_event! {
-//     pub enum TestEvent for Test {
-//         sp_mvm<T>,
-//         system<T>,
-//     }
-// }
 
 type UncheckedExtrinsic = frame_system::mocking::MockUncheckedExtrinsic<Test>;
 type Block = frame_system::mocking::MockBlock<Test>;
@@ -119,7 +105,6 @@ impl sp_mvm::Config for Test {
     type GasWeightMapping = MoveVMGasWeightMapping;
 }
 
-// pub type Mvm = sp_mvm::Module<Test>;
 pub type Sys = system::Module<Test>;
 pub type Time = timestamp::Module<Test>;
 pub type MoveEvent = sp_mvm::Event<Test>;
@@ -165,7 +150,6 @@ pub fn roll_block_to(n: u64) {
     }
 }
 
-// pub fn last_event() -> TestEvent {
 pub fn last_event() -> Event {
     {
         let events = Sys::events();

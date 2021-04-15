@@ -5,21 +5,20 @@ use frame_support::assert_ok;
 use move_core_types::account_address::AccountAddress;
 use move_core_types::identifier::Identifier;
 use move_core_types::language_storage::ModuleId;
-use move_vm_runtime::data_cache::RemoteCache;
 use move_core_types::language_storage::TypeTag;
 use move_core_types::language_storage::StructTag;
+use move_vm_runtime::data_cache::RemoteCache;
 use move_vm::data::*;
 
 use sp_mvm::storage::MoveVmStorage;
-// use sp_mvm::event::MoveRawEvent as RawEvent;
+use sp_mvm::types::MoveStructTag;
+use sp_mvm::types::MoveTypeTag;
 use sp_mvm::Event;
 
 mod common;
 use common::assets::*;
 use common::mock::*;
 use common::utils::*;
-use sp_mvm::types::MoveStructTag;
-use sp_mvm::types::MoveTypeTag;
 
 fn call_publish_module_with_origin(origin: Origin, bc: Vec<u8>) {
     const GAS_LIMIT: u64 = 1_000_000;
@@ -110,15 +109,6 @@ fn execute_script() {
         call_execute_script(Origin::signed(origin));
 
         // construct event: that should be emitted in the method call directly above
-        // let ty_tag: types::MoveTypeTag<T::AccountId> = self.ty_tag.try_into()?;
-        // let tt: MoveTypeTag<_> = TypeTag::Struct(StructTag {
-        //     address: to_move_addr(origin),
-        //     module: Identifier::new(proxy.name()).unwrap(),
-        //     name: Identifier::new("U64").unwrap(),
-        //     type_params: Vec::with_capacity(0),
-        // })
-        // .try_into()
-        // .unwrap();
         let tt = MoveTypeTag::Struct(MoveStructTag::new(
             origin,
             Identifier::new(proxy.name()).unwrap(),
@@ -128,21 +118,11 @@ fn execute_script() {
 
         let expected = vec![
             // one for user::Proxy -> std::Event (`Event::emit`)
-            Event::Event(
-                origin,
-                // FIXME:
-                tt.encode(),
-                // vec![],
-                42u64.to_le_bytes().to_vec(),
-                None,
-            )
-            .into(),
+            Event::Event(origin, tt.encode(), 42u64.to_le_bytes().to_vec(), None).into(),
             // and one for user::Proxy -> std::Event (`EventProxy::emit_event`)
             Event::Event(
                 origin,
-                // FIXME:
                 tt.encode(),
-                // vec![],
                 42u64.to_le_bytes().to_vec(),
                 Some(
                     ModuleId::new(to_move_addr(origin), Identifier::new(proxy.name()).unwrap())
