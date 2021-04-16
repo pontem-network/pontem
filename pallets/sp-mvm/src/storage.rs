@@ -48,7 +48,6 @@ impl<T: StorageMap<Vec<u8>, Vec<u8>, Query = Option<Vec<u8>>>> Storage
 #[cfg(not(feature = "no-vm-static"))]
 pub mod boxed {
     use sp_std::prelude::*;
-
     pub type VmStorageAdapter = VmStorageBoxAdapter;
 
     /// Vm storage boxed adapter for native storage
@@ -62,6 +61,7 @@ pub mod boxed {
     where
         T: super::StorageMap<Vec<u8>, Vec<u8>, Query = Option<Vec<u8>>>,
     {
+        #![allow(clippy::redundant_closure)]
         VmStorageBoxAdapter {
             f_get: Box::new(|key: &[u8]| T::get(key)),
             f_insert: Box::new(|key, value| T::insert(key, value)),
