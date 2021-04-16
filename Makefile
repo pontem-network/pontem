@@ -5,6 +5,8 @@ init:
 .PHONY: check
 check:
 	SKIP_WASM_BUILD=1 cargo check --all
+	SKIP_WASM_BUILD=1 cargo check --all --tests
+	pushd node && cargo check --features=runtime-benchmarks; popd
 
 .PHONY: clippy
 clippy:

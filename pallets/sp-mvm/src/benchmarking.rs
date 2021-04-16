@@ -259,6 +259,7 @@ mod store {
     use sp_std::prelude::*;
 
     #[derive(Serialize)]
+    #[serde(crate = "serde_alt")]
     pub struct Container {
         inner_1: Inner,
         inner_2: Inner,
@@ -267,6 +268,7 @@ mod store {
     }
 
     #[derive(Serialize)]
+    #[serde(crate = "serde_alt")]
     pub struct Inner {
         val: bool,
         val_1: u128,

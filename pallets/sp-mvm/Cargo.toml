@@ -64,8 +64,10 @@ sp-runtime = { default-features = false, version = "3.0.0" }
 
 sp-io = { default-features = false, version = "3.0.0" }
 
-serde = { version = "1", default-features = false, package = "alt_serde", features = ["derive", "alloc"], optional = true }
-[dependencies.bcs]
+# serde is for lcs/bcs only
+# used for benchmarking (runtime, std, no-std)
+serde-alt = { version = "1", default-features = false, package = "alt_serde", features = ["derive", "alloc"], optional = true }
+[dependencies.bcs-alt]
 package = "bcs"
 default-features = false
 git = "https://github.com/pontem-network/sp-move-vm.git"
@@ -74,15 +76,10 @@ optional = true
 
 
 [dev-dependencies]
-# serde is for lcs only
-# serde = "1.0.101"
-# serde = { version = "1", default-features = false, package = "alt_serde", features = ["derive", "alloc"] }
-
-# [dev-dependencies.lcs]
-# package = "bcs"
-# default-features = false
-# git = "https://github.com/pontem-network/sp-move-vm.git"
-# branch = "milestone-3"
+# serde is for lcs/bcs and construct_runtime
+# used for tests (std) only
+serde = { package = "serde", version = "1.0.119" }
+bcs = { package = "bcs", version = "0.1" }
 
 
 [features]
@@ -102,9 +99,6 @@ std = [
     "frame-system/std",
     "frame-benchmarking/std",
     "move-vm-types/std",
-    # dev deps:
-    # "lcs/std",
-    # "serde/std",
     "sp-io/std",
 ]
 
@@ -116,8 +110,8 @@ runtime-benchmarks = [
     "timestamp/runtime-benchmarks",
     "sp-runtime/runtime-benchmarks",
     # "frame-system-benchmarking",
-    "serde",
-    "bcs"
+    "serde-alt",
+    "bcs-alt"
 ]
 
 # Note: frame-support `try-runtime` feature is released after v3.
