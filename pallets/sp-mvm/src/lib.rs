@@ -3,6 +3,13 @@
 #[macro_use]
 extern crate log;
 
+#[cfg(feature = "runtime-benchmarks")]
+extern crate serde_alt as serde;
+#[cfg(feature = "runtime-benchmarks")]
+extern crate bcs_alt as bcs;
+#[cfg(feature = "runtime-benchmarks")]
+mod benchmarking;
+
 /// Edit this file to define custom logic or remove it if it is not needed.
 /// Learn more about FRAME and the core library of Substrate FRAME pallets:
 /// <https://substrate.dev/docs/en/knowledgebase/runtime/frame>
@@ -15,14 +22,6 @@ pub mod oracle;
 pub mod result;
 pub mod storage;
 pub mod types;
-
-// #[cfg(test)]
-// mod mock;
-// #[cfg(test)]
-// mod tests;
-
-#[cfg(feature = "runtime-benchmarks")]
-mod benchmarking;
 
 #[frame_support::pallet]
 pub mod pallet {

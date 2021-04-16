@@ -5,6 +5,8 @@ init:
 .PHONY: check
 check:
 	SKIP_WASM_BUILD=1 cargo check --all
+	SKIP_WASM_BUILD=1 cargo check --all --tests
+	pushd node && cargo check --features=runtime-benchmarks; popd
 
 .PHONY: clippy
 clippy:
@@ -39,3 +41,8 @@ run:
 .PHONY: build
 build:
 	WASM_BUILD_TOOLCHAIN=`cat rust-toolchain` cargo build --release
+
+.PHONY: assets
+assets:
+	pushd pallets/sp-mvm/tests/assets && ./build_assets.sh
+	pushd pallets/sp-mvm/tests/benchmark_assets && ./build_assets.sh
