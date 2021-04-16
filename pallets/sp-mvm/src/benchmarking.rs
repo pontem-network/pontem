@@ -20,13 +20,6 @@ use super::*;
 use super::Module as Mvm;
 
 benchmarks! {
-    do_something {
-        let s in 0 .. 100;
-        let caller: T::AccountId = whitelisted_caller();
-    }: _(RawOrigin::Signed(caller), s)
-    verify {
-        assert_eq!(Something::<T>::get(), Some(s));
-    }
     publish_std {
         let s in 0 .. 100;
         let stdlib_modules = stdlib()
