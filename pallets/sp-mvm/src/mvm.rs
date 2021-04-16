@@ -1,5 +1,5 @@
-use sp_std::prelude::*;
-use frame_support::storage::StorageMap;
+// use sp_std::prelude::*;
+// use frame_support::storage::StorageMap;
 use move_vm::types::Gas;
 use move_vm::types::ScriptTx;
 use move_vm::data::EventHandler;
@@ -26,16 +26,22 @@ pub trait TryCreateMoveVm<T> {
     fn try_create_move_vm() -> Result<Self::Vm, Self::Error>;
 }
 
+#[cfg(not(feature = "no-vm-static"))]
 pub use vm_static::*;
+#[cfg(not(feature = "no-vm-static"))]
 mod vm_static {
     use move_vm::data::ExecutionContext;
 
     use crate::oracle::DummyOracle;
+    use crate::storage::boxed::*;
+    use super::{
+        EventHandler, Gas, Mvm, CreateMoveVm, ScriptTx, TryCreateMoveVm, DefaultEventHandler,
+    };
 
-    use super::*;
+    /// Default type of Move VM implementation
+    pub type DefaultVm<E, O> = Mvm<VmStorageAdapter, E, O>;
 
-    pub type VmWrapperTy<Storage> =
-        VmWrapper<DefaultVm<Storage, DefaultEventHandler, DummyOracle>>;
+    pub type VmWrapperTy = VmWrapper<DefaultVm<DefaultEventHandler, DummyOracle>>;
 
     /// New-type with unsafe impl Send + Sync.
     /// This is just wrapper around VM without Pin or ref-counting,
@@ -63,10 +69,7 @@ mod vm_static {
         }
     }
 
-    impl<Storage> move_vm::Vm for VmWrapperTy<Storage>
-    where
-        Storage: StorageMap<Vec<u8>, Vec<u8>, Query = Option<Vec<u8>>>,
-    {
+    impl move_vm::Vm for VmWrapperTy {
         #[inline]
         fn publish_module(
             &self,

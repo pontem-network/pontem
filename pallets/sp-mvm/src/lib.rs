@@ -28,6 +28,8 @@ pub mod pallet {
     // Clippy didn't love sp- macros
     #![allow(clippy::unused_unit)]
 
+    use crate::oracle::DummyOracle;
+
     use super::mvm;
     use super::gas;
     use super::addr;
@@ -50,7 +52,6 @@ pub mod pallet {
     use support::pallet_prelude::*;
     use support::dispatch::DispatchResultWithPostInfo;
     use codec::{FullCodec, FullEncode};
-    // use codec::Encode;
 
     use move_vm::Vm;
     use move_vm::mvm::Mvm;
@@ -58,7 +59,6 @@ pub mod pallet {
     use move_vm::types::Gas;
     use move_vm::types::ModuleTx;
     use move_vm::types::Transaction;
-    // use move_core_types::language_storage::ModuleId;
     use move_core_types::account_address::AccountAddress;
     use move_core_types::language_storage::CORE_CODE_ADDRESS;
 
@@ -73,12 +73,11 @@ pub mod pallet {
     }
 
     #[pallet::pallet]
-    #[pallet::generate_store(pub(super) trait Store)]
+    #[pallet::generate_store(pub trait Store)]
     pub struct Pallet<T>(_);
 
     // The pallet's runtime storage items.
     // https://substrate.dev/docs/en/knowledgebase/runtime/storage
-
     /// Move VM storage. Map with already encoded key-values pairs:
     /// - Key: `AccessPath` as bytes
     /// - Value: `WriteSet` as bytes
@@ -91,8 +90,10 @@ pub mod pallet {
     // https://substrate.dev/docs/en/knowledgebase/runtime/events
     #[pallet::event]
     #[pallet::metadata(T::AccountId = "AccountId")]
-    #[pallet::generate_deposit(pub(super) fn deposit_event)]
+    #[pallet::generate_deposit(pub fn deposit_event)]
     pub enum Event<T: Config> {
+        // Event documentation should end with an array that provides descriptive names for event
+        // parameters. [something, who]
 
         // Event documentation should end with an array that provides descriptive names for event parameters.
         /// Event provided by Move VM
@@ -113,15 +114,11 @@ pub mod pallet {
         StdModulePublished,
     }
 
-    #[pallet::hooks]
-    impl<T: Config> Hooks<BlockNumberFor<T>> for Pallet<T> {}
-
     // Dispatchable functions allows users to interact with the pallet and invoke state changes.
     // These functions materialize as "extrinsics", which are often compared to transactions.
     // Dispatchable functions must be annotated with a weight and must return a DispatchResult.
     #[pallet::call]
     impl<T: Config> Pallet<T> {
-
         // #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
         #[pallet::weight(T::GasWeightMapping::gas_to_weight(*gas_limit))]
         pub fn execute(
@@ -133,8 +130,7 @@ pub mod pallet {
             let transaction = Transaction::try_from(&tx_bc[..])
                 .map_err(|_| Error::<T>::TransactionValidationError)?;
 
-            // TODO: let vm = Self::try_get_or_create_move_vm()?;
-            let vm = Self::try_create_move_vm()?;
+            let vm = Self::get_vm()?;
             let gas = Self::get_move_gas_limit(gas_limit)?;
 
             let tx = {
@@ -192,8 +188,7 @@ pub mod pallet {
             let who = ensure_signed(origin)?;
             debug!("executing `publish` with signed {:?}", who);
 
-            // TODO: let vm = Self::try_get_or_create_move_vm()?;
-            let vm = Self::try_create_move_vm()?;
+            let vm = Self::get_vm()?;
             let gas = Self::get_move_gas_limit(gas_limit)?;
 
             let tx = {
@@ -226,8 +221,7 @@ pub mod pallet {
             ensure_root(origin)?;
             debug!("executing `publish STD` with root");
 
-            // TODO: let vm = Self::try_get_or_create_move_vm()?;
-            let vm = Self::try_create_move_vm()?;
+            let vm = Self::get_vm()?;
             // TODO: use gas_used
             let mut _gas_used = 0;
             let mut results = Vec::with_capacity(modules.len());
@@ -256,8 +250,31 @@ pub mod pallet {
 
             Ok(result)
         }
+    }
 
-        // TODO: on_finalize after VM static init
+    #[pallet::hooks]
+    impl<T: Config> Hooks<BlockNumberFor<T>> for Pallet<T> {
+        fn on_finalize(_n: BlockNumberFor<T>) {
+            Self::get_vm().unwrap().clear();
+        }
+    }
+
+    // get VM methods unification
+    impl<T: Config> Pallet<T> {
+        #[cfg(not(feature = "no-vm-static"))]
+        fn get_vm() -> Result<&'static VmWrapperTy, Error<T>> {
+            let vm = Self::try_get_or_create_move_vm()?;
+            Ok(vm)
+        }
+
+        #[cfg(feature = "no-vm-static")]
+        fn get_vm() -> Result<
+            DefaultVm<VMStorage<T>, event::DefaultEventHandler, oracle::DummyOracle>,
+            Error<T>,
+        > {
+            let vm = Self::try_create_move_vm()?;
+            Ok(vm)
+        }
     }
 
     const GAS_UNIT_PRICE: u64 = 1;
@@ -290,6 +307,7 @@ pub mod pallet {
         }
     }
 
+    #[cfg(feature = "no-vm-static")]
     impl<T: Config> mvm::TryCreateMoveVm<T> for Pallet<T> {
         type Vm =
             Mvm<VmStorageAdapter<VMStorage<T>>, event::DefaultEventHandler, oracle::DummyOracle>;
@@ -312,18 +330,104 @@ pub mod pallet {
         }
     }
 
+    #[cfg(not(feature = "no-vm-static"))]
+    impl<T: Config> mvm::TryCreateMoveVm<T> for Pallet<T> {
+        type Vm = Mvm<
+            super::storage::boxed::VmStorageBoxAdapter,
+            event::DefaultEventHandler,
+            oracle::DummyOracle,
+        >;
+        type Error = Error<T>;
+
+        fn try_create_move_vm() -> Result<Self::Vm, Self::Error> {
+            use super::storage::boxed::*;
+
+            trace!("MoveVM created");
+            let oracle = Default::default();
+            Mvm::new(
+                VmStorageBoxAdapter::from(Self::move_vm_storage()),
+                Self::create_move_event_handler(),
+                oracle,
+            )
+            .map_err(|err| {
+                error!("{}", err);
+                Error::InvalidVMConfig
+            })
+        }
+    }
+
     // TODO: FIXME: rewrite static VM init
+    // frame_support::storage::StorageMap
+    // type Vm = mvm::VmWrapperTy<VMStorage<T>>;
+
+    #[cfg(not(feature = "no-vm-static"))]
+    impl<T: Config> TryGetStaticMoveVm<DefaultEventHandler> for Pallet<T> {
+        // type Vm = VmWrapperTy<super::storage::boxed::VmStorageBoxAdapter>;
+        type Vm = VmWrapper<
+            Mvm<super::storage::boxed::VmStorageBoxAdapter, DefaultEventHandler, DummyOracle>,
+        >;
+        type Error = Error<T>;
+
+        fn try_get_or_create_move_vm() -> Result<&'static Self::Vm, Self::Error> {
+            // use super::storage::boxed::VmStorageBoxAdapter;
+            use super::storage::boxed::*;
+
+            #[cfg(not(feature = "std"))]
+            use once_cell::race::OnceBox as OnceCell;
+            #[cfg(feature = "std")]
+            use once_cell::sync::OnceCell;
+
+            static VM: OnceCell<VmWrapperTy> = OnceCell::new();
+            VM.get_or_try_init(|| {
+                #[cfg(feature = "std")]
+                println!("Static VM initializing");
+
+                #[cfg(feature = "std")]
+                {
+                    Self::try_create_move_vm_wrapped()
+                }
+                #[cfg(not(feature = "std"))]
+                Self::try_create_move_vm_wrapped().map(Box::from)
+            })
+        }
+    }
+
+    // type AnyVMStorage = VMStorage<Any>;
+    // type AnyVMStorage = VMStorage<StorageMap<_GeneratedPrefixForStorageVMStorage<>, Blake2_128Concat, Vec<u8>, Vec<u8>>>;
+
     // impl<T: Config> mvm::TryGetStaticMoveVm<event::DefaultEventHandler> for Pallet<T> {
-    //     type Vm = mvm::VmWrapperTy<VMStorage<T>>;
+    //     // type Vm = mvm::VmWrapperTy<<Pallet<T> as Store>::VMStorage>;
+    //     type Vm = VmWrapperTy<AnyVMStorage>;
     //     type Error = Error<T>;
 
     //     fn try_get_or_create_move_vm() -> Result<&'static Self::Vm, Self::Error> {
+
     //         #[cfg(not(feature = "std"))]
     //         use once_cell::race::OnceBox as OnceCell;
     //         #[cfg(feature = "std")]
     //         use once_cell::sync::OnceCell;
 
-    //         static VM: OnceCell<mvm::VmWrapperTy<VMStorage<T>>> = OnceCell::new();
+    //         // unsafe {
+    //         //     static mut VM: Option<Self::Vm> = None;
+    //         //     if VM.is_none() {
+    //         //         // VM = Some(Self::try_create_move_vm_wrapped()?);
+    //         //         VM = None;
+    //         //     }
+
+    //         //     if let Some(vm) = VM {
+    //         //         return Ok(vm);
+    //         //     } else {
+    //         //         unreachable!();
+    //         //     }
+    //         // }
+
+    //         // static VM: Option<Self::Vm> = None;
+    //         // return Ok(VM);
+
+    //         // Self::try_create_move_vm_wrapped()
+    //         // Err(Error::<T>::NumConversionError)
+
+    //         static VM: OnceCell<VmWrapperTy<AnyVMStorage>> = OnceCell::new();
     //         // static VM: OnceCell<Self::Vm> = OnceCell::new();
     //         VM.get_or_try_init(|| {
     //             #[cfg(feature = "std")]

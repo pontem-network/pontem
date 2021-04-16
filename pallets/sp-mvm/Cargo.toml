@@ -84,6 +84,7 @@ bcs = { package = "bcs", version = "0.1" }
 
 [features]
 default = ["std"]
+no-vm-static = []
 std = [
     "log/std",
     "once_cell/std",
@@ -91,6 +92,7 @@ std = [
     "move-vm/std",
     "move-vm-runtime/std",
     "move-core-types/std",
+    "sp-io/std",
     "sp-std/std",
     "sp-core/std",
     "sp-runtime/std",
@@ -99,7 +101,7 @@ std = [
     "frame-system/std",
     "frame-benchmarking/std",
     "move-vm-types/std",
-    "sp-io/std",
+    "timestamp/std"
 ]
 
 runtime-benchmarks = [
