@@ -5,12 +5,13 @@ init:
 .PHONY: check
 check:
 	SKIP_WASM_BUILD=1 cargo check --all
+	SKIP_WASM_BUILD=1 cargo check --all --tests
+	pushd node && cargo check --features=runtime-benchmarks; popd
 
 .PHONY: clippy
 clippy:
-	# Build with target=wasm32 as workaround for substrate issue
-	pushd pallets/sp-mvm && \
-	cargo clippy -p=sp-mvm --target=wasm32-unknown-unknown --no-default-features
+	pushd pallets/sp-mvm && SKIP_WASM_BUILD=1 cargo clippy
+	pushd pallets/sp-mvm && cargo clippy -p=sp-mvm --target=wasm32-unknown-unknown --no-default-features
 
 .PHONY: bench
 bench:
@@ -39,3 +40,8 @@ run:
 .PHONY: build
 build:
 	WASM_BUILD_TOOLCHAIN=`cat rust-toolchain` cargo build --release
+
+.PHONY: assets
+assets:
+	pushd pallets/sp-mvm/tests/assets && ./build_assets.sh
+	pushd pallets/sp-mvm/tests/benchmark_assets && ./build_assets.sh

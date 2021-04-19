@@ -6995,6 +6995,8 @@ dependencies = [
 name = "sp-mvm"
 version = "0.2.2"
 dependencies = [
+ "alt_serde",
+ "bcs 0.1.1",
  "bcs 0.1.2",
  "frame-benchmarking",
  "frame-support",
