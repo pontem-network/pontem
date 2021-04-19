@@ -43,7 +43,8 @@ use pallet_transaction_payment::CurrencyAdapter;
 
 /// Import the Move-pallet.
 pub use sp_mvm;
-pub use sp_mvm::gas;
+pub use sp_mvm::gas::{GasWeightMapping};
+pub use sp_mvm_rpc_runtime::types::MVMApiEstimation;
 
 /// An index to a block.
 pub type BlockNumber = u32;
@@ -280,7 +281,7 @@ pub const WEIGHT_PER_GAS: u64 = WEIGHT_PER_SECOND / GAS_PER_SECOND;
 pub struct MoveVMGasWeightMapping;
 
 // Just use provided gas.
-impl gas::GasWeightMapping for MoveVMGasWeightMapping {
+impl GasWeightMapping for MoveVMGasWeightMapping {
     fn gas_to_weight(gas: u64) -> Weight {
         gas.saturating_mul(WEIGHT_PER_GAS)
     }
@@ -476,6 +477,39 @@ impl_runtime_apis! {
             len: u32,
         ) -> pallet_transaction_payment::FeeDetails<Balance> {
             TransactionPayment::query_fee_details(uxt, len)
+        }
+    }
+
+    impl sp_mvm_rpc_runtime::MVMApiRuntime<Block, AccountId> for Runtime {
+        // Convert Weight to Gas.
+        fn gas_to_weight(gas_limit: u64) -> Weight {
+             <Runtime as sp_mvm::Config>::GasWeightMapping::gas_to_weight(gas_limit)
+        }
+
+        // Convert Gas to Weight.
+        fn weight_to_gas(weight: Weight) -> u64 {
+            <Runtime as sp_mvm::Config>::GasWeightMapping::weight_to_gas(weight)
+        }
+
+        // Estimate gas for publish module.
+        fn estimate_gas_publish(account: AccountId, module_bc: Vec<u8>, gas_limit: u64) -> Result<MVMApiEstimation, sp_runtime::DispatchError> {
+            // TODO: pass real error.
+            let vm_result = Mvm::raw_publish_module(&account, module_bc, gas_limit, true).map_err(|_| sp_runtime::DispatchError::Other("error during VM execution"))?;
+
+            Ok(MVMApiEstimation {
+                gas_used: vm_result.gas_used,
+                status_code: vm_result.status_code as u64,
+            })
+        }
+
+        // Estimate gas for execute script.
+        fn estimate_gas_execute(account: AccountId, tx_bc: Vec<u8>, gas_limit: u64) -> Result<MVMApiEstimation, sp_runtime::DispatchError> {
+            let vm_result = Mvm::raw_execute_script(&account, tx_bc, gas_limit, true).map_err(|_| sp_runtime::DispatchError::Other("error during VM execution"))?;
+
+            Ok(MVMApiEstimation {
+                gas_used: vm_result.gas_used,
+                status_code: vm_result.status_code as u64,
+            })
         }
     }
 

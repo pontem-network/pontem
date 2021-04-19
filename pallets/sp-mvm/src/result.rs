@@ -41,7 +41,7 @@ pub fn from_status_code_with_gas<T: Config>(
 
 pub fn from_vm_result<T: Config>(vm_result: VmResult) -> DispatchResultWithPostInfo {
     let gas = PostDispatchInfo {
-        actual_weight: Some(vm_result.gas_used),
+        actual_weight: Some(T::GasWeightMapping::gas_to_weight(vm_result.gas_used)),
         pays_fee: Pays::Yes,
     };
 
@@ -79,7 +79,7 @@ pub fn from_vm_results<T: Config>(vm_results: &[VmResult]) -> DispatchResultWith
     }
 
     let gas = PostDispatchInfo {
-        actual_weight: Some(gas_total),
+        actual_weight: Some(T::GasWeightMapping::gas_to_weight(gas_total)),
         pays_fee: Pays::Yes,
     };
 
