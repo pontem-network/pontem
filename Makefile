@@ -10,9 +10,8 @@ check:
 
 .PHONY: clippy
 clippy:
-	# Build with target=wasm32 as workaround for substrate issue
-	pushd pallets/sp-mvm && \
-	cargo clippy -p=sp-mvm --target=wasm32-unknown-unknown --no-default-features
+	pushd pallets/sp-mvm && SKIP_WASM_BUILD=1 cargo clippy
+	pushd pallets/sp-mvm && cargo clippy -p=sp-mvm --target=wasm32-unknown-unknown --no-default-features
 
 .PHONY: bench
 bench:
