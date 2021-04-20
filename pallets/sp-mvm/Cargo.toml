@@ -4,7 +4,7 @@ authors = ["Pontem Network Team <https://pontem.network>"]
 description = "FRAME pallet adding Move-lang support."
 edition = "2018"
 repository = "https://github.com/pontem-network/sp-move"
-version = "0.2.0"
+version = "0.2.2"
 
 [package.metadata.docs.rs]
 targets = ["x86_64-unknown-linux-gnu"]
@@ -15,10 +15,10 @@ version = "0.4"
 default-features = false
 
 [dependencies.codec]
+version = "2.0.0"
 default-features = false
 features = ["derive"]
 package = "parity-scale-codec"
-version = "1.3.4"
 
 
 # Move, addition deps for addrs & results:
@@ -49,40 +49,42 @@ git = "https://github.com/pontem-network/sp-move-vm.git"
 branch = "milestone-3"
 default-features = false
 
-[dev-dependencies.lcs]
+[dependencies]
+once_cell = { default-features = false, version = "1.5.2" }
+# substrate:
+frame-support = { default-features = false, version = "3.0.0" }
+frame-system = { default-features = false, version = "3.0.0" }
+frame-benchmarking = { default-features = false, optional = true, version = '3.1.0' }
+sp-std = { default-features = false, version = "3.0.0" }
+sp-core = { default-features = false, version = "3.0.0" }
+timestamp = { default-features = false, version = "3.0.0", package = "pallet-timestamp" }
+# logging, `sp_runtime::print`:
+sp-runtime = { default-features = false, version = "3.0.0" }
+
+
+sp-io = { default-features = false, version = "3.0.0" }
+
+# serde is for lcs/bcs only
+# used for benchmarking (runtime, std, no-std)
+serde-alt = { version = "1", default-features = false, package = "alt_serde", features = ["derive", "alloc"], optional = true }
+[dependencies.bcs-alt]
 package = "bcs"
 default-features = false
 git = "https://github.com/pontem-network/sp-move-vm.git"
 branch = "milestone-3"
-
-[dependencies]
-frame-support = { default-features = false, version = "2.0.0" }
-frame-system = { default-features = false, version = "2.0.0" }
-
-# corelib, std, structs:
-sp-std = { default-features = false, version = "2.0.0" }
-sp-core = { default-features = false, version = "2.0.0" }
-# calc timestamp for block:
-timestamp = { default-features = false, version = "2.0.0", package = "pallet-timestamp" }
-# logging, `sp_runtime::print`:
-sp-runtime = { default-features = false, version = "2.0.0" }
-
-once_cell = { default-features = false, version = "1.5.2" }
-
-# num-traits = { version = "0.2.8", default-features = false }
-# hex = { default-features = false, version = "=0.4.2", features = ["alloc"] }
+optional = true
 
 
 [dev-dependencies]
-sp-io = { default-features = false, version = "2.0.0" }
-sp-core = { default-features = false, version = "2.0.0" }
-sp-runtime = { default-features = false, version = "2.0.0" }
-# serde is for lcs only
-serde = { version = "1", default-features = false, package = "alt_serde", features = ["derive", "alloc"] }
+# serde is for lcs/bcs and construct_runtime
+# used for tests (std) only
+serde = { package = "serde", version = "1.0.119" }
+bcs = { package = "bcs", version = "0.1" }
 
 
 [features]
-default = [ "std" ]
+default = ["std"]
+no-vm-static = []
 std = [
     "log/std",
     "once_cell/std",
@@ -90,15 +92,30 @@ std = [
     "move-vm/std",
     "move-vm-runtime/std",
     "move-core-types/std",
+    "sp-io/std",
     "sp-std/std",
     "sp-core/std",
     "sp-runtime/std",
     "codec/std",
     "frame-support/std",
     "frame-system/std",
+    "frame-benchmarking/std",
     "move-vm-types/std",
-    # dev deps:
-    "lcs/std",
-    "serde/std",
-    "sp-io/std",
+    "timestamp/std"
 ]
+
+runtime-benchmarks = [
+    "frame-benchmarking",
+    "frame-support/runtime-benchmarks",
+    "frame-system/runtime-benchmarks",
+    # "pallet-balances/runtime-benchmarks",
+    "timestamp/runtime-benchmarks",
+    "sp-runtime/runtime-benchmarks",
+    # "frame-system-benchmarking",
+    "serde-alt",
+    "bcs-alt"
+]
+
+# Note: frame-support `try-runtime` feature is released after v3.
+# Uncomment the following line when `frame-support` version > `3.0.0`.
+# try-runtime = ['frame-support/try-runtime']

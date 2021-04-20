@@ -5,54 +5,54 @@ homepage = 'https://substrate.dev'
 license = 'Unlicense'
 name = 'mv-node-runtime'
 repository = 'https://github.com/substrate-developer-hub/substrate-mv-node/'
-version = '2.0.0'
+version = '3.0.0'
 
 [package.metadata.docs.rs]
 targets = ['x86_64-unknown-linux-gnu']
 
 [build-dependencies]
-wasm-builder-runner = { package = 'substrate-wasm-builder-runner', version = '2.0.0' }
+substrate-wasm-builder = '4.0.0'
 
 [dependencies.codec]
 default-features = false
-features = ['derive']
+features = [ 'derive' ]
 package = 'parity-scale-codec'
-version = '1.3.4'
+version = '2.0.0'
 
 [dependencies]
 hex-literal = { optional = true, version = '0.3.1' }
-serde = { features = ['derive'], optional = true, version = '1.0.101' }
-
-# local dependencies
-sp-mvm = { path = '../pallets/sp-mvm', default-features = false, version = '0' }
-# vm = { path = '../../vm/language/vm', default-features = false }
+serde = { version = "1.0.119", optional = true, features = [ "derive" ] } # / 1.0.101
 
 # Substrate dependencies
-frame-benchmarking = { default-features = false, optional = true, version = '2.0.0' }
-frame-executive = { default-features = false, version = '2.0.0' }
-frame-support = { default-features = false, version = '2.0.0' }
-frame-system = { default-features = false, version = '2.0.0' }
-frame-system-benchmarking = { default-features = false, optional = true, version = '2.0.0' }
-frame-system-rpc-runtime-api = { default-features = false, version = '2.0.0' }
-pallet-aura = { default-features = false, version = '2.0.0' }
-pallet-balances = { default-features = false, version = '2.0.0' }
-pallet-grandpa = { default-features = false, version = '2.0.0' }
-pallet-randomness-collective-flip = { default-features = false, version = '2.0.0' }
-pallet-sudo = { default-features = false, version = '2.0.0' }
-pallet-timestamp = { default-features = false, version = '2.0.0' }
-pallet-transaction-payment = { default-features = false, version = '2.0.0' }
-pallet-transaction-payment-rpc-runtime-api = { default-features = false, version = '2.0.0' }
-sp-api = { default-features = false, version = '2.0.0' }
-sp-block-builder = { default-features = false, version = '2.0.0' }
-sp-consensus-aura = { default-features = false, version = '0.8.0' }
-sp-core = { default-features = false, version = '2.0.0' }
-sp-inherents = { default-features = false, version = '2.0.0' }
-sp-offchain = { default-features = false, version = '2.0.0' }
-sp-runtime = { default-features = false, version = '2.0.0' }
-sp-session = { default-features = false, version = '2.0.0' }
-sp-std = { default-features = false, version = '2.0.0' }
-sp-transaction-pool = { default-features = false, version = '2.0.0' }
-sp-version = { default-features = false, version = '2.0.0' }
+frame-benchmarking = { default-features = false, optional = true, version = '3.0.0' }
+frame-executive = { default-features = false, version = '3.0.0' }
+frame-support = { default-features = false, version = '3.0.0' }
+frame-system = { default-features = false, version = '3.0.0' }
+frame-system-benchmarking = { default-features = false, optional = true, version = '3.0.0' }
+frame-system-rpc-runtime-api = { default-features = false, version = '3.0.0' }
+pallet-aura = { default-features = false, version = '3.0.0' }
+pallet-balances = { default-features = false, version = '3.0.0' }
+pallet-grandpa = { default-features = false, version = '3.0.0' }
+pallet-randomness-collective-flip = { default-features = false, version = '3.0.0' }
+pallet-sudo = { default-features = false, version = '3.0.0' }
+pallet-timestamp = { default-features = false, version = '3.0.0' }
+pallet-transaction-payment = { default-features = false, version = '3.0.0' }
+pallet-transaction-payment-rpc-runtime-api = { default-features = false, version = '3.0.0' }
+sp-api = { default-features = false, version = '3.0.0' }
+sp-block-builder = { default-features = false, version = '3.0.0' }
+sp-consensus-aura = { default-features = false, version = '0.9.0' }
+sp-core = { default-features = false, version = '3.0.0' }
+sp-inherents = { default-features = false, version = '3.0.0' }
+sp-offchain = { default-features = false, version = '3.0.0' }
+sp-runtime = { default-features = false, version = '3.0.0' }
+sp-session = { default-features = false, version = '3.0.0' }
+sp-std = { default-features = false, version = '3.0.0' }
+sp-transaction-pool = { default-features = false, version = '3.0.0' }
+sp-version = { default-features = false, version = '3.0.0' }
+
+# local dependencies
+sp-mvm = { path = '../pallets/sp-mvm', default-features = false, version = '0.2.2' }
+sp-mvm-rpc-runtime = { path = '../pallets/sp-mvm/rpc/runtime', default-features = false, version = '0.2.2' }
 
 [features]
 default = ['std']
@@ -65,16 +65,15 @@ runtime-benchmarks = [
     'pallet-balances/runtime-benchmarks',
     'pallet-timestamp/runtime-benchmarks',
     'sp-runtime/runtime-benchmarks',
+    'sp-mvm/runtime-benchmarks',
 ]
 std = [
-    # 'vm/std',
     'codec/std',
     'serde',
     'frame-executive/std',
     'frame-support/std',
     'frame-system/std',
     'frame-system-rpc-runtime-api/std',
-    'sp-mvm/std',
     'pallet-aura/std',
     'pallet-balances/std',
     'pallet-grandpa/std',
@@ -94,4 +93,5 @@ std = [
     'sp-std/std',
     'sp-transaction-pool/std',
     'sp-version/std',
+    'sp-mvm/std',
 ]
