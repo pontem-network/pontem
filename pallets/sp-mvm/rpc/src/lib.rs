@@ -33,27 +33,27 @@ impl From<MVMApiEstimation> for Estimation {
 #[rpc]
 pub trait MVMApiRpc<BlockHash, AccountId> {
     #[rpc(name = "mvm_gasToWeight")]
-    fn gas_to_weight(&self, at: Option<BlockHash>, gas: u64) -> Result<Weight>;
+    fn gas_to_weight(&self, gas: u64, at: Option<BlockHash>) -> Result<Weight>;
 
     #[rpc(name = "mvm_weightToGas")]
-    fn weight_to_gas(&self, at: Option<BlockHash>, weight: Weight) -> Result<u64>;
+    fn weight_to_gas(&self, weight: Weight, at: Option<BlockHash>) -> Result<u64>;
 
     #[rpc(name = "mvm_estimateGasPublish")]
     fn estimate_gas_publish(
         &self,
-        at: Option<BlockHash>,
         account: AccountId,
         module_bc: Vec<u8>,
         gas_limit: u64,
+        at: Option<BlockHash>,
     ) -> Result<Estimation>;
 
     #[rpc(name = "mvm_estimateGasExecute")]
     fn estimate_gas_execute(
         &self,
-        at: Option<BlockHash>,
         account: AccountId,
         tx_bc: Vec<u8>,
         gas_limit: u64,
+        at: Option<BlockHash>,
     ) -> Result<Estimation>;
 }
 
@@ -78,7 +78,7 @@ where
     C: 'static + ProvideRuntimeApi<Block> + HeaderBackend<Block>,
     C::Api: MVMApiRuntime<Block, AccountId>,
 {
-    fn gas_to_weight(&self, at: Option<<Block as BlockT>::Hash>, gas: u64) -> Result<Weight> {
+    fn gas_to_weight(&self, gas: u64, at: Option<<Block as BlockT>::Hash>) -> Result<Weight> {
         let api = self.client.runtime_api();
         let at = BlockId::hash(at.unwrap_or_else(||
 			// If the block hash is not supplied assume the best block.
@@ -93,7 +93,7 @@ where
         })
     }
 
-    fn weight_to_gas(&self, at: Option<<Block as BlockT>::Hash>, weight: Weight) -> Result<u64> {
+    fn weight_to_gas(&self, weight: Weight, at: Option<<Block as BlockT>::Hash>) -> Result<u64> {
         let api = self.client.runtime_api();
         let at = BlockId::hash(at.unwrap_or_else(||
 			// If the block hash is not supplied assume the best block.
@@ -110,10 +110,10 @@ where
 
     fn estimate_gas_publish(
         &self,
-        at: Option<<Block as BlockT>::Hash>,
         account: AccountId,
         module_bc: Vec<u8>,
         gas_limit: u64,
+        at: Option<<Block as BlockT>::Hash>,
     ) -> Result<Estimation> {
         let api = self.client.runtime_api();
         let at = BlockId::hash(at.unwrap_or_else(||
@@ -139,10 +139,10 @@ where
 
     fn estimate_gas_execute(
         &self,
-        at: Option<<Block as BlockT>::Hash>,
         account: AccountId,
         tx_bc: Vec<u8>,
         gas_limit: u64,
+        at: Option<<Block as BlockT>::Hash>,
     ) -> Result<Estimation> {
         let api = self.client.runtime_api();
         let at = BlockId::hash(at.unwrap_or_else(||
