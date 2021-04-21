@@ -12,6 +12,7 @@ use sp_api::ProvideRuntimeApi;
 use sp_mvm_rpc_runtime::{MVMApiRuntime, types::MVMApiEstimation};
 use frame_support::weights::Weight;
 use serde::{Serialize, Deserialize};
+use fc_rpc_core::types::Bytes;
 
 // Estimation struct with serde.
 #[derive(Serialize, Deserialize)]
@@ -42,7 +43,7 @@ pub trait MVMApiRpc<BlockHash, AccountId> {
     fn estimate_gas_publish(
         &self,
         account: AccountId,
-        module_bc: Vec<u8>,
+        module_bc: Bytes,
         gas_limit: u64,
         at: Option<BlockHash>,
     ) -> Result<Estimation>;
@@ -51,7 +52,7 @@ pub trait MVMApiRpc<BlockHash, AccountId> {
     fn estimate_gas_execute(
         &self,
         account: AccountId,
-        tx_bc: Vec<u8>,
+        tx_bc: Bytes,
         gas_limit: u64,
         at: Option<BlockHash>,
     ) -> Result<Estimation>;
@@ -111,7 +112,7 @@ where
     fn estimate_gas_publish(
         &self,
         account: AccountId,
-        module_bc: Vec<u8>,
+        module_bc: Bytes,
         gas_limit: u64,
         at: Option<<Block as BlockT>::Hash>,
     ) -> Result<Estimation> {
@@ -121,7 +122,7 @@ where
 			self.client.info().best_hash));
 
         let res = api
-            .estimate_gas_publish(&at, account, module_bc, gas_limit)
+            .estimate_gas_publish(&at, account, module_bc.into_vec(), gas_limit)
             .map_err(|e| RpcError {
                 code: ErrorCode::ServerError(500),
                 message: "Error during requesting Runtime API".into(),
@@ -140,7 +141,7 @@ where
     fn estimate_gas_execute(
         &self,
         account: AccountId,
-        tx_bc: Vec<u8>,
+        tx_bc: Bytes,
         gas_limit: u64,
         at: Option<<Block as BlockT>::Hash>,
     ) -> Result<Estimation> {
@@ -150,7 +151,7 @@ where
 			self.client.info().best_hash));
 
         let res = api
-            .estimate_gas_execute(&at, account, tx_bc, gas_limit)
+            .estimate_gas_execute(&at, account, tx_bc.into_vec(), gas_limit)
             .map_err(|e| RpcError {
                 code: ErrorCode::ServerError(500),
                 message: "Error during requesting Runtime API".into(),
