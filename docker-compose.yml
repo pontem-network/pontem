@@ -3,7 +3,9 @@ version: "3.2"
 services:
   sp-move:
     container_name: sp-move
-    build: .build
+    build:
+      context: .
+      dockerfile: .build/dev.Dockerfile
     working_dir: /opt/sp-move
     ports:
       - "9944:9944"
