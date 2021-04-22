@@ -11,11 +11,11 @@ use sp_mvm::storage::MoveVmStorage;
 mod common;
 use common::assets::*;
 use common::mock::*;
-use common::utils::*;
+use common::addr::*;
 
 #[derive(Deserialize)]
-struct StoreU64 {
-    pub val: u64,
+struct StoreU128 {
+    pub val: u128,
 }
 
 fn call_publish_module(signer: <Test as system::Config>::AccountId, bc: Vec<u8>, mod_name: &str) {
@@ -37,7 +37,7 @@ fn call_publish_module(signer: <Test as system::Config>::AccountId, bc: Vec<u8>,
 
 fn call_execute_script(origin: Origin) {
     const GAS_LIMIT: u64 = 1_000_000;
-    let txbc = UserTx::StoreU64.bc().to_vec();
+    let txbc = UserTx::StoreGetBalance.bc().to_vec();
 
     // execute VM tx:
     let result = Mvm::execute(origin, txbc, GAS_LIMIT);
@@ -51,35 +51,35 @@ fn call_execute_script(origin: Origin) {
     let tag = StructTag {
         address: origin_move_addr(),
         module: Identifier::new(UserMod::Store.name()).unwrap(),
-        name: Identifier::new("U64").unwrap(),
+        name: Identifier::new("U128").unwrap(),
         type_params: vec![],
     };
     let blob = state
         .get_resource(&origin_move_addr(), &tag)
         .unwrap()
         .unwrap();
-    let store: StoreU64 = bcs::from_bytes(&blob).unwrap();
-    assert_eq!(42, store.val);
+    let store: StoreU128 = bcs::from_bytes(&blob).unwrap();
+    assert_eq!(INITIAL_BALANCE, store.val);
 }
 
 #[test]
-fn publish_module() {
+fn execute_store_balance() {
     new_test_ext().execute_with(|| {
+        let root = root_ps_acc();
         let origin = origin_ps_acc();
+
+        // publish entire std lib:
+        let modules = StdMod::all();
+        for module in modules {
+            call_publish_module(root, module.bc().to_vec(), module.name());
+        }
+
+        // publish user module:
         let module = UserMod::Store;
-
         call_publish_module(origin, module.bc().to_vec(), module.name());
-    });
-}
 
-#[test]
-fn execute_script() {
-    new_test_ext().execute_with(|| {
-        let origin = origin_ps_acc();
+        // execute tx:
         let signer = Origin::signed(origin);
-        let module = UserMod::Store;
-
-        call_publish_module(origin, module.bc().to_vec(), module.name());
         call_execute_script(signer);
     });
 }

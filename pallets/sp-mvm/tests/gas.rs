@@ -1,10 +1,10 @@
-use frame_support::{dispatch};
+use frame_support::dispatch;
 use sp_runtime::DispatchError;
 
 mod common;
 use common::assets::*;
 use common::mock::*;
-use common::utils::*;
+use common::addr::*;
 
 // Publish module.
 fn call_publish_module(

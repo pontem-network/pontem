@@ -26,27 +26,27 @@ package = "parity-scale-codec"
 [dependencies.move-vm]
 package = "mvm"
 git = "https://github.com/pontem-network/sp-move-vm.git"
-branch = "milestone-3"
+branch = "balance"
 default-features = false
 
 [dependencies.vm]
 git = "https://github.com/pontem-network/sp-move-vm.git"
-branch = "milestone-3"
+branch = "balance"
 default-features = false
 
 [dependencies.move-vm-runtime]
 git = "https://github.com/pontem-network/sp-move-vm.git"
-branch = "milestone-3"
+branch = "balance"
 default-features = false
 
 [dependencies.move-core-types]
 git = "https://github.com/pontem-network/sp-move-vm.git"
-branch = "milestone-3"
+branch = "balance"
 default-features = false
 
 [dependencies.move-vm-types]
 git = "https://github.com/pontem-network/sp-move-vm.git"
-branch = "milestone-3"
+branch = "balance"
 default-features = false
 
 [dependencies]
@@ -58,9 +58,9 @@ frame-benchmarking = { default-features = false, optional = true, version = '3.1
 sp-std = { default-features = false, version = "3.0.0" }
 sp-core = { default-features = false, version = "3.0.0" }
 timestamp = { default-features = false, version = "3.0.0", package = "pallet-timestamp" }
+balances = { default-features = false, version = "3.0.0", package = "pallet-balances" }
 # logging, `sp_runtime::print`:
 sp-runtime = { default-features = false, version = "3.0.0" }
-
 
 sp-io = { default-features = false, version = "3.0.0" }
 
@@ -71,7 +71,7 @@ serde-alt = { version = "1", default-features = false, package = "alt_serde", fe
 package = "bcs"
 default-features = false
 git = "https://github.com/pontem-network/sp-move-vm.git"
-branch = "milestone-3"
+branch = "balance"
 optional = true
 
 
@@ -83,7 +83,10 @@ bcs = { package = "bcs", version = "0.1" }
 
 
 [features]
-default = ["std"]
+default = [
+    "std",
+    # "no-vm-static"
+]
 no-vm-static = []
 std = [
     "log/std",
@@ -101,19 +104,22 @@ std = [
     "frame-system/std",
     "frame-benchmarking/std",
     "move-vm-types/std",
-    "timestamp/std"
+    "timestamp/std",
+    "balances/std",
 ]
 
 runtime-benchmarks = [
     "frame-benchmarking",
     "frame-support/runtime-benchmarks",
     "frame-system/runtime-benchmarks",
-    # "pallet-balances/runtime-benchmarks",
-    "timestamp/runtime-benchmarks",
     "sp-runtime/runtime-benchmarks",
     # "frame-system-benchmarking",
+
+    "timestamp/runtime-benchmarks",
+    "balances/runtime-benchmarks",
+
     "serde-alt",
-    "bcs-alt"
+    "bcs-alt",
 ]
 
 # Note: frame-support `try-runtime` feature is released after v3.

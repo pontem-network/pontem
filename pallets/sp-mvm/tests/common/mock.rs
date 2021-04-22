@@ -13,8 +13,14 @@ use sp_runtime::traits::{BlakeTwo256, IdentityLookup};
 use sp_runtime::{testing::Header};
 use move_vm::data::Oracle;
 
+use super::addr::origin_ps_acc;
+use super::addr::root_ps_acc;
+
 type UncheckedExtrinsic = frame_system::mocking::MockUncheckedExtrinsic<Test>;
 type Block = frame_system::mocking::MockBlock<Test>;
+
+/// Initial balance for all existent test accounts
+pub const INITIAL_BALANCE: <Test as balances::Config>::Balance = 42000;
 
 // Configure a mock runtime to test the pallet.
 frame_support::construct_runtime!(
@@ -25,8 +31,8 @@ frame_support::construct_runtime!(
     {
         System: frame_system::{Module, Call, Config, Storage, Event<T>},
         Timestamp: timestamp::{Module, Call, Storage, Inherent},
+        Balances: balances::{Module, Call, Storage, Config<T>, Event<T>},
         Mvm: sp_mvm::{Module, Call, Storage, Event<T>},
-        // Balances: pallet_balances::{Module, Call, Storage, Config<T>, Event<T>},
         // Sudo: pallet_sudo::{Module, Call, Config<T>, Storage, Event<T>},
     }
 );
@@ -54,7 +60,8 @@ impl system::Config for Test {
     type BlockHashCount = BlockHashCount;
     type Version = ();
     type PalletInfo = PalletInfo;
-    type AccountData = ();
+    // type AccountData = ();
+    type AccountData = balances::AccountData<<Self as balances::Config>::Balance>;
     type OnNewAccount = ();
     type OnKilledAccount = ();
     type SystemWeightInfo = ();
@@ -86,6 +93,7 @@ impl gas::GasWeightMapping for MoveVMGasWeightMapping {
 // ----------------- //
 
 // --- timestamp --- //
+
 parameter_types! {
     pub const MinimumPeriod: u64 = 5;
 }
@@ -96,6 +104,26 @@ impl timestamp::Config for Test {
     type MinimumPeriod = MinimumPeriod;
     type WeightInfo = ();
 }
+
+// --- balances --- //
+
+parameter_types! {
+    pub const ExistentialDeposit: u128 = 1;
+    pub const MaxLocks: u32 = 50;
+}
+
+impl balances::Config for Test {
+    type MaxLocks = MaxLocks;
+    /// The type for recording an account's balance.
+    type Balance = u128;
+    /// The ubiquitous event type.
+    type Event = Event;
+    type DustRemoval = ();
+    type ExistentialDeposit = ExistentialDeposit;
+    type AccountStore = Sys;
+    type WeightInfo = balances::weights::SubstrateWeight<Self>;
+}
+
 // ----------------- //
 
 impl sp_mvm::Config for Test {
@@ -119,22 +147,45 @@ impl Oracle for MockOracle {
 
 /// Build genesis storage according to the mock runtime.
 pub fn new_test_ext() -> sp_io::TestExternalities {
-    system::GenesisConfig::default()
+    let mut sys = system::GenesisConfig::default()
         .build_storage::<Test>()
-        .unwrap()
-        .into()
+        .expect("Frame system builds valid default genesis config");
+    /*
+    let negative = <balances::Module<T> as Currency<T::AccountId>>::withdraw(
+        &address,
+        amount.try_into().ok().unwrap(),
+        WithdrawReasons::RESERVE,
+        ExistenceRequirement::AllowDeath,
+    )
+
+    */
+
+    balances::GenesisConfig::<Test> {
+        balances: vec![
+            (root_ps_acc(), INITIAL_BALANCE),
+            (origin_ps_acc(), INITIAL_BALANCE),
+        ],
+        // balances: Vec::<(
+        //     <Test as system::Config>::AccountId,
+        //     <Test as balances::Config>::Balance,
+        // )>::new(),
+    }
+    .assimilate_storage(&mut sys)
+    .expect("Pallet balances storage can be assimilated");
+
+    sys.into()
 }
 
 pub const TIME_BLOCK_MULTIPLIER: u64 = 100;
 pub fn roll_next_block() {
     // Stake::on_finalize(Sys::block_number());
-    // Balances::on_finalize(Sys::block_number());
+    Balances::on_finalize(Sys::block_number());
     Mvm::on_finalize(Sys::block_number());
     Sys::on_finalize(Sys::block_number());
     Sys::set_block_number(Sys::block_number() + 1);
     Sys::on_initialize(Sys::block_number());
     Mvm::on_initialize(Sys::block_number());
-    // Balances::on_initialize(Sys::block_number());
+    Balances::on_initialize(Sys::block_number());
     // Stake::on_initialize(Sys::block_number());
 
     // set time with multiplier `*MULTIPLIER` by block:

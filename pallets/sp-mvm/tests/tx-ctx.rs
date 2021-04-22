@@ -11,7 +11,7 @@ use sp_mvm::storage::MoveVmStorage;
 mod common;
 use common::assets::*;
 use common::mock::*;
-use common::utils::*;
+use common::addr::*;
 
 #[derive(Deserialize)]
 struct StoreU64 {

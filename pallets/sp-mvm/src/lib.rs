@@ -15,6 +15,7 @@ mod benchmarking;
 /// <https://substrate.dev/docs/en/knowledgebase/runtime/frame>
 pub use pallet::*;
 pub mod addr;
+pub mod balance;
 pub mod event;
 pub mod gas;
 pub mod mvm;
@@ -50,6 +51,7 @@ pub mod pallet {
     use frame_system::pallet_prelude::*;
     use frame_support as support;
     use support::pallet_prelude::*;
+    // use support::dispatch::DispatchResult;
     use support::dispatch::DispatchResultWithPostInfo;
     use codec::{FullCodec, FullEncode, Encode};
 
@@ -65,12 +67,15 @@ pub mod pallet {
 
     /// Configure the pallet by specifying the parameters and types on which it depends.
     #[pallet::config]
-    pub trait Config: frame_system::Config + timestamp::Config {
+    pub trait Config: frame_system::Config + timestamp::Config + balances::Config {
         /// Because this pallet emits events, it depends on the runtime's definition of an event.
         type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
 
         /// Gas to weight convertion settings.
         type GasWeightMapping: gas::GasWeightMapping;
+
+        // doesn't really needed now:
+        // type Currency: Currency<Self::AccountId>;
     }
 
     #[pallet::pallet]
@@ -91,6 +96,7 @@ pub mod pallet {
     // https://substrate.dev/docs/en/knowledgebase/runtime/events
     #[pallet::event]
     #[pallet::metadata(T::AccountId = "AccountId")]
+    // #[pallet::metadata(T::AccountId = "AccountId", T::Balance = "Balance")]
     #[pallet::generate_deposit(pub fn deposit_event)]
     pub enum Event<T: Config> {
         // Event documentation should end with an array that provides descriptive names for event parameters.
@@ -194,6 +200,71 @@ pub mod pallet {
 
             Ok(result)
         }
+
+        //
+        //
+        //
+        //
+        //
+        //
+
+        // #[pallet::weight(10000)]
+        // pub fn balances_tests_withdraw_foo(
+        //     origin: OriginFor<T>,
+        //     value: <T as balances::Config>::Balance,
+        // ) -> DispatchResultWithPostInfo
+        // where
+        //     <T as balances::Config>::Balance: TryFrom<move_vm_types::natives::balance::Balance>,
+        //     <T as balances::Config>::Balance: TryInto<move_vm_types::natives::balance::Balance>,
+        // {
+        //     let address = ensure_signed(origin)?;
+        //     debug!("executing `withdraw` with signed {:?}", address);
+
+        //     use balances::PositiveImbalance;
+        //     use frame_support::traits::ExistenceRequirement;
+        //     use frame_support::traits::Get;
+        //     use frame_support::traits::Currency;
+        //     use frame_support::traits::ReservableCurrency;
+        //     use frame_support::traits::Imbalance;
+
+        //     use frame_support::traits::WithdrawReasons;
+        //     use frame_support::traits::StoredMap;
+
+        //     // // let data /* :AccountData<T::Balance> */ = <T as balances::Config>::AccountStore::get(&address);
+        //     // // #[cfg(feature = "std")]
+        //     // // println!("DATA: {:#?}", data);
+
+        //     // let balance =
+        //     //     <balances::Module<T> as Currency<T::AccountId>>::total_balance(&address);
+
+        //     let balance: move_vm_types::natives::balance::Balance =
+        //         <balances::Module<T> as Currency<T::AccountId>>::total_balance(&address)
+        //             .try_into()
+        //             .ok()
+        //             .unwrap();
+
+        //     #[cfg(feature = "std")]
+        //     println!("BALANCE: {}", balance);
+
+        //     // let value: T::Balance = 10000_u64.try_into().ok().unwrap();
+
+        //     // let res = <balances::Module<T> as Currency<T::AccountId>>::burn(value);
+        //     // let res = <balances::Module<T> as Currency<T::AccountId>>::issue(value);
+
+        //     let negative = <balances::Module<T> as Currency<T::AccountId>>::withdraw(
+        //         &address,
+        //         value,
+        //         WithdrawReasons::RESERVE,
+        //         ExistenceRequirement::AllowDeath,
+        //     )?;
+
+        //     use crate::pallet::support::weights::PostDispatchInfo;
+
+        //     Ok(PostDispatchInfo {
+        //         actual_weight: None,
+        //         pays_fee: Pays::Yes,
+        //     })
+        // }
     }
 
     #[pallet::hooks]
@@ -213,7 +284,7 @@ pub mod pallet {
 
         #[cfg(feature = "no-vm-static")]
         fn get_vm() -> Result<
-            DefaultVm<VMStorage<T>, event::DefaultEventHandler, oracle::DummyOracle>,
+            DefaultVm<VMStorage<T>, event::DefaultEventHandler, oracle::DummyOracle, T>,
             Error<T>,
         > {
             let vm = Self::try_create_move_vm()?;
@@ -332,8 +403,12 @@ pub mod pallet {
 
     #[cfg(feature = "no-vm-static")]
     impl<T: Config> mvm::TryCreateMoveVm<T> for Pallet<T> {
-        type Vm =
-            Mvm<VmStorageAdapter<VMStorage<T>>, event::DefaultEventHandler, oracle::DummyOracle>;
+        type Vm = Mvm<
+            VmStorageAdapter<VMStorage<T>>,
+            event::DefaultEventHandler,
+            oracle::DummyOracle,
+            super::balance::BalancesAdapter<T>,
+        >;
         type Error = Error<T>;
 
         fn try_create_move_vm() -> Result<Self::Vm, Self::Error> {
@@ -343,6 +418,7 @@ pub mod pallet {
                 Self::move_vm_storage(),
                 Self::create_move_event_handler(),
                 oracle,
+                super::balance::BalancesAdapter::new(),
             )
             .map_err(|err| {
                 error!("{}", err);
@@ -357,6 +433,7 @@ pub mod pallet {
             super::storage::boxed::VmStorageBoxAdapter,
             event::DefaultEventHandler,
             oracle::DummyOracle,
+            super::balance::boxed::BalancesAdapter,
         >;
         type Error = Error<T>;
 
@@ -364,11 +441,11 @@ pub mod pallet {
             use super::storage::boxed::*;
 
             trace!("MoveVM created");
-            let oracle = Default::default();
             Mvm::new(
                 VmStorageBoxAdapter::from(Self::move_vm_storage()),
                 Self::create_move_event_handler(),
-                oracle,
+                Default::default(),
+                super::balance::MoveBalancesAdapter::<T>::new().into(),
             )
             .map_err(|err| {
                 error!("{}", err);
@@ -379,10 +456,7 @@ pub mod pallet {
 
     #[cfg(not(feature = "no-vm-static"))]
     impl<T: Config> TryGetStaticMoveVm<DefaultEventHandler> for Pallet<T> {
-        // type Vm = VmWrapperTy<super::storage::boxed::VmStorageBoxAdapter>;
-        type Vm = VmWrapper<
-            Mvm<super::storage::boxed::VmStorageBoxAdapter, DefaultEventHandler, DummyOracle>,
-        >;
+        type Vm = VmWrapper<<Self as mvm::TryCreateMoveVm<T>>::Vm>;
         type Error = Error<T>;
 
         fn try_get_or_create_move_vm() -> Result<&'static Self::Vm, Self::Error> {

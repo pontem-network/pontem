@@ -1,14 +1,22 @@
-const STD_MODULES: &[&str] = &["Block", "Event", "Time"];
+#![allow(dead_code)]
+
+const STD_MODULES: &[&str] = &[
+    "Block", "PONT", "Signer", "Time", "Event", "Pontem", "Account",
+];
 const STD_BYTECODE: &[&[u8]] = &[
     include_bytes!("../assets/target/modules/0_Block.mv"),
-    include_bytes!("../assets/target/modules/1_Event.mv"),
-    include_bytes!("../assets/target/modules/2_Time.mv"),
+    include_bytes!("../assets/target/modules/1_PONT.mv"),
+    include_bytes!("../assets/target/modules/2_Signer.mv"),
+    include_bytes!("../assets/target/modules/3_Time.mv"),
+    include_bytes!("../assets/target/modules/5_Event.mv"),
+    include_bytes!("../assets/target/modules/6_Pontem.mv"),
+    include_bytes!("../assets/target/modules/7_Account.mv"),
 ];
 
 const USER_MODULES: &[&str] = &["Store", "EventProxy"];
 const USER_BYTECODE: &[&[u8]] = &[
-    include_bytes!("../assets/target/modules/3_Store.mv"),
-    include_bytes!("../assets/target/modules/4_EventProxy.mv"),
+    include_bytes!("../assets/target/modules/4_Store.mv"),
+    include_bytes!("../assets/target/modules/8_EventProxy.mv"),
 ];
 
 const TX_NAMES: &[&str] = &[
@@ -17,6 +25,8 @@ const TX_NAMES: &[&str] = &[
     "store_system_block",
     "store_system_timestamp",
     "inf_loop",
+    "store_native_balance",
+    "store_native_deposit",
 ];
 const TX_BYTECODE: &[&[u8]] = &[
     include_bytes!("../assets/target/transactions/store_u64.mvt"),
@@ -24,6 +34,8 @@ const TX_BYTECODE: &[&[u8]] = &[
     include_bytes!("../assets/target/transactions/store_system_block.mvt"),
     include_bytes!("../assets/target/transactions/store_system_timestamp.mvt"),
     include_bytes!("../assets/target/transactions/inf_loop.mvt"),
+    include_bytes!("../assets/target/transactions/store_native_balance.mvt"),
+    include_bytes!("../assets/target/transactions/store_native_deposit.mvt"),
 ];
 
 pub trait BinAsset: Sized + Copy + Into<usize> {
@@ -44,8 +56,12 @@ pub trait BinAsset: Sized + Copy + Into<usize> {
 #[derive(Copy, Clone, Debug)]
 pub enum StdMod {
     Block = 0,
-    Event = 1,
-    Time = 2,
+    PONT = 1,
+    Signer = 2,
+    Time = 3,
+    Event = 4,
+    Pontem = 5,
+    Account = 6,
 }
 
 #[repr(usize)]
@@ -63,6 +79,8 @@ pub enum UserTx {
     StoreSysBlock = 2,
     StoreSysTime = 3,
     InfLoop = 4,
+    StoreGetBalance = 5,
+    StoreNativeDeposit = 6,
 }
 
 impl Into<usize> for StdMod {
@@ -88,7 +106,15 @@ impl BinAsset for StdMod {
     const BYTES: &'static [&'static [u8]] = STD_BYTECODE;
 
     fn all() -> &'static [Self] {
-        &[Self::Block, Self::Event, Self::Time]
+        &[
+            Self::Block,
+            Self::PONT,
+            Self::Signer,
+            Self::Time,
+            Self::Event,
+            Self::Pontem,
+            Self::Account,
+        ]
     }
 }
 
@@ -112,6 +138,7 @@ impl BinAsset for UserTx {
             Self::StoreSysBlock,
             Self::StoreSysTime,
             Self::InfLoop,
+            Self::StoreGetBalance,
         ]
     }
 }

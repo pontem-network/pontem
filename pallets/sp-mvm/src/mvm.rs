@@ -1,15 +1,14 @@
-// use sp_std::prelude::*;
-// use frame_support::storage::StorageMap;
 use move_vm::types::Gas;
 use move_vm::types::ScriptTx;
 use move_vm::data::EventHandler;
 use move_vm::mvm::Mvm;
 
+use crate::balance::BalancesAdapter;
 use crate::event::DefaultEventHandler;
 use crate::storage::*;
 
 /// Default type of Move VM implementation
-pub type DefaultVm<S, E, O> = Mvm<VmStorageAdapter<S>, E, O>;
+pub type DefaultVm<S, E, O, R> = Mvm<VmStorageAdapter<S>, E, O, BalancesAdapter<R>>;
 
 pub trait CreateMoveVm<T> {
     type Vm: move_vm::Vm;
@@ -34,13 +33,13 @@ mod vm_static {
 
     use crate::oracle::DummyOracle;
     use crate::storage::boxed::*;
+    use crate::balance::boxed::BalancesAdapter;
     use super::{
         EventHandler, Gas, Mvm, CreateMoveVm, ScriptTx, TryCreateMoveVm, DefaultEventHandler,
     };
 
     /// Default type of Move VM implementation
-    pub type DefaultVm<E, O> = Mvm<VmStorageAdapter, E, O>;
-
+    pub type DefaultVm<E, O> = Mvm<VmStorageAdapter, E, O, BalancesAdapter>;
     pub type VmWrapperTy = VmWrapper<DefaultVm<DefaultEventHandler, DummyOracle>>;
 
     /// New-type with unsafe impl Send + Sync.

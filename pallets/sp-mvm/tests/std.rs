@@ -16,7 +16,7 @@ use sp_mvm::Event;
 mod common;
 use common::assets::*;
 use common::mock::*;
-use common::utils::*;
+use common::addr::*;
 
 fn call_publish_module_with_origin(origin: Origin, bc: Vec<u8>) {
     const GAS_LIMIT: u64 = 1_000_000;
