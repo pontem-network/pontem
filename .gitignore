@@ -11,5 +11,4 @@
 
 # Dove temp cache/lock-file
 .Dove.man
-/pallets/sp-mvm/tests/benchmark_assets/target/.external/
-/pallets/sp-mvm/tests/benchmark_assets/target/scripts/
+/pallets/**/target/

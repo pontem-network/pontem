@@ -1,3 +1,5 @@
+SHELL := /bin/bash
+
 .PHONY: init
 init:
 	./scripts/init.sh
@@ -31,6 +33,7 @@ bench:
 
 .PHONY: test
 test:
+	pushd pallets/sp-mvm/tests/assets; ./build_assets.sh
 	SKIP_WASM_BUILD=1 cargo test --all --no-fail-fast -- --nocapture --test-threads=1
 
 .PHONY: run
