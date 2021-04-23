@@ -1,14 +1,9 @@
 use std::convert::TryInto;
 use codec::Encode;
-use frame_system as system;
 use frame_support::assert_ok;
-use move_core_types::account_address::AccountAddress;
 use move_core_types::identifier::Identifier;
 use move_core_types::language_storage::ModuleId;
-use move_vm_runtime::data_cache::RemoteCache;
-use move_vm::data::*;
 
-use sp_mvm::storage::MoveVmStorage;
 use sp_mvm::types::MoveStructTag;
 use sp_mvm::types::MoveTypeTag;
 use sp_mvm::Event;
@@ -17,41 +12,7 @@ mod common;
 use common::assets::*;
 use common::mock::*;
 use common::addr::*;
-
-fn call_publish_module_with_origin(origin: Origin, bc: Vec<u8>) {
-    const GAS_LIMIT: u64 = 1_000_000;
-
-    // execute VM for publish module:
-    let result = Mvm::publish_module(origin, bc, GAS_LIMIT);
-    eprintln!("publish_module result: {:?}", result);
-    assert_ok!(result);
-}
-
-fn call_publish_module(signer: <Test as system::Config>::AccountId, bc: Vec<u8>, mod_name: &str) {
-    let origin = Origin::signed(signer);
-    call_publish_module_with_origin(origin, bc.clone());
-
-    // check storage:
-    check_storage(signer, bc, mod_name);
-}
-
-fn check_storage(signer: <Test as system::Config>::AccountId, bc: Vec<u8>, mod_name: &str) {
-    // check storage:
-    let module_id = ModuleId::new(to_move_addr(signer), Identifier::new(mod_name).unwrap());
-    let storage = Mvm::move_vm_storage();
-    let oracle = MockOracle(None);
-    let state = State::new(storage, oracle);
-    assert_eq!(bc, state.get_module(&module_id).unwrap().unwrap());
-}
-
-fn check_storage_with_addr(signer: AccountAddress, bc: Vec<u8>, mod_name: &str) {
-    // check storage:
-    let module_id = ModuleId::new(signer, Identifier::new(mod_name).unwrap());
-    let storage = Mvm::move_vm_storage();
-    let oracle = MockOracle(None);
-    let state = State::new(storage, oracle);
-    assert_eq!(bc, state.get_module(&module_id).unwrap().unwrap());
-}
+use common::utils;
 
 fn call_execute_script(origin: Origin) {
     const GAS_LIMIT: u64 = 1_000_000;
@@ -67,8 +28,7 @@ fn call_execute_script(origin: Origin) {
 fn publish_module() {
     new_test_ext().execute_with(|| {
         let root = root_ps_acc();
-        let module = StdMod::Event;
-        call_publish_module(root, module.bc().to_vec(), module.name());
+        utils::publish_module(root, StdMod::Event);
     });
 }
 
@@ -80,11 +40,11 @@ fn publish_module_as_root() {
         let event = StdMod::Event;
         let proxy = UserMod::EventProxy;
 
-        call_publish_module_with_origin(Origin::root(), event.bc().to_vec());
-        check_storage_with_addr(CORE_CODE_ADDRESS, event.bc().to_vec(), event.name());
+        utils::publish_module_raw_with_origin_unchecked(Origin::root(), event.bc().to_vec());
+        utils::check_storage_mod_raw_with_addr(ROOT_ADDR, event.bc().to_vec(), event.name());
 
-        call_publish_module_with_origin(Origin::root(), proxy.bc().to_vec());
-        check_storage_with_addr(CORE_CODE_ADDRESS, proxy.bc().to_vec(), proxy.name());
+        utils::publish_module_raw_with_origin_unchecked(Origin::root(), proxy.bc().to_vec());
+        utils::check_storage_mod_raw_with_addr(ROOT_ADDR, proxy.bc().to_vec(), proxy.name());
     });
 }
 
@@ -96,8 +56,8 @@ fn execute_script() {
         let event = StdMod::Event;
         let proxy = UserMod::EventProxy;
 
-        call_publish_module(root, event.bc().to_vec(), event.name());
-        call_publish_module(origin, proxy.bc().to_vec(), proxy.name());
+        utils::publish_module(root, event);
+        utils::publish_module(origin, proxy);
 
         // we need next block because events are not populated on genesis:
         roll_next_block();

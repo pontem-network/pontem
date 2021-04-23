@@ -27,6 +27,9 @@ const TX_NAMES: &[&str] = &[
     "inf_loop",
     "store_native_balance",
     "store_native_deposit",
+    "store_native_deposit_reg",
+    "store_native_withdraw",
+    "store_native_withdraw_reg",
 ];
 const TX_BYTECODE: &[&[u8]] = &[
     include_bytes!("../assets/target/transactions/store_u64.mvt"),
@@ -36,6 +39,9 @@ const TX_BYTECODE: &[&[u8]] = &[
     include_bytes!("../assets/target/transactions/inf_loop.mvt"),
     include_bytes!("../assets/target/transactions/store_native_balance.mvt"),
     include_bytes!("../assets/target/transactions/store_native_deposit.mvt"),
+    include_bytes!("../assets/target/transactions/store_native_deposit_reg.mvt"),
+    include_bytes!("../assets/target/transactions/store_native_withdraw.mvt"),
+    include_bytes!("../assets/target/transactions/store_native_withdraw_reg.mvt"),
 ];
 
 pub trait BinAsset: Sized + Copy + Into<usize> {
@@ -81,6 +87,9 @@ pub enum UserTx {
     InfLoop = 4,
     StoreGetBalance = 5,
     StoreNativeDeposit = 6,
+    StoreNativeDepositReg = 7,
+    StoreNativeWithdraw = 8,
+    StoreNativeWithdrawReg = 9,
 }
 
 impl Into<usize> for StdMod {

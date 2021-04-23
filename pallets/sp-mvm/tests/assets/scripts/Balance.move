@@ -3,9 +3,13 @@ script {
     use 0x1::PONT;
     use 0x1::Pontem;
 
-    fun test_balance_transfer(alice: &signer, bob: address, amount: u128) {
+    fun test_balance_transfer(alice: &signer, bob: address, amount: u128, register_coin: bool) {
         assert(Account::get_native_balance<PONT::T>(alice) >= amount, 1);
         assert(amount > 3, 2);
+
+        if (register_coin) {
+            Pontem::register_coin<PONT::T>(b"PONT", 2);
+        };
 
         let ponts = Account::deposit_native<PONT::T>(alice, amount - 3);
         Account::deposit(alice, bob, ponts);
