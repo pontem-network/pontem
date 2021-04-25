@@ -58,7 +58,7 @@ jobs:
             -H "Accept: application/octet-stream" \
             -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
             -o "dove" \
-            "https://github.com/pontem-network/move-tools/releases/download/1.1.1/dove-1.1.0-${{ matrix.cfg.dove }}"
+            "https://github.com/pontem-network/move-tools/releases/download/1.1.4/dove-1.1.4-${{ matrix.cfg.dove }}"
           sudo chown runner ./dove && chmod +x ./dove
           mv ./dove ~/.cargo/bin/dove
           dove -V
