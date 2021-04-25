@@ -17,6 +17,7 @@ clippy:
 
 .PHONY: bench
 bench:
+	make assets
 	# This is just an example about how to run benchmarks for the pallet
 	mkdir -p ./target/sp-bench
 	pushd node && \
@@ -33,7 +34,7 @@ bench:
 
 .PHONY: test
 test:
-	pushd pallets/sp-mvm/tests/assets; ./build_assets.sh
+	make assets
 	SKIP_WASM_BUILD=1 cargo test --all --no-fail-fast -- --nocapture --test-threads=1
 
 .PHONY: run
