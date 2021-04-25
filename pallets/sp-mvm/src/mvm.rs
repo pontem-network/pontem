@@ -1,14 +1,10 @@
-use move_vm::types::Gas;
-use move_vm::types::ScriptTx;
-use move_vm::data::EventHandler;
 use move_vm::mvm::Mvm;
 
 use crate::balance::BalancesAdapter;
-use crate::event::DefaultEventHandler;
 use crate::storage::*;
 
 /// Default type of Move VM implementation
-pub type DefaultVm<S, E, O, R> = Mvm<VmStorageAdapter<S>, E, O, BalancesAdapter<R>>;
+pub type DefaultVm<S, E, O, R> = Mvm<StorageAdapter<S>, E, O, BalancesAdapter<R>>;
 
 pub trait CreateMoveVm<T> {
     type Vm: move_vm::Vm;
@@ -29,14 +25,16 @@ pub trait TryCreateMoveVm<T> {
 pub use vm_static::*;
 #[cfg(not(feature = "no-vm-static"))]
 mod vm_static {
+    use move_vm::types::Gas;
+    use move_vm::types::ScriptTx;
+    use move_vm::data::EventHandler;
     use move_vm::data::ExecutionContext;
 
     use crate::oracle::DummyOracle;
     use crate::storage::boxed::*;
     use crate::balance::boxed::BalancesAdapter;
-    use super::{
-        EventHandler, Gas, Mvm, CreateMoveVm, ScriptTx, TryCreateMoveVm, DefaultEventHandler,
-    };
+    use crate::event::DefaultEventHandler;
+    use super::{Mvm, CreateMoveVm, TryCreateMoveVm};
 
     /// Default type of Move VM implementation
     pub type DefaultVm<E, O> = Mvm<VmStorageAdapter, E, O, BalancesAdapter>;
@@ -153,7 +151,7 @@ mod vm_static {
 
     /// Get or create and get the VM
     pub trait TryCreateMoveVmWrapped<T>: TryCreateMoveVm<T> {
-        fn try_create_move_vm_wrapped() -> Result<VmWrapper<Self::Vm>, Self::Error> {
+        fn try_create_move_vm_static() -> Result<VmWrapper<Self::Vm>, Self::Error> {
             Self::try_create_move_vm().map(VmWrapper::new)
         }
     }

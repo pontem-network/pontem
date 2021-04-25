@@ -8,7 +8,7 @@ use move_vm::data::Storage;
 pub trait MoveVmStorage<T, K: FullEncode, V: FullCodec> {
     type VmStorage;
 
-    fn move_vm_storage() -> VmStorageAdapter<Self::VmStorage, K, V>
+    fn move_vm_storage() -> StorageAdapter<Self::VmStorage, K, V>
     where
         Self::VmStorage: StorageMap<K, V, Query = Option<V>>,
     {
@@ -17,9 +17,9 @@ pub trait MoveVmStorage<T, K: FullEncode, V: FullCodec> {
 }
 
 /// Vm storage adapter for native storage
-pub struct VmStorageAdapter<T, K = Vec<u8>, V = Vec<u8>>(PhantomData<(T, K, V)>);
+pub struct StorageAdapter<T, K = Vec<u8>, V = Vec<u8>>(PhantomData<(T, K, V)>);
 
-impl<T, K, V> Default for VmStorageAdapter<T, K, V> {
+impl<T, K, V> Default for StorageAdapter<T, K, V> {
     fn default() -> Self {
         Self(Default::default())
     }
@@ -27,7 +27,7 @@ impl<T, K, V> Default for VmStorageAdapter<T, K, V> {
 
 /// Default VM storage implementation
 impl<T: StorageMap<Vec<u8>, Vec<u8>, Query = Option<Vec<u8>>>> Storage
-    for VmStorageAdapter<T, Vec<u8>, Vec<u8>>
+    for StorageAdapter<T, Vec<u8>, Vec<u8>>
 {
     fn get(&self, key: &[u8]) -> Option<Vec<u8>> {
         trace!("storage::get {:?}", key);
@@ -69,11 +69,11 @@ pub mod boxed {
         }
     }
 
-    impl<T> From<super::VmStorageAdapter<T, Vec<u8>, Vec<u8>>> for VmStorageBoxAdapter
+    impl<T> From<super::StorageAdapter<T, Vec<u8>, Vec<u8>>> for VmStorageBoxAdapter
     where
         T: super::StorageMap<Vec<u8>, Vec<u8>, Query = Option<Vec<u8>>>,
     {
-        fn from(_: super::VmStorageAdapter<T, Vec<u8>, Vec<u8>>) -> Self {
+        fn from(_: super::StorageAdapter<T, Vec<u8>, Vec<u8>>) -> Self {
             into_boxfn_adapter::<T>()
         }
     }

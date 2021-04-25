@@ -3,11 +3,6 @@ use core::convert::TryInto;
 use move_vm::data::BalanceAccess;
 use move_vm_types::natives::balance::Balance as VmBalance;
 
-// #[cfg(feature = "no-vm-static")]
-pub type BalancesAdapter<T> = MoveBalancesAdapter<T>;
-// #[cfg(not(feature = "no-vm-static"))]
-// pub type BalancesAdapter<T> = DummyBalancesAdapter;
-
 use crate::addr::address_to_account;
 use frame_support::traits::Currency;
 use frame_support::traits::WithdrawReasons;
@@ -15,21 +10,21 @@ use frame_support::traits::ExistenceRequirement;
 
 type BalanceOf<T> = <T as balances::Config>::Balance;
 
-pub struct MoveBalancesAdapter<T>(core::marker::PhantomData<T>);
+pub struct BalancesAdapter<T>(core::marker::PhantomData<T>);
 
-impl<T: balances::Config> Default for MoveBalancesAdapter<T> {
+impl<T: balances::Config> Default for BalancesAdapter<T> {
     fn default() -> Self {
         Self(core::marker::PhantomData)
     }
 }
 
-impl<T: balances::Config> MoveBalancesAdapter<T> {
+impl<T: balances::Config> BalancesAdapter<T> {
     pub fn new() -> Self {
         Self(core::marker::PhantomData)
     }
 }
 
-impl<T: balances::Config> BalanceAccess for MoveBalancesAdapter<T>
+impl<T: balances::Config> BalanceAccess for BalancesAdapter<T>
 where
     <T as balances::Config>::Balance: TryFrom<VmBalance>,
     <T as balances::Config>::Balance: TryInto<VmBalance>,
@@ -100,38 +95,38 @@ pub mod boxed {
     use move_vm_types::natives::balance::Balance as VmBalance;
     use move_vm::data::BalanceAccess;
 
-    pub type BalancesAdapter = MoveBalancesBoxedAdapter;
+    pub type BalancesAdapter = BalancesBoxedAdapter;
 
     /// Vm storage boxed adapter for native storage
-    pub struct MoveBalancesBoxedAdapter {
+    pub struct BalancesBoxedAdapter {
         f_get: Box<dyn Fn(&AccountAddress, &str) -> Option<VmBalance>>,
         f_deposit: Box<dyn Fn(&AccountAddress, &str, VmBalance)>,
         f_withdraw: Box<dyn Fn(&AccountAddress, &str, VmBalance)>,
     }
 
-    impl<T: balances::Config> From<super::MoveBalancesAdapter<T>> for MoveBalancesBoxedAdapter {
-        fn from(_balances: super::MoveBalancesAdapter<T>) -> Self {
+    impl<T: balances::Config> From<super::BalancesAdapter<T>> for BalancesBoxedAdapter {
+        fn from(_balances: super::BalancesAdapter<T>) -> Self {
             Self {
                 f_get: Box::new(|address, ticker| {
-                    let adapter = super::MoveBalancesAdapter::<T>::new();
+                    let adapter = super::BalancesAdapter::<T>::new();
                     adapter.get_balance(address, ticker)
                 }),
                 f_deposit: Box::new(|address, ticker, amount| {
-                    let adapter = super::MoveBalancesAdapter::<T>::new();
+                    let adapter = super::BalancesAdapter::<T>::new();
                     adapter.deposit(address, ticker, amount)
                 }),
                 f_withdraw: Box::new(|address, ticker, amount| {
-                    let adapter = super::MoveBalancesAdapter::<T>::new();
+                    let adapter = super::BalancesAdapter::<T>::new();
                     adapter.withdraw(address, ticker, amount)
                 }),
             }
         }
     }
 
-    impl<T: balances::Config + 'static> From<&'static super::MoveBalancesAdapter<T>>
-        for MoveBalancesBoxedAdapter
+    impl<T: balances::Config + 'static> From<&'static super::BalancesAdapter<T>>
+        for BalancesBoxedAdapter
     {
-        fn from(balances: &'static super::MoveBalancesAdapter<T>) -> Self {
+        fn from(balances: &'static super::BalancesAdapter<T>) -> Self {
             Self {
                 f_get: Box::new(move |addr, id| balances.get_balance(addr, id)),
                 f_deposit: Box::new(move |addr, id, val| balances.deposit(addr, id, val)),
@@ -140,7 +135,7 @@ pub mod boxed {
         }
     }
 
-    impl BalanceAccess for MoveBalancesBoxedAdapter {
+    impl BalanceAccess for BalancesBoxedAdapter {
         fn get_balance(&self, address: &AccountAddress, ticker: &str) -> Option<VmBalance> {
             trace!("balances::get {} for {}", ticker, address);
             (self.f_get)(address, ticker)

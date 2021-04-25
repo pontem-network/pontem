@@ -29,20 +29,19 @@ pub mod pallet {
     // Clippy didn't love sp- macros
     #![allow(clippy::unused_unit)]
 
-    use crate::oracle::DummyOracle;
-
-    use super::mvm;
-    use super::gas;
-    use super::addr;
-    use super::types;
-    use super::event;
-    use super::oracle;
-    use super::result;
+    use super::*;
     use super::storage::MoveVmStorage;
-    use super::storage::VmStorageAdapter;
-    use super::gas::GasWeightMapping;
+    use super::storage::StorageAdapter;
+    use gas::GasWeightMapping;
+    use oracle::DummyOracle;
     use event::*;
     use mvm::*;
+
+    #[cfg(not(feature = "no-vm-static"))]
+    mod boxed {
+        pub use crate::storage::boxed::VmStorageBoxAdapter as StorageAdapter;
+        pub use crate::balance::boxed::BalancesAdapter;
+    }
 
     use core::convert::TryInto;
     use core::convert::TryFrom;
@@ -51,7 +50,6 @@ pub mod pallet {
     use frame_system::pallet_prelude::*;
     use frame_support as support;
     use support::pallet_prelude::*;
-    // use support::dispatch::DispatchResult;
     use support::dispatch::DispatchResultWithPostInfo;
     use codec::{FullCodec, FullEncode, Encode};
 
@@ -204,6 +202,7 @@ pub mod pallet {
 
     #[pallet::hooks]
     impl<T: Config> Hooks<BlockNumberFor<T>> for Pallet<T> {
+        #[cfg(not(feature = "no-vm-static"))]
         fn on_finalize(_n: BlockNumberFor<T>) {
             Self::get_vm().unwrap().clear();
         }
@@ -336,51 +335,30 @@ pub mod pallet {
         }
     }
 
-    #[cfg(feature = "no-vm-static")]
     impl<T: Config> mvm::TryCreateMoveVm<T> for Pallet<T> {
+        #[cfg(not(feature = "no-vm-static"))]
         type Vm = Mvm<
-            VmStorageAdapter<VMStorage<T>>,
+            boxed::StorageAdapter,
             event::DefaultEventHandler,
             oracle::DummyOracle,
-            super::balance::BalancesAdapter<T>,
+            boxed::BalancesAdapter,
+        >;
+        #[cfg(feature = "no-vm-static")]
+        type Vm = Mvm<
+            StorageAdapter<VMStorage<T>>,
+            event::DefaultEventHandler,
+            oracle::DummyOracle,
+            balance::BalancesAdapter<T>,
         >;
         type Error = Error<T>;
 
         fn try_create_move_vm() -> Result<Self::Vm, Self::Error> {
             trace!("MoveVM created");
-            let oracle = Default::default();
             Mvm::new(
-                Self::move_vm_storage(),
-                Self::create_move_event_handler(),
-                oracle,
-                super::balance::BalancesAdapter::new(),
-            )
-            .map_err(|err| {
-                error!("{}", err);
-                Error::InvalidVMConfig
-            })
-        }
-    }
-
-    #[cfg(not(feature = "no-vm-static"))]
-    impl<T: Config> mvm::TryCreateMoveVm<T> for Pallet<T> {
-        type Vm = Mvm<
-            super::storage::boxed::VmStorageBoxAdapter,
-            event::DefaultEventHandler,
-            oracle::DummyOracle,
-            super::balance::boxed::BalancesAdapter,
-        >;
-        type Error = Error<T>;
-
-        fn try_create_move_vm() -> Result<Self::Vm, Self::Error> {
-            use super::storage::boxed::*;
-
-            trace!("MoveVM created");
-            Mvm::new(
-                VmStorageBoxAdapter::from(Self::move_vm_storage()),
+                Self::move_vm_storage().into(),
                 Self::create_move_event_handler(),
                 Default::default(),
-                super::balance::MoveBalancesAdapter::<T>::new().into(),
+                balance::BalancesAdapter::<T>::new().into(),
             )
             .map_err(|err| {
                 error!("{}", err);
@@ -395,8 +373,6 @@ pub mod pallet {
         type Error = Error<T>;
 
         fn try_get_or_create_move_vm() -> Result<&'static Self::Vm, Self::Error> {
-            use super::storage::boxed::*;
-
             #[cfg(not(feature = "std"))]
             use once_cell::race::OnceBox as OnceCell;
             #[cfg(feature = "std")]
@@ -404,15 +380,8 @@ pub mod pallet {
 
             static VM: OnceCell<VmWrapperTy> = OnceCell::new();
             VM.get_or_try_init(|| {
-                #[cfg(feature = "std")]
-                println!("Static VM initializing");
-
-                #[cfg(feature = "std")]
-                {
-                    Self::try_create_move_vm_wrapped()
-                }
-                #[cfg(not(feature = "std"))]
-                Self::try_create_move_vm_wrapped().map(Box::from)
+                trace!("Static VM initializing");
+                Self::try_create_move_vm_static().map(Into::into)
             })
         }
     }
