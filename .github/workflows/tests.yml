@@ -64,7 +64,7 @@ jobs:
           dove -V
 
       - name: Build test resources
-        run: pushd pallets/sp-mvm/tests/assets; ./build_assets.sh
+        run: make assets
 
       - name: Tests
         run: cargo +${{ steps.rust.outputs.version }} test --all --no-fail-fast -- --nocapture --test-threads=1
