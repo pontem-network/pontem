@@ -7119,7 +7119,7 @@ dependencies = [
 
 [[package]]
 name = "sp-mvm"
-version = "0.2.2"
+version = "0.2.3"
 dependencies = [
  "alt_serde",
  "bcs 0.1.1",
