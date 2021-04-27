@@ -68,6 +68,17 @@ mod vm_static {
 
     impl move_vm::Vm for VmWrapperTy {
         #[inline]
+        fn execute_script(
+            &self,
+            gas: Gas,
+            ctx: ExecutionContext,
+            tx: ScriptTx,
+            dry_run: bool,
+        ) -> move_vm::types::VmResult {
+            self.0.execute_script(gas, ctx, tx, dry_run)
+        }
+
+        #[inline]
         fn publish_module(
             &self,
             gas: Gas,
@@ -78,14 +89,13 @@ mod vm_static {
         }
 
         #[inline]
-        fn execute_script(
+        fn publish_module_package(
             &self,
             gas: Gas,
-            ctx: ExecutionContext,
-            tx: ScriptTx,
+            package: move_vm::types::PublishPackageTx,
             dry_run: bool,
         ) -> move_vm::types::VmResult {
-            self.0.execute_script(gas, ctx, tx, dry_run)
+            self.0.publish_module_package(gas, package, dry_run)
         }
 
         #[inline]
