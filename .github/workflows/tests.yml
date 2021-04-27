@@ -156,4 +156,4 @@ jobs:
           path: target/debug/mv-node
           # path: target/**/mv-node
           if-no-files-found: warn
-          retention-days: 4
+          retention-days: 2
