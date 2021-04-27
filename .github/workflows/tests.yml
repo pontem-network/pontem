@@ -110,12 +110,7 @@ jobs:
           name: Clippy report
           toolchain: ${{ steps.rust.outputs.version }}
           token: ${{ secrets.GITHUB_TOKEN }}
-          args: -p=sp-mvm
-        # run: |
-        #   pushd pallets/sp-mvm
-        #   cargo clippy -p=sp-mvm --target=wasm32-unknown-unknown --no-default-features
-        #   popd
-        # env: { SKIP_WASM_BUILD: 1 }
+          args: -p=sp-mvm -p=sp-mvm-rpc -p=sp-mvm-rpc-runtime
 
   build:
     name: Build
