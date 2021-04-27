@@ -1,4 +1,7 @@
 #![cfg_attr(not(feature = "std"), no_std)]
+// clippy doesn't likes sp- macros
+#![allow(clippy::too_many_arguments)]
+#![allow(clippy::unnecessary_mut_passed)]
 
 use sp_std::prelude::*;
 use frame_support::weights::Weight;
