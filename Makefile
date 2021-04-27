@@ -12,7 +12,7 @@ check:
 
 .PHONY: clippy
 clippy:
-	pushd pallets/sp-mvm && SKIP_WASM_BUILD=1 cargo clippy
+	cargo clippy -p=sp-mvm -p=sp-mvm-rpc -p=sp-mvm-rpc-runtime
 	pushd pallets/sp-mvm && cargo clippy -p=sp-mvm --target=wasm32-unknown-unknown --no-default-features
 
 .PHONY: bench
