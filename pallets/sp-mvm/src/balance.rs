@@ -86,11 +86,9 @@ where
                 amount
                     .try_into()
                     .map_err(|_err| error!("Can't convert VM balance to native balance type."))
-                    .and_then(|amount: BalanceOf<T>| {
-                        Ok(
-                            <balances::Module<T> as Currency<T::AccountId>>::deposit_creating(
-                                &address, amount,
-                            ),
+                    .map(|amount: BalanceOf<T>| {
+                        <balances::Module<T> as Currency<T::AccountId>>::deposit_creating(
+                            &address, amount,
                         )
                     })
             })

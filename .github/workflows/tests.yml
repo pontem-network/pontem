@@ -105,17 +105,17 @@ jobs:
           override: true
 
       - name: Clippy
-        # uses: actions-rs/clippy-check@v1
-        # with:
-        #   name: Clippy report
-        #   toolchain: ${{ steps.rust.outputs.version }}
-        #   token: ${{ secrets.GITHUB_TOKEN }}
-        #   args: -p=sp-mvm --target=wasm32-unknown-unknown --no-default-features
-        run: |
-          pushd pallets/sp-mvm
-          cargo clippy -p=sp-mvm --target=wasm32-unknown-unknown --no-default-features
-          popd
-        env: { SKIP_WASM_BUILD: 1 }
+        uses: actions-rs/clippy-check@v1
+        with:
+          name: Clippy report
+          toolchain: ${{ steps.rust.outputs.version }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          args: -p=sp-mvm
+        # run: |
+        #   pushd pallets/sp-mvm
+        #   cargo clippy -p=sp-mvm --target=wasm32-unknown-unknown --no-default-features
+        #   popd
+        # env: { SKIP_WASM_BUILD: 1 }
 
   build:
     name: Build
