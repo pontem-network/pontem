@@ -14,7 +14,8 @@ env:
 jobs:
   coverage:
     name: "Coverage"
-    runs-on: self-hosted
+    # runs-on: self-hosted
+    runs-on: ubuntu-latest
     if: "!contains(github.event.head_commit.message, 'ci skip') && !contains(github.event.head_commit.message, 'skip ci')"
 
     defaults:
@@ -111,7 +112,6 @@ jobs:
         with:
           name: code-coverage-report
           path: ${{ steps.coverage.outputs.report }}
-
       # - name: upload report to Coveralls
       #   uses: coverallsapp/github-action@v1.1.2
       #   with:
