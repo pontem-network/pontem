@@ -110,12 +110,7 @@ jobs:
           name: Clippy report
           toolchain: ${{ steps.rust.outputs.version }}
           token: ${{ secrets.GITHUB_TOKEN }}
-          args: -p=sp-mvm
-        # run: |
-        #   pushd pallets/sp-mvm
-        #   cargo clippy -p=sp-mvm --target=wasm32-unknown-unknown --no-default-features
-        #   popd
-        # env: { SKIP_WASM_BUILD: 1 }
+          args: -p=sp-mvm -p=sp-mvm-rpc -p=sp-mvm-rpc-runtime
 
   build:
     name: Build
@@ -153,3 +148,12 @@ jobs:
 
       - name: Build
         run: cargo +${{ steps.rust.outputs.version }} build --all
+
+      - name: make artifact
+        uses: actions/upload-artifact@v2.2.3
+        with:
+          name: node-${{ matrix.os }}-debug
+          path: target/debug/mv-node
+          # path: target/**/mv-node
+          if-no-files-found: warn
+          retention-days: 2
