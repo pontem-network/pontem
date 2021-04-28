@@ -1,4 +1,4 @@
-name: Extra Tests
+name: Extra
 on:
   pull_request:
   push:
@@ -14,7 +14,7 @@ env:
 jobs:
   coverage:
     name: "Coverage"
-    runs-on: ${{ matrix.cfg.os }}
+    runs-on: self-hosted
     if: "!contains(github.event.head_commit.message, 'ci skip') && !contains(github.event.head_commit.message, 'skip ci')"
 
     defaults:
@@ -25,10 +25,10 @@ jobs:
       fail-fast: true
       matrix:
         cfg:
-          - os: self-hosted
-            grcov: grcov-linux-x86_64.tar.bz2
           - os: ubuntu-latest
             grcov: grcov-linux-x86_64.tar.bz2
+          # - os: self-hosted
+          #   grcov: grcov-linux-x86_64.tar.bz2
           ## macos disabled because it's so long
           # - os: macos-latest
           #   grcov: grcov-osx-x86_64.tar.bz2
@@ -112,8 +112,8 @@ jobs:
           name: code-coverage-report
           path: ${{ steps.coverage.outputs.report }}
 
-      - name: upload report to Coveralls
-        uses: coverallsapp/github-action@v1.1.2
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          path-to-lcov: ${{ steps.coverage.outputs.report }}
+      # - name: upload report to Coveralls
+      #   uses: coverallsapp/github-action@v1.1.2
+      #   with:
+      #     github-token: ${{ secrets.GITHUB_TOKEN }}
+      #     path-to-lcov: ${{ steps.coverage.outputs.report }}
