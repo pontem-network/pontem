@@ -4,7 +4,7 @@ authors = ["Pontem Network Team <https://pontem.network>"]
 description = "FRAME pallet adding Move-lang support."
 edition = "2018"
 repository = "https://github.com/pontem-network/sp-move"
-version = "0.2.4"
+version = "0.2.5"
 
 [package.metadata.docs.rs]
 targets = ["x86_64-unknown-linux-gnu"]
