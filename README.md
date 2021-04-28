@@ -19,6 +19,30 @@ Current status:
 
 Read [official documentation](https://docs.pontem.network/02.-getting-started/local_node).
 
+## Register PONT coin
+
+We need to register PONT coin information, so create new project using dove and write new script:
+
+```rustc
+script {
+    use 0x1::PONT;
+    use 0x1::Pontem;
+
+    fun register_pont() {
+        // To make sure PONT coin registered and known.
+        Pontem::register_coin<PONT::T>(b"PONT", 6);
+    }
+}
+```
+
+Compile transaction script:
+
+```sh
+dove ct 'register_pont()'
+```
+
+Execute script using [UI](./ui.md) or [CLI](./cli.md).
+
 ## LICENSE
 
 See [LICENSE](/LICENSE).
