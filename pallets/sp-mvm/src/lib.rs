@@ -240,8 +240,11 @@ pub mod pallet {
     #[pallet::hooks]
     impl<T: Config> Hooks<BlockNumberFor<T>> for Pallet<T> {
         #[cfg(not(feature = "no-vm-static"))]
-        fn on_finalize(_n: BlockNumberFor<T>) {
-            Self::get_vm().unwrap().clear();
+        fn on_finalize(_: BlockNumberFor<T>) {
+            if let Some(vm) = Self::get_move_vm_cell().get() {
+                vm.clear();
+                trace!("VM cache cleared on finalize block");
+            }
         }
     }
 
@@ -321,12 +324,6 @@ pub mod pallet {
                     .try_into()
                     .map_err(|_| Error::<T>::NumConversionError)?;
                 let time = <timestamp::Module<T> as UnixTime>::now().as_millis() as u64;
-                // let time = <timestamp::Module<T>>::now()
-                //     // .try_into()
-                //     // .map_err(|_| Error::<T>::NumConversionError)?
-                //     .saturated_into::<u64>()
-                //     .try_into()
-                //     .map_err(|_| Error::<T>::NumConversionError)?;
                 ExecutionContext::new(time, height as u64)
             };
 
@@ -413,18 +410,23 @@ pub mod pallet {
     }
 
     #[cfg(not(feature = "no-vm-static"))]
-    impl<T: Config> TryGetStaticMoveVm<DefaultEventHandler> for Pallet<T> {
+    impl<T: Config> GetStaticMoveVmCell for Pallet<T> {
         type Vm = VmWrapper<<Self as mvm::TryCreateMoveVm<T>>::Vm>;
+
+        #[inline(never)]
+        fn get_move_vm_cell() -> &'static OnceCell<VmWrapperTy> {
+            static VM: OnceCell<VmWrapperTy> = OnceCell::new();
+            &VM
+        }
+    }
+
+    #[cfg(not(feature = "no-vm-static"))]
+    impl<T: Config> TryGetStaticMoveVm for Pallet<T> {
+        type Vm = <Self as GetStaticMoveVmCell>::Vm;
         type Error = Error<T>;
 
         fn try_get_or_create_move_vm() -> Result<&'static Self::Vm, Self::Error> {
-            #[cfg(not(feature = "std"))]
-            use once_cell::race::OnceBox as OnceCell;
-            #[cfg(feature = "std")]
-            use once_cell::sync::OnceCell;
-
-            static VM: OnceCell<VmWrapperTy> = OnceCell::new();
-            VM.get_or_try_init(|| {
+            Self::get_move_vm_cell().get_or_try_init(|| {
                 trace!("Static VM initializing");
                 Self::try_create_move_vm_static().map(Into::into)
             })

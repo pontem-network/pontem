@@ -4,7 +4,7 @@ authors = ["Pontem Network Team <https://pontem.network>"]
 description = "FRAME pallet adding Move-lang support."
 edition = "2018"
 repository = "https://github.com/pontem-network/sp-move"
-version = "0.2.4"
+version = "0.2.5"
 
 [package.metadata.docs.rs]
 targets = ["x86_64-unknown-linux-gnu"]
@@ -26,32 +26,27 @@ package = "parity-scale-codec"
 [dependencies.move-vm]
 package = "mvm"
 git = "https://github.com/pontem-network/sp-move-vm.git"
-# branch = "milestone-3"
-rev = "1153b9eabf069137bb117c8e927e07d1a247b3fc"
+rev = "d558aef3584e8ef0efd58d593e7f461a26c00a89"
 default-features = false
 
 [dependencies.vm]
 git = "https://github.com/pontem-network/sp-move-vm.git"
-# branch = "milestone-3"
-rev = "1153b9eabf069137bb117c8e927e07d1a247b3fc"
+rev = "d558aef3584e8ef0efd58d593e7f461a26c00a89"
 default-features = false
 
 [dependencies.move-vm-runtime]
 git = "https://github.com/pontem-network/sp-move-vm.git"
-# branch = "milestone-3"
-rev = "1153b9eabf069137bb117c8e927e07d1a247b3fc"
+rev = "d558aef3584e8ef0efd58d593e7f461a26c00a89"
 default-features = false
 
 [dependencies.move-core-types]
 git = "https://github.com/pontem-network/sp-move-vm.git"
-# branch = "milestone-3"
-rev = "1153b9eabf069137bb117c8e927e07d1a247b3fc"
+rev = "d558aef3584e8ef0efd58d593e7f461a26c00a89"
 default-features = false
 
 [dependencies.move-vm-types]
 git = "https://github.com/pontem-network/sp-move-vm.git"
-# branch = "milestone-3"
-rev = "1153b9eabf069137bb117c8e927e07d1a247b3fc"
+rev = "d558aef3584e8ef0efd58d593e7f461a26c00a89"
 default-features = false
 
 [dependencies]
@@ -76,8 +71,7 @@ serde-alt = { version = "1", default-features = false, package = "alt_serde", fe
 package = "bcs"
 default-features = false
 git = "https://github.com/pontem-network/sp-move-vm.git"
-# branch = "milestone-3"
-rev = "1153b9eabf069137bb117c8e927e07d1a247b3fc"
+rev = "d558aef3584e8ef0efd58d593e7f461a26c00a89"
 optional = true
 
 

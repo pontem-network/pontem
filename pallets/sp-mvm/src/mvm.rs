@@ -27,14 +27,18 @@ pub use vm_static::*;
 mod vm_static {
     use move_vm::types::Gas;
     use move_vm::types::ScriptTx;
-    use move_vm::data::EventHandler;
     use move_vm::data::ExecutionContext;
 
     use crate::oracle::DummyOracle;
     use crate::storage::boxed::*;
     use crate::balance::boxed::BalancesAdapter;
     use crate::event::DefaultEventHandler;
-    use super::{Mvm, CreateMoveVm, TryCreateMoveVm};
+    use super::{Mvm, TryCreateMoveVm};
+
+    #[cfg(not(feature = "std"))]
+    pub use once_cell::race::OnceBox as OnceCell;
+    #[cfg(feature = "std")]
+    pub use once_cell::sync::OnceCell;
 
     /// Default type of Move VM implementation
     pub type DefaultVm<E, O> = Mvm<VmStorageAdapter, E, O, BalancesAdapter>;
@@ -104,53 +108,22 @@ mod vm_static {
         }
     }
 
-    /**
-    # Impl example
-
-    ```no_run,ignore
-    decl_storage! {
-        trait Store for Module<T: Trait> as VM {
-            /// Storage for move- write-sets contains code & resources
-            pub Storage: map hasher(blake2_128_concat) Vec<u8> => Option<Vec<u8>>;
-        }
-    }
-
-    impl<T: Trait> GetStaticMoveVm<MyEventHandler> for Module<T> {
-        type Vm = VmWrapperTy<Storage>;
-
-        fn get_or_create_move_vm() -> &'static Self::Vm {
-            #[cfg(not(feature = "std"))]
-            use once_cell::race::OnceBox as OnceCell;
-            #[cfg(feature = "std")]
-            use once_cell::sync::OnceCell;
-
-            static VM: OnceCell<VmWrapperTy<Storage>> = OnceCell::new();
-
-            // there .into() needed one-cell's OnceBox to
-            // into Box implicitly convertion for no-std
-            // into itself (noop) for std/test
-            #[allow(clippy::useless_conversion)]
-            VM.get_or_init(|| Self::create_move_vm_wrapped().into())
-        }
-    }
-    ```
-    */
-    pub trait GetStaticMoveVm<E: EventHandler> {
+    pub trait GetStaticMoveVmCell {
         type Vm: move_vm::Vm;
 
-        /// Get or create and get the VM
-        fn get_or_create_move_vm() -> &'static Self::Vm;
-    }
+        fn get_move_vm_cell() -> &'static OnceCell<Self::Vm>;
 
-    pub trait CreateMoveVmWrapped<T>: CreateMoveVm<T> {
-        fn create_move_vm_wrapped() -> VmWrapper<Self::Vm> {
-            VmWrapper::new(Self::create_move_vm())
+        fn move_vm_cell_is_inited() -> bool
+        where
+            <Self as GetStaticMoveVmCell>::Vm: 'static,
+        {
+            Self::get_move_vm_cell().get().is_some()
         }
     }
 
-    impl<T, C: CreateMoveVm<T>> CreateMoveVmWrapped<T> for C {}
+    // TODO: auto-impl TryGetStaticMoveVm
 
-    pub trait TryGetStaticMoveVm<E: EventHandler> {
+    pub trait TryGetStaticMoveVm {
         type Vm: move_vm::Vm;
         type Error;
 
