@@ -158,6 +158,45 @@ pub mod pallet {
             Ok(result)
         }
 
+        /// Batch publish module-package produced by Dove compiler
+        #[pallet::weight(T::GasWeightMapping::gas_to_weight(*gas_limit))]
+        pub fn publish_package(
+            origin: OriginFor<T>,
+            package: Vec<u8>,
+            gas_limit: u64,
+        ) -> DispatchResultWithPostInfo {
+            let sender = match ensure_root(origin.clone()) {
+                Ok(_) => {
+                    debug!("executing `publish package` with root");
+                    CORE_CODE_ADDRESS
+                }
+                Err(_) => {
+                    let signer = ensure_signed(origin)?;
+                    debug!("executing `publish package` with signed {:?}", signer);
+                    addr::account_to_account_address(&signer)
+                }
+            };
+
+            let vm = Self::get_vm()?;
+            let gas = Self::get_move_gas_limit(gas_limit)?;
+
+            let package = {
+                use move_vm::types::ModulePackage;
+                use move_vm::types::PublishPackageTx;
+
+                ModulePackage::try_from(&package[..])
+                    .map_err(|_| Error::<T>::TransactionValidationError)?
+                    .into_tx(sender)
+            };
+
+            let vm_result = vm.publish_module_package(gas, package, false);
+
+            // produce result with spended gas:
+            let result = result::from_vm_result::<T>(vm_result)?;
+
+            Ok(result)
+        }
+
         /// Batch publish std-modules by root account only
         // #[pallet::weight(T::GasWeightMapping::gas_to_weight(*gas_limit) * modules.len().into())]
         #[pallet::weight(T::GasWeightMapping::gas_to_weight(*gas_limit))]
