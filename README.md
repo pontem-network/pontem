@@ -43,6 +43,10 @@ dove ct 'register_pont()'
 
 Execute script using [UI](./ui.md) or [CLI](./cli.md).
 
+## More
+
+See [Move VM Pallet documentation](https://docs.pontem.network/02.-getting-started/getting_started).
+
 ## LICENSE
 
 See [LICENSE](/LICENSE).
