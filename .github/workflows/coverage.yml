@@ -25,8 +25,8 @@ jobs:
       fail-fast: true
       matrix:
         cfg:
-          - os: ubuntu-latest
-            grcov: grcov-linux-x86_64.tar.bz2
+          - grcov: grcov-linux-x86_64.tar.bz2
+            dove: linux-x86_64
           # - os: self-hosted
           #   grcov: grcov-linux-x86_64.tar.bz2
           ## macos disabled because it's so long
@@ -55,7 +55,7 @@ jobs:
         run: cargo clean
 
       - name: get latest grcov binary
-        if: matrix.cfg.os == 'ubuntu-latest'
+        # if: matrix.cfg.os == 'ubuntu-latest'
         uses: dsaltares/fetch-gh-release-asset@0.0.5
         with:
           repo: mozilla/grcov
@@ -63,7 +63,7 @@ jobs:
           file: ${{ matrix.cfg.grcov }}
 
       - name: unpack grcov release binary
-        if: matrix.cfg.os == 'ubuntu-latest'
+        # if: matrix.cfg.os == 'ubuntu-latest'
         run: |
           tar -xvf ${{ matrix.cfg.grcov }}
           sudo chown runner ./grcov && chmod +x ./grcov
