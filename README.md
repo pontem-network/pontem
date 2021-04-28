@@ -14,6 +14,10 @@ Current status:
 - [X] Writesets processing and storage support.
 - [X] Events support.
 - [X] Standard library supports native calls, like: block height, timestamp, signatures, etc.
+- [X] Basic RPC.
+- [X] [Documentation](https://docs.pontem.network).
+- [X] Testnet launched
+- [X] Unit tests.
 
 ## Installation
 
@@ -43,7 +47,7 @@ dove ct 'register_pont()'
 
 Execute script using [UI](./ui.md) or [CLI](./cli.md).
 
-## More
+## Documentation
 
 See [Move VM Pallet documentation](https://docs.pontem.network/02.-getting-started/getting_started).
 
