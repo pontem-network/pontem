@@ -1,0 +1,11 @@
+name: push at all
+on:
+ push:
+   branches:
+     - '*'
+jobs:
+ run_tests:
+   runs-on: self-hosted
+   steps:
+   - name: just test
+     run: ls -l
