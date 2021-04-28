@@ -1,12 +1,12 @@
-use frame_support::{dispatch};
+use frame_support::dispatch;
 use sp_runtime::DispatchError;
 
 mod common;
 use common::assets::*;
 use common::mock::*;
-use common::utils::*;
+use common::addr::*;
 
-// Publish module.
+/// Publish module then return result
 fn call_publish_module(
     origin: Origin,
     bc: Vec<u8>,
@@ -18,7 +18,7 @@ fn call_publish_module(
     result
 }
 
-// Execute script.
+/// Execute script then return result
 fn call_execute_script(
     origin: Origin,
     tx: UserTx,
@@ -32,9 +32,9 @@ fn call_execute_script(
     result
 }
 
-// Check status == out of gas.
+/// Check status == out of gas
 fn check_out_of_gas(error: u8, message: Option<&'static str>) {
-    assert_eq!(error, 148); // OutOfGas.
+    assert_eq!(error, 148); // OutOfGas
     assert_eq!(message, Some("OutOfGas"));
 }
 
@@ -116,46 +116,3 @@ fn execute_gas_limit() {
         }
     });
 }
-/*
-#[test]
-fn execute_store_block() {
-    new_test_ext().execute_with(|| {
-        let root = root_ps_acc();
-        let origin = origin_ps_acc();
-        let signer = Origin::signed(origin);
-        let block = StdMod::Block;
-        let store = UserMod::Store;
-
-        call_publish_module(root, block.bc().to_vec(), block.name());
-        call_publish_module(origin, store.bc().to_vec(), store.name());
-
-        const EXPECTED: u64 = 3;
-        for _ in 0..EXPECTED {
-            roll_next_block();
-        }
-        call_execute_script_tx_block(signer, UserTx::StoreSysBlock);
-        check_storage_block(EXPECTED);
-    });
-}
-
-#[test]
-fn execute_store_time() {
-    new_test_ext().execute_with(|| {
-        let root = root_ps_acc();
-        let origin = origin_ps_acc();
-        let signer = Origin::signed(origin);
-        let time = StdMod::Time;
-        let store = UserMod::Store;
-
-        call_publish_module(root, time.bc().to_vec(), time.name());
-        call_publish_module(origin, store.bc().to_vec(), store.name());
-
-        const EXPECTED: u64 = 3;
-        for _ in 0..EXPECTED {
-            roll_next_block();
-        }
-        call_execute_script_tx_block(signer, UserTx::StoreSysTime);
-        check_storage_block(EXPECTED * TIME_BLOCK_MULTIPLIER);
-    });
-}
-*/
