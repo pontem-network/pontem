@@ -24,15 +24,15 @@ jobs:
 
     strategy:
       fail-fast: true
-      matrix:
-        cfg:
-          - grcov: grcov-linux-x86_64.tar.bz2
-            dove: linux-x86_64
-          # - os: self-hosted
-          #   grcov: grcov-linux-x86_64.tar.bz2
-          ## macos disabled because it's so long
-          # - os: macos-latest
-          #   grcov: grcov-osx-x86_64.tar.bz2
+      # matrix:
+      #   cfg:
+      #     - grcov: grcov-linux-x86_64.tar.bz2
+      #       dove: linux-x86_64
+      #     # - os: self-hosted
+      #     #   grcov: grcov-linux-x86_64.tar.bz2
+      #     ## macos disabled because it's so long
+      #     # - os: macos-latest
+      #     #   grcov: grcov-osx-x86_64.tar.bz2
 
     env:
       SKIP_WASM_BUILD: 1
