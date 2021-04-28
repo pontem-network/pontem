@@ -31,9 +31,7 @@ pub mod pallet {
 
     use super::*;
     use super::storage::MoveVmStorage;
-    use super::storage::StorageAdapter;
     use gas::GasWeightMapping;
-    use oracle::DummyOracle;
     use event::*;
     use mvm::*;
 
@@ -50,8 +48,10 @@ pub mod pallet {
     use frame_system::pallet_prelude::*;
     use frame_support as support;
     use support::pallet_prelude::*;
+    use support::traits::UnixTime;
     use support::dispatch::DispatchResultWithPostInfo;
-    use codec::{FullCodec, FullEncode, Encode};
+    use sp_runtime::traits::UniqueSaturatedInto;
+    use codec::{FullCodec, FullEncode};
 
     use move_vm::Vm;
     use move_vm::mvm::Mvm;
@@ -240,7 +240,13 @@ pub mod pallet {
             tx_bc: Vec<u8>,
             gas_limit: u64,
             dry_run: bool,
-        ) -> Result<VmResult, Error<T>> {
+        ) -> Result<VmResult, Error<T>>
+        where
+            <T as timestamp::Config>::Moment: UniqueSaturatedInto<u64>,
+            // T::BlockNumber: BaseArithmetic,
+            // T::BlockNumber: UniqueSaturatedInto<u64>,
+            T::BlockNumber: TryInto<u64>,
+        {
             // TODO: some minimum gas for processing transaction from bytes?
             let transaction = Transaction::try_from(&tx_bc[..])
                 .map_err(|_| Error::<T>::TransactionValidationError)?;
@@ -277,11 +283,13 @@ pub mod pallet {
                 let height = frame_system::Module::<T>::block_number()
                     .try_into()
                     .map_err(|_| Error::<T>::NumConversionError)?;
-                let time = <timestamp::Module<T>>::get()
-                    .try_into()
-                    .map_err(|_| Error::<T>::NumConversionError)?
-                    .try_into()
-                    .map_err(|_| Error::<T>::NumConversionError)?;
+                let time = <timestamp::Module<T> as UnixTime>::now().as_millis() as u64;
+                // let time = <timestamp::Module<T>>::now()
+                //     // .try_into()
+                //     // .map_err(|_| Error::<T>::NumConversionError)?
+                //     .saturated_into::<u64>()
+                //     .try_into()
+                //     .map_err(|_| Error::<T>::NumConversionError)?;
                 ExecutionContext::new(time, height as u64)
             };
 
