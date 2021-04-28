@@ -60,6 +60,7 @@ pub mod pallet {
     use move_vm::types::ModuleTx;
     use move_vm::types::Transaction;
     use move_vm::types::VmResult;
+    use move_vm::types::ModulePackage;
     use move_core_types::account_address::AccountAddress;
     use move_core_types::language_storage::CORE_CODE_ADDRESS;
 
@@ -181,9 +182,6 @@ pub mod pallet {
             let gas = Self::get_move_gas_limit(gas_limit)?;
 
             let package = {
-                use move_vm::types::ModulePackage;
-                use move_vm::types::PublishPackageTx;
-
                 ModulePackage::try_from(&package[..])
                     .map_err(|_| Error::<T>::TransactionValidationError)?
                     .into_tx(sender)
