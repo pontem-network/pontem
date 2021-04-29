@@ -56,6 +56,7 @@ where
     T: system::Config,
     T::AccountId: Encode,
 {
+    #[inline]
     fn account_to_bytes(acc: &T::AccountId) -> [u8; AccountAddress::LENGTH] {
         account_to_bytes(acc)
     }
@@ -65,6 +66,7 @@ where
 mod tests {
     use super::address_to_account;
     use super::account_to_account_address;
+    use move_core_types::language_storage::CORE_CODE_ADDRESS;
     use sp_core::sr25519::Public;
     use sp_core::crypto::Ss58Codec;
 
@@ -100,6 +102,16 @@ mod tests {
             let addr = account_to_account_address(&pk_expected);
             let pk_decoded = address_to_account(&addr).expect("Cannot decode address");
             assert_eq!(pk_expected, pk_decoded);
+        }
+    }
+
+    #[test]
+    fn account_to_bytes() {
+        for pair in ALL.iter() {
+            let pk_expected = Public::from_ss58check(pair.0).unwrap();
+            let bytes = super::account_to_bytes(&pk_expected);
+            let bytes_expected = CORE_CODE_ADDRESS.to_u8();
+            assert_eq!(bytes_expected, bytes);
         }
     }
 }
