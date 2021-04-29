@@ -97,20 +97,40 @@ where
         .get_resource(&owner, &ty)
         .expect("VM state read storage (resource)")
         .expect(&format!("Resource '{}' should exist", ty));
-    let stored: T = bcs::from_bytes(&blob).unwrap();
+
+    let tt_str = format!("{}", ty);
+    println!("checking stored resource '{}'", tt_str);
+    let stored: T =
+        bcs::from_bytes(&blob).expect(&format!("Resource '{}' should exists", tt_str));
     assert_eq!(expected, stored);
 }
 
-pub fn get_type_tag_pont() -> StructTag {
+/// Returns TypeTag 0x1::PONT::T
+pub fn get_type_tag_pont_coin() -> StructTag {
+    StructTag {
+        address: ROOT_ADDR,
+        module: Identifier::new("PONT").unwrap(),
+        name: Identifier::new("T").unwrap(),
+        type_params: vec![],
+    }
+}
+
+/// Returns TypeTag Pontem::T<0x1::PONT::T>
+pub fn get_type_tag_pont_res() -> StructTag {
+    StructTag {
+        address: ROOT_ADDR,
+        module: Identifier::new("Pontem").unwrap(),
+        name: Identifier::new("T").unwrap(),
+        type_params: vec![TypeTag::Struct(get_type_tag_pont_coin())],
+    }
+}
+
+/// Returns TypeTag 0x1::Account::Balance<0x1::PONT::T>
+pub fn get_type_tag_balance_pont() -> StructTag {
     StructTag {
         address: ROOT_ADDR,
         module: Identifier::new("Account").unwrap(),
         name: Identifier::new("Balance").unwrap(),
-        type_params: vec![TypeTag::Struct(StructTag {
-            address: ROOT_ADDR,
-            module: Identifier::new("PONT").unwrap(),
-            name: Identifier::new("T").unwrap(),
-            type_params: vec![],
-        })],
+        type_params: vec![TypeTag::Struct(get_type_tag_pont_coin())],
     }
 }

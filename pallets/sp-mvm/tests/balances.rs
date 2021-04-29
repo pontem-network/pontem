@@ -29,7 +29,7 @@ fn check_storage_u128(address: AccountAddress, expected: u128) {
 }
 
 fn check_storage_pont(address: AccountAddress, expected: u128) {
-    let tt = get_type_tag_pont();
+    let tt = get_type_tag_balance_pont();
     check_storage_res(address, tt, expected);
 }
 
@@ -102,8 +102,6 @@ fn execute_deposit_withdraw_balance() {
 
         // check storage:
         check_storage_u128(to_move_addr(account), INITIAL_BALANCE);
-        // check balance for PONT assets (equivalent):
-        check_storage_pont(to_move_addr(account), 0);
 
         let balance = balances::Pallet::<Test>::free_balance(&account);
         assert_eq!(INITIAL_BALANCE, balance);

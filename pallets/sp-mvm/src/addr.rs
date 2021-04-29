@@ -66,7 +66,7 @@ where
 mod tests {
     use super::address_to_account;
     use super::account_to_account_address;
-    use move_core_types::language_storage::CORE_CODE_ADDRESS;
+    use super::AccountAddress;
     use sp_core::sr25519::Public;
     use sp_core::crypto::Ss58Codec;
 
@@ -110,7 +110,9 @@ mod tests {
         for pair in ALL.iter() {
             let pk_expected = Public::from_ss58check(pair.0).unwrap();
             let bytes = super::account_to_bytes(&pk_expected);
-            let bytes_expected = AccountAddress::from_hex_literal(pair.1).to_u8();
+            let bytes_expected = AccountAddress::from_hex_literal(&format!("0x{}", pair.1))
+                .expect("Cannot decode address, this cannot be, so unreachable.")
+                .to_u8();
             assert_eq!(bytes_expected, bytes);
         }
     }
