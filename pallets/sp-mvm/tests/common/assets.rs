@@ -1,5 +1,15 @@
 #![allow(dead_code)]
 
+const PACKAGES: &[&str] = &[
+    "Assets",
+];
+const PACKAGES_BYTECODE: &[&[u8]] = &[
+    include_bytes!("../assets/target/packages/assets.pac")
+];
+const PACKAGES_MODULES: &[&[&str]] = &[
+    &["Store", "EventProxy"],
+];
+
 const STD_MODULES: &[&str] = &[
     "Block", "PONT", "Signer", "Time", "Event", "Pontem", "Account",
 ];
@@ -58,6 +68,14 @@ pub trait BinAsset: Sized + Copy + Into<usize> {
     fn all() -> &'static [Self];
 }
 
+pub trait BinAssetPackage: BinAsset {
+    const MODULES: &'static [&'static [&'static str]];
+
+    fn modules(&self) -> &[&'static str] {
+        Self::MODULES[(*self).into()]
+    }
+}
+
 #[repr(usize)]
 #[derive(Copy, Clone, Debug)]
 pub enum StdMod {
@@ -75,6 +93,12 @@ pub enum StdMod {
 pub enum UserMod {
     Store = 0,
     EventProxy = 1,
+}
+
+#[repr(usize)]
+#[derive(Copy, Clone, Debug)]
+pub enum Packages {
+    Assets = 0,
 }
 
 #[repr(usize)]
@@ -99,6 +123,12 @@ impl Into<usize> for StdMod {
 }
 
 impl Into<usize> for UserMod {
+    fn into(self) -> usize {
+        self as usize
+    }
+}
+
+impl Into<usize> for Packages {
     fn into(self) -> usize {
         self as usize
     }
@@ -150,4 +180,19 @@ impl BinAsset for UserTx {
             Self::StoreGetBalance,
         ]
     }
+}
+
+impl BinAsset for Packages {
+    const NAMES: &'static [&'static str] = PACKAGES;
+    const BYTES: &'static [&'static [u8]] = PACKAGES_BYTECODE;
+
+    fn all() -> &'static [Self] {
+        &[
+            Self::Assets,
+        ]
+    }
+}
+
+impl BinAssetPackage for Packages {
+    const MODULES: &'static [&'static [&'static str]] = PACKAGES_MODULES;
 }
