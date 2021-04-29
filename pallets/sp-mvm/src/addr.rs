@@ -110,7 +110,7 @@ mod tests {
         for pair in ALL.iter() {
             let pk_expected = Public::from_ss58check(pair.0).unwrap();
             let bytes = super::account_to_bytes(&pk_expected);
-            let bytes_expected = CORE_CODE_ADDRESS.to_u8();
+            let bytes_expected = AccountAddress::from_hex_literal(pair.1).to_u8();
             assert_eq!(bytes_expected, bytes);
         }
     }
