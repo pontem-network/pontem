@@ -102,14 +102,13 @@ fn execute_script() {
 }
 
 #[test]
-#[ignore = "FIXME: Origin::root() produces BadOrigin because we should build move with `to_move_addr(Origin::root())`."]
 /// publish package as root
 fn publish_package_as_root() {
     new_test_ext().execute_with(|| {
         utils::publish_std();
 
         const GAS_LIMIT: u64 = 1_000_000;
-        let package = Packages::Assets;
+        let package = RootPackages::Assets;
         let root = root_ps_acc();
 
         utils::publish_package(root, package, GAS_LIMIT);
@@ -123,7 +122,7 @@ fn publish_package_as_origin() {
         utils::publish_std();
 
         const GAS_LIMIT: u64 = 1_000_000;
-        let package = Packages::Assets;
+        let package = UsrPackages::Assets;
         let origin = origin_ps_acc();
 
         utils::publish_package(origin, package, GAS_LIMIT);
