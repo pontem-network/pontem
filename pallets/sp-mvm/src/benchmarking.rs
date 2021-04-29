@@ -46,7 +46,7 @@ benchmarks! {
             VMStorage::<T>::insert(module_access_core(name), module);
         }
         let caller: T::AccountId = whitelisted_caller();
-        let module = include_bytes!("../tests/benchmark_assets/target/modules/23_StdImport.mv").to_vec();
+        let module = include_bytes!("../tests/benchmark_assets/target/modules/22_StdImport.mv").to_vec();
     }: publish_module(RawOrigin::Signed(caller), module, 100_000_000)
     verify {
         assert!(VMStorage::<T>::contains_key(module_access("StdImport")));
@@ -218,30 +218,25 @@ pub fn stdlib() -> Vec<(&'static str, Vec<u8>)> {
             include_bytes!("../tests/benchmark_assets/target/modules/16_Security.mv").to_vec(),
         ),
         (
-            "SecurityStorage",
-            include_bytes!("../tests/benchmark_assets/target/modules/17_SecurityStorage.mv")
-                .to_vec(),
-        ),
-        (
             "PONT",
-            include_bytes!("../tests/benchmark_assets/target/modules/18_PONT.mv").to_vec(),
+            include_bytes!("../tests/benchmark_assets/target/modules/17_PONT.mv").to_vec(),
         ),
         (
             "FixedPoint32",
-            include_bytes!("../tests/benchmark_assets/target/modules/19_FixedPoint32.mv")
+            include_bytes!("../tests/benchmark_assets/target/modules/18_FixedPoint32.mv")
                 .to_vec(),
         ),
         (
             "Debug",
-            include_bytes!("../tests/benchmark_assets/target/modules/20_Debug.mv").to_vec(),
+            include_bytes!("../tests/benchmark_assets/target/modules/19_Debug.mv").to_vec(),
         ),
         (
             "Coins",
-            include_bytes!("../tests/benchmark_assets/target/modules/21_Coins.mv").to_vec(),
+            include_bytes!("../tests/benchmark_assets/target/modules/20_Coins.mv").to_vec(),
         ),
         (
             "Block",
-            include_bytes!("../tests/benchmark_assets/target/modules/22_Block.mv").to_vec(),
+            include_bytes!("../tests/benchmark_assets/target/modules/21_Block.mv").to_vec(),
         ),
     ]
 }
