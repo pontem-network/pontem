@@ -33,22 +33,6 @@ fn publish_module() {
 }
 
 #[test]
-#[ignore = "FIXME: Origin::root() produces BadOrigin because we should build move with `to_move_addr(Origin::root())`."]
-/// publish std modules as root
-fn publish_module_as_root() {
-    new_test_ext().execute_with(|| {
-        let event = StdMod::Event;
-        let proxy = UserMod::EventProxy;
-
-        utils::publish_module_raw_with_origin_unchecked(Origin::root(), event.bc().to_vec());
-        utils::check_storage_mod_raw_with_addr(ROOT_ADDR, event.bc(), event.name());
-
-        utils::publish_module_raw_with_origin_unchecked(Origin::root(), proxy.bc().to_vec());
-        utils::check_storage_mod_raw_with_addr(ROOT_ADDR, proxy.bc(), proxy.name());
-    });
-}
-
-#[test]
 /// publish std modules as root
 fn publish_batch_std_as_root() {
     new_test_ext().execute_with(|| {
@@ -123,3 +107,9 @@ fn execute_script() {
         })
     });
 }
+
+// TODO: publish std modules as root
+// call `utils::publish_module_raw_with_origin_unchecked`
+// with `Origin::root()`
+// and check there is mod exists for ROOT_ADDR
+// NOTE: Origin::root() produces BadOrigin because we should build move with `to_move_addr(Origin::root())`.
