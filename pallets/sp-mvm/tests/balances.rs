@@ -28,6 +28,11 @@ fn check_storage_u128(address: AccountAddress, expected: u128) {
     check_storage_res(address, tag, expected);
 }
 
+fn check_storage_pont(address: AccountAddress, expected: u128) {
+    let tt = get_type_tag_balance_pont();
+    check_storage_res(address, tt, expected);
+}
+
 #[test]
 fn execute_get_balance() {
     new_test_ext().execute_with(|| {
@@ -46,7 +51,9 @@ fn execute_get_balance() {
 
         // check storage:
         check_storage_u128(to_move_addr(account), INITIAL_BALANCE);
-        // TODO: chack PS balance
+
+        let balance = balances::Pallet::<Test>::free_balance(&account);
+        assert_eq!(INITIAL_BALANCE, balance);
     });
 }
 
@@ -68,7 +75,12 @@ fn execute_deposit_balance() {
 
         // check storage:
         check_storage_u128(to_move_addr(account), INITIAL_BALANCE / 2);
-        // TODO: chack PS balance
+        // check balance for PONT assets (equivalent):
+        check_storage_pont(to_move_addr(account), INITIAL_BALANCE / 2);
+
+        // let total = balances::TotalIssuance::<Test>::get();
+        let balance = balances::Pallet::<Test>::free_balance(&account);
+        assert_eq!(INITIAL_BALANCE / 2, balance);
     });
 }
 
@@ -90,6 +102,91 @@ fn execute_deposit_withdraw_balance() {
 
         // check storage:
         check_storage_u128(to_move_addr(account), INITIAL_BALANCE);
-        // TODO: chack PS balance
+
+        let balance = balances::Pallet::<Test>::free_balance(&account);
+        assert_eq!(INITIAL_BALANCE, balance);
     });
+}
+
+mod adapter {
+    use move_vm::data::BalanceAccess;
+    use sp_mvm::balance::BalancesAdapter;
+    use sp_mvm::balance::boxed::BalancesAdapter as BoxedBalancesAdapter;
+
+    use super::*;
+
+    fn test_get_balance_with<T: BalanceAccess>(adapter: &T) {
+        new_test_ext().execute_with(|| {
+            let origin = origin_ps_acc();
+            let account = to_move_addr(origin.clone());
+            let expected = balances::Pallet::<Test>::free_balance(&origin);
+            let value = adapter.get_balance(&account, "PONT");
+            assert_eq!(Some(expected), value);
+        });
+    }
+
+    fn test_deposit_with<T: BalanceAccess>(adapter: &T) {
+        new_test_ext().execute_with(|| {
+            let origin = origin_ps_acc();
+            let account = to_move_addr(origin.clone());
+            let initial_balance = balances::Pallet::<Test>::free_balance(&origin);
+
+            let expected_balance = initial_balance / 2;
+
+            adapter.deposit(&account, "PONT", expected_balance);
+
+            let actual_balance = balances::Pallet::<Test>::free_balance(&origin);
+
+            assert_eq!(expected_balance, actual_balance);
+        });
+    }
+
+    fn test_withdraw_with<T: BalanceAccess>(adapter: &T) {
+        new_test_ext().execute_with(|| {
+            let origin = origin_ps_acc();
+            let account = to_move_addr(origin.clone());
+            let initial_balance = balances::Pallet::<Test>::free_balance(&origin);
+
+            adapter.withdraw(&account, "PONT", initial_balance);
+
+            let actual_balance = balances::Pallet::<Test>::free_balance(&origin);
+            assert_eq!(initial_balance * 2, actual_balance);
+        });
+    }
+
+    #[test]
+    fn get_balance() {
+        let adapter = BalancesAdapter::<Test>::new();
+        test_get_balance_with(&adapter);
+    }
+
+    #[test]
+    fn get_balance_boxed() {
+        let adapter = BoxedBalancesAdapter::from(BalancesAdapter::<Test>::new());
+        test_get_balance_with(&adapter);
+    }
+
+    #[test]
+    fn deposit() {
+        let adapter = BalancesAdapter::<Test>::new();
+        test_deposit_with(&adapter);
+    }
+
+    #[test]
+    fn deposit_boxed() {
+        let adapter = BoxedBalancesAdapter::from(BalancesAdapter::<Test>::new());
+        test_deposit_with(&adapter);
+    }
+
+    #[test]
+    fn withdraw() {
+        let adapter = BalancesAdapter::<Test>::new();
+        test_withdraw_with(&adapter);
+    }
+
+    #[test]
+    fn withdraw_boxed() {
+        let adapter = BoxedBalancesAdapter::from(BalancesAdapter::<Test>::new());
+        test_withdraw_with(&adapter);
+    }
 }

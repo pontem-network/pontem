@@ -136,6 +136,7 @@ pub type Sys = system::Module<Test>;
 pub type Time = timestamp::Module<Test>;
 pub type MoveEvent = sp_mvm::Event<Test>;
 
+// TODO: use this `MockOracle` instead of the real one
 #[derive(Clone, Copy, Default)]
 pub struct MockOracle(pub Option<u128>);
 

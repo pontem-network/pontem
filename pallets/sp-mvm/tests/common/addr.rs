@@ -43,3 +43,39 @@ pub fn root_move_addr() -> AccountAddress {
 pub fn to_move_addr(pk: Public) -> AccountAddress {
     account_to_account_address(&pk)
 }
+
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn root_move_addr() {
+        use move_core_types::language_storage::CORE_CODE_ADDRESS;
+        assert_eq!(CORE_CODE_ADDRESS, super::root_move_addr());
+    }
+
+    #[test]
+    fn root_ps_acc() {
+        use move_core_types::language_storage::CORE_CODE_ADDRESS;
+        assert_eq!(CORE_CODE_ADDRESS.to_u8(), super::root_ps_acc().0);
+    }
+
+    #[test]
+    fn origin_move_addr() {
+        let expected = super::AccountAddress::from_hex_literal(
+            "0x8eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a48",
+        )
+        .unwrap();
+        assert_eq!(expected, super::origin_move_addr());
+    }
+
+    #[test]
+    fn origin_to_move_addr() {
+        use super::*;
+
+        let expected = AccountAddress::from_hex_literal(
+            "0x8eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a48",
+        )
+        .unwrap();
+        let addr = to_move_addr(origin_ps_acc());
+        assert_eq!(expected, addr);
+    }
+}

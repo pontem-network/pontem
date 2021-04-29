@@ -11,22 +11,23 @@ const USR_PACKAGES_BYTECODE: &[&[u8]] =
 const USR_PACKAGES_MODULES: &[&[&str]] = &[&["Store", "EventProxy"]];
 
 const STD_MODULES: &[&str] = &[
-    "Block", "PONT", "Signer", "Time", "Event", "Pontem", "Account",
+    "Block", "Coins", "PONT", "Signer", "Time", "Event", "Pontem", "Account",
 ];
 const STD_BYTECODE: &[&[u8]] = &[
     include_bytes!("../assets/user/target/modules/0_Block.mv"),
-    include_bytes!("../assets/user/target/modules/1_PONT.mv"),
-    include_bytes!("../assets/user/target/modules/2_Signer.mv"),
-    include_bytes!("../assets/user/target/modules/3_Time.mv"),
-    include_bytes!("../assets/user/target/modules/5_Event.mv"),
-    include_bytes!("../assets/user/target/modules/6_Pontem.mv"),
-    include_bytes!("../assets/user/target/modules/7_Account.mv"),
+    include_bytes!("../assets/user/target/modules/1_Coins.mv"),
+    include_bytes!("../assets/user/target/modules/2_PONT.mv"),
+    include_bytes!("../assets/user/target/modules/3_Signer.mv"),
+    include_bytes!("../assets/user/target/modules/4_Time.mv"),
+    include_bytes!("../assets/user/target/modules/6_Event.mv"),
+    include_bytes!("../assets/user/target/modules/7_Pontem.mv"),
+    include_bytes!("../assets/user/target/modules/8_Account.mv"),
 ];
 
 const USER_MODULES: &[&str] = &["Store", "EventProxy"];
 const USER_BYTECODE: &[&[u8]] = &[
-    include_bytes!("../assets/user/target/modules/4_Store.mv"),
-    include_bytes!("../assets/user/target/modules/8_EventProxy.mv"),
+    include_bytes!("../assets/user/target/modules/5_Store.mv"),
+    include_bytes!("../assets/user/target/modules/9_EventProxy.mv"),
 ];
 
 const TX_NAMES: &[&str] = &[
@@ -40,6 +41,7 @@ const TX_NAMES: &[&str] = &[
     "store_native_deposit_reg",
     "store_native_withdraw",
     "store_native_withdraw_reg",
+    "get_price_test",
 ];
 const TX_BYTECODE: &[&[u8]] = &[
     include_bytes!("../assets/user/target/transactions/store_u64.mvt"),
@@ -52,6 +54,7 @@ const TX_BYTECODE: &[&[u8]] = &[
     include_bytes!("../assets/user/target/transactions/store_native_deposit_reg.mvt"),
     include_bytes!("../assets/user/target/transactions/store_native_withdraw.mvt"),
     include_bytes!("../assets/user/target/transactions/store_native_withdraw_reg.mvt"),
+    include_bytes!("../assets/user/target/transactions/get_price_test.mvt"),
 ];
 
 pub trait BinAsset: Sized + Copy + Into<usize> {
@@ -80,12 +83,13 @@ pub trait BinAssetPackage: BinAsset {
 #[derive(Copy, Clone, Debug)]
 pub enum StdMod {
     Block = 0,
-    PONT = 1,
-    Signer = 2,
-    Time = 3,
-    Event = 4,
-    Pontem = 5,
-    Account = 6,
+    Coins = 1,
+    PONT = 2,
+    Signer = 3,
+    Time = 4,
+    Event = 5,
+    Pontem = 6,
+    Account = 7,
 }
 
 #[repr(usize)]
@@ -120,6 +124,7 @@ pub enum UserTx {
     StoreNativeDepositReg = 7,
     StoreNativeWithdraw = 8,
     StoreNativeWithdrawReg = 9,
+    GetPriceTest = 10,
 }
 
 impl Into<usize> for StdMod {
@@ -159,6 +164,7 @@ impl BinAsset for StdMod {
     fn all() -> &'static [Self] {
         &[
             Self::Block,
+            Self::Coins,
             Self::PONT,
             Self::Signer,
             Self::Time,
@@ -190,6 +196,7 @@ impl BinAsset for UserTx {
             Self::StoreSysTime,
             Self::InfLoop,
             Self::StoreGetBalance,
+            Self::GetPriceTest,
         ]
     }
 }

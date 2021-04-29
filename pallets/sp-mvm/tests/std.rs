@@ -33,18 +33,25 @@ fn publish_module() {
 }
 
 #[test]
-#[ignore = "FIXME: Origin::root() produces BadOrigin because we should build move with `to_move_addr(Origin::root())`."]
 /// publish std modules as root
-fn publish_module_as_root() {
+fn publish_batch_std_as_root() {
     new_test_ext().execute_with(|| {
-        let event = StdMod::Event;
-        let proxy = UserMod::EventProxy;
+        const GAS_LIMIT: u64 = 1_000_000;
 
-        utils::publish_module_raw_with_origin_unchecked(Origin::root(), event.bc().to_vec());
-        utils::check_storage_mod_raw_with_addr(ROOT_ADDR, event.bc().to_vec(), event.name());
+        let root = root_ps_acc();
 
-        utils::publish_module_raw_with_origin_unchecked(Origin::root(), proxy.bc().to_vec());
-        utils::check_storage_mod_raw_with_addr(ROOT_ADDR, proxy.bc().to_vec(), proxy.name());
+        // execute VM for publish vec of modules:
+        Mvm::publish_std(
+            Origin::root(),
+            StdMod::all().into_iter().map(|m| m.bc().to_vec()).collect(),
+            GAS_LIMIT,
+        )
+        .expect("Publish module");
+
+        // check storage:
+        for module in StdMod::all().into_iter() {
+            utils::check_storage_mod_raw(root, module.bc(), module.name());
+        }
     });
 }
 
@@ -128,3 +135,9 @@ fn publish_package_as_origin() {
         utils::publish_package(origin, package, GAS_LIMIT);
     });
 }
+
+// TODO: publish std modules as root
+// call `utils::publish_module_raw_with_origin_unchecked`
+// with `Origin::root()`
+// and check there is mod exists for ROOT_ADDR
+// NOTE: Origin::root() produces BadOrigin because we should build move with `to_move_addr(Origin::root())`.
