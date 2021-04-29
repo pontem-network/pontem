@@ -82,15 +82,15 @@ jobs:
           sudo chown runner ./dove && chmod +x ./dove
           mv ./dove ~/.cargo/bin/dove
           dove -V
+
       - name: Build test resources
-        # run: pushd pallets/sp-mvm/tests/assets; ./build_assets.sh
         run: make assets
 
       - name: cargo build tests +profile
         uses: actions-rs/cargo@v1
         with:
           command: test
-          args: -p=sp-mvm --no-fail-fast
+          args: -p=sp-mvm --no-fail-fast -- --test-threads=1
 
       - id: coverage_html
         name: coverage analysis with grcov (html)
