@@ -1,22 +1,32 @@
 #![allow(dead_code)]
 
+const ROOT_PACKAGES: &[&str] = &["Assets"];
+const ROOT_PACKAGES_BYTECODE: &[&[u8]] =
+    &[include_bytes!("../assets/root/target/packages/assets.pac")];
+const ROOT_PACKAGES_MODULES: &[&[&str]] = &[&["Store", "EventProxy"]];
+
+const USR_PACKAGES: &[&str] = &["Assets"];
+const USR_PACKAGES_BYTECODE: &[&[u8]] =
+    &[include_bytes!("../assets/user/target/packages/assets.pac")];
+const USR_PACKAGES_MODULES: &[&[&str]] = &[&["Store", "EventProxy"]];
+
 const STD_MODULES: &[&str] = &[
     "Block", "PONT", "Signer", "Time", "Event", "Pontem", "Account",
 ];
 const STD_BYTECODE: &[&[u8]] = &[
-    include_bytes!("../assets/target/modules/0_Block.mv"),
-    include_bytes!("../assets/target/modules/1_PONT.mv"),
-    include_bytes!("../assets/target/modules/2_Signer.mv"),
-    include_bytes!("../assets/target/modules/3_Time.mv"),
-    include_bytes!("../assets/target/modules/5_Event.mv"),
-    include_bytes!("../assets/target/modules/6_Pontem.mv"),
-    include_bytes!("../assets/target/modules/7_Account.mv"),
+    include_bytes!("../assets/user/target/modules/0_Block.mv"),
+    include_bytes!("../assets/user/target/modules/1_PONT.mv"),
+    include_bytes!("../assets/user/target/modules/2_Signer.mv"),
+    include_bytes!("../assets/user/target/modules/3_Time.mv"),
+    include_bytes!("../assets/user/target/modules/5_Event.mv"),
+    include_bytes!("../assets/user/target/modules/6_Pontem.mv"),
+    include_bytes!("../assets/user/target/modules/7_Account.mv"),
 ];
 
 const USER_MODULES: &[&str] = &["Store", "EventProxy"];
 const USER_BYTECODE: &[&[u8]] = &[
-    include_bytes!("../assets/target/modules/4_Store.mv"),
-    include_bytes!("../assets/target/modules/8_EventProxy.mv"),
+    include_bytes!("../assets/user/target/modules/4_Store.mv"),
+    include_bytes!("../assets/user/target/modules/8_EventProxy.mv"),
 ];
 
 const TX_NAMES: &[&str] = &[
@@ -32,16 +42,16 @@ const TX_NAMES: &[&str] = &[
     "store_native_withdraw_reg",
 ];
 const TX_BYTECODE: &[&[u8]] = &[
-    include_bytes!("../assets/target/transactions/store_u64.mvt"),
-    include_bytes!("../assets/target/transactions/emit_event.mvt"),
-    include_bytes!("../assets/target/transactions/store_system_block.mvt"),
-    include_bytes!("../assets/target/transactions/store_system_timestamp.mvt"),
-    include_bytes!("../assets/target/transactions/inf_loop.mvt"),
-    include_bytes!("../assets/target/transactions/store_native_balance.mvt"),
-    include_bytes!("../assets/target/transactions/store_native_deposit.mvt"),
-    include_bytes!("../assets/target/transactions/store_native_deposit_reg.mvt"),
-    include_bytes!("../assets/target/transactions/store_native_withdraw.mvt"),
-    include_bytes!("../assets/target/transactions/store_native_withdraw_reg.mvt"),
+    include_bytes!("../assets/user/target/transactions/store_u64.mvt"),
+    include_bytes!("../assets/user/target/transactions/emit_event.mvt"),
+    include_bytes!("../assets/user/target/transactions/store_system_block.mvt"),
+    include_bytes!("../assets/user/target/transactions/store_system_timestamp.mvt"),
+    include_bytes!("../assets/user/target/transactions/inf_loop.mvt"),
+    include_bytes!("../assets/user/target/transactions/store_native_balance.mvt"),
+    include_bytes!("../assets/user/target/transactions/store_native_deposit.mvt"),
+    include_bytes!("../assets/user/target/transactions/store_native_deposit_reg.mvt"),
+    include_bytes!("../assets/user/target/transactions/store_native_withdraw.mvt"),
+    include_bytes!("../assets/user/target/transactions/store_native_withdraw_reg.mvt"),
 ];
 
 pub trait BinAsset: Sized + Copy + Into<usize> {
@@ -56,6 +66,14 @@ pub trait BinAsset: Sized + Copy + Into<usize> {
     }
 
     fn all() -> &'static [Self];
+}
+
+pub trait BinAssetPackage: BinAsset {
+    const MODULES: &'static [&'static [&'static str]];
+
+    fn modules(&self) -> &[&'static str] {
+        Self::MODULES[(*self).into()]
+    }
 }
 
 #[repr(usize)]
@@ -75,6 +93,18 @@ pub enum StdMod {
 pub enum UserMod {
     Store = 0,
     EventProxy = 1,
+}
+
+#[repr(usize)]
+#[derive(Copy, Clone, Debug)]
+pub enum RootPackages {
+    Assets = 0,
+}
+
+#[repr(usize)]
+#[derive(Copy, Clone, Debug)]
+pub enum UsrPackages {
+    Assets = 0,
 }
 
 #[repr(usize)]
@@ -99,6 +129,18 @@ impl Into<usize> for StdMod {
 }
 
 impl Into<usize> for UserMod {
+    fn into(self) -> usize {
+        self as usize
+    }
+}
+
+impl Into<usize> for RootPackages {
+    fn into(self) -> usize {
+        self as usize
+    }
+}
+
+impl Into<usize> for UsrPackages {
     fn into(self) -> usize {
         self as usize
     }
@@ -150,4 +192,30 @@ impl BinAsset for UserTx {
             Self::StoreGetBalance,
         ]
     }
+}
+
+impl BinAsset for RootPackages {
+    const NAMES: &'static [&'static str] = ROOT_PACKAGES;
+    const BYTES: &'static [&'static [u8]] = ROOT_PACKAGES_BYTECODE;
+
+    fn all() -> &'static [Self] {
+        &[Self::Assets]
+    }
+}
+
+impl BinAssetPackage for RootPackages {
+    const MODULES: &'static [&'static [&'static str]] = ROOT_PACKAGES_MODULES;
+}
+
+impl BinAsset for UsrPackages {
+    const NAMES: &'static [&'static str] = USR_PACKAGES;
+    const BYTES: &'static [&'static [u8]] = USR_PACKAGES_BYTECODE;
+
+    fn all() -> &'static [Self] {
+        &[Self::Assets]
+    }
+}
+
+impl BinAssetPackage for UsrPackages {
+    const MODULES: &'static [&'static [&'static str]] = USR_PACKAGES_MODULES;
 }

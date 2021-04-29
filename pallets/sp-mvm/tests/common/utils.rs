@@ -1,5 +1,6 @@
 #![allow(dead_code)]
 
+use std::convert::TryFrom;
 use frame_support::dispatch::DispatchResultWithPostInfo as PsResult;
 use frame_system as system;
 use move_core_types::account_address::AccountAddress;
@@ -8,6 +9,7 @@ use move_core_types::language_storage::ModuleId;
 use move_core_types::language_storage::StructTag;
 use move_vm_runtime::data_cache::RemoteCache;
 use move_vm::data::*;
+use move_vm::types::ModulePackage;
 
 use sp_mvm::storage::MoveVmStorage;
 
@@ -46,6 +48,54 @@ pub fn publish_module_raw_with_origin_unchecked(origin: Origin, bc: Vec<u8>) {
     // execute VM for publish module:
     Mvm::publish_module(origin, bc, GAS_LIMIT).expect("Publish module");
 }
+
+///////////////////////////
+
+/// Publish package.
+
+/// Publish package __with__ storage check
+pub fn publish_package<Asset: BinAssetPackage>(
+    signer: AccountId,
+    package: Asset,
+    gas_limit: u64,
+) {
+    publish_package_raw(signer, package.bc().to_vec(), gas_limit, package.modules());
+}
+
+/// Publish package __without__ storage check
+pub fn publish_package_unchecked<Asset: BinAssetPackage>(
+    signer: AccountId,
+    package: Asset,
+    gas_limit: u64,
+) {
+    publish_package_raw_unchecked(signer, package.bc().to_vec(), gas_limit);
+}
+
+pub fn publish_package_raw(signer: AccountId, bc: Vec<u8>, gas_limit: u64, names: &[&str]) {
+    publish_package_raw_with_origin_unchecked(Origin::signed(signer), bc.clone(), gas_limit);
+
+    let (modules, _) = ModulePackage::try_from(&bc[..])
+        .unwrap()
+        .into_tx(ROOT_ADDR)
+        .into_inner();
+
+    for (i, mbc) in modules.iter().enumerate() {
+        check_storage_mod_raw(signer, mbc.to_vec(), names[i]);
+    }
+}
+
+/// Publish package __without__ storage check
+pub fn publish_package_raw_unchecked(signer: AccountId, bc: Vec<u8>, gas_limit: u64) {
+    publish_package_raw_with_origin_unchecked(Origin::signed(signer), bc.clone(), gas_limit)
+}
+
+/// Publish package __without__ storage check
+pub fn publish_package_raw_with_origin_unchecked(origin: Origin, bc: Vec<u8>, gas_limit: u64) {
+    // execute VM for publish module:
+    Mvm::publish_package(origin, bc, gas_limit).expect("Publish package");
+}
+
+///////////////////////////
 
 /// Publish entire stdlib with sudo/root key
 pub fn publish_std() {
