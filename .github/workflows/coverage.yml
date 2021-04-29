@@ -90,7 +90,7 @@ jobs:
         uses: actions-rs/cargo@v1
         with:
           command: test
-          args: -p=sp-mvm --all-features --no-fail-fast
+          args: -p=sp-mvm --no-fail-fast
 
       - id: coverage_html
         name: coverage analysis with grcov (html)
