@@ -1,14 +1,8 @@
 #![allow(dead_code)]
 
-const PACKAGES: &[&str] = &[
-    "Assets",
-];
-const PACKAGES_BYTECODE: &[&[u8]] = &[
-    include_bytes!("../assets/target/packages/assets.pac")
-];
-const PACKAGES_MODULES: &[&[&str]] = &[
-    &["Store", "EventProxy"],
-];
+const PACKAGES: &[&str] = &["Assets"];
+const PACKAGES_BYTECODE: &[&[u8]] = &[include_bytes!("../assets/target/packages/assets.pac")];
+const PACKAGES_MODULES: &[&[&str]] = &[&["Store", "EventProxy"]];
 
 const STD_MODULES: &[&str] = &[
     "Block", "PONT", "Signer", "Time", "Event", "Pontem", "Account",
@@ -187,9 +181,7 @@ impl BinAsset for Packages {
     const BYTES: &'static [&'static [u8]] = PACKAGES_BYTECODE;
 
     fn all() -> &'static [Self] {
-        &[
-            Self::Assets,
-        ]
+        &[Self::Assets]
     }
 }
 
