@@ -5,6 +5,6 @@ pub struct DummyOracle;
 
 impl Oracle for DummyOracle {
     fn get_price(&self, _ticker: &str) -> Option<u128> {
-        None
+        Some(1)
     }
 }

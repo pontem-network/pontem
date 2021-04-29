@@ -13,7 +13,7 @@ use sp_runtime::{
     transaction_validity::{TransactionValidity, TransactionSource},
 };
 use sp_runtime::traits::{
-    BlakeTwo256, Block as BlockT, IdentityLookup, Verify, IdentifyAccount, NumberFor, Saturating,
+    BlakeTwo256, Block as BlockT, AccountIdLookup, Verify, IdentifyAccount, NumberFor,
 };
 use sp_api::impl_runtime_apis;
 use sp_consensus_aura::sr25519::AuthorityId as AuraId;
@@ -39,9 +39,12 @@ pub use frame_support::{
         },
     },
 };
+use pallet_transaction_payment::CurrencyAdapter;
 
-/// Import the template pallet.
+/// Import the Move-pallet.
 pub use sp_mvm;
+pub use sp_mvm::gas::{GasWeightMapping};
+pub use sp_mvm_rpc_runtime::types::MVMApiEstimation;
 
 /// An index to a block.
 pub type BlockNumber = u32;
@@ -93,16 +96,29 @@ pub mod opaque {
     }
 }
 
+// To learn more about runtime versioning and what each of the following value means:
+//   https://substrate.dev/docs/en/knowledgebase/runtime/upgrades#runtime-versioning
 pub const VERSION: RuntimeVersion = RuntimeVersion {
     spec_name: create_runtime_str!("mv-node"),
     impl_name: create_runtime_str!("mv-node"),
     authoring_version: 1,
-    spec_version: 1,
+    // The version of the runtime specification. A full node will not attempt to use its native
+    //   runtime in substitute for the on-chain Wasm runtime unless all of `spec_name`,
+    //   `spec_version`, and `authoring_version` are the same between Wasm and native.
+    // This value is set to 100 to notify Polkadot-JS App (https://polkadot.js.org/apps) to use
+    //   the compatible custom types.
+    spec_version: 100,
     impl_version: 1,
     apis: RUNTIME_API_VERSIONS,
     transaction_version: 1,
 };
 
+/// This determines the average expected block time that we are targeting.
+/// Blocks will be produced at a minimum duration defined by `SLOT_DURATION`.
+/// `SLOT_DURATION` is picked up by `pallet_timestamp` which is in turn picked
+/// up by `pallet_aura` to implement `fn slot_duration()`.
+///
+/// Change this to adjust the block time.
 pub const MILLISECS_PER_BLOCK: u64 = 6000;
 
 pub const SLOT_DURATION: u64 = MILLISECS_PER_BLOCK;
@@ -121,29 +137,34 @@ pub fn native_version() -> NativeVersion {
     }
 }
 
+const NORMAL_DISPATCH_RATIO: Perbill = Perbill::from_percent(75);
+
 parameter_types! {
+    pub const Version: RuntimeVersion = VERSION;
     pub const BlockHashCount: BlockNumber = 2400;
     /// We allow for 2 seconds of compute with a 6 second average block time.
-    pub const MaximumBlockWeight: Weight = 2 * WEIGHT_PER_SECOND;
-    pub const AvailableBlockRatio: Perbill = Perbill::from_percent(75);
-    /// Assume 10% of weight for average on_initialize calls.
-    pub MaximumExtrinsicWeight: Weight = AvailableBlockRatio::get()
-        .saturating_sub(Perbill::from_percent(10)) * MaximumBlockWeight::get();
-    pub const MaximumBlockLength: u32 = 5 * 1024 * 1024;
-    pub const Version: RuntimeVersion = VERSION;
+    pub BlockWeights: frame_system::limits::BlockWeights = frame_system::limits::BlockWeights
+        ::with_sensible_defaults(2 * WEIGHT_PER_SECOND, NORMAL_DISPATCH_RATIO);
+    pub BlockLength: frame_system::limits::BlockLength = frame_system::limits::BlockLength
+        ::max_with_normal_ratio(5 * 1024 * 1024, NORMAL_DISPATCH_RATIO);
+    pub const SS58Prefix: u8 = 42;
 }
 
 // Configure FRAME pallets to include in runtime.
 
-impl frame_system::Trait for Runtime {
+impl frame_system::Config for Runtime {
     /// The basic call filter to use in dispatchable.
     type BaseCallFilter = ();
+    /// Block & extrinsics weights: base values and limits.
+    type BlockWeights = BlockWeights;
+    /// The maximum length of a block (in bytes).
+    type BlockLength = BlockLength;
     /// The identifier used to distinguish between accounts.
     type AccountId = AccountId;
     /// The aggregated dispatch type that is available for extrinsics.
     type Call = Call;
     /// The lookup mechanism to get account ID from whatever is passed in dispatchers.
-    type Lookup = IdentityLookup<AccountId>;
+    type Lookup = AccountIdLookup<AccountId, ()>;
     /// The index type for storing how many extrinsics an account has signed.
     type Index = Index;
     /// The index type for blocks.
@@ -160,24 +181,8 @@ impl frame_system::Trait for Runtime {
     type Origin = Origin;
     /// Maximum number of block number to block hash mappings to keep (oldest pruned first).
     type BlockHashCount = BlockHashCount;
-    /// Maximum weight of each block.
-    type MaximumBlockWeight = MaximumBlockWeight;
     /// The weight of database operations that the runtime can invoke.
     type DbWeight = RocksDbWeight;
-    /// The weight of the overhead invoked on the block import process, independent of the
-    /// extrinsics included in that block.
-    type BlockExecutionWeight = BlockExecutionWeight;
-    /// The base weight of any extrinsic processed by the runtime, independent of the
-    /// logic of that extrinsic. (Signature verification, nonce increment, fee, etc...)
-    type ExtrinsicBaseWeight = ExtrinsicBaseWeight;
-    /// The maximum weight that a single extrinsic of `Normal` dispatch class can have,
-    /// idependent of the logic of that extrinsics. (Roughly max block weight - average on
-    /// initialize cost).
-    type MaximumExtrinsicWeight = MaximumExtrinsicWeight;
-    /// Maximum size of all encoded transactions (in bytes) that are allowed in one block.
-    type MaximumBlockLength = MaximumBlockLength;
-    /// Portion of the block weight that is available to all normal transactions.
-    type AvailableBlockRatio = AvailableBlockRatio;
     /// Version of the runtime.
     type Version = Version;
     /// Converts a module to the index of the module in `construct_runtime!`.
@@ -192,13 +197,15 @@ impl frame_system::Trait for Runtime {
     type AccountData = pallet_balances::AccountData<Balance>;
     /// Weight information for the extrinsics of this pallet.
     type SystemWeightInfo = ();
+    /// This is used as an identifier of the chain. 42 is the generic substrate prefix.
+    type SS58Prefix = SS58Prefix;
 }
 
-impl pallet_aura::Trait for Runtime {
+impl pallet_aura::Config for Runtime {
     type AuthorityId = AuraId;
 }
 
-impl pallet_grandpa::Trait for Runtime {
+impl pallet_grandpa::Config for Runtime {
     type Event = Event;
     type Call = Call;
 
@@ -221,7 +228,7 @@ parameter_types! {
     pub const MinimumPeriod: u64 = SLOT_DURATION / 2;
 }
 
-impl pallet_timestamp::Trait for Runtime {
+impl pallet_timestamp::Config for Runtime {
     /// A timestamp: milliseconds since the unix epoch.
     type Moment = u64;
     type OnTimestampSet = Aura;
@@ -234,7 +241,7 @@ parameter_types! {
     pub const MaxLocks: u32 = 50;
 }
 
-impl pallet_balances::Trait for Runtime {
+impl pallet_balances::Config for Runtime {
     type MaxLocks = MaxLocks;
     /// The type for recording an account's balance.
     type Balance = Balance;
@@ -243,29 +250,52 @@ impl pallet_balances::Trait for Runtime {
     type DustRemoval = ();
     type ExistentialDeposit = ExistentialDeposit;
     type AccountStore = System;
-    type WeightInfo = ();
+    type WeightInfo = pallet_balances::weights::SubstrateWeight<Runtime>;
 }
 
 parameter_types! {
     pub const TransactionByteFee: Balance = 1;
 }
 
-impl pallet_transaction_payment::Trait for Runtime {
-    type Currency = Balances;
-    type OnTransactionPayment = ();
+impl pallet_transaction_payment::Config for Runtime {
+    type OnChargeTransaction = CurrencyAdapter<Balances, ()>;
     type TransactionByteFee = TransactionByteFee;
     type WeightToFee = IdentityFee<Balance>;
     type FeeMultiplierUpdate = ();
 }
 
-impl pallet_sudo::Trait for Runtime {
+impl pallet_sudo::Config for Runtime {
     type Event = Event;
     type Call = Call;
 }
 
-/// Configure the template pallet in pallets/sp-mvm.
-impl sp_mvm::Trait for Runtime {
+/// By inheritance from Moonbeam and from Dfinance (based on validators statistic), we believe max 4125000 gas is currently enough for block.
+/// In the same time we use same 500ms Weight as Max Block Weight, from which 75% only are used for transactions.
+/// So our max gas is GAS_PER_SECOND * 0.500 * 0.65 => 4125000.
+pub const GAS_PER_SECOND: u64 = 11_000_000;
+
+/// Approximate ratio of the amount of Weight per Gas.
+/// u64 works for approximations because Weight is a very small unit compared to gas.
+pub const WEIGHT_PER_GAS: u64 = WEIGHT_PER_SECOND / GAS_PER_SECOND;
+
+pub struct MoveVMGasWeightMapping;
+
+// Just use provided gas.
+impl GasWeightMapping for MoveVMGasWeightMapping {
+    fn gas_to_weight(gas: u64) -> Weight {
+        gas.saturating_mul(WEIGHT_PER_GAS)
+    }
+
+    fn weight_to_gas(weight: Weight) -> u64 {
+        use core::convert::TryFrom;
+        u64::try_from(weight.wrapping_div(WEIGHT_PER_GAS)).unwrap_or(u32::MAX as u64)
+    }
+}
+
+/// Configure the Move-pallet in pallets/sp-mvm.
+impl sp_mvm::Config for Runtime {
     type Event = Event;
+    type GasWeightMapping = MoveVMGasWeightMapping;
 }
 
 // Create the runtime by composing the FRAME pallets that were previously configured.
@@ -278,7 +308,7 @@ construct_runtime!(
         System: frame_system::{Module, Call, Config, Storage, Event<T>},
         RandomnessCollectiveFlip: pallet_randomness_collective_flip::{Module, Call, Storage},
         Timestamp: pallet_timestamp::{Module, Call, Storage, Inherent},
-        Aura: pallet_aura::{Module, Config<T>, Inherent},
+        Aura: pallet_aura::{Module, Config<T> /* ,Inherent */},
         Grandpa: pallet_grandpa::{Module, Call, Storage, Config, Event},
         Balances: pallet_balances::{Module, Call, Storage, Config<T>, Event<T>},
         TransactionPayment: pallet_transaction_payment::{Module, Storage},
@@ -288,7 +318,7 @@ construct_runtime!(
 );
 
 /// The address format for describing accounts.
-pub type Address = AccountId;
+pub type Address = sp_runtime::MultiAddress<AccountId, ()>;
 /// Block header type as expected by this runtime.
 pub type Header = generic::Header<BlockNumber, BlakeTwo256>;
 /// Block type as expected by this runtime.
@@ -442,6 +472,45 @@ impl_runtime_apis! {
         ) -> pallet_transaction_payment_rpc_runtime_api::RuntimeDispatchInfo<Balance> {
             TransactionPayment::query_info(uxt, len)
         }
+        fn query_fee_details(
+            uxt: <Block as BlockT>::Extrinsic,
+            len: u32,
+        ) -> pallet_transaction_payment::FeeDetails<Balance> {
+            TransactionPayment::query_fee_details(uxt, len)
+        }
+    }
+
+    impl sp_mvm_rpc_runtime::MVMApiRuntime<Block, AccountId> for Runtime {
+        // Convert Weight to Gas.
+        fn gas_to_weight(gas_limit: u64) -> Weight {
+             <Runtime as sp_mvm::Config>::GasWeightMapping::gas_to_weight(gas_limit)
+        }
+
+        // Convert Gas to Weight.
+        fn weight_to_gas(weight: Weight) -> u64 {
+            <Runtime as sp_mvm::Config>::GasWeightMapping::weight_to_gas(weight)
+        }
+
+        // Estimate gas for publish module.
+        fn estimate_gas_publish(account: AccountId, module_bc: Vec<u8>, gas_limit: u64) -> Result<MVMApiEstimation, sp_runtime::DispatchError> {
+            // TODO: pass real error.
+            let vm_result = Mvm::raw_publish_module(&account, module_bc, gas_limit, true).map_err(|_| sp_runtime::DispatchError::Other("error during VM execution"))?;
+
+            Ok(MVMApiEstimation {
+                gas_used: vm_result.gas_used,
+                status_code: vm_result.status_code as u64,
+            })
+        }
+
+        // Estimate gas for execute script.
+        fn estimate_gas_execute(account: AccountId, tx_bc: Vec<u8>, gas_limit: u64) -> Result<MVMApiEstimation, sp_runtime::DispatchError> {
+            let vm_result = Mvm::raw_execute_script(&account, tx_bc, gas_limit, true).map_err(|_| sp_runtime::DispatchError::Other("error during VM execution"))?;
+
+            Ok(MVMApiEstimation {
+                gas_used: vm_result.gas_used,
+                status_code: vm_result.status_code as u64,
+            })
+        }
     }
 
     #[cfg(feature = "runtime-benchmarks")]
@@ -452,7 +521,7 @@ impl_runtime_apis! {
             use frame_benchmarking::{Benchmarking, BenchmarkBatch, add_benchmark, TrackedStorageKey};
 
             use frame_system_benchmarking::Module as SystemBench;
-            impl frame_system_benchmarking::Trait for Runtime {}
+            impl frame_system_benchmarking::Config for Runtime {}
 
             let whitelist: Vec<TrackedStorageKey> = vec![
                 // Block Number
@@ -473,6 +542,7 @@ impl_runtime_apis! {
             add_benchmark!(params, batches, frame_system, SystemBench::<Runtime>);
             add_benchmark!(params, batches, pallet_balances, Balances);
             add_benchmark!(params, batches, pallet_timestamp, Timestamp);
+            add_benchmark!(params, batches, sp_mvm, Mvm);
 
             if batches.is_empty() { return Err("Benchmark not found for this pallet.".into()) }
             Ok(batches)

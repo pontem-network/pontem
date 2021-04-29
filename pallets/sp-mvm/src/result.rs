@@ -1,10 +1,10 @@
-use super::{Trait, Module};
+use super::{Config, Error};
+use crate::gas::GasWeightMapping;
 use frame_support::dispatch::DispatchErrorWithPostInfo;
 use frame_support::dispatch::DispatchResultWithPostInfo;
 use frame_support::dispatch::PostDispatchInfo;
 use frame_support::dispatch::Weight;
 use frame_support::weights::Pays;
-use frame_support::decl_error;
 use move_vm::types::VmResult;
 use move_core_types::vm_status::StatusCode;
 
@@ -12,14 +12,14 @@ pub fn is_ok(vm_result: &VmResult) -> bool {
     matches!(vm_result.status_code, StatusCode::EXECUTED)
 }
 
-pub fn from_status_code<T: Trait>(code: StatusCode) -> Result<(), Error<T>> {
+pub fn from_status_code<T: Config>(code: StatusCode) -> Result<(), Error<T>> {
     match code {
         StatusCode::EXECUTED => Ok(()),
         _ => Err(Error::<T>::from(code)),
     }
 }
 
-pub fn from_status_code_with_gas<T: Trait>(
+pub fn from_status_code_with_gas<T: Config>(
     code: StatusCode,
     gas: Weight,
 ) -> DispatchResultWithPostInfo {
@@ -39,9 +39,9 @@ pub fn from_status_code_with_gas<T: Trait>(
     }
 }
 
-pub fn from_vm_result<T: Trait>(vm_result: VmResult) -> DispatchResultWithPostInfo {
+pub fn from_vm_result<T: Config>(vm_result: VmResult) -> DispatchResultWithPostInfo {
     let gas = PostDispatchInfo {
-        actual_weight: Some(vm_result.gas_used),
+        actual_weight: Some(T::GasWeightMapping::gas_to_weight(vm_result.gas_used)),
         pays_fee: Pays::Yes,
     };
 
@@ -56,7 +56,7 @@ pub fn from_vm_result<T: Trait>(vm_result: VmResult) -> DispatchResultWithPostIn
     }
 }
 
-pub fn from_vm_results<T: Trait>(vm_results: &[VmResult]) -> DispatchResultWithPostInfo {
+pub fn from_vm_results<T: Config>(vm_results: &[VmResult]) -> DispatchResultWithPostInfo {
     let mut gas_total = 0;
     for vm_result in vm_results {
         gas_total += vm_result.gas_used;
@@ -65,7 +65,7 @@ pub fn from_vm_results<T: Trait>(vm_results: &[VmResult]) -> DispatchResultWithP
             StatusCode::EXECUTED => {}
             status_code => {
                 let gas = PostDispatchInfo {
-                    actual_weight: Some(gas_total),
+                    actual_weight: Some(T::GasWeightMapping::gas_to_weight(gas_total)),
                     pays_fee: Pays::Yes,
                 };
                 return Err({
@@ -79,14 +79,14 @@ pub fn from_vm_results<T: Trait>(vm_results: &[VmResult]) -> DispatchResultWithP
     }
 
     let gas = PostDispatchInfo {
-        actual_weight: Some(gas_total),
+        actual_weight: Some(T::GasWeightMapping::gas_to_weight(gas_total)),
         pays_fee: Pays::Yes,
     };
 
     Ok(gas)
 }
 
-impl<T: Trait> From<StatusCode> for Error<T> {
+impl<T: Config> From<StatusCode> for Error<T> {
     fn from(sp: StatusCode) -> Self {
         match sp {
             StatusCode::UNKNOWN_VALIDATION_STATUS => Self::UnknownValidationStatus,
@@ -282,334 +282,5 @@ impl<T: Trait> From<StatusCode> for Error<T> {
 
             StatusCode::EXECUTED => unreachable!(),
         }
-    }
-}
-
-decl_error! {
-    pub enum Error for Module<T: Trait> {
-        /// Internal: numeric convertion error, overflow
-        NumConversionError,
-
-        /// Failed to read or decode VM configuration
-        InvalidVMConfig,
-        /// `max_gas_amount` value must be in the range from 0 to `u64::MAX / 1000`.
-        /// Causes for invalid gas configuration.
-        InvalidGasAmountMaxValue,
-        /// Script senders should not be empty
-        ScriptValidationError,
-        /// Transaction deserialization & validation error
-        TransactionValidationError,
-        /// Transaction signers num isn't eq signers
-        TransactionSignersNumError,
-
-        /// Unknown validation status
-        UnknownValidationStatus,
-        /// The transaction has a bad signature
-        InvalidSignature,
-        /// Bad account authentication key
-        InvalidAuthKey,
-        /// Sequence number is too old
-        SequenceNumberTooOld,
-        /// Sequence number is too new
-        SequenceNumberTooNew,
-        /// The sequence number is too large and would overflow if the transaction were executed
-        SequenceNumberTooBig,
-        /// Insufficient balance to pay minimum transaction fee
-        InsufficientBalanceForTransactionFee,
-        /// The transaction has expired
-        TransactionExpired,
-        /// The sending account does not exist
-        SendingAccountDoesNotExist,
-        /// This write set transaction was rejected because it did not meet the requirements for one.
-        RejectedWriteSet,
-        /// This write set transaction cannot be applied to the current state.
-        InvalidWriteSet,
-        /// Length of program field in raw transaction exceeded max length
-        ExceededMaxTransactionSize,
-        /// This script is not in our allowlist of scripts.
-        UnknownScript,
-        /// Transaction is trying to publish a new module.
-        UnknownModule,
-        /// Max gas units submitted with transaction exceeds max gas units bound in VM
-        MaxGasUnitsExceedsMaxGasUnitsBound,
-        /// Max gas units submitted with transaction not enough to cover the intrinsic cost of the transaction.
-        MaxGasUnitsBelowMinTransactionGasUnits,
-        /// Gas unit price submitted with transaction is below minimum gas price set in the VM.
-        GasUnitPriceBelowMinBound,
-        /// Gas unit price submitted with the transaction is above the maximum gas price set in the VM.
-        GasUnitPriceAboveMaxBound,
-        /// Gas specifier submitted is either malformed (not a valid identifier), or does not refer to an accepted gas specifier
-        InvalidGasSpecifier,
-        /// The sending account is frozen
-        SendingAccountFrozen,
-        /// Unable to deserialize the account blob
-        UnableToDeserializeAccount,
-        /// The currency info was unable to be found
-        CurrencyInfoDoesNotExist,
-        /// The account sender doesn't have permissions to publish modules
-        InvalidModulePublisher,
-        /// The sending account has no role
-        NoAccountRole,
-        /// The transaction's chain_id does not match the one published on-chain
-        BadChainId,
-        /// Unknown verification error
-        UnknownVerificationError,
-        /// Index out of bounds
-        IndexOutOfBounds,
-        /// Invalid signature token
-        InvalidSignatureToken,
-        /// Recursive struct definition
-        RecursiveStructDefinition,
-        /// Invalid resource field
-        InvalidResourceField,
-        /// Invalid fall through
-        InvalidFallThrough,
-        /// Negative stack size within block
-        NegativeStackSizeWithinBlock,
-        /// Invalid main function signature
-        InvalidMainFunctionSignature,
-        /// Duplicate element
-        DuplicateElement,
-        /// Invalid module handle
-        InvalidModuleHandle,
-        /// Unimplemented handle
-        UnimplementedHandle,
-        /// Lookup failed
-        LookupFailed,
-        /// Type mismatch
-        TypeMismatch,
-        /// Missing dependency
-        MissingDependency,
-        /// Pop resource error
-        PopResourceError,
-        /// Br type mismatch
-        BrTypeMismatchError,
-        /// Abort type mismatch error
-        AbortTypeMismatchError,
-
-        /// Stloc type mismatch error
-        StlocTypeMismatchError,
-        /// Stloc unsafe to destroy error
-        StlocUnsafeToDestroyError,
-        /// Unsafe ret local or resource still borrowed
-        UnsafeRetLocalOrResourceStillBorrowed,
-        /// Ret type mismatch error
-        RetTypeMismatchError,
-        /// Ret borrowed mutable reference error
-        RetBorrowedMutableReferenceError,
-        /// Freezeref type mismatch error
-        FreezerefTypeMismatchError,
-        /// Freezeref exists mutable borrow error
-        FreezerefExistsMutableBorrowError,
-        /// Borrowfield type mismatch error
-        BorrowfieldTypeMismatchError,
-        /// Borrowfield bad field error
-        BorrowfieldBadFieldError,
-        /// Borrowfield exists mutable borrow error
-        BorrowfieldExistsMutableBorrowError,
-        /// Copyloc unavailable error
-        CopylocUnavailableError,
-        /// Copyloc resource error
-        CopylocResourceError,
-        /// Copyloc exists borrow error
-        CopylocExistsBorrowError,
-        /// Moveloc unavailable error
-        MovelocUnavailableError,
-        /// Moveloc exists borrow error
-        MovelocExistsBorrowError,
-        /// Borrowloc reference error
-        BorrowlocReferenceError,
-        /// Borrowloc unavailable error
-        BorrowlocUnavailableError,
-        /// Borrowloc exists borrow error
-        BorrowlocExistsBorrowError,
-        /// Call type mismatch error
-        CallTypeMismatchError,
-        /// Call borrowed mutable reference error
-        CallBorrowedMutableReferenceError,
-        /// Pack type mismatch error
-        PackTypeMismatchError,
-        /// Unpack type mismatch error
-        UnpackTypeMismatchError,
-        /// Readref type mismatch error
-        ReadrefTypeMismatchError,
-        /// Readref resource error
-        ReadrefResourceError,
-        /// Readref exists mutable borrow error
-        ReadrefExistsMutableBorrowError,
-        /// Writeref type mismatch error
-        WriterefTypeMismatchError,
-        /// Writeref resource error
-        WriterefResourceError,
-        /// Writeref exists borrow error
-        WriterefExistsBorrowError,
-        /// Writeref no mutable reference error
-        WriterefNoMutableReferenceError,
-        /// Integer op type mismatch error
-        IntegerOpTypeMismatchError,
-        /// Boolean op type mismatch error
-        BooleanOpTypeMismatchError,
-        /// Equality op type mismatch error
-        EqualityOpTypeMismatchError,
-        /// Exists resource type mismatch error
-        ExistsResourceTypeMismatchError,
-        /// Borrowglobal type mismatch error
-        BorrowglobalTypeMismatchError,
-        /// Borrowglobal no resource error
-        BorrowglobalNoResourceError,
-        /// Movefrom Type mismatch error
-        MovefromTypeMismatchError,
-        /// Movefrom no resource error
-        MovefromNoResourceError,
-        /// Moveto type mismatch error
-        MovetoTypeMismatchError,
-        /// Moveto no resource error
-        MovetoNoResourceError,
-        /// The self address of a module the transaction is publishing is not the sender address
-        ModuleAddressDoesNotMatchSender,
-        /// The module does not have any module handles. Each module or script must have at least one module handle.
-        NoModuleHandles,
-        /// Positive stack size at block end
-        PositiveStackSizeAtBlockEnd,
-        /// Missing acquires resource annotation error
-        MissingAcquiresResourceAnnotationError,
-        /// Extraneous acquires resource annotation error
-        ExtraneousAcquiresResourceAnnotationError,
-        /// Duplicate acquires resource annotation error
-        DuplicateAcquiresResourceAnnotationError,
-        /// Invalid acquires resource annotation error
-        InvalidAcquiresResourceAnnotationError,
-        /// Global reference error
-        GlobalReferenceError,
-        /// Constraint kind mismatch
-        ConstraintKindMismatch,
-        /// Number of type arguments mismatch
-        NumberOfTypeArgumentsMismatch,
-        /// Loop in instantiation graph
-        LoopInInstantiationGraph,
-        /// Zero sized struct.
-        ZeroSizedStruct,
-        /// Linker error
-        LinkerError,
-        /// Invalid constant type
-        InvalidConstantType,
-        /// Malformed constant data
-        MalformedConstantData,
-        /// Empty code unit
-        EmptyCodeUnit,
-        /// Invalid loop split
-        InvalidLoopSplit,
-        /// Invalid loop break
-        InvalidLoopBreak,
-        /// Invalid loop continue
-        InvalidLoopContinue,
-        /// Unsafe fet unused resources
-        UnsafeRetUnusedResources,
-        /// Too many locals
-        TooManyLocals,
-        /// Generic member opcode mismatch
-        GenericMemberOpcodeMismatch,
-        /// Function resolution failure
-        FunctionResolutionFailure,
-        /// Invalid operation in script
-        InvalidOperationInScript,
-        /// The sender is trying to publish a module named `M`, but the sender's account already contains a module with this name.
-        DuplicateModuleName,
-        /// Unknown invariant violation error
-        UnknownInvariantViolationError,
-        /// Empty value stack
-        EmptyValueStack,
-        /// Pc overflow
-        PcOverflow,
-        /// Verification error
-        VerificationError,
-        /// Storage error
-        StorageError,
-        /// Internal type error
-        InternalTypeError,
-        /// Event key mismatch
-        EventKeyMismatch,
-        /// Unreachable
-        Unreachable,
-        /// vm startup failure
-        VmStartupFailure,
-        /// Unexpected error from known move function
-        UnexpectedErrorFromKnownMoveFunction,
-        /// Verifier invariant violation
-        VerifierInvariantViolation,
-        /// Unexpected verifier error
-        UnexpectedVerifierError,
-        /// Unexpected deserialization error
-        UnexpectedDeserializationError,
-        /// Failed to serialize write set changes
-        FailedToSerializeWriteSetChanges,
-        /// Failed to deserialize resource
-        FailedToDeserializeResource,
-        /// Failed to resolve type due to linking being broken after verification
-        TypeResolutionFailure,
-        /// Unknown binary error
-        UnknownBinaryError,
-        /// Malformed
-        Malformed,
-        /// Bad magic
-        BadMagic,
-        /// Unknown version
-        UnknownVersion,
-        /// Unknown table type
-        UnknownTableType,
-        /// Unknown signature type
-        UnknownSignatureType,
-        /// Unknown serialized type
-        UnknownSerializedType,
-        /// Unknown opcode
-        UnknownOpcode,
-        /// BadHeader table
-        BadHeaderTable,
-        /// Unexpected signature type
-        UnexpectedSignatureType,
-        /// Duplicate table
-        DuplicateTable,
-        /// Unknown nominal resource
-        UnknownNominalResource,
-        /// Unknown kind
-        UnknownKind,
-        /// Unknown native struct flag
-        UnknownNativeStructFlag,
-        /// Bad U64
-        BadU64,
-        /// Bad U128
-        BadU128,
-        /// Value serialization error
-        ValueSerializationError,
-        /// Value deserialization error
-        ValueDeserializationError,
-        /// Code deserialization error
-        CodeDeserializationError,
-        /// Unknown runtime status
-        UnknownRuntimeStatus,
-        /// Out of gas
-        OutOfGas,
-        /// We tried to access a resource that does not exist under the account.
-        ResourceDoesNotExist,
-        /// We tried to create a resource under an account where that resource already exists.
-        ResourceAlreadyExists,
-        /// Missing data
-        MissingData,
-        /// Data format error
-        DataFormatError,
-        /// Aborted
-        Aborted,
-        /// Arithmetic error
-        ArithmeticError,
-        /// Execution stack overflow
-        ExecutionStackOverflow,
-        /// Call stack overflow
-        CallStackOverflow,
-        /// Vm max type depth reached
-        VmMaxTypeDepthReached,
-        /// Vm max value depth reached
-        VmMaxValueDepthReached,
-        /// Unknown status.
-        UnknownStatus,
     }
 }

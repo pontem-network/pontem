@@ -1,37 +1,16 @@
+use core::convert::TryInto;
+use sp_std::prelude::*;
+use codec::Encode;
 use move_core_types::account_address::AccountAddress;
 use move_core_types::language_storage::ModuleId;
-use sp_std::prelude::*;
-use frame_support::decl_event;
-use move_vm::data::EventHandler;
 use move_core_types::language_storage::TypeTag;
-pub use self::RawEvent as MoveRawEvent;
-
-decl_event!(
-    pub enum Event<T>
-    where
-        AccountId = <T as frame_system::Trait>::AccountId,
-    {
-        // Event documentation should end with an array that provides descriptive names for event parameters.
-        /// Event provided by Move VM
-        /// [account, type_tag, message, module]
-        Event(
-            AccountAddress,
-            Vec<u8>, /* encoded TypeTag */
-            Vec<u8>, /* encoded String */
-            Option<ModuleId>,
-        ),
-
-        /// Event about successful move-module publishing
-        /// [account]
-        ModulePublished(AccountId),
-
-        /// Event about successful move-module publishing
-        /// [account]
-        StdModulePublished,
-    }
-);
+use move_vm::data::EventHandler;
+use crate::types;
+use crate::{Event, Config};
+use crate::addr::address_to_account;
 
 pub trait DepositMoveEvent {
+    /// Emit a Move event with content of passed `MoveEventArguments`
     fn deposit_move_event(e: MoveEventArguments);
 }
 
@@ -44,10 +23,29 @@ pub struct MoveEventArguments {
     pub caller: Option<ModuleId>,
 }
 
-impl<T> Into<RawEvent<T>> for MoveEventArguments {
-    fn into(self) -> RawEvent<T> {
-        use codec::Encode;
-        RawEvent::Event(self.addr, self.ty_tag.encode(), self.message, self.caller)
+impl<T: Config> TryInto<Event<T>> for MoveEventArguments {
+    type Error = codec::Error;
+
+    fn try_into(self) -> Result<Event<T>, Self::Error> {
+        let account = address_to_account::<T::AccountId>(&self.addr)?;
+        let mut caller_error = None::<Self::Error>;
+        let caller: Option<types::MoveModuleId<T::AccountId>> = self
+            .caller
+            .map(|caller| {
+                caller
+                    .try_into()
+                    .map_err(|err| caller_error = Some(err))
+                    .ok()
+            })
+            .flatten();
+
+        if let Some(err) = caller_error {
+            return Err(err);
+        }
+
+        let ty_tag: types::MoveTypeTag<T::AccountId> = self.ty_tag.try_into()?;
+
+        Ok(Event::Event(account, ty_tag.encode(), self.message, caller))
     }
 }
 

@@ -58,13 +58,13 @@ jobs:
             -H "Accept: application/octet-stream" \
             -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
             -o "dove" \
-            "https://github.com/pontem-network/move-tools/releases/download/1.1.1/dove-1.1.0-${{ matrix.cfg.dove }}"
+            "https://github.com/pontem-network/move-tools/releases/download/1.1.4/dove-1.1.4-${{ matrix.cfg.dove }}"
           sudo chown runner ./dove && chmod +x ./dove
           mv ./dove ~/.cargo/bin/dove
           dove -V
 
       - name: Build test resources
-        run: pushd pallets/sp-mvm/tests/assets; ./build_assets.sh
+        run: make assets
 
       - name: Tests
         run: cargo +${{ steps.rust.outputs.version }} test --all --no-fail-fast -- --nocapture --test-threads=1
@@ -105,17 +105,12 @@ jobs:
           override: true
 
       - name: Clippy
-        # uses: actions-rs/clippy-check@v1
-        # with:
-        #   name: Clippy report
-        #   toolchain: ${{ steps.rust.outputs.version }}
-        #   token: ${{ secrets.GITHUB_TOKEN }}
-        #   args: -p=sp-mvm --target=wasm32-unknown-unknown --no-default-features
-        run: |
-          pushd pallets/sp-mvm
-          cargo clippy -p=sp-mvm --target=wasm32-unknown-unknown --no-default-features
-          popd
-        env: { SKIP_WASM_BUILD: 1 }
+        uses: actions-rs/clippy-check@v1
+        with:
+          name: Clippy report
+          toolchain: ${{ steps.rust.outputs.version }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          args: -p=sp-mvm -p=sp-mvm-rpc -p=sp-mvm-rpc-runtime
 
   build:
     name: Build
@@ -153,3 +148,12 @@ jobs:
 
       - name: Build
         run: cargo +${{ steps.rust.outputs.version }} build --all
+
+      - name: make artifact
+        uses: actions/upload-artifact@v2.2.3
+        with:
+          name: node-${{ matrix.os }}-debug
+          path: target/debug/mv-node
+          # path: target/**/mv-node
+          if-no-files-found: warn
+          retention-days: 2
