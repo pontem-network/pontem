@@ -14,8 +14,7 @@ env:
 jobs:
   coverage:
     name: "Coverage"
-    runs-on: self-hosted
-    # runs-on: ubuntu-latest
+    runs-on: ${{ matrix.cfg.os }}
     if: "!contains(github.event.head_commit.message, 'ci skip') && !contains(github.event.head_commit.message, 'skip ci')"
 
     defaults:
@@ -26,19 +25,16 @@ jobs:
       fail-fast: true
       matrix:
         cfg:
-          - grcov: grcov-linux-x86_64.tar.bz2
-            dove: linux-x86_64
-          # - os: self-hosted
-          #   grcov: grcov-linux-x86_64.tar.bz2
-          ## macos disabled because it's so long
-          # - os: macos-latest
-          #   grcov: grcov-osx-x86_64.tar.bz2
+          - os: self-hosted
+            grcov: grcov-linux-x86_64.tar.bz2
+            dove:
+              version: 1.1.4
+              release: 1.1.4
+              arch: linux-x86_64
 
     env:
       SKIP_WASM_BUILD: 1
       CARGO_INCREMENTAL: 0
-      # RUSTFLAGS: "-Zprofile -Ccodegen-units=1 -Cinline-threshold=0 -Clink-dead-code -Coverflow-checks=off -Cpanic=abort -Zpanic_abort_tests"
-      # RUSTFLAGS: "-Zprofile -Ccodegen-units=1 -Cinline-threshold=0 -Clink-dead-code -Coverflow-checks=off -Zno-landing-pads"
       RUSTFLAGS: "-Zprofile -Ccodegen-units=1 -Cinline-threshold=0 -Clink-dead-code -Coverflow-checks=off"
       RUSTDOCFLAGS: "-Cpanic=abort"
 
@@ -57,7 +53,6 @@ jobs:
         run: cargo clean
 
       - name: get latest grcov binary
-        # if: matrix.cfg.os == 'ubuntu-latest'
         uses: dsaltares/fetch-gh-release-asset@0.0.5
         with:
           repo: mozilla/grcov
@@ -65,7 +60,6 @@ jobs:
           file: ${{ matrix.cfg.grcov }}
 
       - name: unpack grcov release binary
-        # if: matrix.cfg.os == 'ubuntu-latest'
         run: |
           tar -xvf ${{ matrix.cfg.grcov }}
           sudo chown runner ./grcov && chmod +x ./grcov
@@ -78,7 +72,7 @@ jobs:
             -H "Accept: application/octet-stream" \
             -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
             -o "dove" \
-            "https://github.com/pontem-network/move-tools/releases/download/1.1.4/dove-1.1.4-${{ matrix.cfg.dove }}"
+            "https://github.com/pontem-network/move-tools/releases/download/${{ matrix.cfg.dove.release }}/dove-${{ matrix.cfg.dove.version }}-${{ matrix.cfg.dove.arch }}"
           sudo chown runner ./dove && chmod +x ./dove
           mv ./dove ~/.cargo/bin/dove
           dove -V
@@ -112,11 +106,11 @@ jobs:
       - name: make report artifact
         uses: actions/upload-artifact@v1
         with:
-          name: code-coverage-report
+          name: code-coverage-report.lcov
           path: ${{ steps.coverage.outputs.report }}
 
-      # - name: upload report to Coveralls
-      #   uses: coverallsapp/github-action@v1.1.2
-      #   with:
-      #     github-token: ${{ secrets.GITHUB_TOKEN }}
-      #     path-to-lcov: ${{ steps.coverage.outputs.report }}
+      - name: upload report to Coveralls
+        uses: coverallsapp/github-action@v1.1.2
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path-to-lcov: ${{ steps.coverage.outputs.report }}
