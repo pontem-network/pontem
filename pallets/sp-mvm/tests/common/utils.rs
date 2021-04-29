@@ -6,6 +6,7 @@ use move_core_types::account_address::AccountAddress;
 use move_core_types::identifier::Identifier;
 use move_core_types::language_storage::ModuleId;
 use move_core_types::language_storage::StructTag;
+use move_core_types::language_storage::TypeTag;
 use move_vm_runtime::data_cache::RemoteCache;
 use move_vm::data::*;
 
@@ -98,4 +99,18 @@ where
         .expect(&format!("Resource '{}' should exist", ty));
     let stored: T = bcs::from_bytes(&blob).unwrap();
     assert_eq!(expected, stored);
+}
+
+pub fn get_type_tag_pont() -> StructTag {
+    StructTag {
+        address: ROOT_ADDR,
+        module: Identifier::new("Account").unwrap(),
+        name: Identifier::new("Balance").unwrap(),
+        type_params: vec![TypeTag::Struct(StructTag {
+            address: ROOT_ADDR,
+            module: Identifier::new("PONT").unwrap(),
+            name: Identifier::new("T").unwrap(),
+            type_params: vec![],
+        })],
+    }
 }
