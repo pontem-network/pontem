@@ -41,10 +41,33 @@ fn publish_module_as_root() {
         let proxy = UserMod::EventProxy;
 
         utils::publish_module_raw_with_origin_unchecked(Origin::root(), event.bc().to_vec());
-        utils::check_storage_mod_raw_with_addr(ROOT_ADDR, event.bc().to_vec(), event.name());
+        utils::check_storage_mod_raw_with_addr(ROOT_ADDR, event.bc(), event.name());
 
         utils::publish_module_raw_with_origin_unchecked(Origin::root(), proxy.bc().to_vec());
-        utils::check_storage_mod_raw_with_addr(ROOT_ADDR, proxy.bc().to_vec(), proxy.name());
+        utils::check_storage_mod_raw_with_addr(ROOT_ADDR, proxy.bc(), proxy.name());
+    });
+}
+
+#[test]
+/// publish std modules as root
+fn publish_batch_std_as_root() {
+    new_test_ext().execute_with(|| {
+        const GAS_LIMIT: u64 = 1_000_000;
+
+        let root = root_ps_acc();
+
+        // execute VM for publish vec of modules:
+        Mvm::publish_std(
+            Origin::root(),
+            StdMod::all().into_iter().map(|m| m.bc().to_vec()).collect(),
+            GAS_LIMIT,
+        )
+        .expect("Publish module");
+
+        // check storage:
+        for module in StdMod::all().into_iter() {
+            utils::check_storage_mod_raw(root, module.bc(), module.name());
+        }
     });
 }
 

@@ -46,7 +46,9 @@ fn execute_get_balance() {
 
         // check storage:
         check_storage_u128(to_move_addr(account), INITIAL_BALANCE);
-        // TODO: chack PS balance
+
+        let balance = balances::Pallet::<Test>::free_balance(&account);
+        assert_eq!(INITIAL_BALANCE, balance);
     });
 }
 
@@ -68,7 +70,10 @@ fn execute_deposit_balance() {
 
         // check storage:
         check_storage_u128(to_move_addr(account), INITIAL_BALANCE / 2);
-        // TODO: chack PS balance
+
+        // let total = balances::TotalIssuance::<Test>::get();
+        let balance = balances::Pallet::<Test>::free_balance(&account);
+        assert_eq!(INITIAL_BALANCE / 2, balance);
     });
 }
 
@@ -90,6 +95,8 @@ fn execute_deposit_withdraw_balance() {
 
         // check storage:
         check_storage_u128(to_move_addr(account), INITIAL_BALANCE);
-        // TODO: chack PS balance
+
+        let balance = balances::Pallet::<Test>::free_balance(&account);
+        assert_eq!(INITIAL_BALANCE, balance);
     });
 }

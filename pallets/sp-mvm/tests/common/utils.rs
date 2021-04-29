@@ -64,11 +64,15 @@ pub fn execute_tx_unchecked(origin: Origin, tx: UserTx, gas_limit: u64) -> PsRes
     result
 }
 
-pub fn check_storage_mod_raw(signer: AccountId, bc: Vec<u8>, name: &str) {
+pub fn check_storage_mod_raw<Bc: AsRef<[u8]>>(signer: AccountId, bc: Bc, name: &str) {
     check_storage_mod_raw_with_addr(to_move_addr(signer), bc, name)
 }
 
-pub fn check_storage_mod_raw_with_addr(signer: AccountAddress, bc: Vec<u8>, name: &str) {
+pub fn check_storage_mod_raw_with_addr<Bc: AsRef<[u8]>>(
+    signer: AccountAddress,
+    bc: Bc,
+    name: &str,
+) {
     let module_id = ModuleId::new(signer, Identifier::new(name).unwrap());
     let storage = Mvm::move_vm_storage();
     let oracle = MockOracle(None);
@@ -77,7 +81,7 @@ pub fn check_storage_mod_raw_with_addr(signer: AccountAddress, bc: Vec<u8>, name
         .get_module(&module_id)
         .expect("VM state read storage")
         .expect(&format!("Module '{}' should exist", module_id));
-    assert_eq!(bc, stored);
+    assert_eq!(bc.as_ref(), &stored);
 }
 
 pub fn check_storage_res<T>(owner: AccountAddress, ty: StructTag, expected: T)
