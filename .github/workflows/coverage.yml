@@ -83,7 +83,8 @@ jobs:
           mv ./dove ~/.cargo/bin/dove
           dove -V
       - name: Build test resources
-        run: pushd pallets/sp-mvm/tests/assets; ./build_assets.sh
+        # run: pushd pallets/sp-mvm/tests/assets; ./build_assets.sh
+        run: make assets
 
       - name: cargo build tests +profile
         uses: actions-rs/cargo@v1
