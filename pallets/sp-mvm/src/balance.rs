@@ -11,6 +11,14 @@ use frame_support::traits::ExistenceRequirement;
 
 type BalanceOf<T> = <T as balances::Config>::Balance;
 
+pub const PONT: &str = "PONT";
+/// Suppoted tickers.
+pub static TICKERS: &[&str] = &[PONT];
+
+pub fn is_ticker_supported(ticker: &str) -> bool {
+    TICKERS.contains(&ticker)
+}
+
 pub struct BalancesAdapter<T>(core::marker::PhantomData<T>);
 
 impl<T: balances::Config> Default for BalancesAdapter<T> {
@@ -35,6 +43,11 @@ where
         address: &move_core_types::account_address::AccountAddress,
         ticker: &str,
     ) -> Option<VmBalance> {
+        if !is_ticker_supported(ticker) {
+            trace!("native balance ticker '{}' not supported", ticker);
+            return None;
+        }
+
         trace!(
             "native balance requested for address: {} (ticker: {})",
             address,
@@ -53,6 +66,10 @@ where
         ticker: &str,
         amount: VmBalance,
     ) {
+        if !is_ticker_supported(ticker) {
+            return trace!("native balance ticker '{}' not supported", ticker);
+        }
+
         trace!("deposit resource {} requested, amount: {}", ticker, amount);
         let address = address_to_account::<T::AccountId>(&address).unwrap();
         let imbalance = amount
@@ -79,6 +96,10 @@ where
         ticker: &str,
         amount: VmBalance,
     ) {
+        if !is_ticker_supported(ticker) {
+            return trace!("native balance ticker '{}' not supported", ticker);
+        }
+
         trace!("withdraw resource {} requested, amount: {}", ticker, amount);
         let imbalance = address_to_account::<T::AccountId>(&address)
             .map_err(|_err| error!("Can't convert address from Move to Substrate."))
@@ -145,28 +166,26 @@ pub mod boxed {
 
     impl BalanceAccess for BalancesBoxedAdapter {
         fn get_balance(&self, address: &AccountAddress, ticker: &str) -> Option<VmBalance> {
-            trace!("balances::get {} for {}", ticker, address);
             (self.f_get)(address, ticker)
         }
 
         fn deposit(&self, address: &AccountAddress, ticker: &str, amount: VmBalance) {
-            trace!(
-                "balances::create (deposit) {} {} for {}",
-                ticker,
-                amount,
-                address
-            );
             (self.f_deposit)(address, ticker, amount)
         }
 
         fn withdraw(&self, address: &AccountAddress, ticker: &str, amount: VmBalance) {
-            trace!(
-                "balances::destroy (withdraw) {} {} for {}",
-                ticker,
-                amount,
-                address
-            );
             (self.f_withdraw)(address, ticker, amount)
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::PONT;
+
+    #[test]
+    fn is_ticker_supported() {
+        assert!(!super::is_ticker_supported(&"NOT_SUPPORTED"));
+        assert!(super::is_ticker_supported(PONT));
     }
 }
