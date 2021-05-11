@@ -42,6 +42,7 @@ const TX_NAMES: &[&str] = &[
     "store_native_withdraw",
     "store_native_withdraw_reg",
     "get_price_test",
+    "missed_native_balance",
 ];
 const TX_BYTECODE: &[&[u8]] = &[
     include_bytes!("../assets/user/target/transactions/store_u64.mvt"),
@@ -55,6 +56,7 @@ const TX_BYTECODE: &[&[u8]] = &[
     include_bytes!("../assets/user/target/transactions/store_native_withdraw.mvt"),
     include_bytes!("../assets/user/target/transactions/store_native_withdraw_reg.mvt"),
     include_bytes!("../assets/user/target/transactions/get_price_test.mvt"),
+    include_bytes!("../assets/user/target/transactions/missed_native_balance.mvt"),
 ];
 
 pub trait BinAsset: Sized + Copy + Into<usize> {
@@ -125,6 +127,7 @@ pub enum UserTx {
     StoreNativeWithdraw = 8,
     StoreNativeWithdrawReg = 9,
     GetPriceTest = 10,
+    MissedNativeBalance = 11,
 }
 
 impl Into<usize> for StdMod {
@@ -197,6 +200,7 @@ impl BinAsset for UserTx {
             Self::InfLoop,
             Self::StoreGetBalance,
             Self::GetPriceTest,
+            Self::MissedNativeBalance,
         ]
     }
 }
