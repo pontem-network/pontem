@@ -59,7 +59,7 @@ fn execute_get_balance() {
 }
 
 #[test]
-fn execute_get_missing_balance() {
+fn execute_get_missing_balance_err() {
     new_test_ext().execute_with(|| {
         let account = origin_ps_acc();
 
@@ -71,17 +71,8 @@ fn execute_get_missing_balance() {
         let result = execute_tx_unchecked(signer, UserTx::MissedNativeBalance, GAS_LIMIT);
         assert!(result.is_err());
 
-        // let expected = VmResult::new(42, None, 420);
-        // let expected = from_vm_result::<Test>(VmResult {
-        //     status_code: StatusCode::UNKNOWN_NOMINAL_RESOURCE,
-        //     sub_status: None,
-        //     gas_used: 420,
-        // })
-        // .unwrap_err();
-
         match result.unwrap_err().error {
             DispatchError::Module {
-                // Error::<T>::ResourceDoesNotExist
                 message: Some("ResourceDoesNotExist"),
                 ..
             } => { /* OK */ }
