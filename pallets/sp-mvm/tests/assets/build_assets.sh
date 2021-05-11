@@ -12,6 +12,7 @@ dove ct "store_native_deposit(false)"
 dove ct "store_native_deposit(true)" -o=store_native_deposit_reg
 dove ct "store_native_withdraw(false)"
 dove ct "store_native_withdraw(true)" -o=store_native_withdraw_reg
+dove ct "missed_native_balance()"
 dove ct "get_price_test()"
 popd
 

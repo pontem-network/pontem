@@ -1,5 +1,6 @@
-use serde::Deserialize;
 use frame_support::assert_ok;
+use sp_runtime::DispatchError;
+use serde::Deserialize;
 use move_core_types::identifier::Identifier;
 use move_core_types::language_storage::StructTag;
 use move_core_types::account_address::AccountAddress;
@@ -54,6 +55,38 @@ fn execute_get_balance() {
 
         let balance = balances::Pallet::<Test>::free_balance(&account);
         assert_eq!(INITIAL_BALANCE, balance);
+    });
+}
+
+#[test]
+fn execute_get_missing_balance() {
+    new_test_ext().execute_with(|| {
+        let account = origin_ps_acc();
+
+        // publish entire std lib:
+        publish_std();
+
+        // execute tx:
+        let signer = Origin::signed(account);
+        let result = execute_tx_unchecked(signer, UserTx::MissedNativeBalance, GAS_LIMIT);
+        assert!(result.is_err());
+
+        // let expected = VmResult::new(42, None, 420);
+        // let expected = from_vm_result::<Test>(VmResult {
+        //     status_code: StatusCode::UNKNOWN_NOMINAL_RESOURCE,
+        //     sub_status: None,
+        //     gas_used: 420,
+        // })
+        // .unwrap_err();
+
+        match result.unwrap_err().error {
+            DispatchError::Module {
+                // Error::<T>::ResourceDoesNotExist
+                message: Some("ResourceDoesNotExist"),
+                ..
+            } => { /* OK */ }
+            _ => panic!("should be an error"),
+        }
     });
 }
 
