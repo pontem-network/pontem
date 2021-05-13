@@ -49,12 +49,7 @@ impl<T: Config> TryInto<Event<T>> for MoveEventArguments {
 
         let ty_tag_enc = format!("{}", self.ty_tag).as_bytes().to_vec();
 
-        Ok(Event::Event(
-            account,
-            ty_tag_enc,
-            self.message,
-            caller,
-        ))
+        Ok(Event::Event(account, ty_tag_enc, self.message, caller))
     }
 }
 
