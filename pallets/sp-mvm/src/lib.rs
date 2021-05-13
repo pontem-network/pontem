@@ -103,7 +103,7 @@ pub mod pallet {
         /// [account, type_tag, message, module]
         Event(
             T::AccountId, /* transcoded AccountAddress */
-            Vec<u8>,      /* encoded TypeTag, TODO: use `MoveTypeTag<T::AccountId>` instead */
+            Vec<u8>,      /* encoded TypeTag as String, use Text in web-UI */
             Vec<u8>,      /* encoded String, use Text in web-UI */
             Option<types::MoveModuleId<T::AccountId>>,
         ),
