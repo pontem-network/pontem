@@ -45,7 +45,7 @@ pub fn authority_keys_from_seed(s: &str) -> (AuraId, GrandpaId) {
 fn properties() -> Option<sc_chain_spec::Properties> {
     json!({
         "ss58Format": SS58_FORMAT,
-        "tokenDecimals": 12,
+        "tokenDecimals": 18,
         "tokenSymbol": "PONT"
     })
     .as_object()
