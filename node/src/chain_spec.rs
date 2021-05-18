@@ -9,6 +9,11 @@ use sp_runtime::traits::{Verify, IdentifyAccount};
 use sc_service::ChainType;
 use serde_json::json;
 
+/// Address format for Pontem.
+/// 42 is a placeholder for any Substrate-based chain.
+/// See https://github.com/paritytech/substrate/blob/master/ss58-registry.json
+const SS58_FORMAT: u8 = 42;
+
 // The URL for the telemetry server.
 // const STAGING_TELEMETRY_URL: &str = "wss://telemetry.polkadot.io/submit/";
 
@@ -39,7 +44,7 @@ pub fn authority_keys_from_seed(s: &str) -> (AuraId, GrandpaId) {
 
 fn properties() -> Option<sc_chain_spec::Properties> {
     json!({
-        "ss58Format": 42,
+        "ss58Format": SS58_FORMAT,
         "tokenDecimals": 12,
         "tokenSymbol": "PONT"
     })
