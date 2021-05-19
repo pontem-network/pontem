@@ -54,7 +54,7 @@ where
             ticker
         );
         let address = address_to_account::<T::AccountId>(&address).unwrap();
-        <balances::Module<T> as Currency<T::AccountId>>::free_balance(&address)
+        <balances::Pallet<T> as Currency<T::AccountId>>::free_balance(&address)
             .try_into()
             .map_err(|_err| error!("Convert native balance to VM balance type."))
             .ok()
@@ -76,7 +76,7 @@ where
             .try_into()
             .map_err(|_err| error!("Can't convert VM balance to native balance type."))
             .and_then(|amount: BalanceOf<T>| {
-                <balances::Module<T> as Currency<T::AccountId>>::withdraw(
+                <balances::Pallet<T> as Currency<T::AccountId>>::withdraw(
                     &address,
                     amount,
                     WithdrawReasons::RESERVE,
@@ -108,7 +108,7 @@ where
                     .try_into()
                     .map_err(|_err| error!("Can't convert VM balance to native balance type."))
                     .map(|amount: BalanceOf<T>| {
-                        <balances::Module<T> as Currency<T::AccountId>>::deposit_creating(
+                        <balances::Pallet<T> as Currency<T::AccountId>>::deposit_creating(
                             &address, amount,
                         )
                     })

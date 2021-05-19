@@ -29,10 +29,10 @@ frame_support::construct_runtime!(
         NodeBlock = Block,
         UncheckedExtrinsic = UncheckedExtrinsic,
     {
-        System: frame_system::{Module, Call, Config, Storage, Event<T>},
-        Timestamp: timestamp::{Module, Call, Storage, Inherent},
-        Balances: balances::{Module, Call, Storage, Config<T>, Event<T>},
-        Mvm: sp_mvm::{Module, Call, Storage, Event<T>},
+        System: frame_system::{Pallet, Call, Config, Storage, Event<T>},
+        Timestamp: timestamp::{Pallet, Call, Storage, Inherent},
+        Balances: balances::{Pallet, Call, Storage, Config<T>, Event<T>},
+        Mvm: sp_mvm::{Pallet, Call, Storage, Event<T>},
         // Sudo: pallet_sudo::{Module, Call, Config<T>, Storage, Event<T>},
     }
 );
@@ -66,6 +66,7 @@ impl system::Config for Test {
     type OnKilledAccount = ();
     type SystemWeightInfo = ();
     type SS58Prefix = SS58Prefix;
+    type OnSetCode = ();
 }
 
 // --- gas --- //
@@ -132,8 +133,8 @@ impl sp_mvm::Config for Test {
     type GasWeightMapping = MoveVMGasWeightMapping;
 }
 
-pub type Sys = system::Module<Test>;
-pub type Time = timestamp::Module<Test>;
+pub type Sys = system::Pallet<Test>;
+pub type Time = timestamp::Pallet<Test>;
 pub type MoveEvent = sp_mvm::Event<Test>;
 
 // TODO: use this `MockOracle` instead of the real one
