@@ -1,11 +1,10 @@
 use std::convert::TryInto;
-use codec::Encode;
 use frame_support::assert_ok;
 use move_core_types::identifier::Identifier;
 use move_core_types::language_storage::ModuleId;
 
-use sp_mvm::types::MoveStructTag;
-use sp_mvm::types::MoveTypeTag;
+use move_core_types::language_storage::StructTag;
+use move_core_types::language_storage::TypeTag;
 use sp_mvm::Event;
 
 mod common;
@@ -74,20 +73,22 @@ fn execute_script() {
         call_execute_script(Origin::signed(origin));
 
         // construct event: that should be emitted in the method call directly above
-        let tt = MoveTypeTag::Struct(MoveStructTag::new(
-            origin,
-            Identifier::new(proxy.name()).unwrap(),
-            Identifier::new("U64").unwrap(),
-            Vec::with_capacity(0),
-        ));
+        let tt = TypeTag::Struct(StructTag {
+            address: to_move_addr(origin),
+            module: Identifier::new(proxy.name()).unwrap(),
+            name: Identifier::new("U64").unwrap(),
+            type_params: Vec::with_capacity(0),
+        })
+        .to_string();
+        let tt = tt.as_bytes();
 
         let expected = vec![
             // one for user::Proxy -> std::Event (`Event::emit`)
-            Event::Event(origin, tt.encode(), 42u64.to_le_bytes().to_vec(), None).into(),
+            Event::Event(origin, tt.to_vec(), 42u64.to_le_bytes().to_vec(), None).into(),
             // and one for user::Proxy -> std::Event (`EventProxy::emit_event`)
             Event::Event(
                 origin,
-                tt.encode(),
+                tt.to_vec(),
                 42u64.to_le_bytes().to_vec(),
                 Some(
                     ModuleId::new(to_move_addr(origin), Identifier::new(proxy.name()).unwrap())
