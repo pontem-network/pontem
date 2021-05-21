@@ -1438,6 +1438,69 @@ dependencies = [
 ]
 
 [[package]]
+name = "cumulus-pallet-parachain-system"
+version = "0.1.0"
+source = "git+http://github.com/paritytech/cumulus.git?branch=rococo-v1#da4c3bac6e9584e65740ef5db4dbd2c31c1a91db"
+dependencies = [
+ "cumulus-primitives-core",
+ "cumulus-primitives-parachain-inherent",
+ "environmental",
+ "frame-support",
+ "frame-system",
+ "hash-db",
+ "log",
+ "memory-db",
+ "pallet-balances",
+ "parity-scale-codec 2.1.0",
+ "polkadot-parachain",
+ "serde",
+ "sp-core",
+ "sp-externalities",
+ "sp-inherents",
+ "sp-io",
+ "sp-runtime",
+ "sp-state-machine",
+ "sp-std",
+ "sp-trie",
+ "sp-version",
+ "trie-db",
+ "xcm",
+]
+
+[[package]]
+name = "cumulus-pallet-xcm"
+version = "0.1.0"
+source = "git+http://github.com/paritytech/cumulus.git?branch=rococo-v1#da4c3bac6e9584e65740ef5db4dbd2c31c1a91db"
+dependencies = [
+ "cumulus-primitives-core",
+ "frame-support",
+ "frame-system",
+ "parity-scale-codec 2.1.0",
+ "serde",
+ "sp-runtime",
+ "sp-std",
+ "xcm",
+]
+
+[[package]]
+name = "cumulus-pallet-xcmp-queue"
+version = "0.1.0"
+source = "git+http://github.com/paritytech/cumulus.git?branch=rococo-v1#da4c3bac6e9584e65740ef5db4dbd2c31c1a91db"
+dependencies = [
+ "cumulus-primitives-core",
+ "frame-support",
+ "frame-system",
+ "log",
+ "parity-scale-codec 2.1.0",
+ "rand 0.8.3",
+ "rand_chacha 0.3.0",
+ "sp-runtime",
+ "sp-std",
+ "xcm",
+ "xcm-executor",
+]
+
+[[package]]
 name = "cumulus-primitives-core"
 version = "0.1.0"
 source = "git+http://github.com/paritytech/cumulus.git?branch=rococo-v1#da4c3bac6e9584e65740ef5db4dbd2c31c1a91db"
@@ -1470,6 +1533,24 @@ dependencies = [
  "sp-std",
  "sp-trie",
  "tracing",
+]
+
+[[package]]
+name = "cumulus-primitives-utility"
+version = "0.1.0"
+source = "git+http://github.com/paritytech/cumulus.git?branch=rococo-v1#da4c3bac6e9584e65740ef5db4dbd2c31c1a91db"
+dependencies = [
+ "cumulus-primitives-core",
+ "frame-support",
+ "impl-trait-for-tuples",
+ "parity-scale-codec 2.1.0",
+ "polkadot-core-primitives",
+ "polkadot-parachain",
+ "polkadot-primitives",
+ "sp-runtime",
+ "sp-std",
+ "sp-trie",
+ "xcm",
 ]
 
 [[package]]
@@ -4490,6 +4571,10 @@ dependencies = [
 name = "mv-node-runtime"
 version = "3.0.0"
 dependencies = [
+ "cumulus-pallet-parachain-system",
+ "cumulus-pallet-xcm",
+ "cumulus-pallet-xcmp-queue",
+ "cumulus-primitives-utility",
  "frame-benchmarking",
  "frame-executive",
  "frame-support",
@@ -4505,7 +4590,10 @@ dependencies = [
  "pallet-timestamp",
  "pallet-transaction-payment",
  "pallet-transaction-payment-rpc-runtime-api",
+ "pallet-xcm",
+ "parachain-info",
  "parity-scale-codec 2.1.0",
+ "polkadot-parachain",
  "serde",
  "sp-api",
  "sp-block-builder",
@@ -4521,6 +4609,9 @@ dependencies = [
  "sp-transaction-pool",
  "sp-version",
  "substrate-wasm-builder 4.0.0",
+ "xcm",
+ "xcm-builder",
+ "xcm-executor",
 ]
 
 [[package]]
@@ -5411,6 +5502,18 @@ dependencies = [
  "sp-runtime",
  "sp-std",
  "xcm",
+]
+
+[[package]]
+name = "parachain-info"
+version = "0.1.0"
+source = "git+http://github.com/paritytech/cumulus.git?branch=rococo-v1#da4c3bac6e9584e65740ef5db4dbd2c31c1a91db"
+dependencies = [
+ "cumulus-primitives-core",
+ "frame-support",
+ "frame-system",
+ "parity-scale-codec 2.1.0",
+ "serde",
 ]
 
 [[package]]
@@ -10587,7 +10690,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "04f8ab788026715fa63b31960869617cba39117e520eb415b0139543e325ab59"
 dependencies = [
  "cfg-if 0.1.10",
- "rand 0.3.23",
+ "rand 0.7.3",
  "static_assertions",
 ]
 

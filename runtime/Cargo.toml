@@ -50,6 +50,20 @@ sp-std = { default-features = false, version = '3.0.0', git = 'http://github.com
 sp-transaction-pool = { default-features = false, version = '3.0.0', git = 'http://github.com/paritytech/substrate.git', branch = 'rococo-v1' }
 sp-version = { default-features = false, version = '3.0.0', git = 'http://github.com/paritytech/substrate.git', branch = 'rococo-v1' }
 
+parachain-info = { default-features = false, git = 'https://github.com/paritytech/cumulus.git', branch = 'rococo-v1' }
+pallet-xcm = { default-features = false, git = 'https://github.com/paritytech/polkadot.git', branch = 'rococo-v1' }
+xcm = { default-features = false, git = 'https://github.com/paritytech/polkadot.git', branch = 'rococo-v1' }
+xcm-builder = { default-features = false, git = 'https://github.com/paritytech/polkadot.git', branch = 'rococo-v1' }
+xcm-executor = { default-features = false, git = 'https://github.com/paritytech/polkadot.git', branch = 'rococo-v1' }
+polkadot-parachain = { default-features = false, git = 'https://github.com/paritytech/polkadot.git', branch = 'rococo-v1' }
+
+
+cumulus-pallet-parachain-system = { default-features = false, git = 'https://github.com/paritytech/cumulus.git', branch = 'rococo-v1' }
+cumulus-pallet-xcm = { default-features = false, git = 'https://github.com/paritytech/cumulus.git', branch = 'rococo-v1' }
+cumulus-pallet-xcmp-queue = { default-features = false, git = 'https://github.com/paritytech/cumulus.git', branch = 'rococo-v1' }
+cumulus-primitives-utility = { default-features = false, git = 'https://github.com/paritytech/cumulus.git', branch = 'rococo-v1' }
+
+
 # local dependencies
 sp-mvm = { path = '../pallets/sp-mvm', default-features = false }
 sp-mvm-rpc-runtime = { path = '../pallets/sp-mvm/rpc/runtime', default-features = false }
@@ -64,6 +78,8 @@ runtime-benchmarks = [
     'frame-system/runtime-benchmarks',
     'pallet-balances/runtime-benchmarks',
     'pallet-timestamp/runtime-benchmarks',
+    'pallet-xcm/runtime-benchmarks',
+    'xcm-builder/runtime-benchmarks',
     'sp-runtime/runtime-benchmarks',
     'sp-mvm/runtime-benchmarks',
 ]
@@ -82,6 +98,11 @@ std = [
     'pallet-timestamp/std',
     'pallet-transaction-payment/std',
     'pallet-transaction-payment-rpc-runtime-api/std',
+    'parachain-info/std',
+    'cumulus-pallet-parachain-system/std',
+    'cumulus-pallet-xcm/std',
+    'cumulus-pallet-xcmp-queue/std',
+    'cumulus-primitives-utility/std',
     'sp-api/std',
     'sp-block-builder/std',
     'sp-consensus-aura/std',
@@ -94,4 +115,7 @@ std = [
     'sp-transaction-pool/std',
     'sp-version/std',
     'sp-mvm/std',
+    'xcm/std',
+    'xcm-builder/std',
+    'xcm-executor/std'
 ]

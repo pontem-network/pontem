@@ -4,7 +4,7 @@ use sp_core::{sr25519, Pair, Public};
 use sc_chain_spec::{ChainSpecExtension, ChainSpecGroup};
 use sp_runtime::traits::{IdentifyAccount, Verify};
 use mv_node_runtime::{
-    GenesisConfig, SudoConfig, SystemConfig, BalancesConfig, WASM_BINARY, AccountId, Signature,
+    GenesisConfig, SudoConfig, SystemConfig, BalancesConfig, WASM_BINARY, AccountId, Signature, ParachainInfoConfig,
 };
 use serde::{Serialize, Deserialize};
 
@@ -66,6 +66,7 @@ pub fn development_config(id: ParaId) -> Result<ChainSpec, String> {
                     get_account_id_from_seed::<sr25519::Public>("Alice//stash"),
                     get_account_id_from_seed::<sr25519::Public>("Bob//stash"),
                 ],
+                id
             )
         },
         // Bootnodes
@@ -113,6 +114,7 @@ pub fn local_testnet_config(id: ParaId) -> Result<ChainSpec, String> {
                     get_account_id_from_seed::<sr25519::Public>("Eve//stash"),
                     get_account_id_from_seed::<sr25519::Public>("Ferdie//stash"),
                 ],
+                id
             )
         },
         // Bootnodes
@@ -136,6 +138,7 @@ fn testnet_genesis(
     wasm_binary: &[u8],
     root_key: AccountId,
     endowed_accounts: Vec<AccountId>,
+    id: ParaId,
 ) -> GenesisConfig {
     GenesisConfig {
         frame_system: SystemConfig {
@@ -151,6 +154,7 @@ fn testnet_genesis(
                 .map(|k| (k, 1 << 60))
                 .collect(),
         },
+        parachain_info: ParachainInfoConfig { parachain_id: id },
         pallet_sudo: SudoConfig {
             // Assign network admin rights.
             key: root_key,
