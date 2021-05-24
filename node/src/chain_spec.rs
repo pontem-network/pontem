@@ -7,6 +7,12 @@ use sp_consensus_aura::sr25519::AuthorityId as AuraId;
 use sp_finality_grandpa::AuthorityId as GrandpaId;
 use sp_runtime::traits::{Verify, IdentifyAccount};
 use sc_service::ChainType;
+use serde_json::json;
+
+/// Address format for Pontem.
+/// 42 is a placeholder for any Substrate-based chain.
+/// See https://github.com/paritytech/substrate/blob/master/ss58-registry.json
+const SS58_FORMAT: u8 = 42;
 
 // The URL for the telemetry server.
 // const STAGING_TELEMETRY_URL: &str = "wss://telemetry.polkadot.io/submit/";
@@ -34,6 +40,16 @@ where
 /// Generate an Aura authority key.
 pub fn authority_keys_from_seed(s: &str) -> (AuraId, GrandpaId) {
     (get_from_seed::<AuraId>(s), get_from_seed::<GrandpaId>(s))
+}
+
+fn properties() -> Option<sc_chain_spec::Properties> {
+    json!({
+        "ss58Format": SS58_FORMAT,
+        "tokenDecimals": 18,
+        "tokenSymbol": "PONT"
+    })
+    .as_object()
+    .cloned()
 }
 
 pub fn development_config() -> Result<ChainSpec, String> {
@@ -69,7 +85,7 @@ pub fn development_config() -> Result<ChainSpec, String> {
         // Protocol ID
         None,
         // Properties
-        None,
+        properties(),
         // Extensions
         None,
     ))
@@ -119,7 +135,7 @@ pub fn local_testnet_config() -> Result<ChainSpec, String> {
         // Protocol ID
         None,
         // Properties
-        None,
+        properties(),
         // Extensions
         None,
     ))
