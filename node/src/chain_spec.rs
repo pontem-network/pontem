@@ -4,7 +4,8 @@ use sp_core::{sr25519, Pair, Public};
 use sc_chain_spec::{ChainSpecExtension, ChainSpecGroup};
 use sp_runtime::traits::{IdentifyAccount, Verify};
 use mv_node_runtime::{
-    GenesisConfig, SudoConfig, SystemConfig, BalancesConfig, WASM_BINARY, AccountId, Signature, ParachainInfoConfig,
+    GenesisConfig, SudoConfig, SystemConfig, BalancesConfig, WASM_BINARY, AccountId, Signature,
+    ParachainInfoConfig, AuraId, AuraConfig,
 };
 use serde::{Serialize, Deserialize};
 
@@ -59,6 +60,10 @@ pub fn development_config(id: ParaId) -> Result<ChainSpec, String> {
                 wasm_binary,
                 // Sudo account
                 get_account_id_from_seed::<sr25519::Public>("Alice"),
+                vec![
+                    get_from_seed::<AuraId>("Alice"),
+                    get_from_seed::<AuraId>("Bob"),
+                ],
                 // Pre-funded accounts
                 vec![
                     get_account_id_from_seed::<sr25519::Public>("Alice"),
@@ -66,7 +71,7 @@ pub fn development_config(id: ParaId) -> Result<ChainSpec, String> {
                     get_account_id_from_seed::<sr25519::Public>("Alice//stash"),
                     get_account_id_from_seed::<sr25519::Public>("Bob//stash"),
                 ],
-                id
+                id,
             )
         },
         // Bootnodes
@@ -79,7 +84,7 @@ pub fn development_config(id: ParaId) -> Result<ChainSpec, String> {
         None,
         // Extensions
         Extensions {
-            relay_chain: "rococo-dev".into(),
+            relay_chain: "westend-dev".into(),
             para_id: id.into(),
         },
     ))
@@ -99,6 +104,10 @@ pub fn local_testnet_config(id: ParaId) -> Result<ChainSpec, String> {
                 wasm_binary,
                 // Sudo account
                 get_account_id_from_seed::<sr25519::Public>("Alice"),
+                vec![
+                    get_from_seed::<AuraId>("Alice"),
+                    get_from_seed::<AuraId>("Bob"),
+                ],
                 // Pre-funded accounts
                 vec![
                     get_account_id_from_seed::<sr25519::Public>("Alice"),
@@ -114,7 +123,7 @@ pub fn local_testnet_config(id: ParaId) -> Result<ChainSpec, String> {
                     get_account_id_from_seed::<sr25519::Public>("Eve//stash"),
                     get_account_id_from_seed::<sr25519::Public>("Ferdie//stash"),
                 ],
-                id
+                id,
             )
         },
         // Bootnodes
@@ -127,7 +136,7 @@ pub fn local_testnet_config(id: ParaId) -> Result<ChainSpec, String> {
         None,
         // Extensions
         Extensions {
-            relay_chain: "rococo-dev".into(),
+            relay_chain: "westend-dev".into(),
             para_id: id.into(),
         },
     ))
@@ -137,6 +146,7 @@ pub fn local_testnet_config(id: ParaId) -> Result<ChainSpec, String> {
 fn testnet_genesis(
     wasm_binary: &[u8],
     root_key: AccountId,
+    initial_authorities: Vec<AuraId>,
     endowed_accounts: Vec<AccountId>,
     id: ParaId,
 ) -> GenesisConfig {
@@ -159,5 +169,9 @@ fn testnet_genesis(
             // Assign network admin rights.
             key: root_key,
         },
+        pallet_aura: AuraConfig {
+            authorities: initial_authorities,
+        },
+        cumulus_pallet_aura_ext: Default::default(),
     }
 }
