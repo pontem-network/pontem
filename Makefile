@@ -1,4 +1,4 @@
-SHELL := /bin/bash
+SHELL := bash
 
 .PHONY: init
 init:
@@ -9,7 +9,17 @@ check:
 	export SKIP_WASM_BUILD=1
 	cargo check --all
 	cargo check --all --tests
+	make check-no-std
+	make check-benchmarks
+
+.PHONY: check-benchmarks
+check-benchmarks:
+	export SKIP_WASM_BUILD=1
 	pushd node && cargo check --features=runtime-benchmarks; popd
+
+.PHONY: check-no-std
+check-no-std:
+	pushd pallets/sp-mvm && cargo check -p=sp-mvm --target=wasm32-unknown-unknown --no-default-features; popd
 
 .PHONY: clippy
 clippy:

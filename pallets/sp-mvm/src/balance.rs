@@ -53,10 +53,13 @@ where
             address,
             ticker
         );
-        let address = address_to_account::<T::AccountId>(&address).unwrap();
-        <balances::Pallet<T> as Currency<T::AccountId>>::free_balance(&address)
-            .try_into()
-            .map_err(|_err| error!("Convert native balance to VM balance type."))
+        address_to_account::<T::AccountId>(&address)
+            .map_err(|_| error!("Can't convert address from Move to Substrate."))
+            .and_then(|address| {
+                <balances::Pallet<T> as Currency<T::AccountId>>::free_balance(&address)
+                    .try_into()
+                    .map_err(|_err| error!("Convert native balance to VM balance type."))
+            })
             .ok()
     }
 
@@ -71,21 +74,23 @@ where
         }
 
         trace!("deposit resource {} requested, amount: {}", ticker, amount);
-        let address = address_to_account::<T::AccountId>(&address).unwrap();
-        let imbalance = amount
-            .try_into()
-            .map_err(|_err| error!("Can't convert VM balance to native balance type."))
-            .and_then(|amount: BalanceOf<T>| {
-                <balances::Pallet<T> as Currency<T::AccountId>>::withdraw(
-                    &address,
-                    amount,
-                    WithdrawReasons::RESERVE,
-                    ExistenceRequirement::AllowDeath,
-                )
-                .map_err(|_err| error!("Can't withdraw native balance."))
+        let imbalance = address_to_account::<T::AccountId>(&address)
+            .map_err(|_| error!("Can't convert address from Move to Substrate."))
+            .and_then(|address| {
+                amount
+                    .try_into()
+                    .map_err(|_err| error!("Can't convert VM balance to native balance type."))
+                    .and_then(|amount: BalanceOf<T>| {
+                        <balances::Pallet<T> as Currency<T::AccountId>>::withdraw(
+                            &address,
+                            amount,
+                            WithdrawReasons::RESERVE,
+                            ExistenceRequirement::AllowDeath,
+                        )
+                        .map_err(|_err| error!("Can't withdraw native balance."))
+                    })
+                    .map(|imbalance| imbalance.peek())
             })
-            .map(|imbalance| imbalance.peek())
-            // TODO: return result
             .ok();
         trace!("native balance withdraw imbalance: {:?}", imbalance);
     }

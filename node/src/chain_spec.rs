@@ -8,6 +8,12 @@ use mv_node_runtime::{
     ParachainInfoConfig, AuraId, AuraConfig,
 };
 use serde::{Serialize, Deserialize};
+use serde_json::json;
+
+/// Address format for Pontem.
+/// 42 is a placeholder for any Substrate-based chain.
+/// See https://github.com/paritytech/substrate/blob/master/ss58-registry.json
+const SS58_FORMAT: u8 = 42;
 
 /// Specialized `ChainSpec`. This is a specialization of the general Substrate ChainSpec type.
 pub type ChainSpec = sc_service::GenericChainSpec<GenesisConfig, Extensions>;
@@ -46,6 +52,16 @@ where
     AccountPublic::from(get_from_seed::<TPublic>(seed)).into_account()
 }
 
+fn properties() -> Option<sc_chain_spec::Properties> {
+    json!({
+        "ss58Format": SS58_FORMAT,
+        "tokenDecimals": 18,
+        "tokenSymbol": "PONT"
+    })
+    .as_object()
+    .cloned()
+}
+
 pub fn development_config(id: ParaId) -> Result<ChainSpec, String> {
     let wasm_binary = WASM_BINARY.ok_or_else(|| "Development wasm not available".to_string())?;
 
@@ -81,7 +97,7 @@ pub fn development_config(id: ParaId) -> Result<ChainSpec, String> {
         // Protocol ID
         None,
         // Properties
-        None,
+        properties(),
         // Extensions
         Extensions {
             relay_chain: "rococo-local".into(),
@@ -133,7 +149,7 @@ pub fn local_testnet_config(id: ParaId) -> Result<ChainSpec, String> {
         // Protocol ID
         None,
         // Properties
-        None,
+        properties(),
         // Extensions
         Extensions {
             relay_chain: "rococo-local".into(),

@@ -1,6 +1,5 @@
 use core::convert::TryInto;
 use sp_std::prelude::*;
-use codec::Encode;
 use move_core_types::account_address::AccountAddress;
 use move_core_types::language_storage::ModuleId;
 use move_core_types::language_storage::TypeTag;
@@ -8,6 +7,11 @@ use move_vm::data::EventHandler;
 use crate::types;
 use crate::{Event, Config};
 use crate::addr::address_to_account;
+
+#[cfg(not(feature = "std"))]
+extern crate alloc;
+#[cfg(not(feature = "std"))]
+use alloc::format;
 
 pub trait DepositMoveEvent {
     /// Emit a Move event with content of passed `MoveEventArguments`
@@ -43,9 +47,9 @@ impl<T: Config> TryInto<Event<T>> for MoveEventArguments {
             return Err(err);
         }
 
-        let ty_tag: types::MoveTypeTag<T::AccountId> = self.ty_tag.try_into()?;
+        let ty_tag_enc = format!("{}", self.ty_tag).as_bytes().to_vec();
 
-        Ok(Event::Event(account, ty_tag.encode(), self.message, caller))
+        Ok(Event::Event(account, ty_tag_enc, self.message, caller))
     }
 }
 

@@ -20,6 +20,7 @@ substrate-build-script-utils = { git = 'https://github.com/paritytech/substrate.
 
 [dependencies]
 jsonrpc-core = '15.1.0'
+serde_json = '1.0'
 structopt = '0.3.8'
 codec = { package = 'parity-scale-codec', version = '2.0.0' }
 log = "0.4"
@@ -61,14 +62,12 @@ sp-finality-grandpa = { git = 'http://github.com/paritytech/substrate.git', bran
 sp-inherents = { git = 'http://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.2' }
 sp-runtime = { git = 'http://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.2' }
 sp-transaction-pool = { git = 'http://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.2' }
-#sp-trie = { git = 'http://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.2' }
 sp-timestamp = { git = 'http://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.2' }
 sp-session = { git = 'http://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.2' }
 sp-offchain = { git = 'http://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.2' }
 sp-keystore = { git = 'http://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.2' }
 
 # Cumulus dependencies
-#cumulus-client-consensus-relay-chain = { git = 'http://github.com/paritytech/cumulus.git', branch = 'polkadot-v0.9.2' }
 cumulus-client-consensus-aura = { git = 'http://github.com/paritytech/cumulus.git', branch = 'polkadot-v0.9.2' }
 cumulus-client-consensus-common = { git = 'http://github.com/paritytech/cumulus.git', branch = 'polkadot-v0.9.2' }
 cumulus-client-network = { git = 'http://github.com/paritytech/cumulus.git', branch = 'polkadot-v0.9.2' }
