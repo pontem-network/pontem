@@ -84,7 +84,7 @@ pub fn development_config(id: ParaId) -> Result<ChainSpec, String> {
         None,
         // Extensions
         Extensions {
-            relay_chain: "westend-dev".into(),
+            relay_chain: "rococo-local".into(),
             para_id: id.into(),
         },
     ))
@@ -136,7 +136,7 @@ pub fn local_testnet_config(id: ParaId) -> Result<ChainSpec, String> {
         None,
         // Extensions
         Extensions {
-            relay_chain: "westend-dev".into(),
+            relay_chain: "rococo-local".into(),
             para_id: id.into(),
         },
     ))
