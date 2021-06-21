@@ -27,13 +27,13 @@ Read [official documentation](https://docs.pontem.network/02.-getting-started/lo
 
 To launch `mv-node` locally, use [`polkadot-launch`](https://github.com/paritytech/polkadot-launch) tool.
 
-**Note:** you must have polkadot node `v0.9.2` compiled and placed in `../polkadot/target/release/`.
+**Note:** you must have polkadot node `v0.9.3` compiled and placed in `../polkadot/target/release/`.
 To use different localion you can modify `./launch-config.json`.
 
 ```sh
-# compile polkadot v0.9.2
+# compile polkadot v0.9.3
 cd polkadot
-git checkout release-v0.9.2
+git checkout release-v0.9.3
 cargo build --release
 
 # run mv-node
