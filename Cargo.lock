@@ -1759,6 +1759,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "cumulus-primitives-timestamp"
+version = "0.1.0"
+source = "git+http://github.com/paritytech/cumulus.git?branch=polkadot-v0.9.6#e11ed73ba342fc1aaafaf86979c987ea8d035544"
+dependencies = [
+ "cumulus-primitives-core",
+ "sp-inherents",
+ "sp-std",
+ "sp-timestamp",
+]
+
+[[package]]
 name = "cumulus-primitives-utility"
 version = "0.1.0"
 source = "git+http://github.com/paritytech/cumulus.git?branch=polkadot-v0.9.6#e11ed73ba342fc1aaafaf86979c987ea8d035544"
@@ -4883,6 +4894,7 @@ dependencies = [
  "cumulus-pallet-xcm",
  "cumulus-pallet-xcmp-queue",
  "cumulus-primitives-core",
+ "cumulus-primitives-timestamp",
  "cumulus-primitives-utility",
  "frame-benchmarking",
  "frame-executive",
@@ -6446,6 +6458,7 @@ dependencies = [
  "pallet-transaction-payment-rpc-runtime-api",
  "polkadot-primitives",
  "polkadot-runtime",
+ "rococo-runtime",
  "sc-client-api",
  "sc-executor",
  "sc-service",

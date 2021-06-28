@@ -4,7 +4,6 @@ use cumulus_client_service::{
     StartFullNodeParams,
 };
 use cumulus_primitives_core::ParaId;
-use polkadot_primitives::v0::CollatorPair;
 use mv_node_runtime::{AccountId, Balance, Index, RuntimeApi};
 use sc_executor::native_executor_instance;
 pub use sc_executor::NativeExecutor;
@@ -111,7 +110,7 @@ where
         config.transaction_pool.clone(),
         config.role.is_authority().into(),
         config.prometheus_registry(),
-        task_manager.spawn_handle(),
+        task_manager.spawn_essential_handle(),
         client.clone(),
     );
 
@@ -142,7 +141,6 @@ where
 #[sc_tracing::logging::prefix_logs_with("Parachain")]
 async fn start_node_impl<RuntimeApi, Executor, BIQ, BIC>(
     parachain_config: Configuration,
-    collator_key: CollatorPair,
     polkadot_config: Configuration,
     id: ParaId,
     build_import_queue: BIQ,
@@ -200,7 +198,6 @@ where
 
     let relay_chain_full_node = cumulus_client_service::build_polkadot_full_node(
         polkadot_config,
-        collator_key.clone(),
         telemetry_worker_handle,
     )
     .map_err(|e| match e {
@@ -223,7 +220,7 @@ where
     let transaction_pool = params.transaction_pool.clone();
     let mut task_manager = params.task_manager;
     let import_queue = cumulus_client_service::SharedImportQueue::new(params.import_queue);
-    let (network, network_status_sinks, system_rpc_tx, start_network) =
+    let (network, system_rpc_tx, start_network) =
         sc_service::build_network(sc_service::BuildNetworkParams {
             config: &parachain_config,
             client: client.clone(),
@@ -260,7 +257,6 @@ where
         keystore: params.keystore_container.sync_keystore(),
         backend: backend.clone(),
         network: network.clone(),
-        network_status_sinks,
         system_rpc_tx,
         telemetry: telemetry.as_mut(),
     })?;
@@ -289,7 +285,6 @@ where
             announce_block,
             client: client.clone(),
             task_manager: &mut task_manager,
-            collator_key,
             relay_chain_full_node,
             spawner,
             parachain_consensus,
@@ -362,7 +357,6 @@ pub fn parachain_build_import_queue(
 /// Start a normal parachain node.
 pub async fn start_node(
     parachain_config: Configuration,
-    collator_key: CollatorPair,
     polkadot_config: Configuration,
     id: ParaId,
 ) -> sc_service::error::Result<(
@@ -371,7 +365,6 @@ pub async fn start_node(
 )> {
     start_node_impl::<RuntimeApi, ParachainRuntimeExecutor, _, _>(
         parachain_config,
-        collator_key,
         polkadot_config,
         id,
         parachain_build_import_queue,

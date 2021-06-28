@@ -67,6 +67,7 @@ cumulus-pallet-xcmp-queue = { default-features = false, git = 'https://github.co
 cumulus-pallet-dmp-queue = { default-features = false, git = 'https://github.com/paritytech/cumulus.git', branch = 'polkadot-v0.9.6' }
 cumulus-primitives-utility = { default-features = false, git = 'https://github.com/paritytech/cumulus.git', branch = 'polkadot-v0.9.6' }
 cumulus-primitives-core = { default-features = false, git = 'https://github.com/paritytech/cumulus.git', branch = 'polkadot-v0.9.6' }
+cumulus-primitives-timestamp = { default-features = false, git = 'https://github.com/paritytech/cumulus.git', branch = 'polkadot-v0.9.6' }
 
 # local dependencies
 sp-mvm = { path = '../pallets/sp-mvm', default-features = false }
@@ -109,6 +110,7 @@ std = [
     'cumulus-pallet-aura-ext/std',
     'cumulus-primitives-utility/std',
     'cumulus-primitives-core/std',
+    'cumulus-primitives-timestamp/std',
     'sp-api/std',
     'sp-block-builder/std',
     'sp-consensus-aura/std',

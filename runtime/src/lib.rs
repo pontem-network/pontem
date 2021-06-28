@@ -20,7 +20,7 @@ use sp_version::NativeVersion;
 
 // Polkadot & XCM imports
 use polkadot_parachain::primitives::Sibling;
-use xcm::v0::{MultiAsset, MultiLocation, MultiLocation::*, Junction::*, BodyId, NetworkId};
+use xcm::v0::{MultiAsset, MultiLocation, MultiLocation::*, Junction::*, BodyId, NetworkId, Xcm};
 use xcm_builder::{
     AccountId32Aliases, CurrencyAdapter, LocationInverter, ParentIsDefault, RelayChainAsNative,
     SiblingParachainAsNative, SiblingParachainConvertsVia, SignedAccountId32AsNative,
@@ -30,7 +30,6 @@ use xcm_builder::{
 };
 use xcm_executor::{Config, XcmExecutor};
 use pallet_xcm::XcmPassthrough;
-use xcm::v0::Xcm;
 
 // A few exports that help ease life for downstream crates.
 #[cfg(any(feature = "std", test))]
@@ -238,8 +237,12 @@ impl pallet_timestamp::Config for Runtime {
 }
 
 parameter_types! {
-    pub const ExistentialDeposit: u128 = 500;
+    pub const ExistentialDeposit: u128 = 1 * MILLIUNIT;
+    pub const TransferFee: u128 = 1 * MILLIUNIT;
+    pub const CreationFee: u128 = 1 * MILLIUNIT;
+    pub const TransactionByteFee: u128 = 1 * MILLIUNIT;
     pub const MaxLocks: u32 = 50;
+    pub const MaxReserves: u32 = 50;
 }
 
 impl pallet_balances::Config for Runtime {
@@ -252,10 +255,8 @@ impl pallet_balances::Config for Runtime {
     type ExistentialDeposit = ExistentialDeposit;
     type AccountStore = System;
     type WeightInfo = pallet_balances::weights::SubstrateWeight<Runtime>;
-}
-
-parameter_types! {
-    pub const TransactionByteFee: Balance = 1 * MICROUNIT;
+    type MaxReserves = MaxReserves;
+    type ReserveIdentifier = [u8; 8];
 }
 
 impl pallet_transaction_payment::Config for Runtime {
@@ -289,6 +290,8 @@ impl cumulus_pallet_parachain_system::Config for Runtime {
 impl parachain_info::Config for Runtime {}
 
 impl cumulus_pallet_aura_ext::Config for Runtime {}
+
+impl pallet_randomness_collective_flip::Config for Runtime {}
 
 parameter_types! {
     pub const RelayLocation: MultiLocation = X1(Parent);
@@ -375,7 +378,7 @@ impl Config for XcmConfig {
     type AssetTransactor = LocalAssetTransactor;
     type OriginConverter = XcmOriginToTransactDispatchOrigin;
     type IsReserve = NativeAsset;
-    type IsTeleporter = NativeAsset; // <- should be enough to allow teleportation of ROC
+    type IsTeleporter = NativeAsset; // <- should be enough to allow teleportation of UNIT
     type LocationInverter = LocationInverter<Ancestry>;
     type Barrier = Barrier;
     type Weigher = FixedWeightBounds<UnitWeightCost, Call>;
@@ -384,7 +387,7 @@ impl Config for XcmConfig {
 }
 
 /// No local origins on this chain are allowed to dispatch XCM sends/executions.
-pub type LocalOriginToLocation = (SignedToAccountId32<Origin, AccountId, RelayNetwork>,);
+pub type LocalOriginToLocation = SignedToAccountId32<Origin, AccountId, RelayNetwork>;
 
 /// The means for routing XCM messages which are not for local execution into the right message
 /// queues.
@@ -455,6 +458,22 @@ impl GasWeightMapping for MoveVMGasWeightMapping {
 impl sp_mvm::Config for Runtime {
     type Event = Event;
     type GasWeightMapping = MoveVMGasWeightMapping;
+}
+
+struct CheckInherents;
+
+impl cumulus_pallet_parachain_system::CheckInherents<Block> for CheckInherents {
+    fn check_inherents(block: &Block, relay_state_proof: &cumulus_pallet_parachain_system::RelayChainStateProof) -> frame_support::inherent::CheckInherentsResult {
+        let relay_chain_slot = relay_state_proof.read_slot().expect("Could not read the relay chain sloto from the proof");
+
+        let inherent_data = cumulus_primitives_timestamp::InherentDataProvider::from_relay_chain_slot_and_duration(
+            relay_chain_slot,
+            sp_std::time::Duration::from_secs(6),
+                                                                                                                  )
+            .create_inherent_data()
+            .expect("Could not create the timestamp inherent data");
+        inherent_data.check_extrinsics(&block)
+    }
 }
 
 // Create the runtime by composing the FRAME pallets that were previously configured.
@@ -698,6 +717,7 @@ impl_runtime_apis! {
 }
 
 cumulus_pallet_parachain_system::register_validate_block!(
-    Runtime,
-    cumulus_pallet_aura_ext::BlockExecutor::<Runtime, Executive>,
+    Runtime = Runtime,
+    BlockExecutor = cumulus_pallet_aura_ext::BlockExecutor::<Runtime, Executive>,
+    CheckInherents = CheckInherents,
 );

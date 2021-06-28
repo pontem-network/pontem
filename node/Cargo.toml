@@ -79,13 +79,22 @@ cumulus-primitives-parachain-inherent = { git = 'http://github.com/paritytech/cu
 # Polkadot dependencies
 polkadot-primitives = { git = 'http://github.com/paritytech/polkadot.git', branch = 'release-v0.9.6' }
 polkadot-service = { git = 'http://github.com/paritytech/polkadot.git', branch = 'release-v0.9.6' }
-polkadot-cli = { git = 'http://github.com/paritytech/polkadot.git', branch = 'release-v0.9.6' }
 polkadot-parachain = { git = 'http://github.com/paritytech/polkadot.git', branch = 'release-v0.9.6' }
 
 # Local dependencies
 mv-node-runtime = { path = '../runtime' }
 sp-mvm-rpc = { path = '../pallets/sp-mvm/rpc' }
 sp-mvm-rpc-runtime = { path = '../pallets/sp-mvm/rpc/runtime' }
+
+# FIXME: You MUST set the relay chain networks you wish to target in the `features` here
+# Options are found here: https://github.com/paritytech/polkadot/blob/master/cli/Cargo.toml#L64-L71
+#
+# Alternatively to setting here, you can use cargo CLI at build time:
+# https://doc.rust-lang.org/cargo/reference/features.html#command-line-feature-options  
+#
+# ** Don't enable relay chains you don't need, as this is a **very** heavy build for no reason**
+# More info: https://github.com/paritytech/polkadot/pull/3189
+polkadot-cli = { git = 'http://github.com/paritytech/polkadot.git', branch = 'release-v0.9.6', features = ["rococo-native"] }
 
 [features]
 default = []
