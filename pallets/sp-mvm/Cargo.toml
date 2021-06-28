@@ -52,17 +52,17 @@ default-features = false
 [dependencies]
 once_cell = { default-features = false, version = "1.5.2" }
 # substrate:
-frame-support = { default-features = false, git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.3' }
-frame-system = { default-features = false, git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.3' }
-frame-benchmarking = { default-features = false, optional = true, git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.3' }
-sp-std = { default-features = false, git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.3' }
-sp-core = { default-features = false, git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.3' }
-timestamp = { default-features = false, package = "pallet-timestamp", git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.3' }
-balances = { default-features = false, package = "pallet-balances", git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.3' }
+frame-support = { default-features = false, git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.6' }
+frame-system = { default-features = false, git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.6' }
+frame-benchmarking = { default-features = false, optional = true, git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.6' }
+sp-std = { default-features = false, git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.6' }
+sp-core = { default-features = false, git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.6' }
+timestamp = { default-features = false, package = "pallet-timestamp", git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.6' }
+balances = { default-features = false, package = "pallet-balances", git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.6' }
 # logging, `sp_runtime::print`:
-sp-runtime = { default-features = false, git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.3' }
+sp-runtime = { default-features = false, git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.6' }
 
-sp-io = { default-features = false, git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.3' }
+sp-io = { default-features = false, git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.6' }
 
 # serde is for lcs/bcs only
 # used for benchmarking (runtime, std, no-std)
