@@ -13,7 +13,7 @@ use sp_runtime::{
     transaction_validity::{TransactionValidity, TransactionSource},
 };
 use sp_runtime::traits::{
-    BlakeTwo256, Block as BlockT, AccountIdLookup, Verify, IdentifyAccount, NumberFor,
+    BlakeTwo256, Block as BlockT, AccountIdLookup, Verify, IdentifyAccount, NumberFor, ConvertInto,
 };
 use sp_api::impl_runtime_apis;
 use sp_consensus_aura::sr25519::AuthorityId as AuraId;
@@ -28,6 +28,7 @@ use sp_version::NativeVersion;
 pub use sp_runtime::BuildStorage;
 pub use pallet_timestamp::Call as TimestampCall;
 pub use pallet_balances::Call as BalancesCall;
+pub use pallet_vesting::Call as VestingCall;
 pub use sp_runtime::{Permill, Perbill};
 pub use frame_support::{
     construct_runtime, parameter_types, StorageValue,
@@ -237,6 +238,18 @@ impl pallet_timestamp::Config for Runtime {
 }
 
 parameter_types! {
+    pub const MinVestedTransfer: Balance = 1 * 1_000_000_000_000_000_000;
+}
+
+impl pallet_vesting::Config for Runtime {
+    type Event = Event;
+    type Currency = Balances;
+    type BlockNumberToBalance = ConvertInto;
+    type MinVestedTransfer = MinVestedTransfer;
+	type WeightInfo = pallet_vesting::weights::SubstrateWeight<Runtime>;
+}
+
+parameter_types! {
     pub const ExistentialDeposit: u128 = 500;
     pub const MaxLocks: u32 = 50;
 }
@@ -314,6 +327,7 @@ construct_runtime!(
         TransactionPayment: pallet_transaction_payment::{Module, Storage},
         Sudo: pallet_sudo::{Module, Call, Config<T>, Storage, Event<T>},
         Mvm: sp_mvm::{Module, Call, Storage, Event<T>},
+        Vesting: pallet_vesting::{Module, Call, Storage, Config<T>, Event<T>},
     }
 );
 

@@ -1,7 +1,8 @@
+use sp_std::str::FromStr;
 use sp_core::{Pair, Public, sr25519};
 use mv_node_runtime::{
     AccountId, AuraConfig, BalancesConfig, GenesisConfig, GrandpaConfig, SudoConfig,
-    SystemConfig, WASM_BINARY, Signature,
+    SystemConfig, VestingConfig, WASM_BINARY, Signature,
 };
 use sp_consensus_aura::sr25519::AuthorityId as AuraId;
 use sp_finality_grandpa::AuthorityId as GrandpaId;
@@ -175,6 +176,9 @@ fn testnet_genesis(
         pallet_sudo: Some(SudoConfig {
             // Assign network admin rights.
             key: root_key,
+        }),
+        pallet_vesting: Some(VestingConfig {
+            vesting: vec![(AccountId::from_str("5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY").unwrap(), 100, 10000, 1 * 1_000_000_000_000_000_000)]
         }),
     }
 }
