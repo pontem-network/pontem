@@ -42,7 +42,6 @@ sc-service = { features = ['wasmtime'], version = '0.9.0' }
 sc-telemetry = '3.0.0'
 sc-transaction-pool = '3.0.0'
 sp-api = '3.0.0'
-sp-std = '3.0.0'
 sp-block-builder = '3.0.0'
 sp-blockchain = '3.0.0'
 sp-consensus = '0.9.0'

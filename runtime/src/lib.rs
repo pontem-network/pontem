@@ -13,7 +13,8 @@ use sp_runtime::{
     transaction_validity::{TransactionValidity, TransactionSource},
 };
 use sp_runtime::traits::{
-    BlakeTwo256, Block as BlockT, AccountIdLookup, Verify, IdentifyAccount, NumberFor, ConvertInto,
+    BlakeTwo256, Block as BlockT, AccountIdLookup, Verify, IdentifyAccount, NumberFor,
+    ConvertInto,
 };
 use sp_api::impl_runtime_apis;
 use sp_consensus_aura::sr25519::AuthorityId as AuraId;
@@ -238,7 +239,8 @@ impl pallet_timestamp::Config for Runtime {
 }
 
 parameter_types! {
-    pub const MinVestedTransfer: Balance = 1 * 1_000_000_000_000_000_000;
+    // 1 PONT.
+    pub const MinVestedTransfer: Balance = 1_000_000_000_000_000_000;
 }
 
 impl pallet_vesting::Config for Runtime {
@@ -246,7 +248,7 @@ impl pallet_vesting::Config for Runtime {
     type Currency = Balances;
     type BlockNumberToBalance = ConvertInto;
     type MinVestedTransfer = MinVestedTransfer;
-	type WeightInfo = pallet_vesting::weights::SubstrateWeight<Runtime>;
+    type WeightInfo = pallet_vesting::weights::SubstrateWeight<Runtime>;
 }
 
 parameter_types! {

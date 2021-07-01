@@ -3863,7 +3863,6 @@ dependencies = [
  "sp-mvm-rpc",
  "sp-mvm-rpc-runtime",
  "sp-runtime",
- "sp-std",
  "sp-transaction-pool",
  "structopt",
  "substrate-build-script-utils",

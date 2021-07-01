@@ -1,4 +1,3 @@
-use sp_std::str::FromStr;
 use sp_core::{Pair, Public, sr25519};
 use mv_node_runtime::{
     AccountId, AuraConfig, BalancesConfig, GenesisConfig, GrandpaConfig, SudoConfig,
@@ -178,7 +177,13 @@ fn testnet_genesis(
             key: root_key,
         }),
         pallet_vesting: Some(VestingConfig {
-            vesting: vec![(AccountId::from_str("5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY").unwrap(), 100, 10000, 1 * 1_000_000_000_000_000_000)]
+            // Move 1 PONT under vesting starting since block 100 and till 10000 block.
+            vesting: vec![(
+                get_account_id_from_seed::<sr25519::Public>("Alice"),
+                100,
+                10000,
+                1_000_000_000_000_000_000,
+            )],
         }),
     }
 }
