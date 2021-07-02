@@ -177,13 +177,12 @@ fn testnet_genesis(
             key: root_key,
         }),
         pallet_vesting: Some(VestingConfig {
-            // Move 1 PONT under vesting starting since block 100 and till 10000 block.
-            vesting: vec![(
-                get_account_id_from_seed::<sr25519::Public>("Alice"),
-                100,
-                10000,
-                1_000_000_000_000_000_000,
-            )],
+            // Move 0.01 PONT under vesting for each account since block 100 and till 10000 block.
+            vesting: endowed_accounts
+                .iter()
+                .cloned()
+                .map(|k| (k, 100, 1000, 1_000_000_000_000_0000))
+                .collect(),
         }),
     }
 }
