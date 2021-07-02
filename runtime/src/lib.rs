@@ -130,6 +130,10 @@ pub const MINUTES: BlockNumber = 60_000 / (MILLISECS_PER_BLOCK as BlockNumber);
 pub const HOURS: BlockNumber = MINUTES * 60;
 pub const DAYS: BlockNumber = HOURS * 24;
 
+// Currencies constants.
+pub const DECIMALS: u32 = 18;
+pub const PONT: Balance = u128::pow(10, DECIMALS);
+
 /// The version information used to identify this runtime when compiled natively.
 #[cfg(feature = "std")]
 pub fn native_version() -> NativeVersion {
@@ -240,7 +244,7 @@ impl pallet_timestamp::Config for Runtime {
 
 parameter_types! {
     // 1 PONT.
-    pub const MinVestedTransfer: Balance = 1_000_000_000_000_000_000;
+    pub const MinVestedTransfer: Balance = PONT;
 }
 
 impl pallet_vesting::Config for Runtime {
