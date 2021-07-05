@@ -29,8 +29,6 @@ jobs:
             grcov: grcov-linux-x86_64.tar.bz2
             dove:
               version: 1.1.4
-              release: 1.1.4
-              arch: linux-x86_64
 
     env:
       SKIP_WASM_BUILD: 1
@@ -66,16 +64,16 @@ jobs:
           cp grcov ~/.cargo/bin/grcov
           rm ${{ matrix.cfg.grcov }}
 
+      - name: Cache
+        uses: actions/cache@v2
+        with:
+          path: ~/.dove
+          key: ${{ matrix.cfg.os }}-dove
       - name: get Dove
-        run: |
-          curl -sL --fail \
-            -H "Accept: application/octet-stream" \
-            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-            -o "dove" \
-            "https://github.com/pontem-network/move-tools/releases/download/${{ matrix.cfg.dove.release }}/dove-${{ matrix.cfg.dove.version }}-${{ matrix.cfg.dove.arch }}"
-          sudo chown runner ./dove && chmod +x ./dove
-          mv ./dove ~/.cargo/bin/dove
-          dove -V
+        uses: pontem-network/get-dove@main
+        with:
+          version: ${{ matrix.cfg.dove.version }}
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build test resources
         run: make assets
