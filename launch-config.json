@@ -42,7 +42,7 @@
 				{
 					"wsPort": 9988,
 					"port": 31200,
-					"flags": ["--alice", "--force-authoring", "--", "--execution=wasm"]
+					"flags": ["--alice", "--", "--execution=wasm"]
 				}
 			]
 		}
