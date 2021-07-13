@@ -38,6 +38,7 @@ pallet-sudo = { default-features = false, git = 'http://github.com/paritytech/su
 pallet-timestamp = { default-features = false, git = 'http://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.8' }
 pallet-transaction-payment = { default-features = false, git = 'http://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.8' }
 pallet-transaction-payment-rpc-runtime-api = { default-features = false, git = 'http://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.8' }
+pallet-vesting = { default-features = false, git = 'http://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.8' }
 
 # Substrate Primitives dependencies
 sp-api = { default-features = false, git = 'http://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.8' }
@@ -85,6 +86,7 @@ runtime-benchmarks = [
     'pallet-timestamp/runtime-benchmarks',
     'pallet-xcm/runtime-benchmarks',
     'xcm-builder/runtime-benchmarks',
+    'pallet-vesting/runtime-benchmarks',
     'sp-runtime/runtime-benchmarks',
     'sp-mvm/runtime-benchmarks',
 ]
@@ -111,6 +113,7 @@ std = [
     'cumulus-primitives-utility/std',
     'cumulus-primitives-core/std',
     'cumulus-primitives-timestamp/std',
+    'pallet-vesting/std',
     'sp-api/std',
     'sp-block-builder/std',
     'sp-consensus-aura/std',

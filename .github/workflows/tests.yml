@@ -27,10 +27,11 @@ jobs:
       matrix:
         cfg:
           - os: macos-latest
-            dove: mac-x86_64
+            dove:
+              version: 1.1.4
           - os: ubuntu-latest
-            dove: linux-x86_64
-
+            dove:
+              version: 1.1.4
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -52,16 +53,16 @@ jobs:
       - name: Check formatting
         run: cargo fmt -- --check
 
+      - name: Cache
+        uses: actions/cache@v2
+        with:
+          path: ~/.dove
+          key: ${{ matrix.cfg.os }}-dove
       - name: get Dove
-        run: |
-          curl -sL --fail \
-            -H "Accept: application/octet-stream" \
-            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-            -o "dove" \
-            "https://github.com/pontem-network/move-tools/releases/download/1.1.4/dove-1.1.4-${{ matrix.cfg.dove }}"
-          sudo chown runner ./dove && chmod +x ./dove
-          mv ./dove ~/.cargo/bin/dove
-          dove -V
+        uses: pontem-network/get-dove@main
+        with:
+          version: ${{ matrix.cfg.dove.version }}
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build test resources
         run: make assets

@@ -9,7 +9,9 @@ include!(concat!(env!("OUT_DIR"), "/wasm_binary.rs"));
 use sp_std::prelude::*;
 use sp_core::{crypto::KeyTypeId, OpaqueMetadata};
 use sp_runtime::{
-    traits::{AccountIdLookup, BlakeTwo256, Block as BlockT, IdentifyAccount, Verify},
+    traits::{
+        ConvertInto, AccountIdLookup, BlakeTwo256, Block as BlockT, IdentifyAccount, Verify,
+    },
     ApplyExtrinsicResult, generic, create_runtime_str, impl_opaque_keys, MultiSignature,
     transaction_validity::{TransactionValidity, TransactionSource},
 };
@@ -38,6 +40,7 @@ pub use pallet_timestamp::Call as TimestampCall;
 pub use pallet_balances::Call as BalancesCall;
 pub use sp_runtime::{Permill, Perbill, MultiAddress};
 pub use sp_consensus_aura::sr25519::AuthorityId as AuraId;
+pub use pallet_vesting::Call as VestingCall;
 pub use frame_support::{
     construct_runtime, parameter_types, StorageValue, match_type,
     traits::{KeyOwnerProofSystem, Randomness, All, IsInVec},
@@ -125,10 +128,12 @@ pub const DAYS: BlockNumber = HOURS * 24;
 /// 1 in 4 blocks (on average) will be primary babe blocks
 pub const PRIMARY_PROBABILITY: (u64, u64) = (1, 4);
 
-// Unit = the base number of indivisible units for balances
-pub const UNIT: Balance = 1_000_000_000_000;
-pub const MILLIUNIT: Balance = 1_000_000_000;
-pub const MICROUNIT: Balance = 1_000_000;
+// Currencies constants.
+pub const DECIMALS: u32 = 18;
+pub const PONT: Balance = u128::pow(10, DECIMALS);
+pub const UNIT: Balance = PONT;
+pub const MILLIUNIT: Balance = UNIT / 1_000;
+pub const MICROUNIT: Balance = MILLIUNIT / 1_000;
 
 /// The version information used to identify this runtime when compiled natively.
 #[cfg(feature = "std")]
@@ -244,6 +249,19 @@ parameter_types! {
     pub const TransferFee: u128 = 1 * MILLIUNIT;
     pub const CreationFee: u128 = 1 * MILLIUNIT;
     pub const TransactionByteFee: u128 = 1 * MILLIUNIT;
+    // 1 PONT.
+    pub const MinVestedTransfer: Balance = PONT;
+}
+
+impl pallet_vesting::Config for Runtime {
+    type Event = Event;
+    type Currency = Balances;
+    type BlockNumberToBalance = ConvertInto;
+    type MinVestedTransfer = MinVestedTransfer;
+    type WeightInfo = pallet_vesting::weights::SubstrateWeight<Runtime>;
+}
+
+parameter_types! {
     pub const MaxLocks: u32 = 50;
     pub const MaxReserves: u32 = 50;
 }
@@ -496,6 +514,7 @@ construct_runtime!(
         Timestamp: pallet_timestamp::{Pallet, Call, Storage, Inherent},
         TransactionPayment: pallet_transaction_payment::{Pallet, Storage},
         Sudo: pallet_sudo::{Pallet, Call, Config<T>, Storage, Event<T>},
+        Vesting: pallet_vesting::{Pallet, Call, Storage, Config<T>, Event<T>},
 
         ParachainSystem: cumulus_pallet_parachain_system::{Pallet, Call, Config, Storage, Inherent, Event<T>} = 20,
         ParachainInfo: parachain_info::{Pallet, Storage, Config} = 21,
@@ -717,6 +736,7 @@ impl_runtime_apis! {
             add_benchmark!(params, batches, frame_system, SystemBench::<Runtime>);
             add_benchmark!(params, batches, pallet_balances, Balances);
             add_benchmark!(params, batches, pallet_timestamp, Timestamp);
+            add_benchmark!(params, batches, pallet_vesting, Vesting);
             add_benchmark!(params, batches, sp_mvm, Mvm);
 
             if batches.is_empty() { return Err("Benchmark not found for this pallet.".into()) }

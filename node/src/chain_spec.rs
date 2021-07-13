@@ -5,7 +5,7 @@ use sc_chain_spec::{ChainSpecExtension, ChainSpecGroup};
 use sp_runtime::traits::{IdentifyAccount, Verify};
 use mv_node_runtime::{
     GenesisConfig, SudoConfig, SystemConfig, BalancesConfig, WASM_BINARY, AccountId, Signature,
-    ParachainInfoConfig, AuraId, AuraConfig,
+    ParachainInfoConfig, AuraId, AuraConfig, VestingConfig, PONT, DECIMALS,
 };
 use serde::{Serialize, Deserialize};
 use serde_json::json;
@@ -55,7 +55,7 @@ where
 fn properties() -> Option<sc_chain_spec::Properties> {
     json!({
         "ss58Format": SS58_FORMAT,
-        "tokenDecimals": 18,
+        "tokenDecimals": DECIMALS,
         "tokenSymbol": "PONT"
     })
     .as_object()
@@ -173,11 +173,11 @@ fn testnet_genesis(
             changes_trie_config: Default::default(),
         },
         balances: BalancesConfig {
-            // Configure endowed accounts with initial balance of 1 << 60.
+            // Configure endowed accounts with initial balance of 1000 PONT.
             balances: endowed_accounts
                 .iter()
                 .cloned()
-                .map(|k| (k, 1 << 60))
+                .map(|k| (k, 1000 * PONT))
                 .collect(),
         },
         parachain_system: Default::default(),
@@ -190,5 +190,13 @@ fn testnet_genesis(
             authorities: initial_authorities,
         },
         aura_ext: Default::default(),
+        vesting: VestingConfig {
+            // Move 10 PONT under vesting for each account since block 100 and till block 1000.
+            vesting: endowed_accounts
+                .iter()
+                .cloned()
+                .map(|k| (k, 100, 1000, 10 * PONT))
+                .collect(),
+        },
     }
 }
