@@ -514,12 +514,12 @@ construct_runtime!(
         Timestamp: pallet_timestamp::{Pallet, Call, Storage, Inherent},
         TransactionPayment: pallet_transaction_payment::{Pallet, Storage},
         Sudo: pallet_sudo::{Pallet, Call, Config<T>, Storage, Event<T>},
-        Vesting: pallet_vesting::{Pallet, Call, Storage, Config<T>, Event<T>},
 
         ParachainSystem: cumulus_pallet_parachain_system::{Pallet, Call, Config, Storage, Inherent, Event<T>} = 20,
         ParachainInfo: parachain_info::{Pallet, Storage, Config} = 21,
 
         Balances: pallet_balances::{Pallet, Call, Storage, Config<T>, Event<T>} = 30,
+        Vesting: pallet_vesting::{Pallet, Call, Storage, Config<T>, Event<T>},
         Aura: pallet_aura::{Pallet, Config<T>},
         AuraExt: cumulus_pallet_aura_ext::{Pallet, Config},
 
