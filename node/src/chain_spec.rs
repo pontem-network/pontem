@@ -180,6 +180,7 @@ fn testnet_genesis(
                 .map(|k| (k, 1 << 60))
                 .collect(),
         },
+        parachain_system: Default::default(),
         parachain_info: ParachainInfoConfig { parachain_id: id },
         sudo: SudoConfig {
             // Assign network admin rights.
