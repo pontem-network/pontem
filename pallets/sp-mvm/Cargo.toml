@@ -29,27 +29,27 @@ package = "parity-scale-codec-derive"
 [dependencies.move-vm]
 package = "mvm"
 git = "https://github.com/pontem-network/sp-move-vm.git"
-rev = "6f98af52c7d9dd15adbd7c63e72a29e6c97ccb2a"
+rev = "12f20a4b90365d174655c6c72b2f9d38e0448832"
 default-features = false
 
 [dependencies.vm]
 git = "https://github.com/pontem-network/sp-move-vm.git"
-rev = "6f98af52c7d9dd15adbd7c63e72a29e6c97ccb2a"
+rev = "12f20a4b90365d174655c6c72b2f9d38e0448832"
 default-features = false
 
 [dependencies.move-vm-runtime]
 git = "https://github.com/pontem-network/sp-move-vm.git"
-rev = "6f98af52c7d9dd15adbd7c63e72a29e6c97ccb2a"
+rev = "12f20a4b90365d174655c6c72b2f9d38e0448832"
 default-features = false
 
 [dependencies.move-core-types]
 git = "https://github.com/pontem-network/sp-move-vm.git"
-rev = "6f98af52c7d9dd15adbd7c63e72a29e6c97ccb2a"
+rev = "12f20a4b90365d174655c6c72b2f9d38e0448832"
 default-features = false
 
 [dependencies.move-vm-types]
 git = "https://github.com/pontem-network/sp-move-vm.git"
-rev = "6f98af52c7d9dd15adbd7c63e72a29e6c97ccb2a"
+rev = "12f20a4b90365d174655c6c72b2f9d38e0448832"
 default-features = false
 
 [dependencies]
