@@ -35,9 +35,9 @@ impl<T: balances::Config> BalancesAdapter<T> {
 #[derive(PartialEq, Eq, Clone, Copy)]
 pub struct Ticker<'a>(&'a [u8]);
 
-impl<'a> std::fmt::Display for Ticker<'a> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.write_str(std::str::from_utf8(self.0).expect("Could not read as utf-8"))
+impl<'a> core::fmt::Display for Ticker<'a> {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        f.write_str(core::str::from_utf8(self.0).expect("Could not read as utf-8"))
             .expect("Could not write into formatter");
         Ok(())
     }
