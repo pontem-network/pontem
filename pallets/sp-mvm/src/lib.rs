@@ -51,7 +51,7 @@ pub mod pallet {
     use support::traits::UnixTime;
     use support::dispatch::DispatchResultWithPostInfo;
     use sp_runtime::traits::UniqueSaturatedInto;
-    use codec::{FullCodec, FullEncode};
+    use parity_scale_codec::{FullCodec, FullEncode};
 
     use move_vm::Vm;
     use move_vm::mvm::Mvm;

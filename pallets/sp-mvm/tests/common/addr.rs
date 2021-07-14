@@ -1,6 +1,6 @@
 #![allow(dead_code)]
 
-use codec::Encode;
+use parity_scale_codec::Encode;
 use sp_core::sr25519::Public;
 use sp_core::crypto::Ss58Codec;
 use move_core_types::account_address::AccountAddress;

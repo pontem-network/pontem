@@ -1,7 +1,7 @@
 use core::marker::PhantomData;
 use sp_std::prelude::*;
-use codec::FullCodec;
-use codec::FullEncode;
+use parity_scale_codec::FullCodec;
+use parity_scale_codec::FullEncode;
 use frame_support::storage::StorageMap;
 use move_vm::io::traits::Storage;
 

@@ -10,6 +10,7 @@ use common::assets::*;
 use common::mock::*;
 use common::addr::*;
 use common::utils::*;
+use test_env_log::test;
 
 const GAS_LIMIT: u64 = 1_000_000;
 
@@ -143,6 +144,7 @@ mod adapter {
     use sp_mvm::balance::boxed::BalancesAdapter as BoxedBalancesAdapter;
 
     use super::*;
+    use test_env_log::test;
 
     fn test_get_balance_with<T: BalanceAccess>(adapter: &T) {
         new_test_ext().execute_with(|| {

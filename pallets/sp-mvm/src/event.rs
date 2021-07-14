@@ -28,7 +28,7 @@ pub struct MoveEventArguments {
 }
 
 impl<T: Config> TryInto<Event<T>> for MoveEventArguments {
-    type Error = codec::Error;
+    type Error = parity_scale_codec::Error;
 
     fn try_into(self) -> Result<Event<T>, Self::Error> {
         let ty_tag_enc = format!("{}", self.ty_tag).as_bytes().to_vec();
