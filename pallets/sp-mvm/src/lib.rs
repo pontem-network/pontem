@@ -238,6 +238,24 @@ pub mod pallet {
         }
     }
 
+    #[pallet::genesis_config]
+    pub struct GenesisConfig;
+
+    #[cfg(feature = "std")]
+    impl Default for GenesisConfig {
+        fn default() -> Self {
+            Self
+        }
+    }
+
+    #[pallet::genesis_build]
+    impl<T: Config> GenesisBuild<T> for GenesisConfig {
+        fn build(&self) {
+            move_vm::genesis::init_storage(Pallet::<T>::move_vm_storage(), Default::default())
+                .expect("Unable to initialize storage");
+        }
+    }
+
     #[pallet::hooks]
     impl<T: Config> Hooks<BlockNumberFor<T>> for Pallet<T> {
         #[cfg(not(feature = "no-vm-static"))]
