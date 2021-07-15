@@ -176,6 +176,6 @@ fn testnet_genesis(
             // Assign network admin rights.
             key: root_key,
         }),
-        sp_mvm: Some(MvmConfig),
+        sp_mvm: Some(MvmConfig::default()),
     }
 }
