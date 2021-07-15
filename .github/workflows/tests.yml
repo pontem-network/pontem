@@ -15,7 +15,7 @@ env:
 jobs:
   test:
     name: Tests
-    runs-on: ${{ matrix.cfg.os }}
+    runs-on: ${{ matrix.os }}
     if: "!contains(github.event.head_commit.message, 'ci skip') && !contains(github.event.head_commit.message, 'skip ci')"
 
     defaults:
@@ -25,11 +25,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        cfg:
-          - os: macos-latest
-            dove: mac-x86_64
-          - os: ubuntu-latest
-            dove: linux-x86_64
+        os:
+          - macos-latest
+          - ubuntu-latest
+        dove:
+          - 1.2.5
 
     steps:
       - name: Checkout repository
@@ -52,16 +52,11 @@ jobs:
       - name: Check formatting
         run: cargo fmt -- --check
 
-      - name: get Dove
-        run: |
-          curl -sL --fail \
-            -H "Accept: application/octet-stream" \
-            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-            -o "dove" \
-            "https://github.com/pontem-network/move-tools/releases/download/1.1.4/dove-1.1.4-${{ matrix.cfg.dove }}"
-          sudo chown runner ./dove && chmod +x ./dove
-          mv ./dove ~/.cargo/bin/dove
-          dove -V
+      - name: get dove
+        uses: pontem-network/get-dove@main
+        with:
+          version: ${{ matrix.dove }}
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build test resources
         run: make assets
@@ -84,6 +79,8 @@ jobs:
       matrix:
         os:
           - ubuntu-latest
+        dove:
+          - 1.2.5
 
     steps:
       - name: Checkout repository
@@ -103,6 +100,12 @@ jobs:
           components: clippy
           target: wasm32-unknown-unknown
           override: true
+
+      - name: get dove
+        uses: pontem-network/get-dove@main
+        with:
+          version: ${{ matrix.dove }}
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Clippy
         uses: actions-rs/clippy-check@v1
@@ -127,6 +130,8 @@ jobs:
         os:
           - macos-latest
           - ubuntu-latest
+        dove:
+          - 1.2.5
 
     steps:
       - name: Checkout repository
@@ -145,6 +150,12 @@ jobs:
           profile: minimal
           target: wasm32-unknown-unknown
           override: false
+
+      - name: get dove
+        uses: pontem-network/get-dove@main
+        with:
+          version: ${{ matrix.dove }}
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build
         run: cargo +${{ steps.rust.outputs.version }} build --all

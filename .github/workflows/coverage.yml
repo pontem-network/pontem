@@ -14,7 +14,7 @@ env:
 jobs:
   coverage:
     name: "Coverage"
-    runs-on: ${{ matrix.cfg.os }}
+    runs-on: ${{ matrix.os }}
     if: "!contains(github.event.head_commit.message, 'ci skip') && !contains(github.event.head_commit.message, 'skip ci')"
 
     defaults:
@@ -24,13 +24,16 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        cfg:
-          - os: self-hosted
-            grcov: grcov-linux-x86_64.tar.bz2
-            dove:
-              version: 1.1.4
-              release: 1.1.4
-              arch: linux-x86_64
+        os:
+          - self-hosted
+        dove:
+          - 1.2.5
+        grcov:
+          - grcov-linux-x86_64.tar.bz2
+        # include:
+        #   - os: self-hosted
+        #     grcov: grcov-linux-x86_64.tar.bz2
+        #     dove: 1.2.5
 
     env:
       SKIP_WASM_BUILD: 1
@@ -57,25 +60,20 @@ jobs:
         with:
           repo: mozilla/grcov
           version: "latest"
-          file: ${{ matrix.cfg.grcov }}
+          file: ${{ matrix.grcov }}
 
       - name: unpack grcov release binary
         run: |
-          tar -xvf ${{ matrix.cfg.grcov }}
+          tar -xvf ${{ matrix.grcov }}
           sudo chown runner ./grcov && chmod +x ./grcov
           cp grcov ~/.cargo/bin/grcov
-          rm ${{ matrix.cfg.grcov }}
+          rm ${{ matrix.grcov }}
 
-      - name: get Dove
-        run: |
-          curl -sL --fail \
-            -H "Accept: application/octet-stream" \
-            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-            -o "dove" \
-            "https://github.com/pontem-network/move-tools/releases/download/${{ matrix.cfg.dove.release }}/dove-${{ matrix.cfg.dove.version }}-${{ matrix.cfg.dove.arch }}"
-          sudo chown runner ./dove && chmod +x ./dove
-          mv ./dove ~/.cargo/bin/dove
-          dove -V
+      - name: get dove
+        uses: pontem-network/get-dove@main
+        with:
+          version: ${{ matrix.dove }}
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build test resources
         run: make assets
