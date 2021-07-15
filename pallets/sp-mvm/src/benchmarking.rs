@@ -35,7 +35,7 @@ benchmarks! {
     publish_empty_module {
         let s in 0 .. 100;
         let caller: T::AccountId = whitelisted_caller();
-        let module = include_bytes!("../tests/benchmark_assets/target/modules/2_Empty.mv").to_vec();
+        let module = include_bytes!("../tests/benchmark_assets/artifacts/modules/2_Empty.mv").to_vec();
     }: publish_module(RawOrigin::Signed(caller), module, 100_000_000)
     verify {
         assert!(VMStorage::<T>::contains_key(module_access("Empty")));
@@ -46,7 +46,7 @@ benchmarks! {
             VMStorage::<T>::insert(module_access_core(name), module);
         }
         let caller: T::AccountId = whitelisted_caller();
-        let module = include_bytes!("../tests/benchmark_assets/target/modules/22_StdImport.mv").to_vec();
+        let module = include_bytes!("../tests/benchmark_assets/artifacts/modules/22_StdImport.mv").to_vec();
     }: publish_module(RawOrigin::Signed(caller), module, 100_000_000)
     verify {
         assert!(VMStorage::<T>::contains_key(module_access("StdImport")));
@@ -54,7 +54,7 @@ benchmarks! {
     publish_s_module {
         let s in 0 .. 100;
         let caller: T::AccountId = whitelisted_caller();
-        let module = include_bytes!("../tests/benchmark_assets/target/modules/6_S.mv").to_vec();
+        let module = include_bytes!("../tests/benchmark_assets/artifacts/modules/6_S.mv").to_vec();
     }: publish_module(RawOrigin::Signed(caller), module, 100_000_000)
     verify {
         assert!(VMStorage::<T>::contains_key(module_access("S")));
@@ -62,7 +62,7 @@ benchmarks! {
     publish_m_module {
         let s in 0 .. 100;
         let caller: T::AccountId = whitelisted_caller();
-        let module = include_bytes!("../tests/benchmark_assets/target/modules/5_M.mv").to_vec();
+        let module = include_bytes!("../tests/benchmark_assets/artifacts/modules/5_M.mv").to_vec();
     }: publish_module(RawOrigin::Signed(caller), module, 100_000_000)
     verify {
         assert!(VMStorage::<T>::contains_key(module_access("M")));
@@ -70,7 +70,7 @@ benchmarks! {
     publish_l_module {
         let s in 0 .. 100;
         let caller: T::AccountId = whitelisted_caller();
-        let module = include_bytes!("../tests/benchmark_assets/target/modules/4_L.mv").to_vec();
+        let module = include_bytes!("../tests/benchmark_assets/artifacts/modules/4_L.mv").to_vec();
     }: publish_module(RawOrigin::Signed(caller), module, 100_000_000)
     verify {
         assert!(VMStorage::<T>::contains_key(module_access("L")));
@@ -78,7 +78,7 @@ benchmarks! {
     execute_many_params {
         let s in 0 .. 100;
         let caller: T::AccountId = whitelisted_caller();
-        let tx = include_bytes!("../tests/benchmark_assets/target/transactions/many_params.mvt").to_vec();
+        let tx = include_bytes!("../tests/benchmark_assets/artifacts/transactions/many_params.mvt").to_vec();
     }: execute(RawOrigin::Signed(caller), tx, 500_000)
     verify {
         // no-op
@@ -88,9 +88,9 @@ benchmarks! {
          for (name, module) in stdlib() {
             VMStorage::<T>::insert(module_access_core(name), module);
         }
-        VMStorage::<T>::insert(module_access_core("Store"), include_bytes!("../tests/benchmark_assets/target/modules/1_Store.mv").to_vec());
+        VMStorage::<T>::insert(module_access_core("Store"), include_bytes!("../tests/benchmark_assets/artifacts/modules/1_Store.mv").to_vec());
         let caller: T::AccountId = whitelisted_caller();
-        let tx = include_bytes!("../tests/benchmark_assets/target/transactions/store.mvt").to_vec();
+        let tx = include_bytes!("../tests/benchmark_assets/artifacts/transactions/store.mvt").to_vec();
     }: execute(RawOrigin::Signed(caller), tx, 500_000)
     verify {
 
@@ -122,9 +122,9 @@ benchmarks! {
 
         VMStorage::<T>::insert(ak.as_ref().to_vec(), bcs::to_bytes(&container()).unwrap());
 
-        VMStorage::<T>::insert(module_access_core("Store"), include_bytes!("../tests/benchmark_assets/target/modules/1_Store.mv").to_vec());
+        VMStorage::<T>::insert(module_access_core("Store"), include_bytes!("../tests/benchmark_assets/artifacts/modules/1_Store.mv").to_vec());
         let caller: T::AccountId = whitelisted_caller();
-        let tx = include_bytes!("../tests/benchmark_assets/target/transactions/load.mvt").to_vec();
+        let tx = include_bytes!("../tests/benchmark_assets/artifacts/transactions/load.mvt").to_vec();
     }: execute(RawOrigin::Signed(caller), tx, 500_000)
     verify {
     }
@@ -134,21 +134,21 @@ benchmarks! {
             VMStorage::<T>::insert(module_access_core(name), module);
         }
         let caller: T::AccountId = whitelisted_caller();
-        let tx = include_bytes!("../tests/benchmark_assets/target/transactions/store_events.mvt").to_vec();
+        let tx = include_bytes!("../tests/benchmark_assets/artifacts/transactions/store_events.mvt").to_vec();
     }: execute(RawOrigin::Signed(caller), tx, 500_000)
     verify {
     }
     execute_vec_input {
         let s in 0 .. 100;
         let caller: T::AccountId = whitelisted_caller();
-        let tx = include_bytes!("../tests/benchmark_assets/target/transactions/vector_input.mvt").to_vec();
+        let tx = include_bytes!("../tests/benchmark_assets/artifacts/transactions/vector_input.mvt").to_vec();
     }: execute(RawOrigin::Signed(caller), tx, 500_000)
     verify {
     }
     execute_loop {
         let s in 0 .. 100;
         let caller: T::AccountId = whitelisted_caller();
-        let tx = include_bytes!("../tests/benchmark_assets/target/transactions/lp.mvt").to_vec();
+        let tx = include_bytes!("../tests/benchmark_assets/artifacts/transactions/lp.mvt").to_vec();
     }: execute(RawOrigin::Signed(caller), tx, 100_000_000)
     verify {
     }
@@ -175,68 +175,68 @@ pub fn stdlib() -> Vec<(&'static str, Vec<u8>)> {
     vec![
         (
             "Signer",
-            include_bytes!("../tests/benchmark_assets/target/modules/0_Signer.mv").to_vec(),
+            include_bytes!("../tests/benchmark_assets/artifacts/modules/0_Signer.mv").to_vec(),
         ),
         (
             "Event",
-            include_bytes!("../tests/benchmark_assets/target/modules/7_Event.mv").to_vec(),
+            include_bytes!("../tests/benchmark_assets/artifacts/modules/7_Event.mv").to_vec(),
         ),
         (
             "Pontem",
-            include_bytes!("../tests/benchmark_assets/target/modules/8_Pontem.mv").to_vec(),
+            include_bytes!("../tests/benchmark_assets/artifacts/modules/8_Pontem.mv").to_vec(),
         ),
         (
             "Account",
-            include_bytes!("../tests/benchmark_assets/target/modules/9_Account.mv").to_vec(),
+            include_bytes!("../tests/benchmark_assets/artifacts/modules/9_Account.mv").to_vec(),
         ),
         (
             "Vector",
-            include_bytes!("../tests/benchmark_assets/target/modules/10_Vector.mv").to_vec(),
+            include_bytes!("../tests/benchmark_assets/artifacts/modules/10_Vector.mv").to_vec(),
         ),
         (
             "Compare",
-            include_bytes!("../tests/benchmark_assets/target/modules/11_Compare.mv").to_vec(),
+            include_bytes!("../tests/benchmark_assets/artifacts/modules/11_Compare.mv").to_vec(),
         ),
         (
             "U256",
-            include_bytes!("../tests/benchmark_assets/target/modules/12_U256.mv").to_vec(),
+            include_bytes!("../tests/benchmark_assets/artifacts/modules/12_U256.mv").to_vec(),
         ),
         (
             "Math",
-            include_bytes!("../tests/benchmark_assets/target/modules/13_Math.mv").to_vec(),
+            include_bytes!("../tests/benchmark_assets/artifacts/modules/13_Math.mv").to_vec(),
         ),
         (
             "Offer",
-            include_bytes!("../tests/benchmark_assets/target/modules/14_Offer.mv").to_vec(),
+            include_bytes!("../tests/benchmark_assets/artifacts/modules/14_Offer.mv").to_vec(),
         ),
         (
             "Time",
-            include_bytes!("../tests/benchmark_assets/target/modules/15_Time.mv").to_vec(),
+            include_bytes!("../tests/benchmark_assets/artifacts/modules/15_Time.mv").to_vec(),
         ),
         (
             "Security",
-            include_bytes!("../tests/benchmark_assets/target/modules/16_Security.mv").to_vec(),
+            include_bytes!("../tests/benchmark_assets/artifacts/modules/16_Security.mv").to_vec(),
         ),
         (
             "PONT",
-            include_bytes!("../tests/benchmark_assets/target/modules/17_PONT.mv").to_vec(),
+            include_bytes!("../tests/benchmark_assets/artifacts/modules/17_PONT.mv").to_vec(),
         ),
         (
             "FixedPoint32",
-            include_bytes!("../tests/benchmark_assets/target/modules/18_FixedPoint32.mv")
+            include_bytes!("../tests/benchmark_assets/artifacts/modules/18_FixedPoint32.mv")
                 .to_vec(),
         ),
         (
             "Debug",
-            include_bytes!("../tests/benchmark_assets/target/modules/19_Debug.mv").to_vec(),
+            include_bytes!("../tests/benchmark_assets/artifacts/modules/19_Debug.mv").to_vec(),
         ),
         (
             "Coins",
-            include_bytes!("../tests/benchmark_assets/target/modules/20_Coins.mv").to_vec(),
+            include_bytes!("../tests/benchmark_assets/artifacts/modules/20_Coins.mv").to_vec(),
         ),
         (
             "Block",
-            include_bytes!("../tests/benchmark_assets/target/modules/21_Block.mv").to_vec(),
+            include_bytes!("../tests/benchmark_assets/artifacts/modules/21_Block.mv").to_vec(),
         ),
     ]
 }

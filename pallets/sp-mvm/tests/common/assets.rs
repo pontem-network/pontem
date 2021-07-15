@@ -2,32 +2,32 @@
 
 const ROOT_PACKAGES: &[&str] = &["Assets"];
 const ROOT_PACKAGES_BYTECODE: &[&[u8]] =
-    &[include_bytes!("../assets/root/target/packages/assets.pac")];
+    &[include_bytes!("../assets/root/artifacts/packages/assets.pac")];
 const ROOT_PACKAGES_MODULES: &[&[&str]] = &[&["Store", "EventProxy"]];
 
 const USR_PACKAGES: &[&str] = &["Assets"];
 const USR_PACKAGES_BYTECODE: &[&[u8]] =
-    &[include_bytes!("../assets/user/target/packages/assets.pac")];
+    &[include_bytes!("../assets/user/artifacts/packages/assets.pac")];
 const USR_PACKAGES_MODULES: &[&[&str]] = &[&["Store", "EventProxy"]];
 
 const STD_MODULES: &[&str] = &[
     "Block", "Coins", "PONT", "Signer", "Time", "Event", "Pontem", "Account",
 ];
 const STD_BYTECODE: &[&[u8]] = &[
-    include_bytes!("../assets/user/target/modules/0_Block.mv"),
-    include_bytes!("../assets/user/target/modules/1_Coins.mv"),
-    include_bytes!("../assets/user/target/modules/2_PONT.mv"),
-    include_bytes!("../assets/user/target/modules/3_Signer.mv"),
-    include_bytes!("../assets/user/target/modules/4_Time.mv"),
-    include_bytes!("../assets/user/target/modules/6_Event.mv"),
-    include_bytes!("../assets/user/target/modules/7_Pontem.mv"),
-    include_bytes!("../assets/user/target/modules/8_Account.mv"),
+    include_bytes!("../assets/user/artifacts/modules/0_Block.mv"),
+    include_bytes!("../assets/user/artifacts/modules/1_Coins.mv"),
+    include_bytes!("../assets/user/artifacts/modules/2_PONT.mv"),
+    include_bytes!("../assets/user/artifacts/modules/3_Signer.mv"),
+    include_bytes!("../assets/user/artifacts/modules/4_Time.mv"),
+    include_bytes!("../assets/user/artifacts/modules/6_Event.mv"),
+    include_bytes!("../assets/user/artifacts/modules/7_Pontem.mv"),
+    include_bytes!("../assets/user/artifacts/modules/8_Account.mv"),
 ];
 
 const USER_MODULES: &[&str] = &["Store", "EventProxy"];
 const USER_BYTECODE: &[&[u8]] = &[
-    include_bytes!("../assets/user/target/modules/5_Store.mv"),
-    include_bytes!("../assets/user/target/modules/9_EventProxy.mv"),
+    include_bytes!("../assets/user/artifacts/modules/5_Store.mv"),
+    include_bytes!("../assets/user/artifacts/modules/9_EventProxy.mv"),
 ];
 
 const TX_NAMES: &[&str] = &[
@@ -45,18 +45,18 @@ const TX_NAMES: &[&str] = &[
     "missed_native_balance",
 ];
 const TX_BYTECODE: &[&[u8]] = &[
-    include_bytes!("../assets/user/target/transactions/store_u64.mvt"),
-    include_bytes!("../assets/user/target/transactions/emit_event.mvt"),
-    include_bytes!("../assets/user/target/transactions/store_system_block.mvt"),
-    include_bytes!("../assets/user/target/transactions/store_system_timestamp.mvt"),
-    include_bytes!("../assets/user/target/transactions/inf_loop.mvt"),
-    include_bytes!("../assets/user/target/transactions/store_native_balance.mvt"),
-    include_bytes!("../assets/user/target/transactions/store_native_deposit.mvt"),
-    include_bytes!("../assets/user/target/transactions/store_native_deposit_reg.mvt"),
-    include_bytes!("../assets/user/target/transactions/store_native_withdraw.mvt"),
-    include_bytes!("../assets/user/target/transactions/store_native_withdraw_reg.mvt"),
-    include_bytes!("../assets/user/target/transactions/get_price_test.mvt"),
-    include_bytes!("../assets/user/target/transactions/missed_native_balance.mvt"),
+    include_bytes!("../assets/user/artifacts/transactions/store_u64.mvt"),
+    include_bytes!("../assets/user/artifacts/transactions/emit_event.mvt"),
+    include_bytes!("../assets/user/artifacts/transactions/store_system_block.mvt"),
+    include_bytes!("../assets/user/artifacts/transactions/store_system_timestamp.mvt"),
+    include_bytes!("../assets/user/artifacts/transactions/inf_loop.mvt"),
+    include_bytes!("../assets/user/artifacts/transactions/store_native_balance.mvt"),
+    include_bytes!("../assets/user/artifacts/transactions/store_native_deposit.mvt"),
+    include_bytes!("../assets/user/artifacts/transactions/store_native_deposit_reg.mvt"),
+    include_bytes!("../assets/user/artifacts/transactions/store_native_withdraw.mvt"),
+    include_bytes!("../assets/user/artifacts/transactions/store_native_withdraw_reg.mvt"),
+    include_bytes!("../assets/user/artifacts/transactions/get_price_test.mvt"),
+    include_bytes!("../assets/user/artifacts/transactions/missed_native_balance.mvt"),
 ];
 
 pub trait BinAsset: Sized + Copy + Into<usize> {

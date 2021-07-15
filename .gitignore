@@ -12,3 +12,4 @@
 # Dove temp cache/lock-file
 .Dove.man
 /pallets/**/target/
+/pallets/**/artifacts/
