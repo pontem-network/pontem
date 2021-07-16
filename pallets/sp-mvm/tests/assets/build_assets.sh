@@ -2,18 +2,18 @@ pushd ./user
 dove clean
 dove build --tree
 dove build --package
-dove ct "store_u64(42)"
-dove ct "emit_event(42)"
-dove ct "store_system_block()"
-dove ct "store_system_timestamp()"
-dove ct "inf_loop()"
-dove ct "store_native_balance()"
-dove ct "store_native_deposit(false)"
-dove ct "store_native_deposit(true)" -o=store_native_deposit_reg
-dove ct "store_native_withdraw(false)"
-dove ct "store_native_withdraw(true)" -o=store_native_withdraw_reg
-dove ct "missed_native_balance()"
-dove ct "get_price_test()"
+dove tx "store_u64(42)"
+dove tx "emit_event(42)"
+dove tx "store_system_block()"
+dove tx "store_system_timestamp()"
+dove tx "inf_loop()"
+#dove tx "store_native_balance()"
+#dove tx "store_native_deposit(false)"
+#dove tx "store_native_deposit(true)" -o=store_native_deposit_reg
+#dove tx "store_native_withdraw(false)"
+#dove tx "store_native_withdraw(true)" -o=store_native_withdraw_reg
+#dove tx "missed_native_balance()"
+#dove tx "get_price_test()"
 popd
 
 pushd ./root
