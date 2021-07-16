@@ -92,11 +92,28 @@
         "type": "github"
       }
     },
+    "rocksdb": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1626418200,
+        "narHash": "sha256-w10kaGXbTGFmQto0kgHjpJikZhiK85IZJkLr0dig5go=",
+        "owner": "facebook",
+        "repo": "rocksdb",
+        "rev": "aeb913dd01b0dc4ccdf5f9e05316802a94c1d6f1",
+        "type": "github"
+      },
+      "original": {
+        "owner": "facebook",
+        "repo": "rocksdb",
+        "type": "github"
+      }
+    },
     "root": {
       "inputs": {
         "fenix": "fenix",
         "naersk": "naersk_2",
         "nixpkgs": "nixpkgs_2",
+        "rocksdb": "rocksdb",
         "utils": "utils"
       }
     },

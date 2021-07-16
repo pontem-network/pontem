@@ -13,3 +13,5 @@
 .Dove.man
 /pallets/**/target/
 artifacts/
+
+.direnv
