@@ -85,8 +85,8 @@ optional = true
 # used for tests (std) only
 serde = { package = "serde", version = "1.0.119" }
 bcs = { package = "bcs", version = "0.1" }
-env_logger = ""
-test-env-log = ""
+env_logger = "*"
+test-env-log = "*"
 
 
 [features]
