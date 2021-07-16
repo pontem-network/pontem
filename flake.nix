@@ -8,13 +8,11 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
     utils.url = "github:numtide/flake-utils";
 
-    rocksdb = {
-      flake = false;
-      url = "github:facebook/rocksdb";
-    };
+    move-tools.url = "github:pontem-network/move-tools";
+
   };
 
-  outputs = flake-args@{ self, nixpkgs, utils, naersk, fenix, ... }:
+  outputs = flake-args@{ self, nixpkgs, utils, naersk, fenix, move-tools, ... }:
     utils.lib.eachDefaultSystem (system:
       let
         pkgs = import nixpkgs { inherit system; };
@@ -37,6 +35,7 @@
           buildInputs = [
             protobuf openssl pre-commit pkgconfig
             llvmPackagesR.clang
+            move-tools.defaultPackage."${system}"
 
             (fenixArch.combine [
               (fenixArch.latest.withComponents [ "cargo" "clippy-preview" "llvm-tools-preview" "rust-std" "rustc" "rustc-dev" "rustfmt-preview" ])
