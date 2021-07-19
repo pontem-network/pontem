@@ -54,30 +54,14 @@ fn execute_script() {
         .to_string();
         let tt = tt.as_bytes();
 
-        let expected = vec![
-            // one for user::Proxy -> std::Event (`Event::emit`)
-            Event::Event(
-                tt.to_vec(),
-                42u64.to_le_bytes().to_vec(),
-                42u64.to_le_bytes().to_vec(),
-            )
-            .into(),
-            // and one for user::Proxy -> std::Event (`EventProxy::emit_event`)
-            Event::Event(
-                tt.to_vec(),
-                42u64.to_le_bytes().to_vec(),
-                42u64.to_le_bytes().to_vec(),
-            )
-            .into(),
-        ];
+        // guid is sequence number (8 bytes) followed by account address
+        let mut guid = vec![0; 8];
+        guid.extend(&origin.0);
 
-        expected.into_iter().for_each(|expected| {
-            // iterate through array of `EventRecord`s
-            assert!(Sys::events().iter().any(|rec| {
-                // TODO: compare only required fields
-                rec.event == expected
-            }))
-        })
+        let expected = Event::Event(guid, tt.to_vec(), 42u64.to_le_bytes().to_vec()).into();
+
+        // iterate through array of `EventRecord`s
+        assert!(Sys::events().iter().any(|rec| { rec.event == expected }))
     });
 }
 

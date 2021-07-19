@@ -94,18 +94,14 @@ pub mod pallet {
     // https://substrate.dev/docs/en/knowledgebase/runtime/events
     #[pallet::event]
     #[pallet::metadata(T::AccountId = "AccountId")]
-    // #[pallet::metadata(T::AccountId = "AccountId", T::Balance = "Balance")]
     #[pallet::generate_deposit(pub fn deposit_event)]
     pub enum Event<T: Config> {
-        // Event documentation should end with an array that provides descriptive names for event parameters.
         /// Event provided by Move VM
-        /// [account, type_tag, message, module]
+        /// [guid, typetag, message]
         Event(
-            // T::AccountId, /* transcoded AccountAddress */
-            Vec<u8>, /* encoded TypeTag as String, use Text in web-UI */
-            Vec<u8>, /* encoded String, use Text in web-UI */
-            Vec<u8>, /* encoded TypeTag as String, use Text in web-UI */
-                     // Option<types::MoveModuleId<T::AccountId>>,
+            Vec<u8>, // Event guid
+            Vec<u8>, // Event typetag, encoded as String
+            Vec<u8>, // Actual event payload
         ),
 
         /// Event about successful move-module publishing
