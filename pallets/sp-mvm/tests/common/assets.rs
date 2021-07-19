@@ -11,7 +11,7 @@ const USR_PACKAGES_BYTECODE: &[&[u8]] =
 const USR_PACKAGES_MODULES: &[&[&str]] = &[&["Store", "EventProxy"]];
 
 const STD_MODULES: &[&str] = &[
-    "Errors", "Signer", "CoreAddresses", "DiemTimestamp", "DiemBlock"
+    "Errors", "Signer", "CoreAddresses", "DiemTimestamp", "DiemBlock", "Event",
     // "Block", "Coins", "PONT", "Signer", "Time", "Event", "Pontem", "Account",
 ];
 const STD_BYTECODE: &[&[u8]] = &[
@@ -20,7 +20,7 @@ const STD_BYTECODE: &[&[u8]] = &[
     include_bytes!("../assets/user/artifacts/modules/4_CoreAddresses.mv"),
     include_bytes!("../assets/user/artifacts/modules/5_DiemTimestamp.mv"),
     include_bytes!("../assets/user/artifacts/modules/34_DiemBlock.mv"),
-    // include_bytes!("../assets/user/artifacts/modules/6_Event.mv"),
+    include_bytes!("../assets/user/artifacts/modules/17_Event.mv"),
     // include_bytes!("../assets/user/artifacts/modules/7_Pontem.mv"),
     // include_bytes!("../assets/user/artifacts/modules/8_Account.mv"),
 ];
