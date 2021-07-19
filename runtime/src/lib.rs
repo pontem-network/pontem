@@ -165,6 +165,13 @@ impl frame_system::Config for Runtime {
     type SS58Prefix = SS58Prefix;
 }
 
+parameter_types! {
+    pub const EpochDuration: u64 = EPOCH_DURATION_IN_BLOCKS as u64;
+    pub const ExpectedBlockTime: Moment = MILLISECS_PER_BLOCK;
+    pub const ReportLongevity: u64 =
+        BondingDuration::get() as u64 * SessionsPerEra::get() as u64 * EpochDuration::get();
+}
+
 impl pallet_aura::Config for Runtime {
     type AuthorityId = AuraId;
 }
@@ -186,6 +193,18 @@ impl pallet_grandpa::Config for Runtime {
     type HandleEquivocation = ();
 
     type WeightInfo = ();
+}
+
+parameter_types! {
+    pub const SessionsPerEra: sp_staking::SessionIndex = 6;
+    pub const BondingDuration: pallet_staking::EraIndex = 7;
+    pub const SlashDeferDuration: pallet_staking::EraIndex = 2;
+    //pub const RewardCurve: &'static PiecewiseLinear<'static> = &VALIDATOR_REWARD_CURVE;
+    pub const MaxNominatorRewardedPerValidator: u32 = 64;
+    pub const ElectionLookahead: BlockNumber = 0;
+    pub const MaxIterations: u32 = 10;
+    // 0.05%. The higher the value, the more strict solution acceptance becomes.
+    pub MinSolutionScoreBump: Perbill = Perbill::from_rational_approximation(5u32, 10_000);
 }
 
 parameter_types! {
