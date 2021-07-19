@@ -19,7 +19,6 @@ pub mod balance;
 pub mod event;
 pub mod gas;
 pub mod mvm;
-pub mod oracle;
 pub mod result;
 pub mod storage;
 pub mod types;
