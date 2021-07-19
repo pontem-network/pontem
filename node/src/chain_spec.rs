@@ -1,18 +1,20 @@
 use sp_core::{Pair, Public, sr25519};
 use mv_node_runtime::{
     primitives::{AccountId, Signature},
-    AuraConfig, BalancesConfig, GenesisConfig, GrandpaConfig, SudoConfig, SystemConfig,
-    VestingConfig, WASM_BINARY,
+    BabeConfig, BalancesConfig, GenesisConfig, GrandpaConfig, SudoConfig, SystemConfig,
+    VestingConfig, WASM_BINARY, SessionConfig,
+    opaque::SessionKeys,
+    StakerStatus, StakingConfig,
     constants::currency::{PONT, DECIMALS},
+    Perbill,
 };
-use sp_consensus_aura::sr25519::AuthorityId as AuraId;
+use sp_consensus_babe::AuthorityId as BabeId;
 use sp_finality_grandpa::AuthorityId as GrandpaId;
 use sp_runtime::traits::{Verify, IdentifyAccount};
 use sc_service::ChainType;
 use serde_json::json;
 
 /// Address format for Pontem.
-/// 42 is a placeholder for any Substrate-based chain.
 /// See https://github.com/paritytech/substrate/blob/master/ss58-registry.json
 const SS58_FORMAT: u8 = 42;
 
@@ -40,8 +42,18 @@ where
 }
 
 /// Generate an Aura authority key.
-pub fn authority_keys_from_seed(s: &str) -> (AuraId, GrandpaId) {
-    (get_from_seed::<AuraId>(s), get_from_seed::<GrandpaId>(s))
+pub fn authority_keys_from_seed(s: &str) -> (AccountId, AccountId, BabeId, GrandpaId) {
+    (
+        get_account_id_from_seed::<sr25519::Public>(&format!("{}//stash", s)),
+        get_account_id_from_seed::<sr25519::Public>(s),
+        get_from_seed::<BabeId>(s),
+        get_from_seed::<GrandpaId>(s),
+    )
+}
+
+// Get session key.
+fn session_keys(babe: BabeId, grandpa: GrandpaId) -> SessionKeys {
+    SessionKeys { babe, grandpa }
 }
 
 fn properties() -> Option<sc_chain_spec::Properties> {
@@ -146,7 +158,7 @@ pub fn local_testnet_config() -> Result<ChainSpec, String> {
 /// Configure initial storage state for FRAME modules.
 fn testnet_genesis(
     wasm_binary: &[u8],
-    initial_authorities: Vec<(AuraId, GrandpaId)>,
+    initial_authorities: Vec<(AccountId, AccountId, BabeId, GrandpaId)>,
     root_key: AccountId,
     endowed_accounts: Vec<AccountId>,
     _enable_println: bool,
@@ -157,33 +169,60 @@ fn testnet_genesis(
             code: wasm_binary.to_vec(),
             changes_trie_config: Default::default(),
         }),
+        pallet_babe: Some(BabeConfig {
+            authorities: vec![],
+        }),
+        pallet_staking: Some(StakingConfig {
+            validator_count: 2,
+            minimum_validator_count: 1,
+            stakers: initial_authorities
+                .iter()
+                .map(|x| {
+                    (
+                        x.0.clone(),
+                        x.1.clone(),
+                        10_000 * PONT,
+                        StakerStatus::Validator,
+                    )
+                }) // Stake 10k PONT for each validator.
+                .collect(),
+            invulnerables: initial_authorities.iter().map(|x| x.0.clone()).collect(),
+            slash_reward_fraction: Perbill::from_percent(10),
+            ..Default::default()
+        }),
+        pallet_session: Some(SessionConfig {
+            keys: initial_authorities
+                .iter()
+                .map(|x| {
+                    (
+                        x.1.clone(), // controller
+                        x.0.clone(), // stash
+                        session_keys(x.2.clone(), x.3.clone()),
+                    )
+                })
+                .collect::<Vec<_>>(),
+        }),
         pallet_balances: Some(BalancesConfig {
             // Configure endowed accounts with initial balance of 1000 PONT coins.
             balances: endowed_accounts
                 .iter()
                 .cloned()
-                .map(|k| (k, 1000 * PONT))
+                .map(|k| (k, 100_000 * PONT))
                 .collect(),
-        }),
-        pallet_aura: Some(AuraConfig {
-            authorities: initial_authorities.iter().map(|x| (x.0.clone())).collect(),
         }),
         pallet_grandpa: Some(GrandpaConfig {
-            authorities: initial_authorities
-                .iter()
-                .map(|x| (x.1.clone(), 1))
-                .collect(),
+            authorities: vec![],
         }),
         pallet_sudo: Some(SudoConfig {
             // Assign network admin rights.
             key: root_key,
         }),
         pallet_vesting: Some(VestingConfig {
-            // Move 10 PONT under vesting for each account since block 100 and till block 1000.
+            // Move 1_000 PONT under vesting for each account since block 100 and till block 1000.
             vesting: endowed_accounts
                 .iter()
                 .cloned()
-                .map(|k| (k, 100, 1000, 10 * PONT))
+                .map(|k| (k, 100, 1000, 1_000 * PONT))
                 .collect(),
         }),
     }

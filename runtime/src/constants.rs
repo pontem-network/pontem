@@ -29,7 +29,7 @@ pub mod time {
     // 1 in 4 blocks (on average, not counting collisions) will be primary BABE blocks.
     pub const PRIMARY_PROBABILITY: (u64, u64) = (1, 4);
 
-    // Epoch durations.
+    // Epoch durations. Session and Epoch is same.
 
     // 1 epoch is 2400 blocks.
     pub const EPOCH_DURATION_IN_BLOCKS: BlockNumber = 4 * HOURS;

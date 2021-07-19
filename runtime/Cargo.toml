@@ -30,9 +30,9 @@ frame-support = { default-features = false, version = '3.0.0' }
 frame-system = { default-features = false, version = '3.0.0' }
 frame-system-benchmarking = { default-features = false, optional = true, version = '3.0.0' }
 frame-system-rpc-runtime-api = { default-features = false, version = '3.0.0' }
+pallet-session = { version = "3.0.0", default-features = false }
 pallet-authorship = { version = "3.0.0", default-features = false }
 pallet-staking = { version = "3.0.0", default-features =  false }
-pallet-aura = { default-features = false, version = '3.0.0' }
 pallet-balances = { default-features = false, version = '3.0.0' }
 pallet-grandpa = { default-features = false, version = '3.0.0' }
 pallet-randomness-collective-flip = { default-features = false, version = '3.0.0' }
@@ -41,9 +41,11 @@ pallet-timestamp = { default-features = false, version = '3.0.0' }
 pallet-transaction-payment = { default-features = false, version = '3.0.0' }
 pallet-transaction-payment-rpc-runtime-api = { default-features = false, version = '3.0.0' }
 pallet-vesting = { default-features = false, version = '3.0.0' }
+pallet-babe = { default-features = false, version = '3.0.0' }
+pallet-staking-reward-curve = { version = "3.0.0", default-features = false }
 sp-api = { default-features = false, version = '3.0.0' }
 sp-block-builder = { default-features = false, version = '3.0.0' }
-sp-consensus-aura = { default-features = false, version = '0.9.0' }
+sp-consensus-babe = { default-features = false, version = '0.9.0' }
 sp-core = { default-features = false, version = '3.0.0' }
 sp-inherents = { default-features = false, version = '3.0.0' }
 sp-offchain = { default-features = false, version = '3.0.0' }
@@ -79,7 +81,6 @@ std = [
     'frame-support/std',
     'frame-system/std',
     'frame-system-rpc-runtime-api/std',
-    'pallet-aura/std',
     'pallet-balances/std',
     'pallet-grandpa/std',
     'pallet-randomness-collective-flip/std',
@@ -89,10 +90,12 @@ std = [
     'pallet-transaction-payment-rpc-runtime-api/std',
     'pallet-vesting/std',
     'pallet-staking/std',
+    'pallet-babe/std',
+    'pallet-session/std',
     'sp-staking/std',
     'sp-api/std',
     'sp-block-builder/std',
-    'sp-consensus-aura/std',
+    'sp-consensus-babe/std',
     'sp-core/std',
     'sp-inherents/std',
     'sp-offchain/std',
