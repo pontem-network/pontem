@@ -39,13 +39,13 @@ fn check_out_of_gas(error: u8, message: Option<&'static str>) {
 }
 
 #[test]
-fn publish_std_gas_limit() {
+fn publish_module_gas_limit() {
     new_test_ext().execute_with(|| {
         const GAS_LIMIT: u64 = 1;
         let root = root_ps_acc();
         let signer = Origin::signed(root);
 
-        let res = call_publish_module(signer, StdMod::DiemBlock.bc().to_vec(), GAS_LIMIT);
+        let res = call_publish_module(signer, UserMod::EventProxy.bc().to_vec(), GAS_LIMIT);
 
         assert!(res.is_err());
 

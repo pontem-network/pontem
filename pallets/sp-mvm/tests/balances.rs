@@ -45,9 +45,6 @@ fn execute_get_balance() {
     new_test_ext().execute_with(|| {
         let account = origin_ps_acc();
 
-        // publish entire std lib:
-        publish_std();
-
         // publish user module:
         publish_module(account, UserMod::Store);
 
@@ -68,9 +65,6 @@ fn execute_get_balance() {
 fn execute_get_missing_balance_err() {
     new_test_ext().execute_with(|| {
         let account = origin_ps_acc();
-
-        // publish entire std lib:
-        publish_std();
 
         // execute tx:
         let signer = Origin::signed(account);
@@ -93,9 +87,6 @@ fn execute_get_missing_balance_err() {
 fn execute_deposit_balance() {
     new_test_ext().execute_with(|| {
         let account = origin_ps_acc();
-
-        // publish entire std lib:
-        publish_std();
 
         // publish user module:
         publish_module(account, UserMod::Store);
@@ -120,9 +111,6 @@ fn execute_deposit_balance() {
 fn execute_deposit_withdraw_balance() {
     new_test_ext().execute_with(|| {
         let account = origin_ps_acc();
-
-        // publish entire std lib:
-        publish_std();
 
         // publish user module:
         publish_module(account, UserMod::Store);

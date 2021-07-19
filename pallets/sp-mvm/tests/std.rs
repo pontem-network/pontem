@@ -25,30 +25,7 @@ fn call_execute_script(origin: Origin) {
 fn publish_module() {
     new_test_ext().execute_with(|| {
         let root = root_ps_acc();
-        utils::publish_module(root, StdMod::Event);
-    });
-}
-
-#[test]
-/// publish std modules as root
-fn publish_batch_std_as_root() {
-    new_test_ext().execute_with(|| {
-        const GAS_LIMIT: u64 = 1_000_000;
-
-        let root = root_ps_acc();
-
-        // execute VM for publish vec of modules:
-        Mvm::publish_std(
-            Origin::root(),
-            StdMod::all().into_iter().map(|m| m.bc().to_vec()).collect(),
-            GAS_LIMIT,
-        )
-        .expect("Publish module");
-
-        // check storage:
-        for module in StdMod::all().into_iter() {
-            utils::check_storage_mod_raw(root, module.bc(), module.name());
-        }
+        utils::publish_module(root, UserMod::EventProxy);
     });
 }
 
@@ -58,7 +35,6 @@ fn execute_script() {
         let root = root_ps_acc();
         let origin = origin_ps_acc();
 
-        // utils::publish_module(root, StdMod::Event);
         utils::publish_module(origin, UserMod::EventProxy);
 
         // we need next block because events are not populated on genesis:
@@ -109,8 +85,6 @@ fn execute_script() {
 /// publish package as root
 fn publish_package_as_root() {
     new_test_ext().execute_with(|| {
-        utils::publish_std();
-
         const GAS_LIMIT: u64 = 1_000_000;
         let package = RootPackages::Assets;
         let root = root_ps_acc();
@@ -123,8 +97,6 @@ fn publish_package_as_root() {
 /// publish package as origin
 fn publish_package_as_origin() {
     new_test_ext().execute_with(|| {
-        utils::publish_std();
-
         const GAS_LIMIT: u64 = 1_000_000;
         let package = UsrPackages::Assets;
         let origin = origin_ps_acc();

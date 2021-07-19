@@ -95,16 +95,6 @@ pub fn publish_package_raw_with_origin_unchecked(origin: Origin, bc: Vec<u8>, ga
     Mvm::publish_package(origin, bc, gas_limit).expect("Publish package");
 }
 
-///////////////////////////
-
-/// Publish entire stdlib with sudo/root key
-pub fn publish_std() {
-    let root = root_ps_acc();
-    for module in StdMod::all().into_iter() {
-        publish_module_raw(root, module.bc().to_vec(), module.name());
-    }
-}
-
 pub fn execute_tx_unchecked(origin: Origin, tx: UserTx, gas_limit: u64) -> PsResult {
     // get bytecode:
     let bc = tx.bc().to_vec();

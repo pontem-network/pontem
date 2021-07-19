@@ -10,21 +10,6 @@ const USR_PACKAGES_BYTECODE: &[&[u8]] =
     &[include_bytes!("../assets/user/artifacts/bundles/assets.pac")];
 const USR_PACKAGES_MODULES: &[&[&str]] = &[&["Store", "EventProxy"]];
 
-const STD_MODULES: &[&str] = &[
-    "Errors", "Signer", "CoreAddresses", "DiemTimestamp", "DiemBlock", "Event",
-    // "Block", "Coins", "PONT", "Signer", "Time", "Event", "Pontem", "Account",
-];
-const STD_BYTECODE: &[&[u8]] = &[
-    include_bytes!("../assets/user/artifacts/modules/3_Errors.mv"),
-    include_bytes!("../assets/user/artifacts/modules/0_Signer.mv"),
-    include_bytes!("../assets/user/artifacts/modules/4_CoreAddresses.mv"),
-    include_bytes!("../assets/user/artifacts/modules/5_DiemTimestamp.mv"),
-    include_bytes!("../assets/user/artifacts/modules/36_DiemBlock.mv"),
-    include_bytes!("../assets/user/artifacts/modules/17_Event.mv"),
-    // include_bytes!("../assets/user/artifacts/modules/7_Pontem.mv"),
-    // include_bytes!("../assets/user/artifacts/modules/8_Account.mv"),
-];
-
 const USER_MODULES: &[&str] = &["Store", "EventProxy"];
 const USER_BYTECODE: &[&[u8]] = &[
     include_bytes!("../assets/user/artifacts/modules/2_Store.mv"),
@@ -84,17 +69,6 @@ pub trait BinAssetPackage: BinAsset {
 
 #[repr(usize)]
 #[derive(Copy, Clone, Debug)]
-pub enum StdMod {
-    Errors = 0,
-    Signer = 1,
-    CoreAddresses = 2,
-    DiemTimestamp = 3,
-    DiemBlock = 4,
-    Event = 5,
-}
-
-#[repr(usize)]
-#[derive(Copy, Clone, Debug)]
 pub enum UserMod {
     Store = 0,
     EventProxy = 1,
@@ -129,12 +103,6 @@ pub enum UserTx {
     //MissedNativeBalance = 11,
 }
 
-impl Into<usize> for StdMod {
-    fn into(self) -> usize {
-        self as usize
-    }
-}
-
 impl Into<usize> for UserMod {
     fn into(self) -> usize {
         self as usize
@@ -156,22 +124,6 @@ impl Into<usize> for UsrPackages {
 impl Into<usize> for UserTx {
     fn into(self) -> usize {
         self as usize
-    }
-}
-
-impl BinAsset for StdMod {
-    const NAMES: &'static [&'static str] = STD_MODULES;
-    const BYTES: &'static [&'static [u8]] = STD_BYTECODE;
-
-    fn all() -> &'static [Self] {
-        &[
-            Self::Errors,
-            Self::Signer,
-            Self::CoreAddresses,
-            Self::DiemTimestamp,
-            Self::DiemBlock,
-            Self::Event,
-        ]
     }
 }
 
