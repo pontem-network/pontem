@@ -85,14 +85,12 @@ pub trait BinAssetPackage: BinAsset {
 #[repr(usize)]
 #[derive(Copy, Clone, Debug)]
 pub enum StdMod {
-    Block = 0,
-    Coins = 1,
-    PONT = 2,
-    Signer = 3,
-    Time = 4,
+    Errors = 0,
+    Signer = 1,
+    CoreAddresses = 2,
+    DiemTimestamp = 3,
+    DiemBlock = 4,
     Event = 5,
-    Pontem = 6,
-    Account = 7,
 }
 
 #[repr(usize)]
@@ -122,13 +120,13 @@ pub enum UserTx {
     StoreSysBlock = 2,
     StoreSysTime = 3,
     InfLoop = 4,
-    StoreGetBalance = 5,
-    StoreNativeDeposit = 6,
-    StoreNativeDepositReg = 7,
-    StoreNativeWithdraw = 8,
-    StoreNativeWithdrawReg = 9,
-    GetPriceTest = 10,
-    MissedNativeBalance = 11,
+    //StoreGetBalance = 5,
+    //StoreNativeDeposit = 6,
+    //StoreNativeDepositReg = 7,
+    //StoreNativeWithdraw = 8,
+    //StoreNativeWithdrawReg = 9,
+    //GetPriceTest = 10,
+    //MissedNativeBalance = 11,
 }
 
 impl Into<usize> for StdMod {
@@ -167,14 +165,12 @@ impl BinAsset for StdMod {
 
     fn all() -> &'static [Self] {
         &[
-            Self::Block,
-            Self::Coins,
-            Self::PONT,
+            Self::Errors,
             Self::Signer,
-            Self::Time,
+            Self::CoreAddresses,
+            Self::DiemTimestamp,
+            Self::DiemBlock,
             Self::Event,
-            Self::Pontem,
-            Self::Account,
         ]
     }
 }
@@ -199,9 +195,6 @@ impl BinAsset for UserTx {
             Self::StoreSysBlock,
             Self::StoreSysTime,
             Self::InfLoop,
-            Self::StoreGetBalance,
-            Self::GetPriceTest,
-            Self::MissedNativeBalance,
         ]
     }
 }

@@ -45,7 +45,7 @@ fn publish_std_gas_limit() {
         let root = root_ps_acc();
         let signer = Origin::signed(root);
 
-        let res = call_publish_module(signer, StdMod::Block.bc().to_vec(), GAS_LIMIT);
+        let res = call_publish_module(signer, StdMod::DiemBlock.bc().to_vec(), GAS_LIMIT);
 
         assert!(res.is_err());
 

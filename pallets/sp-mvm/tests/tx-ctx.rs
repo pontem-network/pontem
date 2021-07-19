@@ -43,7 +43,7 @@ fn execute_store_block() {
         let origin = origin_ps_acc();
         let signer = Origin::signed(origin);
 
-        publish_module(root, StdMod::Block);
+        publish_module(root, StdMod::DiemBlock);
         publish_module(origin, UserMod::Store);
 
         const EXPECTED: u64 = 3;
@@ -62,7 +62,7 @@ fn execute_store_time() {
         let origin = origin_ps_acc();
         let signer = Origin::signed(origin);
 
-        publish_module(root, StdMod::Time);
+        publish_module(root, StdMod::DiemTimestamp);
         publish_module(origin, UserMod::Store);
 
         const EXPECTED: u64 = 3;
