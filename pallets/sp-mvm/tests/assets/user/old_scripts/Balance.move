@@ -26,7 +26,7 @@ script {
             //            Pontem::register_coin<PONT::T>(b"PONT", 2);
         };
 
-        TreasuryComplianceScripts::tiered_mint<PONT>()
+//        TreasuryComplianceScripts::tiered_mint<PONT>()
 
         //        Diem::register_currency()
 //        DiemAccount::add_currency<PONT>(&alice);

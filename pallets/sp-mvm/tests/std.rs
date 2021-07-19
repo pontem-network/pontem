@@ -1,7 +1,5 @@
-use std::convert::TryInto;
 use frame_support::assert_ok;
 use move_core_types::identifier::Identifier;
-use move_core_types::language_storage::ModuleId;
 
 use move_core_types::language_storage::StructTag;
 use move_core_types::language_storage::TypeTag;
@@ -59,11 +57,9 @@ fn execute_script() {
     new_test_ext().execute_with(|| {
         let root = root_ps_acc();
         let origin = origin_ps_acc();
-        let event = StdMod::Event;
-        let proxy = UserMod::EventProxy;
 
-        utils::publish_module(root, event);
-        utils::publish_module(origin, proxy);
+        // utils::publish_module(root, StdMod::Event);
+        utils::publish_module(origin, UserMod::EventProxy);
 
         // we need next block because events are not populated on genesis:
         roll_next_block();
@@ -75,7 +71,7 @@ fn execute_script() {
         // construct event: that should be emitted in the method call directly above
         let tt = TypeTag::Struct(StructTag {
             address: to_move_addr(origin),
-            module: Identifier::new(proxy.name()).unwrap(),
+            module: Identifier::new("EventProxy").unwrap(),
             name: Identifier::new("U64").unwrap(),
             type_params: Vec::with_capacity(0),
         })

@@ -19,7 +19,7 @@ const STD_BYTECODE: &[&[u8]] = &[
     include_bytes!("../assets/user/artifacts/modules/0_Signer.mv"),
     include_bytes!("../assets/user/artifacts/modules/4_CoreAddresses.mv"),
     include_bytes!("../assets/user/artifacts/modules/5_DiemTimestamp.mv"),
-    include_bytes!("../assets/user/artifacts/modules/34_DiemBlock.mv"),
+    include_bytes!("../assets/user/artifacts/modules/36_DiemBlock.mv"),
     include_bytes!("../assets/user/artifacts/modules/17_Event.mv"),
     // include_bytes!("../assets/user/artifacts/modules/7_Pontem.mv"),
     // include_bytes!("../assets/user/artifacts/modules/8_Account.mv"),
