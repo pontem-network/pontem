@@ -31,7 +31,7 @@ frame_support::construct_runtime!(
         System: frame_system::{Module, Call, Config, Storage, Event<T>},
         Timestamp: timestamp::{Module, Call, Storage, Inherent},
         Balances: balances::{Module, Call, Storage, Config<T>, Event<T>},
-        Mvm: sp_mvm::{Module, Call, Storage, Event<T>},
+        Mvm: sp_mvm::{Module, Call, Config<T>, Storage, Event<T>},
         // Sudo: pallet_sudo::{Module, Call, Config<T>, Storage, Event<T>},
     }
 );
@@ -161,7 +161,11 @@ pub fn new_test_ext() -> sp_io::TestExternalities {
         // )>::new(),
     }
     .assimilate_storage(&mut sys)
-    .expect("Pallet balances storage can be assimilated");
+    .expect("Pallet balances storage can't be assimilated");
+
+    sp_mvm::GenesisConfig::<Test>::default()
+        .assimilate_storage(&mut sys)
+        .expect("Pallet mvm storage can't be assimilated");
 
     sys.into()
 }
