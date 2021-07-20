@@ -1,4 +1,3 @@
-use frame_support::assert_ok;
 use move_core_types::identifier::Identifier;
 
 use move_core_types::language_storage::StructTag;
@@ -10,15 +9,6 @@ use common::assets::*;
 use common::mock::*;
 use common::addr::*;
 use common::utils;
-
-fn call_execute_script(origin: Origin) {
-    const GAS_LIMIT: u64 = 1_000_000;
-
-    // execute VM tx:
-    let result = Mvm::execute(origin, UserTx::EmitEvent.bc().to_vec(), GAS_LIMIT);
-    eprintln!("tx result: {:?}", result);
-    assert_ok!(result);
-}
 
 #[test]
 /// publish modules personally as root
@@ -32,7 +22,6 @@ fn publish_module() {
 #[test]
 fn execute_script() {
     new_test_ext().execute_with(|| {
-        let root = root_ps_acc();
         let origin = origin_ps_acc();
 
         utils::publish_module(origin, UserMod::EventProxy, None).unwrap();
@@ -42,7 +31,7 @@ fn execute_script() {
 
         assert!(Sys::events().is_empty());
 
-        call_execute_script(Origin::signed(origin));
+        utils::execute_tx(origin, UserTx::EmitEvent, None).unwrap();
 
         // construct event: that should be emitted in the method call directly above
         let tt = TypeTag::Struct(StructTag {
