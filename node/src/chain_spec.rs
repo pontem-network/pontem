@@ -186,8 +186,8 @@ fn testnet_genesis(
                     )
                 }) // Stake 10k PONT for each validator.
                 .collect(),
-            invulnerables: initial_authorities.iter().map(|x| x.0.clone()).collect(),
-            slash_reward_fraction: Perbill::from_percent(10),
+            invulnerables: initial_authorities.iter().map(|x| x.0.clone()).collect(), // Can't be slashed, etc.
+            slash_reward_fraction: Perbill::from_percent(1), // 1 percent slashing.
             ..Default::default()
         }),
         pallet_session: Some(SessionConfig {
@@ -218,11 +218,11 @@ fn testnet_genesis(
             key: root_key,
         }),
         pallet_vesting: Some(VestingConfig {
-            // Move 1_000 PONT under vesting for each account since block 100 and till block 1000.
+            // Move 1_000 PONT under vesting for each account since block 10 and till block 1000.
             vesting: endowed_accounts
                 .iter()
                 .cloned()
-                .map(|k| (k, 100, 1000, 1_000 * PONT))
+                .map(|k| (k, 100, 1000, 10 * PONT))
                 .collect(),
         }),
     }
