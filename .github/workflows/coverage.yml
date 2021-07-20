@@ -24,16 +24,11 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        os:
-          - self-hosted
-        dove:
-          - 1.2.5
-        grcov:
-          - grcov-linux-x86_64.tar.bz2
-        # include:
-        #   - os: self-hosted
-        #     grcov: grcov-linux-x86_64.tar.bz2
-        #     dove: 1.2.5
+        cfg:
+          - os: self-hosted
+            grcov: grcov-linux-x86_64.tar.bz2
+            dove:
+              version: 1.2.5
 
     env:
       SKIP_WASM_BUILD: 1
@@ -69,10 +64,15 @@ jobs:
           cp grcov ~/.cargo/bin/grcov
           rm ${{ matrix.grcov }}
 
-      - name: get dove
+      - name: Cache
+        uses: actions/cache@v2
+        with:
+          path: ~/.dove
+          key: ${{ matrix.cfg.os }}-dove
+      - name: get Dove
         uses: pontem-network/get-dove@main
         with:
-          version: ${{ matrix.dove }}
+          version: ${{ matrix.cfg.dove.version }}
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build test resources

@@ -1,7 +1,7 @@
 use sp_core::{Pair, Public, sr25519};
 use mv_node_runtime::{
     AccountId, AuraConfig, BalancesConfig, GenesisConfig, GrandpaConfig, SudoConfig,
-    SystemConfig, WASM_BINARY, Signature, MvmConfig,
+    SystemConfig, VestingConfig, WASM_BINARY, Signature, PONT, DECIMALS, MvmConfig,
 };
 use sp_consensus_aura::sr25519::AuthorityId as AuraId;
 use sp_finality_grandpa::AuthorityId as GrandpaId;
@@ -45,7 +45,7 @@ pub fn authority_keys_from_seed(s: &str) -> (AuraId, GrandpaId) {
 fn properties() -> Option<sc_chain_spec::Properties> {
     json!({
         "ss58Format": SS58_FORMAT,
-        "tokenDecimals": 18,
+        "tokenDecimals": DECIMALS,
         "tokenSymbol": "PONT"
     })
     .as_object()
@@ -156,11 +156,11 @@ fn testnet_genesis(
             changes_trie_config: Default::default(),
         }),
         pallet_balances: Some(BalancesConfig {
-            // Configure endowed accounts with initial balance of 1 << 60.
+            // Configure endowed accounts with initial balance of 1000 PONT coins.
             balances: endowed_accounts
                 .iter()
                 .cloned()
-                .map(|k| (k, 1 << 60))
+                .map(|k| (k, 1000 * PONT))
                 .collect(),
         }),
         pallet_aura: Some(AuraConfig {
@@ -177,5 +177,13 @@ fn testnet_genesis(
             key: root_key,
         }),
         sp_mvm: Some(MvmConfig::default()),
+        pallet_vesting: Some(VestingConfig {
+            // Move 10 PONT under vesting for each account since block 100 and till block 1000.
+            vesting: endowed_accounts
+                .iter()
+                .cloned()
+                .map(|k| (k, 100, 1000, 10 * PONT))
+                .collect(),
+        }),
     }
 }
