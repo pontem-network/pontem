@@ -31,7 +31,7 @@ frame-system = { default-features = false, version = '3.0.0' }
 frame-system-benchmarking = { default-features = false, optional = true, version = '3.0.0' }
 frame-system-rpc-runtime-api = { default-features = false, version = '3.0.0' }
 pallet-session = { version = "3.0.0", default-features = false }
-pallet-session-benchmarking = { version = '3.0.0', default-features = false }
+pallet-session-benchmarking = { version = '3.0.0', default-features = false, optional = true }
 pallet-authorship = { version = "3.0.0", default-features = false }
 pallet-staking = { version = "3.0.0", default-features =  false }
 pallet-balances = { default-features = false, version = '3.0.0' }
@@ -77,6 +77,7 @@ runtime-benchmarks = [
     'pallet-vesting/runtime-benchmarks',
     'sp-runtime/runtime-benchmarks',
     'sp-mvm/runtime-benchmarks',
+    'pallet-session-benchmarking',
 ]
 std = [
     'codec/std',
