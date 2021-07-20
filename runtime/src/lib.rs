@@ -246,9 +246,9 @@ impl pallet_session::historical::Config for Runtime {
 // Inflation configuration.
 pallet_staking_reward_curve::build! {
     const VALIDATOR_REWARD_CURVE: PiecewiseLinear<'static> = curve!(
-        min_inflation: 0_010_000,
-        max_inflation: 0_020_000,
-        ideal_stake: 0_150_000,
+        min_inflation: 0_100_000,
+        max_inflation: 0_300_000,
+        ideal_stake: 0_500_000,
         falloff: 0_020_000,
         max_piece_count: 100,
         test_precision: 0_005_500,
@@ -656,8 +656,11 @@ impl_runtime_apis! {
         ) -> Result<Vec<frame_benchmarking::BenchmarkBatch>, sp_runtime::RuntimeString> {
             use frame_benchmarking::{Benchmarking, BenchmarkBatch, add_benchmark, TrackedStorageKey};
 
+            use pallet_session_benchmarking::Module as SessionBench;
             use frame_system_benchmarking::Module as SystemBench;
+
             impl frame_system_benchmarking::Config for Runtime {}
+            impl pallet_session_benchmarking::Config for Runtime {}
 
             let whitelist: Vec<TrackedStorageKey> = vec![
                 // Block Number
@@ -676,10 +679,14 @@ impl_runtime_apis! {
             let params = (&config, &whitelist);
 
             add_benchmark!(params, batches, frame_system, SystemBench::<Runtime>);
+            add_benchmark!(params, batches, pallet_babe, Babe);
             add_benchmark!(params, batches, pallet_balances, Balances);
             add_benchmark!(params, batches, pallet_timestamp, Timestamp);
             add_benchmark!(params, batches, pallet_vesting, Vesting);
             add_benchmark!(params, batches, sp_mvm, Mvm);
+            add_benchmark!(params, batches, pallet_grandpa, Grandpa);
+            add_benchmark!(params, batches, pallet_session, SessionBench::<Runtime>);
+            add_benchmark!(params, batches, pallet_staking, Staking);
 
             if batches.is_empty() { return Err("Benchmark not found for this pallet.".into()) }
             Ok(batches)
