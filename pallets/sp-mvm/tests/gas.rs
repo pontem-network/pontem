@@ -51,7 +51,8 @@ fn publish_module_gas_limit() {
         let root = root_ps_acc();
         let signer = Origin::signed(root);
 
-        let res = call_publish_module(signer, UserMod::EventProxy.bc().to_vec(), MINIMAL_GAS_LIMIT);
+        let res =
+            call_publish_module(signer, UserMod::EventProxy.bc().to_vec(), MINIMAL_GAS_LIMIT);
 
         let error = res.unwrap_err().error;
         check_out_of_gas(error);

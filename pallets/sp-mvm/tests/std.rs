@@ -25,7 +25,7 @@ fn call_execute_script(origin: Origin) {
 fn publish_module() {
     new_test_ext().execute_with(|| {
         let root = root_ps_acc();
-        utils::publish_module(root, UserMod::EventProxy);
+        utils::publish_module(root, UserMod::EventProxy, None).unwrap();
     });
 }
 
@@ -35,7 +35,7 @@ fn execute_script() {
         let root = root_ps_acc();
         let origin = origin_ps_acc();
 
-        utils::publish_module(origin, UserMod::EventProxy);
+        utils::publish_module(origin, UserMod::EventProxy, None).unwrap();
 
         // we need next block because events are not populated on genesis:
         roll_next_block();
@@ -69,11 +69,10 @@ fn execute_script() {
 /// publish package as root
 fn publish_package_as_root() {
     new_test_ext().execute_with(|| {
-        const GAS_LIMIT: u64 = 1_000_000;
         let package = RootPackages::Assets;
         let root = root_ps_acc();
 
-        utils::publish_package(root, package, GAS_LIMIT);
+        utils::publish_package(root, package, None).unwrap();
     });
 }
 
@@ -81,11 +80,10 @@ fn publish_package_as_root() {
 /// publish package as origin
 fn publish_package_as_origin() {
     new_test_ext().execute_with(|| {
-        const GAS_LIMIT: u64 = 1_000_000;
         let package = UsrPackages::Assets;
         let origin = origin_ps_acc();
 
-        utils::publish_package(origin, package, GAS_LIMIT);
+        utils::publish_package(origin, package, None).unwrap();
     });
 }
 

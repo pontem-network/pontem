@@ -19,80 +19,54 @@ use super::addr::*;
 
 pub type AccountId = <Test as frame_system::Config>::AccountId;
 
+const DEFAULT_GAS_LIMIT: u64 = 1_000_000;
+
 /// Publish module __with__ storage check
-pub fn publish_module<Asset: BinAsset>(signer: AccountId, module: Asset) {
-    publish_module_raw(signer, module.bc().to_vec(), module.name());
+pub fn publish_module<Asset: BinAsset>(
+    signer: AccountId,
+    module: Asset,
+    gas_limit: Option<u64>,
+) -> PsResult {
+    let bytecode = module.bc().to_vec();
+    let name = module.name();
+    let result = publish_module_unchecked(signer, module, gas_limit)?;
+    check_storage_module(to_move_addr(signer), bytecode, name);
+    Ok(result)
 }
 
 /// Publish module __without__ storage check
-pub fn publish_module_unchecked<Asset: BinAsset>(signer: AccountId, module: Asset) {
-    publish_module_raw_unchecked(signer, module.bc().to_vec())
+pub fn publish_module_unchecked<Asset: BinAsset>(
+    signer: AccountId,
+    module: Asset,
+    gas_limit: Option<u64>,
+) -> PsResult {
+    let gas_limit = gas_limit.unwrap_or(DEFAULT_GAS_LIMIT);
+    Mvm::publish_module(Origin::signed(signer), module.bc().to_vec(), gas_limit)
 }
-
-pub fn publish_module_raw(signer: AccountId, bc: Vec<u8>, name: &str) {
-    publish_module_raw_with_origin_unchecked(Origin::signed(signer), bc.clone());
-
-    // check storage:
-    check_storage_mod_raw(signer, bc, name);
-}
-
-/// Publish module __without__ storage check
-pub fn publish_module_raw_unchecked(signer: AccountId, bc: Vec<u8>) {
-    publish_module_raw_with_origin_unchecked(Origin::signed(signer), bc.clone())
-}
-
-/// Publish module __without__ storage check
-pub fn publish_module_raw_with_origin_unchecked(origin: Origin, bc: Vec<u8>) {
-    const GAS_LIMIT: u64 = 1_000_000;
-
-    // execute VM for publish module:
-    Mvm::publish_module(origin, bc, GAS_LIMIT).expect("Publish module");
-}
-
-///////////////////////////
 
 /// Publish package.
-
+///
 /// Publish package __with__ storage check
 pub fn publish_package<Asset: BinAssetPackage>(
     signer: AccountId,
     package: Asset,
-    gas_limit: u64,
-) {
-    publish_package_raw(signer, package.bc().to_vec(), gas_limit, package.modules());
+    gas_limit: Option<u64>,
+) -> PsResult {
+    let bytecode = package.bc();
+    let names = package.modules();
+    let result = publish_package_unchecked(signer, package, gas_limit)?;
+    check_storage_package(to_move_addr(signer), bytecode, names);
+    Ok(result)
 }
 
-/// Publish package __without__ storage check
-pub fn publish_package_unchecked<Asset: BinAssetPackage>(
+/// Publish module __without__ storage check
+pub fn publish_package_unchecked<Asset: BinAsset>(
     signer: AccountId,
     package: Asset,
-    gas_limit: u64,
-) {
-    publish_package_raw_unchecked(signer, package.bc().to_vec(), gas_limit);
-}
-
-pub fn publish_package_raw(signer: AccountId, bc: Vec<u8>, gas_limit: u64, names: &[&str]) {
-    publish_package_raw_with_origin_unchecked(Origin::signed(signer), bc.clone(), gas_limit);
-
-    let (modules, _) = ModulePackage::try_from(&bc[..])
-        .unwrap()
-        .into_tx(ROOT_ADDR)
-        .into_inner();
-
-    for (i, mbc) in modules.iter().enumerate() {
-        check_storage_mod_raw(signer, mbc.to_vec(), names[i]);
-    }
-}
-
-/// Publish package __without__ storage check
-pub fn publish_package_raw_unchecked(signer: AccountId, bc: Vec<u8>, gas_limit: u64) {
-    publish_package_raw_with_origin_unchecked(Origin::signed(signer), bc.clone(), gas_limit)
-}
-
-/// Publish package __without__ storage check
-pub fn publish_package_raw_with_origin_unchecked(origin: Origin, bc: Vec<u8>, gas_limit: u64) {
-    // execute VM for publish module:
-    Mvm::publish_package(origin, bc, gas_limit).expect("Publish package");
+    gas_limit: Option<u64>,
+) -> PsResult {
+    let gas_limit = gas_limit.unwrap_or(DEFAULT_GAS_LIMIT);
+    Mvm::publish_package(Origin::signed(signer), package.bc().to_vec(), gas_limit)
 }
 
 pub fn execute_tx_unchecked(origin: Origin, tx: UserTx, gas_limit: u64) -> PsResult {
@@ -104,16 +78,12 @@ pub fn execute_tx_unchecked(origin: Origin, tx: UserTx, gas_limit: u64) -> PsRes
     result
 }
 
-pub fn check_storage_mod_raw<Bc: AsRef<[u8]>>(signer: AccountId, bc: Bc, name: &str) {
-    check_storage_mod_raw_with_addr(to_move_addr(signer), bc, name)
-}
-
-pub fn check_storage_mod_raw_with_addr<Bc: AsRef<[u8]>>(
-    signer: AccountAddress,
+pub fn check_storage_module<Bc: AsRef<[u8]>>(
+    account_address: AccountAddress,
     bc: Bc,
     name: &str,
 ) {
-    let module_id = ModuleId::new(signer, Identifier::new(name).unwrap());
+    let module_id = ModuleId::new(account_address, Identifier::new(name).unwrap());
     let storage = Mvm::move_vm_storage();
     let state = State::new(storage);
     let stored = state
@@ -121,6 +91,21 @@ pub fn check_storage_mod_raw_with_addr<Bc: AsRef<[u8]>>(
         .expect("VM state read storage")
         .expect(&format!("Module '{}' should exist", module_id));
     assert_eq!(bc.as_ref(), &stored);
+}
+
+pub fn check_storage_package<Bc: AsRef<[u8]>>(
+    account_address: AccountAddress,
+    bytecode: Bc,
+    names: &[&str],
+) {
+    let (modules, _) = ModulePackage::try_from(bytecode.as_ref())
+        .unwrap()
+        .into_tx(ROOT_ADDR)
+        .into_inner();
+
+    for (i, bytecode) in modules.iter().enumerate() {
+        check_storage_module(account_address, bytecode, names[i]);
+    }
 }
 
 pub fn check_storage_res<T>(owner: AccountAddress, ty: StructTag, expected: T)

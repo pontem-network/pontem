@@ -1,13 +1,15 @@
 #![allow(dead_code)]
 
 const ROOT_PACKAGES: &[&str] = &["Assets"];
-const ROOT_PACKAGES_BYTECODE: &[&[u8]] =
-    &[include_bytes!("../assets/root/artifacts/bundles/assets.pac")];
+const ROOT_PACKAGES_BYTECODE: &[&[u8]] = &[include_bytes!(
+    "../assets/root/artifacts/bundles/assets.pac"
+)];
 const ROOT_PACKAGES_MODULES: &[&[&str]] = &[&["Store", "EventProxy"]];
 
 const USR_PACKAGES: &[&str] = &["Assets"];
-const USR_PACKAGES_BYTECODE: &[&[u8]] =
-    &[include_bytes!("../assets/user/artifacts/bundles/assets.pac")];
+const USR_PACKAGES_BYTECODE: &[&[u8]] = &[include_bytes!(
+    "../assets/user/artifacts/bundles/assets.pac"
+)];
 const USR_PACKAGES_MODULES: &[&[&str]] = &[&["Store", "EventProxy"]];
 
 const USER_MODULES: &[&str] = &["Store", "EventProxy"];

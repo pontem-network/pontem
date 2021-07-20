@@ -43,7 +43,7 @@ fn execute_store_block() {
         let origin = origin_ps_acc();
         let signer = Origin::signed(origin);
 
-        publish_module(origin, UserMod::Store);
+        publish_module(origin, UserMod::Store, None).unwrap();
 
         const EXPECTED: u64 = 3;
         for _ in 0..EXPECTED {
@@ -61,7 +61,7 @@ fn execute_store_time() {
         let origin = origin_ps_acc();
         let signer = Origin::signed(origin);
 
-        publish_module(origin, UserMod::Store);
+        publish_module(origin, UserMod::Store, None).unwrap();
 
         const EXPECTED: u64 = 3;
         for _ in 0..EXPECTED {

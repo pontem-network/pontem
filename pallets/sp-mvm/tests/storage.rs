@@ -47,7 +47,7 @@ fn call_execute_script(origin: Origin) {
 fn publish_module() {
     new_test_ext().execute_with(|| {
         let origin = origin_ps_acc();
-        utils::publish_module(origin, UserMod::Store);
+        utils::publish_module(origin, UserMod::Store, None).unwrap();
     });
 }
 
@@ -57,7 +57,7 @@ fn execute_script() {
         let origin = origin_ps_acc();
         let signer = Origin::signed(origin);
 
-        utils::publish_module(origin, UserMod::Store);
+        utils::publish_module(origin, UserMod::Store, None).unwrap();
         call_execute_script(signer);
     });
 }

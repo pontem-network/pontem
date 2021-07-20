@@ -46,7 +46,7 @@ fn execute_get_balance() {
         let account = origin_ps_acc();
 
         // publish user module:
-        publish_module(account, UserMod::Store);
+        publish_module(account, UserMod::Store, None).unwrap();
 
         // execute tx:
         let signer = Origin::signed(account);
@@ -89,7 +89,7 @@ fn execute_deposit_balance() {
         let account = origin_ps_acc();
 
         // publish user module:
-        publish_module(account, UserMod::Store);
+        publish_module(account, UserMod::Store, None).unwrap();
 
         // execute tx:
         let signer = Origin::signed(account);
@@ -113,7 +113,7 @@ fn execute_deposit_withdraw_balance() {
         let account = origin_ps_acc();
 
         // publish user module:
-        publish_module(account, UserMod::Store);
+        publish_module(account, UserMod::Store, None).unwrap();
 
         // execute tx:
         let signer = Origin::signed(account);
