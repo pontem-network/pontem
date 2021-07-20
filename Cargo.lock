@@ -3922,6 +3922,7 @@ dependencies = [
  "pallet-aura",
  "pallet-balances",
  "pallet-grandpa",
+ "pallet-multisig",
  "pallet-randomness-collective-flip",
  "pallet-sudo",
  "pallet-timestamp",
@@ -4234,6 +4235,22 @@ dependencies = [
  "sp-runtime",
  "sp-session",
  "sp-staking",
+ "sp-std",
+]
+
+[[package]]
+name = "pallet-multisig"
+version = "3.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "775556e56d1b9ab9a2437b8ea281bb16d7aadda8f309213d6d72d0a6a4c6fec4"
+dependencies = [
+ "frame-support",
+ "frame-system",
+ "parity-scale-codec",
+ "serde",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
  "sp-std",
 ]
 
@@ -4710,21 +4727,21 @@ dependencies = [
 [[package]]
 name = "petgraph"
 version = "0.5.1"
-source = "git+https://github.com/pontem-network/petgraph.git#17ae1eae1ee0a580e4f34ccefaf4d611d03eadcb"
-dependencies = [
- "fixedbitset 0.3.2",
- "hashbrown",
- "indexmap 1.6.0",
-]
-
-[[package]]
-name = "petgraph"
-version = "0.5.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "467d164a6de56270bd7c4d070df81d07beace25012d5103ced4e9ff08d6afdb7"
 dependencies = [
  "fixedbitset 0.2.0",
  "indexmap 1.6.2",
+]
+
+[[package]]
+name = "petgraph"
+version = "0.5.1"
+source = "git+https://github.com/pontem-network/petgraph.git#17ae1eae1ee0a580e4f34ccefaf4d611d03eadcb"
+dependencies = [
+ "fixedbitset 0.3.2",
+ "hashbrown",
+ "indexmap 1.6.0",
 ]
 
 [[package]]
@@ -7199,6 +7216,7 @@ dependencies = [
  "mvm",
  "once_cell",
  "pallet-balances",
+ "pallet-multisig",
  "pallet-timestamp",
  "parity-scale-codec",
  "parity-scale-codec-derive",

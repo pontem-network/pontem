@@ -44,7 +44,6 @@ pub use frame_support::{
 use pallet_transaction_payment::CurrencyAdapter;
 
 /// Import the Move-pallet.
-pub use sp_mvm;
 pub use sp_mvm::gas::{GasWeightMapping};
 pub use sp_mvm_rpc_runtime::types::MVMApiEstimation;
 
@@ -288,6 +287,28 @@ impl pallet_sudo::Config for Runtime {
     type Call = Call;
 }
 
+parameter_types! {
+    pub const MultisigCostPerSig: Balance = 500;
+    pub const MultisigCostPerFact: Balance = 500;
+    pub const MaxSigners: u16 = 16;
+}
+
+impl pallet_multisig::Config for Runtime {
+    type Event = Event;
+
+    type Call = Call;
+
+    type Currency = Balances;
+
+    type MaxSignatories = MaxSigners;
+
+    type DepositBase = MultisigCostPerSig;
+
+    type DepositFactor = MultisigCostPerFact;
+
+    type WeightInfo = ();
+}
+
 /// By inheritance from Moonbeam and from Dfinance (based on validators statistic), we believe max 4125000 gas is currently enough for block.
 /// In the same time we use same 500ms Weight as Max Block Weight, from which 75% only are used for transactions.
 /// So our max gas is GAS_PER_SECOND * 0.500 * 0.65 => 4125000.
@@ -334,6 +355,7 @@ construct_runtime!(
         Sudo: pallet_sudo::{Module, Call, Config<T>, Storage, Event<T>},
         Mvm: sp_mvm::{Module, Call, Config<T>, Storage, Event<T>},
         Vesting: pallet_vesting::{Module, Call, Storage, Config<T>, Event<T>},
+        MultiSig:  pallet_multisig::{Module, Call, Storage, Event<T>},
     }
 );
 
