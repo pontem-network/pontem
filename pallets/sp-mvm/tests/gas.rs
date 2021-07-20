@@ -6,6 +6,9 @@ use common::assets::*;
 use common::mock::*;
 use common::addr::*;
 
+const OUT_OF_GAS_ERROR_CODE: u8 = 148;
+const MINIMAL_GAS_LIMIT: u64 = 1;
+
 /// Publish module then return result
 fn call_publish_module(
     origin: Origin,
@@ -33,60 +36,38 @@ fn call_execute_script(
 }
 
 /// Check status == out of gas
-fn check_out_of_gas(error: u8, message: Option<&'static str>) {
-    assert_eq!(error, 148); // OutOfGas
-    assert_eq!(message, Some("OutOfGas"));
+fn check_out_of_gas(error: DispatchError) {
+    if let DispatchError::Module { error, message, .. } = error {
+        assert_eq!(error, OUT_OF_GAS_ERROR_CODE); // OutOfGas
+        assert_eq!(message, Some("OutOfGas"));
+    } else {
+        panic!("Unexpected error: {:?}", error);
+    }
 }
 
 #[test]
 fn publish_module_gas_limit() {
     new_test_ext().execute_with(|| {
-        const GAS_LIMIT: u64 = 1;
         let root = root_ps_acc();
         let signer = Origin::signed(root);
 
-        let res = call_publish_module(signer, UserMod::EventProxy.bc().to_vec(), GAS_LIMIT);
+        let res = call_publish_module(signer, UserMod::EventProxy.bc().to_vec(), MINIMAL_GAS_LIMIT);
 
-        assert!(res.is_err());
-
-        let err = res.unwrap_err();
-
-        if let DispatchError::Module {
-            index: _,
-            error,
-            message,
-        } = err.error
-        {
-            check_out_of_gas(error, message)
-        } else {
-            panic!("unknown error")
-        }
+        let error = res.unwrap_err().error;
+        check_out_of_gas(error);
     });
 }
 
 #[test]
 fn publish_gas_limit() {
     new_test_ext().execute_with(|| {
-        const GAS_LIMIT: u64 = 1;
         let origin = origin_ps_acc();
         let signer = Origin::signed(origin);
 
-        let res = call_publish_module(signer, UserMod::Store.bc().to_vec(), GAS_LIMIT);
+        let res = call_publish_module(signer, UserMod::Store.bc().to_vec(), MINIMAL_GAS_LIMIT);
 
-        assert!(res.is_err());
-
-        let err = res.unwrap_err();
-
-        if let DispatchError::Module {
-            index: _,
-            error,
-            message,
-        } = err.error
-        {
-            check_out_of_gas(error, message)
-        } else {
-            panic!("unknown error")
-        }
+        let error = res.unwrap_err().error;
+        check_out_of_gas(error);
     });
 }
 
@@ -100,19 +81,7 @@ fn execute_gas_limit() {
 
         let res = call_execute_script(signer, UserTx::InfLoop, GAS_LIMIT);
 
-        assert!(res.is_err());
-
-        let err = res.unwrap_err();
-
-        if let DispatchError::Module {
-            index: _,
-            error,
-            message,
-        } = err.error
-        {
-            check_out_of_gas(error, message)
-        } else {
-            panic!("unknown error");
-        }
+        let error = res.unwrap_err().error;
+        check_out_of_gas(error);
     });
 }
