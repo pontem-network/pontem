@@ -54,7 +54,6 @@ pub mod pallet {
 
     use move_vm::Vm;
     use move_vm::mvm::Mvm;
-    use move_vm::gas_schedule::cost_table;
     use move_vm::io::context::ExecutionContext;
     use move_vm::types::Gas;
     use move_vm::types::ModuleTx;
@@ -237,14 +236,16 @@ pub mod pallet {
 
     #[pallet::genesis_config]
     pub struct GenesisConfig<T: Config> {
-        _phantom: std::marker::PhantomData<T>,
+        pub _phantom: std::marker::PhantomData<T>,
+        pub stdlib: Vec<u8>,
     }
 
     #[cfg(feature = "std")]
     impl<T: Config> Default for GenesisConfig<T> {
         fn default() -> Self {
-            Self {
+            GenesisConfig {
                 _phantom: Default::default(),
+                stdlib: Default::default(),
             }
         }
     }
@@ -252,7 +253,12 @@ pub mod pallet {
     #[pallet::genesis_build]
     impl<T: Config> GenesisBuild<T> for GenesisConfig<T> {
         fn build(&self) {
-            move_vm::genesis::init_storage(Pallet::<T>::move_vm_storage(), Default::default())
+            let package =
+                ModulePackage::try_from(&self.stdlib[..]).expect("Failed to parse stdlib");
+            let genesis_config =
+                move_vm::genesis::build_genesis_config(package.into_tx(CORE_CODE_ADDRESS));
+
+            move_vm::genesis::init_storage(Pallet::<T>::move_vm_storage(), genesis_config)
                 .expect("Unable to initialize storage");
         }
     }
@@ -411,7 +417,7 @@ pub mod pallet {
                 Self::move_vm_storage().into(),
                 Self::create_move_event_handler(),
                 balance::BalancesAdapter::<T>::new().into(),
-                cost_table(),
+                //cost_table(),
             )
             .map_err(|err| {
                 error!("{}", err);

@@ -8,6 +8,7 @@ use sp_finality_grandpa::AuthorityId as GrandpaId;
 use sp_runtime::traits::{Verify, IdentifyAccount};
 use sc_service::ChainType;
 use serde_json::json;
+use std::include_bytes;
 
 /// Address format for Pontem.
 /// 42 is a placeholder for any Substrate-based chain.
@@ -176,7 +177,10 @@ fn testnet_genesis(
             // Assign network admin rights.
             key: root_key,
         }),
-        sp_mvm: Some(MvmConfig::default()),
+        sp_mvm: Some(MvmConfig {
+            stdlib: include_bytes!("../move-stdlib/artifacts/bundles/move-stdlib.pac").to_vec(),
+            ..Default::default()
+        }),
         pallet_vesting: Some(VestingConfig {
             // Move 10 PONT under vesting for each account since block 100 and till block 1000.
             vesting: endowed_accounts
