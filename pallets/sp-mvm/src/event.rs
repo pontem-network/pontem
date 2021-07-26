@@ -1,13 +1,8 @@
 use core::convert::TryInto;
 use move_vm::io::traits::EventHandler;
-use sp_core::hexdisplay::AsBytesRef;
 use sp_std::prelude::*;
-use move_core_types::account_address::AccountAddress;
-use move_core_types::language_storage::ModuleId;
 use move_core_types::language_storage::TypeTag;
-use crate::types;
 use crate::{Event, Config};
-use crate::addr::address_to_account;
 
 #[cfg(not(feature = "std"))]
 extern crate alloc;

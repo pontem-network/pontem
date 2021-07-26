@@ -1,7 +1,7 @@
 use core::convert::{TryInto, TryFrom};
 use move_core_types::identifier::Identifier;
 use sp_std::prelude::*;
-use parity_scale_codec::{Encode as EncodeT, Decode as DecodeT};
+use parity_scale_codec::{Decode as DecodeT};
 use parity_scale_codec_derive::{Encode, Decode};
 use crate::addr::address_to_account;
 use move_core_types::language_storage::ModuleId as InternalModuleId;

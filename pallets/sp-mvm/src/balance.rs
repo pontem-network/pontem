@@ -160,7 +160,7 @@ where
 
     fn get_currency_info(
         &self,
-        path: &move_vm::io::traits::CurrencyAccessPath,
+        _path: &move_vm::io::traits::CurrencyAccessPath,
     ) -> Option<move_vm::io::balance::CurrencyInfo> {
         todo!()
     }
@@ -169,7 +169,7 @@ where
 #[cfg(not(feature = "no-vm-static"))]
 pub mod boxed {
     use move_vm::io::{
-        balance::CurrencyInfo,
+        //balance::CurrencyInfo,
         traits::{Balance as VmBalance, BalanceAccess},
     };
     use sp_std::prelude::*;
@@ -227,7 +227,7 @@ pub mod boxed {
 
         fn get_currency_info(
             &self,
-            path: &move_vm::io::traits::CurrencyAccessPath,
+            _path: &move_vm::io::traits::CurrencyAccessPath,
         ) -> Option<move_vm::io::balance::CurrencyInfo> {
             None
         }

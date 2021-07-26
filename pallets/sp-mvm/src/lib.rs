@@ -54,12 +54,14 @@ pub mod pallet {
 
     use move_vm::Vm;
     use move_vm::mvm::Mvm;
+    use move_vm::gas_schedule::cost_table;
     use move_vm::io::context::ExecutionContext;
     use move_vm::types::Gas;
     use move_vm::types::ModuleTx;
     use move_vm::types::Transaction;
     use move_vm::types::VmResult;
     use move_vm::types::ModulePackage;
+
     use move_core_types::account_address::AccountAddress;
     use move_core_types::language_storage::CORE_CODE_ADDRESS;
 
@@ -409,6 +411,7 @@ pub mod pallet {
                 Self::move_vm_storage().into(),
                 Self::create_move_event_handler(),
                 balance::BalancesAdapter::<T>::new().into(),
+                cost_table(),
             )
             .map_err(|err| {
                 error!("{}", err);
