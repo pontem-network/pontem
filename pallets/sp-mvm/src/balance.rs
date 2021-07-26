@@ -7,6 +7,7 @@ use frame_support::traits::Currency;
 use frame_support::traits::Imbalance;
 use frame_support::traits::WithdrawReasons;
 use frame_support::traits::ExistenceRequirement;
+use move_vm::io::balance::CurrencyInfo;
 
 type BalanceOf<T> = <T as balances::Config>::Balance;
 
@@ -65,6 +66,7 @@ impl<T: balances::Config> BalanceAccess for BalancesAdapter<T>
 where
     <T as balances::Config>::Balance: TryFrom<VmBalance>,
     <T as balances::Config>::Balance: TryInto<VmBalance>,
+    <T as balances::Config>::Balance: TryInto<u128>,
 {
     fn get_balance(
         &self,
@@ -158,11 +160,16 @@ where
         trace!("native balance deposit imbalance: {:?}", imbalance);
     }
 
+    // As we have only one currency now, calling PONT, we ignore paths.
+    // TODO: support paths.
     fn get_currency_info(
         &self,
         _path: &move_vm::io::traits::CurrencyAccessPath,
-    ) -> Option<move_vm::io::balance::CurrencyInfo> {
-        todo!()
+    ) -> Option<CurrencyInfo> {
+        match <balances::Module<T> as Currency<T::AccountId>>::total_issuance().try_into() {
+            Ok(total_value) => Some(CurrencyInfo { total_value }),
+            Err(_) => None,
+        }
     }
 }
 
