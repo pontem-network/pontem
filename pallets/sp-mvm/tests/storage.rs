@@ -1,6 +1,4 @@
-use move_vm::io::state::State;
 use serde::Deserialize;
-use frame_support::assert_ok;
 use move_core_types::identifier::Identifier;
 use move_core_types::language_storage::StructTag;
 

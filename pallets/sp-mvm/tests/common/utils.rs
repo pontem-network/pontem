@@ -133,7 +133,7 @@ pub fn get_type_tag_pont_coin() -> StructTag {
     StructTag {
         address: ROOT_ADDR,
         module: Identifier::new("PONT").unwrap(),
-        name: Identifier::new("T").unwrap(),
+        name: Identifier::new("PONT").unwrap(),
         type_params: vec![],
     }
 }
@@ -142,8 +142,8 @@ pub fn get_type_tag_pont_coin() -> StructTag {
 pub fn get_type_tag_pont_res() -> StructTag {
     StructTag {
         address: ROOT_ADDR,
-        module: Identifier::new("Pontem").unwrap(),
-        name: Identifier::new("T").unwrap(),
+        module: Identifier::new("Diem").unwrap(),
+        name: Identifier::new("Diem").unwrap(),
         type_params: vec![TypeTag::Struct(get_type_tag_pont_coin())],
     }
 }
@@ -152,7 +152,7 @@ pub fn get_type_tag_pont_res() -> StructTag {
 pub fn get_type_tag_balance_pont() -> StructTag {
     StructTag {
         address: ROOT_ADDR,
-        module: Identifier::new("Account").unwrap(),
+        module: Identifier::new("DiemAccount").unwrap(),
         name: Identifier::new("Balance").unwrap(),
         type_params: vec![TypeTag::Struct(get_type_tag_pont_coin())],
     }
