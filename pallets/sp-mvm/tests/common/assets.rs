@@ -82,7 +82,6 @@ pub enum UserMod {
     EventProxy = 1,
 }
 
-
 #[repr(usize)]
 #[derive(Copy, Clone, Debug)]
 pub enum RootMod {
@@ -157,7 +156,6 @@ impl BinAsset for UserMod {
         &[Self::Store, Self::EventProxy]
     }
 }
-
 
 impl BinAsset for RootMod {
     const NAMES: &'static [&'static str] = ROOT_MODULES;

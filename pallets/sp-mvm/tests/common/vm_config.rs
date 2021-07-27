@@ -20,7 +20,6 @@ chain_id: u8,
 
 // Build configuration to call initialize functions on standard library.
 pub fn build() -> (Vec<u8>, Vec<u8>, Vec<Vec<u8>>) {
-
     /*let chain_id: ChainId = Default::default();
     let args = serialize_values(&vec![
         MoveValue::Signer(account_config::diem_root_address()), // dr_signer
@@ -32,7 +31,11 @@ pub fn build() -> (Vec<u8>, Vec<u8>, Vec<Vec<u8>>) {
 
         MoveValue::U8(chain_id.id()),
     ]);*/
-    let genesis : GenesisConfig = Default::default();
+    let genesis: GenesisConfig = Default::default();
 
-    (MODULE_NAME.to_vec(), FUNC_NAME.to_vec(), genesis.init_func_config.unwrap().args)
+    (
+        MODULE_NAME.to_vec(),
+        FUNC_NAME.to_vec(),
+        genesis.init_func_config.unwrap().args,
+    )
 }

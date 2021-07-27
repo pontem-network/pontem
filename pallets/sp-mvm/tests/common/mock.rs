@@ -179,7 +179,7 @@ pub fn new_test_ext() -> sp_io::TestExternalities {
     }
     .assimilate_storage(&mut sys)
     .expect("Pallet mvm storage can't be assimilated");
-       
+
     sys.into()
 }
 

@@ -114,7 +114,7 @@ fn execute_deposit_balance() {
         publish_module(account, UserMod::Store, None).unwrap();
 
         // execute tx:
-        let signer = Origin::signed(account);
+        let _signer = Origin::signed(account);
         //let result = execute_tx_unchecked(signer, UserTx::StoreNativeDepositReg, GAS_LIMIT);
         //assert_ok!(result);
 
