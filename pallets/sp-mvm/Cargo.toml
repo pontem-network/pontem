@@ -88,6 +88,11 @@ bcs = { package = "bcs", version = "0.1" }
 env_logger = "*"
 test-env-log = "*"
 
+[dependencies.diem-types]
+git = "https://github.com/pontem-network/sp-move-vm.git"
+rev = "7f63b1da136cfaf6575ab687f3b21a132016fe61"
+default-features = false
+
 
 [features]
 default = [

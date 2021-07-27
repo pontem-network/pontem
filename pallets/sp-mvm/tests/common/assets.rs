@@ -18,13 +18,19 @@ const USER_BYTECODE: &[&[u8]] = &[
     include_bytes!("../assets/user/artifacts/modules/46_EventProxy.mv"),
 ];
 
+const ROOT_MODULES: &[&str] = &["Store", "EventProxy"];
+const ROOT_BYTECODE: &[&[u8]] = &[
+    include_bytes!("../assets/root/artifacts/modules/0_Store.mv"),
+    include_bytes!("../assets/root/artifacts/modules/1_EventProxy.mv"),
+];
+
 const TX_NAMES: &[&str] = &[
     "store_u64",
     "emit_event",
     "store_system_block",
     "store_system_timestamp",
     "inf_loop",
-    // "store_native_balance",
+    "store_native_balance",
     // "store_native_deposit",
     // "store_native_deposit_reg",
     // "store_native_withdraw",
@@ -76,6 +82,14 @@ pub enum UserMod {
     EventProxy = 1,
 }
 
+
+#[repr(usize)]
+#[derive(Copy, Clone, Debug)]
+pub enum RootMod {
+    Store = 0,
+    EventProxy = 1,
+}
+
 #[repr(usize)]
 #[derive(Copy, Clone, Debug)]
 pub enum RootPackages {
@@ -96,7 +110,7 @@ pub enum UserTx {
     StoreSysBlock = 2,
     StoreSysTime = 3,
     InfLoop = 4,
-    //StoreGetBalance = 5,
+    StoreGetBalance = 5,
     //StoreNativeDeposit = 6,
     //StoreNativeDepositReg = 7,
     //StoreNativeWithdraw = 8,
@@ -106,6 +120,12 @@ pub enum UserTx {
 }
 
 impl Into<usize> for UserMod {
+    fn into(self) -> usize {
+        self as usize
+    }
+}
+
+impl Into<usize> for RootMod {
     fn into(self) -> usize {
         self as usize
     }
@@ -132,6 +152,16 @@ impl Into<usize> for UserTx {
 impl BinAsset for UserMod {
     const NAMES: &'static [&'static str] = USER_MODULES;
     const BYTES: &'static [&'static [u8]] = USER_BYTECODE;
+
+    fn all() -> &'static [Self] {
+        &[Self::Store, Self::EventProxy]
+    }
+}
+
+
+impl BinAsset for RootMod {
+    const NAMES: &'static [&'static str] = ROOT_MODULES;
+    const BYTES: &'static [&'static [u8]] = ROOT_BYTECODE;
 
     fn all() -> &'static [Self] {
         &[Self::Store, Self::EventProxy]

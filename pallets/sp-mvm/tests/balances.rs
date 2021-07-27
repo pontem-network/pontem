@@ -19,6 +19,11 @@ struct StoreU128 {
     pub val: u128,
 }
 
+#[derive(Deserialize, Debug, PartialEq)]
+struct StoreU64 {
+    pub val: u64,
+}
+
 fn check_storage_u128<T>(address: AccountAddress, expected: T)
 where
     T: Into<u128>,
@@ -30,6 +35,22 @@ where
         address,
         module: Identifier::new(UserMod::Store.name()).unwrap(),
         name: Identifier::new("U128").unwrap(),
+        type_params: vec![],
+    };
+    check_storage_res(address, tag, expected);
+}
+
+fn check_storage_u64<T>(address: AccountAddress, expected: T)
+where
+    T: Into<u64>,
+{
+    let expected = StoreU64 {
+        val: expected.into(),
+    };
+    let tag = StructTag {
+        address,
+        module: Identifier::new(UserMod::Store.name()).unwrap(),
+        name: Identifier::new("U64").unwrap(),
         type_params: vec![],
     };
     check_storage_res(address, tag, expected);
@@ -49,12 +70,11 @@ fn execute_get_balance() {
         publish_module(account, UserMod::Store, None).unwrap();
 
         // execute tx:
-        let signer = Origin::signed(account);
-        //let result = execute_tx_unchecked(signer, UserTx::StoreGetBalance, GAS_LIMIT);
-        //assert_ok!(result);
+        let result = execute_tx(account, UserTx::StoreGetBalance, None);
+        assert_ok!(result);
 
         // check storage:
-        check_storage_u128(to_move_addr(account), INITIAL_BALANCE);
+        check_storage_u64(to_move_addr(account), INITIAL_BALANCE);
 
         let balance = balances::Pallet::<Test>::free_balance(&account);
         assert_eq!(INITIAL_BALANCE, balance);

@@ -15,7 +15,7 @@ use common::utils;
 fn publish_module() {
     new_test_ext().execute_with(|| {
         let root = root_ps_acc();
-        utils::publish_module(root, UserMod::EventProxy, None).unwrap();
+        utils::publish_module(root, RootMod::EventProxy, None).unwrap();
     });
 }
 
