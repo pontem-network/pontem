@@ -5,7 +5,7 @@ use substrate_build_script_utils::{generate_cargo_keys, rerun_if_git_head_change
 
 const STDLIB_DIR_NAME: &str = "move-stdlib";
 const REPO: &str = "https://github.com/pontem-network/move-stdlib.git";
-const REV: &str = "2ddfd7445716ff0bb5e117b9f40ae1cf14975ff6";
+const REV: &str = "e3df0ecf81e5290604e6846a77eab4beb75dd162";
 
 fn main() {
     println!("cargo:rerun-if-changed=build.rs");
