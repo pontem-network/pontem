@@ -44,7 +44,7 @@ const TX_BYTECODE: &[&[u8]] = &[
     include_bytes!("../assets/user/artifacts/transactions/store_system_block.mvt"),
     include_bytes!("../assets/user/artifacts/transactions/store_system_timestamp.mvt"),
     include_bytes!("../assets/user/artifacts/transactions/inf_loop.mvt"),
-    // include_bytes!("../assets/user/artifacts/transactions/store_native_balance.mvt"),
+    include_bytes!("../assets/user/artifacts/transactions/store_native_balance.mvt"),
     // include_bytes!("../assets/user/artifacts/transactions/store_native_deposit.mvt"),
     // include_bytes!("../assets/user/artifacts/transactions/store_native_deposit_reg.mvt"),
     // include_bytes!("../assets/user/artifacts/transactions/store_native_withdraw.mvt"),
