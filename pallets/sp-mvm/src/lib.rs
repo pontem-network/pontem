@@ -238,6 +238,9 @@ pub mod pallet {
     pub struct GenesisConfig<T: Config> {
         pub _phantom: std::marker::PhantomData<T>,
         pub stdlib: Vec<u8>,
+        pub init_module: Vec<u8>,
+        pub init_func: Vec<u8>,
+        pub init_args: Vec<Vec<u8>>,
     }
 
     #[cfg(feature = "std")]
@@ -246,6 +249,9 @@ pub mod pallet {
             GenesisConfig {
                 _phantom: Default::default(),
                 stdlib: Default::default(),
+                init_module: Default::default(),
+                init_func: Default::default(),
+                init_args: Default::default(),
             }
         }
     }
@@ -255,8 +261,15 @@ pub mod pallet {
         fn build(&self) {
             let package =
                 ModulePackage::try_from(&self.stdlib[..]).expect("Failed to parse stdlib");
-            let genesis_config =
-                move_vm::genesis::build_genesis_config(package.into_tx(CORE_CODE_ADDRESS));
+
+            let genesis_config = move_vm::genesis::build_genesis_config(
+                package.into_tx(CORE_CODE_ADDRESS),
+                Some(move_vm::genesis::InitFuncConfig {
+                    module: self.init_module.clone(),
+                    func: self.init_func.clone(),
+                    args: self.init_args.clone(),
+                }),
+            );
 
             move_vm::genesis::init_storage(Pallet::<T>::move_vm_storage(), genesis_config)
                 .expect("Unable to initialize storage");

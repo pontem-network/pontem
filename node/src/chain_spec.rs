@@ -10,6 +10,8 @@ use sc_service::ChainType;
 use serde_json::json;
 use std::include_bytes;
 
+use crate::vm_config::build as build_vm_config;
+
 /// Address format for Pontem.
 /// 42 is a placeholder for any Substrate-based chain.
 /// See https://github.com/paritytech/substrate/blob/master/ss58-registry.json
@@ -150,6 +152,8 @@ fn testnet_genesis(
     endowed_accounts: Vec<AccountId>,
     _enable_println: bool,
 ) -> GenesisConfig {
+    let vm_config = build_vm_config();
+
     GenesisConfig {
         frame_system: Some(SystemConfig {
             // Add Wasm runtime to storage.
@@ -179,6 +183,9 @@ fn testnet_genesis(
         }),
         sp_mvm: Some(MvmConfig {
             stdlib: include_bytes!("../move-stdlib/artifacts/bundles/move-stdlib.pac").to_vec(),
+            init_module: vm_config.0.clone(),
+            init_func: vm_config.1.clone(),
+            init_args: vm_config.2.clone(),
             ..Default::default()
         }),
         pallet_vesting: Some(VestingConfig {
