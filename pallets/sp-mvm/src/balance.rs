@@ -44,6 +44,7 @@ impl<'a> core::fmt::Display for Ticker<'a> {
     }
 }
 
+#[allow(clippy::from_over_into)]
 impl<'a> Into<&'a [u8]> for Ticker<'a> {
     fn into(self) -> &'a [u8] {
         self.0
