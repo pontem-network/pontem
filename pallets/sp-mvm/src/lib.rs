@@ -362,10 +362,10 @@ pub mod pallet {
                 let height = frame_system::Module::<T>::block_number()
                     .try_into()
                     .map_err(|_| Error::<T>::NumConversionError)?;
-                    
+
                 let time = match height as u64 {
                     0 => 0,
-                    _ => <timestamp::Module<T> as UnixTime>::now().as_millis() as u64
+                    _ => <timestamp::Module<T> as UnixTime>::now().as_millis() as u64,
                 };
 
                 ExecutionContext::new(time, height as u64)

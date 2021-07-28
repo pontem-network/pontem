@@ -17,6 +17,7 @@ targets = ['x86_64-unknown-linux-gnu']
 
 [build-dependencies]
 substrate-build-script-utils = '3.0.0'
+stdlib-fetch = { path = "../utils/stdlib-fetch" }
 
 [dependencies]
 jsonrpc-core = '15.1.0'
@@ -57,16 +58,6 @@ substrate-frame-rpc-system = '3.0.0'
 mv-node-runtime = { path = '../runtime', version = '3.0.0' }
 sp-mvm-rpc = { path = '../pallets/sp-mvm/rpc' }
 sp-mvm-rpc-runtime = { path = '../pallets/sp-mvm/rpc/runtime' }
-
-[dependencies.move-core-types]
-git = "https://github.com/pontem-network/sp-move-vm.git"
-rev = "7f63b1da136cfaf6575ab687f3b21a132016fe61"
-default-features = false
-
-[dependencies.diem-types]
-git = "https://github.com/pontem-network/sp-move-vm.git"
-rev = "7f63b1da136cfaf6575ab687f3b21a132016fe61"
-default-features = false
 
 [dependencies.move-vm]
 package = "mvm"

@@ -182,7 +182,7 @@ fn testnet_genesis(
             key: root_key,
         }),
         sp_mvm: Some(MvmConfig {
-            stdlib: include_bytes!("../move-stdlib/artifacts/bundles/move-stdlib.pac").to_vec(),
+            stdlib: include_bytes!("../move/stdlib/artifacts/bundles/move-stdlib.pac").to_vec(),
             init_module: vm_config.0.clone(),
             init_func: vm_config.1.clone(),
             init_args: vm_config.2.clone(),
