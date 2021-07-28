@@ -237,9 +237,9 @@ pub mod pallet {
     #[pallet::genesis_config]
     pub struct GenesisConfig<T: Config> {
         pub _phantom: std::marker::PhantomData<T>,
-        pub stdlib: Vec<u8>, // Standard library bytes.
-        pub init_module: Vec<u8>, // Module name for genesis init.
-        pub init_func: Vec<u8>, // Init function name.
+        pub stdlib: Vec<u8>,         // Standard library bytes.
+        pub init_module: Vec<u8>,    // Module name for genesis init.
+        pub init_func: Vec<u8>,      // Init function name.
         pub init_args: Vec<Vec<u8>>, // Arguments.
     }
 
@@ -361,7 +361,8 @@ pub mod pallet {
             let ctx = {
                 let height = frame_system::Module::<T>::block_number()
                     .try_into()
-                    .map_err(|_| Error::<T>::NumConversionError)? as u64;
+                    .map_err(|_| Error::<T>::NumConversionError)?
+                    as u64;
 
                 // Because if we call now().as_millis() during genesis it returns error.
                 // And stdlib initializing during genesis.
