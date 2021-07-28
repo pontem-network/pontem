@@ -62,10 +62,9 @@ sp-mvm-rpc-runtime = { path = '../pallets/sp-mvm/rpc/runtime' }
 [dependencies.move-vm]
 package = "mvm"
 git = "https://github.com/pontem-network/sp-move-vm.git"
-rev = "7f63b1da136cfaf6575ab687f3b21a132016fe61"
+rev = "a9258310bdd79606d000c9b302f2661712c9f2b0"
 default-features = false
 features = [ "move_stdlib" ]
-
 
 [features]
 default = []
