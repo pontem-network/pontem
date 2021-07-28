@@ -65,8 +65,6 @@ impl Ticker<'_> {
 impl<T: balances::Config> BalanceAccess for BalancesAdapter<T>
 where
     <T as balances::Config>::Balance: TryFrom<VmBalance>,
-    <T as balances::Config>::Balance: TryInto<VmBalance>,
-    <T as balances::Config>::Balance: TryInto<u128>,
 {
     fn get_balance(
         &self,

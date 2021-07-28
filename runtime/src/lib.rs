@@ -62,7 +62,7 @@ pub type AccountId = <<Signature as Verify>::Signer as IdentifyAccount>::Account
 pub type AccountIndex = u32;
 
 /// Balance of an account.
-pub type Balance = u128;
+pub type Balance = u64;
 
 /// Index of a transaction in the chain.
 pub type Index = u32;
@@ -130,8 +130,8 @@ pub const HOURS: BlockNumber = MINUTES * 60;
 pub const DAYS: BlockNumber = HOURS * 24;
 
 // Currencies constants.
-pub const DECIMALS: u32 = 18;
-pub const PONT: Balance = u128::pow(10, DECIMALS);
+pub const DECIMALS: u32 = 10;
+pub const PONT: Balance = u64::pow(10, DECIMALS);
 
 /// The version information used to identify this runtime when compiled natively.
 #[cfg(feature = "std")]
@@ -255,7 +255,7 @@ impl pallet_vesting::Config for Runtime {
 }
 
 parameter_types! {
-    pub const ExistentialDeposit: u128 = 500;
+    pub const ExistentialDeposit: u64 = 500;
     pub const MaxLocks: u32 = 50;
 }
 
