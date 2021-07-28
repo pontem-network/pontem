@@ -1,3 +1,11 @@
+# Clone and rebuild stdlib
+rm -rf ./stdlib
+git clone https://github.com/pontem-network/move-stdlib.git ./stdlib
+pushd ./stdlib
+git checkout e3df0ecf81e5290604e6846a77eab4beb75dd162
+dove build --package
+popd
+
 pushd ./user
 dove clean
 dove build --tree
@@ -7,7 +15,7 @@ dove tx "emit_event(42)"
 dove tx "store_system_block()"
 dove tx "store_system_timestamp()"
 dove tx "inf_loop()"
-#dove tx "store_native_balance()"
+dove tx "store_native_balance()"
 #dove tx "store_native_deposit(false)"
 #dove tx "store_native_deposit(true)" -o=store_native_deposit_reg
 #dove tx "store_native_withdraw(false)"
@@ -18,5 +26,6 @@ popd
 
 pushd ./root
 dove clean
+dove build
 dove build --package
 pushd

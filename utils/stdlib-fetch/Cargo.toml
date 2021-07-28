@@ -1,0 +1,11 @@
+[package]
+authors = ['Pontem Network <https://github.com/pontem-network>']
+description = 'Fetch stdlib using local git binary and dove for build.'
+license = 'Apache 2.0'
+edition = '2018'
+name = 'stdlib-fetch'
+repository = "https://github.com/pontem-network/sp-move"
+version = '1.0.0'
+
+[dependencies]
+anyhow = "1.0.42"

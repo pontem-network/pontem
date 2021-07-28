@@ -54,7 +54,6 @@ pub mod pallet {
 
     use move_vm::Vm;
     use move_vm::mvm::Mvm;
-    use move_vm::gas_schedule::cost_table;
     use move_vm::io::context::ExecutionContext;
     use move_vm::types::Gas;
     use move_vm::types::ModuleTx;
@@ -237,14 +236,22 @@ pub mod pallet {
 
     #[pallet::genesis_config]
     pub struct GenesisConfig<T: Config> {
-        _phantom: std::marker::PhantomData<T>,
+        pub _phantom: std::marker::PhantomData<T>,
+        pub stdlib: Vec<u8>,         // Standard library bytes.
+        pub init_module: Vec<u8>,    // Module name for genesis init.
+        pub init_func: Vec<u8>,      // Init function name.
+        pub init_args: Vec<Vec<u8>>, // Arguments.
     }
 
     #[cfg(feature = "std")]
     impl<T: Config> Default for GenesisConfig<T> {
         fn default() -> Self {
-            Self {
+            GenesisConfig {
                 _phantom: Default::default(),
+                stdlib: vec![],
+                init_module: vec![],
+                init_func: vec![],
+                init_args: vec![],
             }
         }
     }
@@ -252,7 +259,19 @@ pub mod pallet {
     #[pallet::genesis_build]
     impl<T: Config> GenesisBuild<T> for GenesisConfig<T> {
         fn build(&self) {
-            move_vm::genesis::init_storage(Pallet::<T>::move_vm_storage(), Default::default())
+            let package =
+                ModulePackage::try_from(&self.stdlib[..]).expect("Failed to parse stdlib");
+
+            let genesis_config = move_vm::genesis::build_genesis_config(
+                package.into_tx(CORE_CODE_ADDRESS),
+                Some(move_vm::genesis::InitFuncConfig {
+                    module: self.init_module.clone(),
+                    func: self.init_func.clone(),
+                    args: self.init_args.clone(),
+                }),
+            );
+
+            move_vm::genesis::init_storage(Pallet::<T>::move_vm_storage(), genesis_config)
                 .expect("Unable to initialize storage");
         }
     }
@@ -342,9 +361,17 @@ pub mod pallet {
             let ctx = {
                 let height = frame_system::Module::<T>::block_number()
                     .try_into()
-                    .map_err(|_| Error::<T>::NumConversionError)?;
-                let time = <timestamp::Module<T> as UnixTime>::now().as_millis() as u64;
-                ExecutionContext::new(time, height as u64)
+                    .map_err(|_| Error::<T>::NumConversionError)?
+                    as u64;
+
+                // Because if we call now().as_millis() during genesis it returns error.
+                // And stdlib initializing during genesis.
+                let time = match height {
+                    0 => 0,
+                    _ => <timestamp::Module<T> as UnixTime>::now().as_millis() as u64,
+                };
+
+                ExecutionContext::new(time, height)
             };
 
             let res = vm.execute_script(gas, ctx, tx, dry_run);
@@ -411,7 +438,6 @@ pub mod pallet {
                 Self::move_vm_storage().into(),
                 Self::create_move_event_handler(),
                 balance::BalancesAdapter::<T>::new().into(),
-                cost_table(),
             )
             .map_err(|err| {
                 error!("{}", err);

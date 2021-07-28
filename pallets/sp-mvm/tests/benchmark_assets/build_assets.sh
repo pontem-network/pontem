@@ -1,3 +1,11 @@
+# Clone and rebuild stdlib
+rm -rf ./stdlib
+git clone https://github.com/pontem-network/move-stdlib.git ./stdlib
+pushd ./stdlib
+git checkout e3df0ecf81e5290604e6846a77eab4beb75dd162
+dove build
+popd
+
 dove clean
 dove build --tree
 dove tx "lp()"

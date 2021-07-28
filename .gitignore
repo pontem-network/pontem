@@ -13,5 +13,6 @@
 .Dove.man
 /pallets/**/target/
 artifacts/
+/node/move/stdlib/
 
 .direnv

@@ -8,12 +8,14 @@ use frame_support::{
     parameter_types,
     weights::{Weight, constants::WEIGHT_PER_SECOND},
 };
+use std::include_bytes;
 use frame_support::traits::{OnInitialize, OnFinalize};
 use sp_runtime::traits::{BlakeTwo256, IdentityLookup};
 use sp_runtime::{testing::Header};
 
 use super::addr::origin_ps_acc;
 use super::addr::root_ps_acc;
+use super::vm_config::build as build_vm_config;
 
 type UncheckedExtrinsic = frame_system::mocking::MockUncheckedExtrinsic<Test>;
 type Block = frame_system::mocking::MockBlock<Test>;
@@ -163,9 +165,17 @@ pub fn new_test_ext() -> sp_io::TestExternalities {
     .assimilate_storage(&mut sys)
     .expect("Pallet balances storage can't be assimilated");
 
-    sp_mvm::GenesisConfig::<Test>::default()
-        .assimilate_storage(&mut sys)
-        .expect("Pallet mvm storage can't be assimilated");
+    let vm_config = build_vm_config();
+
+    sp_mvm::GenesisConfig::<Test> {
+        stdlib: include_bytes!("../assets/stdlib/artifacts/bundles/move-stdlib.pac").to_vec(),
+        init_module: vm_config.0.clone(),
+        init_func: vm_config.1.clone(),
+        init_args: vm_config.2.clone(),
+        ..Default::default()
+    }
+    .assimilate_storage(&mut sys)
+    .expect("Pallet mvm storage can't be assimilated");
 
     sys.into()
 }
