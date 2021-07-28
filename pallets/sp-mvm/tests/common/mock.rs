@@ -168,7 +168,7 @@ pub fn new_test_ext() -> sp_io::TestExternalities {
     let vm_config = build_vm_config();
 
     sp_mvm::GenesisConfig::<Test> {
-        stdlib: include_bytes!("move-stdlib.pac").to_vec(),
+        stdlib: include_bytes!("../assets/stdlib/artifacts/bundles/move-stdlib.pac").to_vec(),
         init_module: vm_config.0.clone(),
         init_func: vm_config.1.clone(),
         init_args: vm_config.2.clone(),
