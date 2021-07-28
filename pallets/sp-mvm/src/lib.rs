@@ -237,10 +237,10 @@ pub mod pallet {
     #[pallet::genesis_config]
     pub struct GenesisConfig<T: Config> {
         pub _phantom: std::marker::PhantomData<T>,
-        pub stdlib: Vec<u8>,
-        pub init_module: Vec<u8>,
-        pub init_func: Vec<u8>,
-        pub init_args: Vec<Vec<u8>>,
+        pub stdlib: Vec<u8>, // Standard library bytes.
+        pub init_module: Vec<u8>, // Module name for genesis init.
+        pub init_func: Vec<u8>, // Init function name.
+        pub init_args: Vec<Vec<u8>>, // Arguments.
     }
 
     #[cfg(feature = "std")]
@@ -248,10 +248,10 @@ pub mod pallet {
         fn default() -> Self {
             GenesisConfig {
                 _phantom: Default::default(),
-                stdlib: Default::default(),
-                init_module: Default::default(),
-                init_func: Default::default(),
-                init_args: Default::default(),
+                stdlib: vec![],
+                init_module: vec![],
+                init_func: vec![],
+                init_args: vec![],
             }
         }
     }
@@ -361,14 +361,16 @@ pub mod pallet {
             let ctx = {
                 let height = frame_system::Module::<T>::block_number()
                     .try_into()
-                    .map_err(|_| Error::<T>::NumConversionError)?;
+                    .map_err(|_| Error::<T>::NumConversionError)? as u64;
 
-                let time = match height as u64 {
+                // Because if we call now().as_millis() during genesis it returns error.
+                // And stdlib initializing during genesis.
+                let time = match height {
                     0 => 0,
                     _ => <timestamp::Module<T> as UnixTime>::now().as_millis() as u64,
                 };
 
-                ExecutionContext::new(time, height as u64)
+                ExecutionContext::new(time, height)
             };
 
             let res = vm.execute_script(gas, ctx, tx, dry_run);
@@ -435,7 +437,6 @@ pub mod pallet {
                 Self::move_vm_storage().into(),
                 Self::create_move_event_handler(),
                 balance::BalancesAdapter::<T>::new().into(),
-                //cost_table(),
             )
             .map_err(|err| {
                 error!("{}", err);
