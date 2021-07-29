@@ -449,6 +449,14 @@ dependencies = [
 
 [[package]]
 name = "bcs"
+version = "0.1.1"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=a9258310bdd79606d000c9b302f2661712c9f2b0#a9258310bdd79606d000c9b302f2661712c9f2b0"
+dependencies = [
+ "alt_serde",
+]
+
+[[package]]
+name = "bcs"
 version = "0.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a86ab68e515a8b195b2be6ff544a83b626eb3b15ea435be1fa6b9d4ccd1591ac"
@@ -630,9 +638,9 @@ dependencies = [
 [[package]]
 name = "borrow-graph"
 version = "0.0.1"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=7f63b1da136cfaf6575ab687f3b21a132016fe61#7f63b1da136cfaf6575ab687f3b21a132016fe61"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=a9258310bdd79606d000c9b302f2661712c9f2b0#a9258310bdd79606d000c9b302f2661712c9f2b0"
 dependencies = [
- "mirai-annotations",
+ "mirai-annotations 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=a9258310bdd79606d000c9b302f2661712c9f2b0)",
 ]
 
 [[package]]
@@ -680,13 +688,13 @@ checksum = "e3b5ca7a04898ad4bcd41c90c5285445ff5b791899bb1b0abdd2a2aa791211d7"
 [[package]]
 name = "bytecode-verifier"
 version = "0.1.0"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=7f63b1da136cfaf6575ab687f3b21a132016fe61#7f63b1da136cfaf6575ab687f3b21a132016fe61"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=a9258310bdd79606d000c9b302f2661712c9f2b0#a9258310bdd79606d000c9b302f2661712c9f2b0"
 dependencies = [
  "anyhow",
  "borrow-graph",
  "hashbrown",
- "mirai-annotations",
- "move-core-types",
+ "mirai-annotations 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=a9258310bdd79606d000c9b302f2661712c9f2b0)",
+ "move-core-types 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=a9258310bdd79606d000c9b302f2661712c9f2b0)",
  "petgraph 0.5.1 (git+https://github.com/pontem-network/petgraph.git)",
  "vm",
 ]
@@ -761,6 +769,14 @@ dependencies = [
 name = "cell"
 version = "0.1.0"
 source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=7f63b1da136cfaf6575ab687f3b21a132016fe61#7f63b1da136cfaf6575ab687f3b21a132016fe61"
+dependencies = [
+ "once_cell",
+]
+
+[[package]]
+name = "cell"
+version = "0.1.0"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=a9258310bdd79606d000c9b302f2661712c9f2b0#a9258310bdd79606d000c9b302f2661712c9f2b0"
 dependencies = [
  "once_cell",
 ]
@@ -1261,12 +1277,30 @@ dependencies = [
  "anyhow",
  "bcs 0.1.1 (git+https://github.com/pontem-network/sp-move-vm.git?rev=7f63b1da136cfaf6575ab687f3b21a132016fe61)",
  "bytes 1.0.1",
- "cell",
- "diem-crypto-derive",
- "diem-nibble",
+ "cell 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=7f63b1da136cfaf6575ab687f3b21a132016fe61)",
+ "diem-nibble 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=7f63b1da136cfaf6575ab687f3b21a132016fe61)",
  "ed25519-dalek",
  "hex",
- "mirai-annotations",
+ "mirai-annotations 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=7f63b1da136cfaf6575ab687f3b21a132016fe61)",
+ "static_assertions",
+ "tiny-keccak",
+]
+
+[[package]]
+name = "diem-crypto"
+version = "0.0.1"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=a9258310bdd79606d000c9b302f2661712c9f2b0#a9258310bdd79606d000c9b302f2661712c9f2b0"
+dependencies = [
+ "alt_serde",
+ "anyhow",
+ "bcs 0.1.1 (git+https://github.com/pontem-network/sp-move-vm.git?rev=a9258310bdd79606d000c9b302f2661712c9f2b0)",
+ "bytes 1.0.1",
+ "cell 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=a9258310bdd79606d000c9b302f2661712c9f2b0)",
+ "diem-crypto-derive 0.0.1 (git+https://github.com/pontem-network/sp-move-vm.git?rev=a9258310bdd79606d000c9b302f2661712c9f2b0)",
+ "diem-nibble 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=a9258310bdd79606d000c9b302f2661712c9f2b0)",
+ "ed25519-dalek",
+ "hex",
+ "mirai-annotations 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=a9258310bdd79606d000c9b302f2661712c9f2b0)",
  "rand 0.7.3",
  "rand_core 0.5.1",
  "serde_bytes",
@@ -1285,9 +1319,27 @@ dependencies = [
 ]
 
 [[package]]
+name = "diem-crypto-derive"
+version = "0.0.1"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=a9258310bdd79606d000c9b302f2661712c9f2b0#a9258310bdd79606d000c9b302f2661712c9f2b0"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn",
+]
+
+[[package]]
 name = "diem-nibble"
 version = "0.1.0"
 source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=7f63b1da136cfaf6575ab687f3b21a132016fe61#7f63b1da136cfaf6575ab687f3b21a132016fe61"
+dependencies = [
+ "alt_serde",
+]
+
+[[package]]
+name = "diem-nibble"
+version = "0.1.0"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=a9258310bdd79606d000c9b302f2661712c9f2b0#a9258310bdd79606d000c9b302f2661712c9f2b0"
 dependencies = [
  "alt_serde",
 ]
@@ -1300,12 +1352,28 @@ dependencies = [
  "alt_serde",
  "anyhow",
  "bcs 0.1.1 (git+https://github.com/pontem-network/sp-move-vm.git?rev=7f63b1da136cfaf6575ab687f3b21a132016fe61)",
- "cell",
- "diem-crypto",
- "diem-crypto-derive",
+ "cell 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=7f63b1da136cfaf6575ab687f3b21a132016fe61)",
+ "diem-crypto 0.0.1 (git+https://github.com/pontem-network/sp-move-vm.git?rev=7f63b1da136cfaf6575ab687f3b21a132016fe61)",
+ "diem-crypto-derive 0.0.1 (git+https://github.com/pontem-network/sp-move-vm.git?rev=7f63b1da136cfaf6575ab687f3b21a132016fe61)",
  "hashbrown",
  "hex",
- "move-core-types",
+ "move-core-types 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=7f63b1da136cfaf6575ab687f3b21a132016fe61)",
+]
+
+[[package]]
+name = "diem-types"
+version = "0.0.1"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=a9258310bdd79606d000c9b302f2661712c9f2b0#a9258310bdd79606d000c9b302f2661712c9f2b0"
+dependencies = [
+ "alt_serde",
+ "anyhow",
+ "bcs 0.1.1 (git+https://github.com/pontem-network/sp-move-vm.git?rev=a9258310bdd79606d000c9b302f2661712c9f2b0)",
+ "cell 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=a9258310bdd79606d000c9b302f2661712c9f2b0)",
+ "diem-crypto 0.0.1 (git+https://github.com/pontem-network/sp-move-vm.git?rev=a9258310bdd79606d000c9b302f2661712c9f2b0)",
+ "diem-crypto-derive 0.0.1 (git+https://github.com/pontem-network/sp-move-vm.git?rev=a9258310bdd79606d000c9b302f2661712c9f2b0)",
+ "hashbrown",
+ "hex",
+ "move-core-types 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=a9258310bdd79606d000c9b302f2661712c9f2b0)",
 ]
 
 [[package]]
@@ -1595,7 +1663,7 @@ checksum = "e88a8acf291dafb59c2d96e8f59828f3838bb1a70398823ade51a84de6a6deed"
 [[package]]
 name = "fallible"
 version = "0.1.0"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=7f63b1da136cfaf6575ab687f3b21a132016fe61#7f63b1da136cfaf6575ab687f3b21a132016fe61"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=a9258310bdd79606d000c9b302f2661712c9f2b0#a9258310bdd79606d000c9b302f2661712c9f2b0"
 
 [[package]]
 name = "fallible-iterator"
@@ -3722,6 +3790,11 @@ version = "0.1.0"
 source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=7f63b1da136cfaf6575ab687f3b21a132016fe61#7f63b1da136cfaf6575ab687f3b21a132016fe61"
 
 [[package]]
+name = "mirai-annotations"
+version = "0.1.0"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=a9258310bdd79606d000c9b302f2661712c9f2b0#a9258310bdd79606d000c9b302f2661712c9f2b0"
+
+[[package]]
 name = "more-asserts"
 version = "0.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3735,25 +3808,46 @@ dependencies = [
  "alt_serde",
  "anyhow",
  "bcs 0.1.1 (git+https://github.com/pontem-network/sp-move-vm.git?rev=7f63b1da136cfaf6575ab687f3b21a132016fe61)",
- "cell",
- "diem-crypto",
- "diem-crypto-derive",
+ "cell 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=7f63b1da136cfaf6575ab687f3b21a132016fe61)",
+ "diem-crypto 0.0.1 (git+https://github.com/pontem-network/sp-move-vm.git?rev=7f63b1da136cfaf6575ab687f3b21a132016fe61)",
+ "diem-crypto-derive 0.0.1 (git+https://github.com/pontem-network/sp-move-vm.git?rev=7f63b1da136cfaf6575ab687f3b21a132016fe61)",
  "enum-iterator",
  "hex",
- "mirai-annotations",
+ "mirai-annotations 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=7f63b1da136cfaf6575ab687f3b21a132016fe61)",
+ "parity-scale-codec",
+ "parity-scale-codec-derive",
+ "ref-cast",
+ "short-hex-str 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=7f63b1da136cfaf6575ab687f3b21a132016fe61)",
+ "static_assertions",
+]
+
+[[package]]
+name = "move-core-types"
+version = "0.1.0"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=a9258310bdd79606d000c9b302f2661712c9f2b0#a9258310bdd79606d000c9b302f2661712c9f2b0"
+dependencies = [
+ "alt_serde",
+ "anyhow",
+ "bcs 0.1.1 (git+https://github.com/pontem-network/sp-move-vm.git?rev=a9258310bdd79606d000c9b302f2661712c9f2b0)",
+ "cell 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=a9258310bdd79606d000c9b302f2661712c9f2b0)",
+ "diem-crypto 0.0.1 (git+https://github.com/pontem-network/sp-move-vm.git?rev=a9258310bdd79606d000c9b302f2661712c9f2b0)",
+ "diem-crypto-derive 0.0.1 (git+https://github.com/pontem-network/sp-move-vm.git?rev=a9258310bdd79606d000c9b302f2661712c9f2b0)",
+ "enum-iterator",
+ "hex",
+ "mirai-annotations 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=a9258310bdd79606d000c9b302f2661712c9f2b0)",
  "parity-scale-codec",
  "parity-scale-codec-derive",
  "rand 0.7.3",
  "rand_core 0.5.1",
  "ref-cast",
- "short-hex-str",
+ "short-hex-str 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=a9258310bdd79606d000c9b302f2661712c9f2b0)",
  "static_assertions",
 ]
 
 [[package]]
 name = "move-lang"
 version = "0.0.1"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=7f63b1da136cfaf6575ab687f3b21a132016fe61#7f63b1da136cfaf6575ab687f3b21a132016fe61"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=a9258310bdd79606d000c9b302f2661712c9f2b0#a9258310bdd79606d000c9b302f2661712c9f2b0"
 dependencies = [
  "alt_serde",
  "fallible",
@@ -3765,12 +3859,12 @@ dependencies = [
 [[package]]
 name = "move-vm-natives"
 version = "0.1.0"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=7f63b1da136cfaf6575ab687f3b21a132016fe61#7f63b1da136cfaf6575ab687f3b21a132016fe61"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=a9258310bdd79606d000c9b302f2661712c9f2b0#a9258310bdd79606d000c9b302f2661712c9f2b0"
 dependencies = [
- "cell",
- "diem-crypto",
- "mirai-annotations",
- "move-core-types",
+ "cell 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=a9258310bdd79606d000c9b302f2661712c9f2b0)",
+ "diem-crypto 0.0.1 (git+https://github.com/pontem-network/sp-move-vm.git?rev=a9258310bdd79606d000c9b302f2661712c9f2b0)",
+ "mirai-annotations 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=a9258310bdd79606d000c9b302f2661712c9f2b0)",
+ "move-core-types 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=a9258310bdd79606d000c9b302f2661712c9f2b0)",
  "move-vm-types",
  "sha2 0.9.3",
  "smallvec 1.6.1",
@@ -3781,17 +3875,17 @@ dependencies = [
 [[package]]
 name = "move-vm-runtime"
 version = "0.1.0"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=7f63b1da136cfaf6575ab687f3b21a132016fe61#7f63b1da136cfaf6575ab687f3b21a132016fe61"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=a9258310bdd79606d000c9b302f2661712c9f2b0#a9258310bdd79606d000c9b302f2661712c9f2b0"
 dependencies = [
  "anyhow",
  "bytecode-verifier",
- "cell",
- "diem-crypto",
+ "cell 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=a9258310bdd79606d000c9b302f2661712c9f2b0)",
+ "diem-crypto 0.0.1 (git+https://github.com/pontem-network/sp-move-vm.git?rev=a9258310bdd79606d000c9b302f2661712c9f2b0)",
  "hashbrown",
  "hex",
  "log",
- "mirai-annotations",
- "move-core-types",
+ "mirai-annotations 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=a9258310bdd79606d000c9b302f2661712c9f2b0)",
+ "move-core-types 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=a9258310bdd79606d000c9b302f2661712c9f2b0)",
  "move-vm-natives",
  "move-vm-types",
  "vm",
@@ -3800,14 +3894,14 @@ dependencies = [
 [[package]]
 name = "move-vm-types"
 version = "0.1.0"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=7f63b1da136cfaf6575ab687f3b21a132016fe61#7f63b1da136cfaf6575ab687f3b21a132016fe61"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=a9258310bdd79606d000c9b302f2661712c9f2b0#a9258310bdd79606d000c9b302f2661712c9f2b0"
 dependencies = [
  "alt_serde",
- "bcs 0.1.1 (git+https://github.com/pontem-network/sp-move-vm.git?rev=7f63b1da136cfaf6575ab687f3b21a132016fe61)",
- "diem-crypto",
+ "bcs 0.1.1 (git+https://github.com/pontem-network/sp-move-vm.git?rev=a9258310bdd79606d000c9b302f2661712c9f2b0)",
+ "diem-crypto 0.0.1 (git+https://github.com/pontem-network/sp-move-vm.git?rev=a9258310bdd79606d000c9b302f2661712c9f2b0)",
  "hashbrown",
- "mirai-annotations",
- "move-core-types",
+ "mirai-annotations 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=a9258310bdd79606d000c9b302f2661712c9f2b0)",
+ "move-core-types 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=a9258310bdd79606d000c9b302f2661712c9f2b0)",
  "sha2 0.9.3",
  "smallvec 1.6.1",
  "vm",
@@ -3960,18 +4054,18 @@ dependencies = [
 [[package]]
 name = "mvm"
 version = "0.1.0"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=7f63b1da136cfaf6575ab687f3b21a132016fe61#7f63b1da136cfaf6575ab687f3b21a132016fe61"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=a9258310bdd79606d000c9b302f2661712c9f2b0#a9258310bdd79606d000c9b302f2661712c9f2b0"
 dependencies = [
  "alt_serde",
  "anyhow",
- "bcs 0.1.1 (git+https://github.com/pontem-network/sp-move-vm.git?rev=7f63b1da136cfaf6575ab687f3b21a132016fe61)",
- "cell",
- "diem-crypto",
- "diem-types",
+ "bcs 0.1.1 (git+https://github.com/pontem-network/sp-move-vm.git?rev=a9258310bdd79606d000c9b302f2661712c9f2b0)",
+ "cell 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=a9258310bdd79606d000c9b302f2661712c9f2b0)",
+ "diem-crypto 0.0.1 (git+https://github.com/pontem-network/sp-move-vm.git?rev=a9258310bdd79606d000c9b302f2661712c9f2b0)",
+ "diem-types 0.0.1 (git+https://github.com/pontem-network/sp-move-vm.git?rev=a9258310bdd79606d000c9b302f2661712c9f2b0)",
  "hashbrown",
  "hex",
  "log",
- "move-core-types",
+ "move-core-types 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=a9258310bdd79606d000c9b302f2661712c9f2b0)",
  "move-lang",
  "move-vm-runtime",
  "move-vm-types",
@@ -4107,7 +4201,7 @@ dependencies = [
 [[package]]
 name = "num-variants"
 version = "0.1.0"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=7f63b1da136cfaf6575ab687f3b21a132016fe61#7f63b1da136cfaf6575ab687f3b21a132016fe61"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=a9258310bdd79606d000c9b302f2661712c9f2b0#a9258310bdd79606d000c9b302f2661712c9f2b0"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -6715,7 +6809,16 @@ version = "0.1.0"
 source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=7f63b1da136cfaf6575ab687f3b21a132016fe61#7f63b1da136cfaf6575ab687f3b21a132016fe61"
 dependencies = [
  "alt_serde",
- "mirai-annotations",
+ "mirai-annotations 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=7f63b1da136cfaf6575ab687f3b21a132016fe61)",
+]
+
+[[package]]
+name = "short-hex-str"
+version = "0.1.0"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=a9258310bdd79606d000c9b302f2661712c9f2b0#a9258310bdd79606d000c9b302f2661712c9f2b0"
+dependencies = [
+ "alt_serde",
+ "mirai-annotations 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=a9258310bdd79606d000c9b302f2661712c9f2b0)",
 ]
 
 [[package]]
@@ -7214,19 +7317,20 @@ dependencies = [
  "alt_serde",
  "bcs 0.1.1 (git+https://github.com/pontem-network/sp-move-vm.git?rev=371417f59e3692a938c7001fb75d785229fd6dc0)",
  "bcs 0.1.2",
- "diem-types",
+ "diem-types 0.0.1 (git+https://github.com/pontem-network/sp-move-vm.git?rev=7f63b1da136cfaf6575ab687f3b21a132016fe61)",
  "env_logger",
  "frame-benchmarking",
  "frame-support",
  "frame-system",
  "getrandom 0.2.3",
  "log",
- "move-core-types",
+ "move-core-types 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=a9258310bdd79606d000c9b302f2661712c9f2b0)",
  "move-vm-runtime",
  "move-vm-types",
  "mvm",
  "once_cell",
  "pallet-balances",
+ "pallet-multisig",
  "pallet-timestamp",
  "parity-scale-codec",
  "parity-scale-codec-derive",
@@ -7573,7 +7677,7 @@ dependencies = [
 [[package]]
 name = "stdlib"
 version = "0.1.0"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=7f63b1da136cfaf6575ab687f3b21a132016fe61#7f63b1da136cfaf6575ab687f3b21a132016fe61"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=a9258310bdd79606d000c9b302f2661712c9f2b0#a9258310bdd79606d000c9b302f2661712c9f2b0"
 
 [[package]]
 name = "stdlib-fetch"
@@ -8505,15 +8609,15 @@ checksum = "5fecdca9a5291cc2b8dcf7dc02453fee791a280f3743cb0905f8822ae463b3fe"
 [[package]]
 name = "vm"
 version = "0.1.0"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=7f63b1da136cfaf6575ab687f3b21a132016fe61#7f63b1da136cfaf6575ab687f3b21a132016fe61"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=a9258310bdd79606d000c9b302f2661712c9f2b0#a9258310bdd79606d000c9b302f2661712c9f2b0"
 dependencies = [
  "alt_serde",
  "anyhow",
- "cell",
- "diem-crypto",
+ "cell 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=a9258310bdd79606d000c9b302f2661712c9f2b0)",
+ "diem-crypto 0.0.1 (git+https://github.com/pontem-network/sp-move-vm.git?rev=a9258310bdd79606d000c9b302f2661712c9f2b0)",
  "hashbrown",
- "mirai-annotations",
- "move-core-types",
+ "mirai-annotations 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=a9258310bdd79606d000c9b302f2661712c9f2b0)",
+ "move-core-types 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=a9258310bdd79606d000c9b302f2661712c9f2b0)",
  "num-variants",
  "ref-cast",
 ]

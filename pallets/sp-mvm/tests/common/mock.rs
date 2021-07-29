@@ -34,6 +34,7 @@ frame_support::construct_runtime!(
         Timestamp: timestamp::{Module, Call, Storage, Inherent},
         Balances: balances::{Module, Call, Storage, Config<T>, Event<T>},
         Mvm: sp_mvm::{Module, Call, Config<T>, Storage, Event<T>},
+        Multisig: pallet_multisig::{Module, Call, Storage, Event<T>},
         // Sudo: pallet_sudo::{Module, Call, Config<T>, Storage, Event<T>},
     }
 );
@@ -131,6 +132,22 @@ impl sp_mvm::Config for Test {
     // type Event = TestEvent;
     type Event = Event;
     type GasWeightMapping = MoveVMGasWeightMapping;
+}
+
+parameter_types! {
+    pub const DepositBase: u64 = 0;
+    pub const DepositFactor: u64 = 0;
+    pub const MaxSignatories: u16 = 0;
+}
+
+impl pallet_multisig::Config for Test {
+    type Event = Event;
+    type Call = Call;
+    type Currency = Balances;
+    type DepositBase = DepositBase;
+    type DepositFactor = DepositFactor;
+    type MaxSignatories = MaxSignatories;
+    type WeightInfo = ();
 }
 
 pub type Sys = system::Module<Test>;
