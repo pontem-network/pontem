@@ -137,7 +137,7 @@ impl sp_mvm::Config for Test {
 parameter_types! {
     pub const DepositBase: u64 = 0;
     pub const DepositFactor: u64 = 0;
-    pub const MaxSignatories: u16 = 0;
+    pub const MaxSignatories: u16 = 16;
 }
 
 impl pallet_multisig::Config for Test {
