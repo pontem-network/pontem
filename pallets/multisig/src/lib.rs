@@ -116,6 +116,8 @@ pub mod pallet {
             + GetDispatchInfo
             + From<frame_system::Call<Self>>;
 
+        type MyOrigin: From<Origin<Self>> + Into<<Self as frame_system::Config>::Origin>;
+
         /// The currency mechanism.
         type Currency: ReservableCurrency<Self::AccountId>;
 
@@ -140,6 +142,23 @@ pub mod pallet {
 
         /// Weight information for extrinsics in this pallet.
         type WeightInfo: WeightInfo;
+    }
+
+    #[pallet::origin]
+    #[derive(PartialEq, Eq, Encode, Decode, Clone)]
+    #[cfg_attr(feature = "std", derive(Debug))]
+    pub struct Origin<T: Config> {
+        signers: Vec<T::AccountId>,
+    }
+
+    impl<T: Config> Origin<T> {
+        pub fn new(signers: Vec<T::AccountId>) -> Self {
+            Self { signers }
+        }
+
+        pub fn signers(&self) -> &[T::AccountId] {
+            &self.signers
+        }
     }
 
     #[pallet::pallet]
@@ -576,13 +595,19 @@ impl<T: Config> Pallet<T> {
                     Error::<T>::WeightTooLow
                 );
 
+                let mut signers = m.approvals.clone();
+                // insert the last approver
+                if let Some(pos) = maybe_pos {
+                    signers.insert(pos, who.clone());
+                }
+                let origin = Origin::new(signers);
                 // Clean up storage before executing call to avoid an possibility of reentrancy
                 // attack.
                 <Multisigs<T>>::remove(&id, call_hash);
                 Self::clear_call(&call_hash);
                 T::Currency::unreserve(&m.depositor, m.deposit);
 
-                let result = call.dispatch(RawOrigin::Signed(id.clone()).into());
+                let result = call.dispatch(T::MyOrigin::from(origin).into());
                 Self::deposit_event(Event::MultisigExecuted(
                     who,
                     timepoint,

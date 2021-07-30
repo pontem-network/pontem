@@ -35,7 +35,7 @@ frame_support::construct_runtime!(
         Timestamp: timestamp::{Module, Call, Storage, Inherent},
         Balances: balances::{Module, Call, Storage, Config<T>, Event<T>},
         Mvm: sp_mvm::{Module, Call, Config<T>, Storage, Event<T>},
-        Multisig: pallet_multisig::{Module, Call, Storage, Event<T>},
+        Multisig: pallet_multisig::{Module, Call, Origin<T>, Storage, Event<T>},
         // Sudo: pallet_sudo::{Module, Call, Config<T>, Storage, Event<T>},
     }
 );
@@ -144,6 +144,7 @@ parameter_types! {
 impl pallet_multisig::Config for Test {
     type Event = Event;
     type Call = Call;
+    type MyOrigin = Origin;
     type Currency = Balances;
     type DepositBase = DepositBase;
     type DepositFactor = DepositFactor;
