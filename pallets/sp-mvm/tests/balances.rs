@@ -74,76 +74,32 @@ fn execute_get_balance() {
     });
 }
 
-// TODO: replace with new tests.
 #[test]
-#[ignore]
-fn execute_get_missing_balance_err() {
+fn execute_transfer() {
     new_test_ext().execute_with(|| {
-        //let account = origin_ps_acc();
+        let bob = origin_ps_acc();
+        let alice_account = alice_acc();
+
+        let bob_init_balance = balances::Pallet::<Test>::free_balance(&bob);
+        eprintln!("Bob balance: {}", bob_init_balance);
+
+        // publish user module
+        publish_module(bob, UserMod::Store, None).unwrap();
 
         // execute tx:
-        //let signer = Origin::signed(account);
-        //let result = execute_tx_unchecked(signer, UserTx::MissedNativeBalance, GAS_LIMIT);
-        //assert!(result.is_err());
+        let result = execute_tx(bob, UserTx::Transfer, None);
+        assert_ok!(result);
 
-        /*
-        match result.unwrap_err().error {
-            DispatchError::Module {
-                message: Some("ResourceDoesNotExist"),
-                ..
-            } => { /* OK */ }
-            _ => panic!("should be an error"),
-        }
-        */
-    });
-}
+        // check storage balance:
+        check_storage_u64(to_move_addr(bob), INITIAL_BALANCE-2000);
 
-// TODO: replace with new tests.
-#[test]
-#[ignore]
-fn execute_deposit_balance() {
-    new_test_ext().execute_with(|| {
-        //let account = origin_ps_acc();
+        // check bob balance after script
+        let bob_balance = balances::Pallet::<Test>::free_balance(&bob);
+        assert_eq!(bob_init_balance-2000, bob_balance);
 
-        // publish user module:
-        //publish_module(account, UserMod::Store, None).unwrap();
-
-        // execute tx:
-        //let _signer = Origin::signed(account);
-        //let result = execute_tx_unchecked(signer, UserTx::StoreNativeDepositReg, GAS_LIMIT);
-        //assert_ok!(result);
-
-        // check storage:
-        //check_storage_u128(to_move_addr(account), INITIAL_BALANCE / 2);
-        // check balance for PONT assets (equivalent):
-        //check_storage_pont(to_move_addr(account), INITIAL_BALANCE / 2);
-
-        // let total = balances::TotalIssuance::<Test>::get();
-        //let balance = balances::Pallet::<Test>::free_balance(&account);
-        //assert_eq!(INITIAL_BALANCE / 2, balance);
-    });
-}
-
-// TODO: replace with new tests.
-#[test]
-#[ignore]
-fn execute_deposit_withdraw_balance() {
-    new_test_ext().execute_with(|| {
-        //let account = origin_ps_acc();
-
-        // publish user module:
-        //publish_module(account, UserMod::Store, None).unwrap();
-
-        // execute tx:
-        //let signer = Origin::signed(account);
-        //let result = execute_tx_unchecked(signer, UserTx::StoreNativeWithdrawReg, GAS_LIMIT);
-        //assert_ok!(result);
-
-        // check storage:
-        //check_storage_u128(to_move_addr(account), INITIAL_BALANCE);
-
-        //let balance = balances::Pallet::<Test>::free_balance(&account);
-        //assert_eq!(INITIAL_BALANCE, balance);
+        // check alice balance after script
+        let alice_balance = balances::Pallet::<Test>::free_balance(&alice_account);
+        assert_eq!(INITIAL_BALANCE+2000, alice_balance);
     });
 }
 
@@ -165,7 +121,7 @@ mod adapter {
         });
     }
 
-    fn test_deposit_with<T: BalanceAccess>(adapter: &T) {
+    fn test_sub_with<T: BalanceAccess>(adapter: &T) {
         new_test_ext().execute_with(|| {
             let origin = origin_ps_acc();
             let account = to_move_addr(origin.clone());
@@ -173,7 +129,7 @@ mod adapter {
 
             let expected_balance = initial_balance / 2;
 
-            adapter.add(&account, "PONT".as_bytes(), expected_balance);
+            adapter.sub(&account, "PONT".as_bytes(), expected_balance);
 
             let actual_balance = balances::Pallet::<Test>::free_balance(&origin);
 
@@ -181,13 +137,13 @@ mod adapter {
         });
     }
 
-    fn test_withdraw_with<T: BalanceAccess>(adapter: &T) {
+    fn test_add_with<T: BalanceAccess>(adapter: &T) {
         new_test_ext().execute_with(|| {
             let origin = origin_ps_acc();
             let account = to_move_addr(origin.clone());
             let initial_balance = balances::Pallet::<Test>::free_balance(&origin);
 
-            adapter.sub(&account, "PONT".as_bytes(), initial_balance);
+            adapter.add(&account, "PONT".as_bytes(), initial_balance);
 
             let actual_balance = balances::Pallet::<Test>::free_balance(&origin);
             assert_eq!(initial_balance * 2, actual_balance);
@@ -207,26 +163,26 @@ mod adapter {
     }
 
     #[test]
-    fn deposit() {
+    fn sub() {
         let adapter = BalancesAdapter::<Test>::new();
-        test_deposit_with(&adapter);
+        test_sub_with(&adapter);
     }
 
     #[test]
-    fn deposit_boxed() {
+    fn sub_boxed() {
         let adapter = BoxedBalancesAdapter::from(BalancesAdapter::<Test>::new());
-        test_deposit_with(&adapter);
+        test_sub_with(&adapter);
     }
 
     #[test]
-    fn withdraw() {
+    fn add() {
         let adapter = BalancesAdapter::<Test>::new();
-        test_withdraw_with(&adapter);
+        test_add_with(&adapter);
     }
 
     #[test]
-    fn withdraw_boxed() {
+    fn add_boxed() {
         let adapter = BoxedBalancesAdapter::from(BalancesAdapter::<Test>::new());
-        test_withdraw_with(&adapter);
+        test_add_with(&adapter);
     }
 }

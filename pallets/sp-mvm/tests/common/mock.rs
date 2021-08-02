@@ -15,6 +15,7 @@ use sp_runtime::{testing::Header};
 
 use super::addr::origin_ps_acc;
 use super::addr::root_ps_acc;
+use super::addr::alice_acc;
 use super::vm_config::build as build_vm_config;
 
 type UncheckedExtrinsic = frame_system::mocking::MockUncheckedExtrinsic<Test>;
@@ -173,6 +174,7 @@ pub fn new_test_ext() -> sp_io::TestExternalities {
         balances: vec![
             (root_ps_acc(), INITIAL_BALANCE),
             (origin_ps_acc(), INITIAL_BALANCE),
+            (alice_acc(), INITIAL_BALANCE)
         ],
         // balances: Vec::<(
         //     <Test as system::Config>::AccountId,

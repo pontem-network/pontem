@@ -31,6 +31,7 @@ const TX_NAMES: &[&str] = &[
     "store_system_timestamp",
     "inf_loop",
     "store_native_balance",
+    "transfer",
     // "store_native_deposit",
     // "store_native_deposit_reg",
     // "store_native_withdraw",
@@ -45,6 +46,7 @@ const TX_BYTECODE: &[&[u8]] = &[
     include_bytes!("../assets/user/artifacts/transactions/store_system_timestamp.mvt"),
     include_bytes!("../assets/user/artifacts/transactions/inf_loop.mvt"),
     include_bytes!("../assets/user/artifacts/transactions/store_native_balance.mvt"),
+    include_bytes!("../assets/user/artifacts/transactions/transfer.mvt"),
     // include_bytes!("../assets/user/artifacts/transactions/store_native_deposit.mvt"),
     // include_bytes!("../assets/user/artifacts/transactions/store_native_deposit_reg.mvt"),
     // include_bytes!("../assets/user/artifacts/transactions/store_native_withdraw.mvt"),
@@ -110,6 +112,7 @@ pub enum UserTx {
     StoreSysTime = 3,
     InfLoop = 4,
     StoreGetBalance = 5,
+    Transfer = 6,
     //StoreNativeDeposit = 6,
     //StoreNativeDepositReg = 7,
     //StoreNativeWithdraw = 8,
@@ -177,6 +180,8 @@ impl BinAsset for UserTx {
             Self::StoreSysBlock,
             Self::StoreSysTime,
             Self::InfLoop,
+            Self::StoreGetBalance,
+            Self::Transfer,
         ]
     }
 }

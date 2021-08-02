@@ -8,6 +8,7 @@ pub use move_core_types::language_storage::CORE_CODE_ADDRESS as ROOT_ADDR;
 use sp_mvm::addr::account_to_account_address;
 
 pub const BOB_SS58: &str = "5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty";
+pub const ALICE_SS58: &str = "5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY";
 
 /// Returns pk for //Bob (5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty)
 pub fn origin_ps_acc() -> Public {
@@ -18,6 +19,19 @@ pub fn origin_ps_acc() -> Public {
 /// Returns `AccountAddress` for Bob
 pub fn origin_move_addr() -> AccountAddress {
     let pk = origin_ps_acc();
+    let vec = pk.encode();
+    let mut arr = [0; AccountAddress::LENGTH];
+    arr.copy_from_slice(&vec);
+    AccountAddress::new(arr)
+}
+
+pub fn alice_acc() -> Public {
+    let pk = Public::from_ss58check(ALICE_SS58).unwrap();
+    pk
+}
+
+pub fn alice_move_addr() -> AccountAddress {
+    let pk = alice_acc();
     let vec = pk.encode();
     let mut arr = [0; AccountAddress::LENGTH];
     arr.copy_from_slice(&vec);
