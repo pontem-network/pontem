@@ -174,7 +174,7 @@ pub fn new_test_ext() -> sp_io::TestExternalities {
         balances: vec![
             (root_ps_acc(), INITIAL_BALANCE),
             (origin_ps_acc(), INITIAL_BALANCE),
-            (alice_acc(), INITIAL_BALANCE)
+            (alice_acc(), INITIAL_BALANCE),
         ],
         // balances: Vec::<(
         //     <Test as system::Config>::AccountId,

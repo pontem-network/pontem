@@ -91,15 +91,15 @@ fn execute_transfer() {
         assert_ok!(result);
 
         // check storage balance:
-        check_storage_u64(to_move_addr(bob), INITIAL_BALANCE-2000);
+        check_storage_u64(to_move_addr(bob), INITIAL_BALANCE - 2000);
 
         // check bob balance after script
         let bob_balance = balances::Pallet::<Test>::free_balance(&bob);
-        assert_eq!(bob_init_balance-2000, bob_balance);
+        assert_eq!(bob_init_balance - 2000, bob_balance);
 
         // check alice balance after script
         let alice_balance = balances::Pallet::<Test>::free_balance(&alice_account);
-        assert_eq!(INITIAL_BALANCE+2000, alice_balance);
+        assert_eq!(INITIAL_BALANCE + 2000, alice_balance);
     });
 }
 
