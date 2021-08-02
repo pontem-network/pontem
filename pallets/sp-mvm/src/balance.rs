@@ -105,6 +105,37 @@ where
             return trace!("native balance ticker '{}' not supported", ticker);
         }
 
+        trace!("withdraw resource {} requested, amount: {}", ticker, amount);
+        let imbalance = address_to_account::<T::AccountId>(&address)
+            .map_err(|_err| error!("Can't convert address from Move to Substrate."))
+            .and_then(|address| {
+                amount
+                    .try_into()
+                    .map_err(|_err| error!("Can't convert VM balance to native balance type."))
+                    .map(|amount: BalanceOf<T>| {
+                        <balances::Module<T> as Currency<T::AccountId>>::deposit_creating(
+                            &address, amount,
+                        )
+                    })
+            })
+            .map(|imbalance| imbalance.peek())
+            // TODO: return result
+            .ok();
+        trace!("native balance deposit imbalance: {:?}", imbalance);
+    }
+
+    fn sub(
+        &self,
+        address: &move_core_types::account_address::AccountAddress,
+        ticker: &[u8],
+        amount: VmBalance,
+    ) {
+        let ticker = Ticker(ticker);
+
+        if !is_ticker_supported(ticker) {
+            return trace!("native balance ticker '{}' not supported", ticker);
+        }
+
         trace!("deposit resource {} requested, amount: {}", ticker, amount);
         let imbalance = address_to_account::<T::AccountId>(&address)
             .map_err(|_| error!("Can't convert address from Move to Substrate."))
@@ -125,37 +156,6 @@ where
             })
             .ok();
         trace!("native balance withdraw imbalance: {:?}", imbalance);
-    }
-
-    fn sub(
-        &self,
-        address: &move_core_types::account_address::AccountAddress,
-        ticker: &[u8],
-        amount: VmBalance,
-    ) {
-        let ticker = Ticker(ticker);
-
-        if !is_ticker_supported(ticker) {
-            return trace!("native balance ticker '{}' not supported", ticker);
-        }
-
-        trace!("withdraw resource {} requested, amount: {}", ticker, amount);
-        let imbalance = address_to_account::<T::AccountId>(&address)
-            .map_err(|_err| error!("Can't convert address from Move to Substrate."))
-            .and_then(|address| {
-                amount
-                    .try_into()
-                    .map_err(|_err| error!("Can't convert VM balance to native balance type."))
-                    .map(|amount: BalanceOf<T>| {
-                        <balances::Module<T> as Currency<T::AccountId>>::deposit_creating(
-                            &address, amount,
-                        )
-                    })
-            })
-            .map(|imbalance| imbalance.peek())
-            // TODO: return result
-            .ok();
-        trace!("native balance deposit imbalance: {:?}", imbalance);
     }
 
     // As we have only one currency now, calling PONT, we ignore paths.
