@@ -27,9 +27,9 @@ jobs:
       matrix:
         cfg:
           - os: macos-latest
-            dove: 1.2.5
+            dove: 1.2.7
           - os: ubuntu-latest
-            dove: 1.2.5
+            dove: 1.2.7
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -55,7 +55,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/.dove
-          key: ${{ matrix.cfg.os }}-dove
+          key: ${{ matrix.cfg.os }}-dove-${{ matrix.cfg.dove }}
       - name: get Dove
         uses: pontem-network/get-dove@main
         with:
@@ -84,7 +84,7 @@ jobs:
         os:
           - ubuntu-latest
         dove:
-          - 1.2.5
+          - 1.2.7
 
     steps:
       - name: Checkout repository
@@ -135,7 +135,7 @@ jobs:
           - macos-latest
           - ubuntu-latest
         dove:
-          - 1.2.5
+          - 1.2.7
 
     steps:
       - name: Checkout repository
