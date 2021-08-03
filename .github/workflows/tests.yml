@@ -27,11 +27,9 @@ jobs:
       matrix:
         cfg:
           - os: macos-latest
-            dove:
-              version: 1.2.5
+            dove: 1.2.5
           - os: ubuntu-latest
-            dove:
-              version: 1.2.5
+            dove: 1.2.5
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -61,7 +59,7 @@ jobs:
       - name: get Dove
         uses: pontem-network/get-dove@main
         with:
-          version: ${{ matrix.cfg.dove.version }}
+          version: ${{ matrix.cfg.dove }}
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build test resources
@@ -167,6 +165,7 @@ jobs:
         run: cargo +${{ steps.rust.outputs.version }} build --all
 
       - name: make artifact
+        if: "contains(github.event.head_commit.message, 'save artifact') || contains(github.event.head_commit.message, '+artifact')"
         uses: actions/upload-artifact@v2.2.3
         with:
           name: node-${{ matrix.os }}-debug
