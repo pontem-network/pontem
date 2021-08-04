@@ -10,5 +10,5 @@ account_address = "5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty" # Bob
 # account_address = "0x8eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a48" # Bob
 
 dependencies = [
-    { git = "https://github.com/pontem-network/move-stdlib.git", rev = "ed4b158bdc339f7de20dc2144dfad606870b1f6f" }
+    { git = "https://github.com/pontem-network/move-stdlib.git", rev = "537b28a577b65849d54225d3a1391fe3e11b4b51" }
 ]
