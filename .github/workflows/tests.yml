@@ -27,11 +27,9 @@ jobs:
       matrix:
         cfg:
           - os: macos-latest
-            dove:
-              version: 1.1.4
+            dove: 1.2.7
           - os: ubuntu-latest
-            dove:
-              version: 1.1.4
+            dove: 1.2.7
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -57,11 +55,12 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/.dove
-          key: ${{ matrix.cfg.os }}-dove
+          key: ${{ matrix.cfg.os }}-dove-${{ matrix.cfg.dove }}
       - name: get Dove
         uses: pontem-network/get-dove@main
         with:
-          version: ${{ matrix.cfg.dove.version }}
+          prerelease: true
+          version: ${{ matrix.cfg.dove }}
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build test resources
@@ -85,6 +84,8 @@ jobs:
       matrix:
         os:
           - ubuntu-latest
+        dove:
+          - 1.2.7
 
     steps:
       - name: Checkout repository
@@ -104,6 +105,13 @@ jobs:
           components: clippy
           target: wasm32-unknown-unknown
           override: true
+
+      - name: get dove
+        uses: pontem-network/get-dove@main
+        with:
+          prerelease: true
+          version: ${{ matrix.dove }}
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Clippy
         uses: actions-rs/clippy-check@v1
@@ -128,6 +136,8 @@ jobs:
         os:
           - macos-latest
           - ubuntu-latest
+        dove:
+          - 1.2.7
 
     steps:
       - name: Checkout repository
@@ -147,10 +157,18 @@ jobs:
           target: wasm32-unknown-unknown
           override: false
 
+      - name: get dove
+        uses: pontem-network/get-dove@main
+        with:
+          prerelease: true
+          version: ${{ matrix.dove }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Build
         run: cargo +${{ steps.rust.outputs.version }} build --all
 
       - name: make artifact
+        if: "contains(github.event.head_commit.message, 'save artifact') || contains(github.event.head_commit.message, '+artifact')"
         uses: actions/upload-artifact@v2.2.3
         with:
           name: node-${{ matrix.os }}-debug

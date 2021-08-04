@@ -1,9 +1,9 @@
 use core::marker::PhantomData;
 use sp_std::prelude::*;
-use codec::FullCodec;
-use codec::FullEncode;
+use parity_scale_codec::FullCodec;
+use parity_scale_codec::FullEncode;
 use frame_support::storage::StorageMap;
-use move_vm::data::Storage;
+use move_vm::io::traits::Storage;
 
 pub trait MoveVmStorage<T, K: FullEncode, V: FullCodec> {
     type VmStorage;
@@ -78,7 +78,7 @@ pub mod boxed {
         }
     }
 
-    impl move_vm::data::Storage for VmStorageBoxAdapter {
+    impl move_vm::io::traits::Storage for VmStorageBoxAdapter {
         fn get(&self, key: &[u8]) -> Option<Vec<u8>> {
             trace!("storage::get {:?}", key);
             (self.f_get)(key)

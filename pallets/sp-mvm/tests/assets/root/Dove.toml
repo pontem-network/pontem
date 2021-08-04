@@ -1,6 +1,7 @@
 [package]
 name = "assets"
-dialect = "polkadot"
+dialect = "pont"
+dove_version = ">=1.2.7"
 
 # account_address = "0x0" # dev/null
 account_address = "0x1" # std
@@ -9,5 +10,5 @@ account_address = "0x1" # std
 # account_address = "0x8eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a48" # Bob
 
 dependencies = [
-    { git = "https://github.com/pontem-network/move-stdlib.git", rev = "0fb6bf83ca3c3a826f0df59ebbe62296515ca0ef" }
+    { git = "https://github.com/pontem-network/move-stdlib.git", rev = "ed4b158bdc339f7de20dc2144dfad606870b1f6f" }
 ]

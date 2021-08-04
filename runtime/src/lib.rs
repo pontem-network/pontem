@@ -44,7 +44,6 @@ pub use frame_support::{
 use pallet_transaction_payment::CurrencyAdapter;
 
 /// Import the Move-pallet.
-pub use sp_mvm;
 pub use sp_mvm::gas::{GasWeightMapping};
 pub use sp_mvm_rpc_runtime::types::MVMApiEstimation;
 
@@ -63,7 +62,7 @@ pub type AccountId = <<Signature as Verify>::Signer as IdentifyAccount>::Account
 pub type AccountIndex = u32;
 
 /// Balance of an account.
-pub type Balance = u128;
+pub type Balance = u64;
 
 /// Index of a transaction in the chain.
 pub type Index = u32;
@@ -131,8 +130,8 @@ pub const HOURS: BlockNumber = MINUTES * 60;
 pub const DAYS: BlockNumber = HOURS * 24;
 
 // Currencies constants.
-pub const DECIMALS: u32 = 18;
-pub const PONT: Balance = u128::pow(10, DECIMALS);
+pub const DECIMALS: u32 = 10;
+pub const PONT: Balance = u64::pow(10, DECIMALS);
 
 /// The version information used to identify this runtime when compiled natively.
 #[cfg(feature = "std")]
@@ -256,7 +255,7 @@ impl pallet_vesting::Config for Runtime {
 }
 
 parameter_types! {
-    pub const ExistentialDeposit: u128 = 500;
+    pub const ExistentialDeposit: u64 = 500;
     pub const MaxLocks: u32 = 50;
 }
 
@@ -286,6 +285,28 @@ impl pallet_transaction_payment::Config for Runtime {
 impl pallet_sudo::Config for Runtime {
     type Event = Event;
     type Call = Call;
+}
+
+parameter_types! {
+    pub const MultisigCostPerSig: Balance = 500;
+    pub const MultisigCostPerFact: Balance = 500;
+    pub const MaxSigners: u16 = 16;
+}
+
+impl pallet_multisig::Config for Runtime {
+    type Event = Event;
+
+    type Call = Call;
+
+    type Currency = Balances;
+
+    type MaxSignatories = MaxSigners;
+
+    type DepositBase = MultisigCostPerSig;
+
+    type DepositFactor = MultisigCostPerFact;
+
+    type WeightInfo = ();
 }
 
 /// By inheritance from Moonbeam and from Dfinance (based on validators statistic), we believe max 4125000 gas is currently enough for block.
@@ -332,8 +353,9 @@ construct_runtime!(
         Balances: pallet_balances::{Module, Call, Storage, Config<T>, Event<T>},
         TransactionPayment: pallet_transaction_payment::{Module, Storage},
         Sudo: pallet_sudo::{Module, Call, Config<T>, Storage, Event<T>},
-        Mvm: sp_mvm::{Module, Call, Storage, Event<T>},
+        Mvm: sp_mvm::{Module, Call, Config<T>, Storage, Event<T>},
         Vesting: pallet_vesting::{Module, Call, Storage, Config<T>, Event<T>},
+        MultiSig:  pallet_multisig::{Module, Call, Storage, Event<T>},
     }
 );
 

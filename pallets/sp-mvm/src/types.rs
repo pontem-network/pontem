@@ -1,7 +1,8 @@
 use core::convert::{TryInto, TryFrom};
 use move_core_types::identifier::Identifier;
 use sp_std::prelude::*;
-use codec::{Encode, Decode};
+use parity_scale_codec::{Decode as DecodeT};
+use parity_scale_codec_derive::{Encode, Decode};
 use crate::addr::address_to_account;
 use move_core_types::language_storage::ModuleId as InternalModuleId;
 use move_core_types::language_storage::StructTag as InternalStructTag;
@@ -13,8 +14,8 @@ pub struct MoveModuleId<AccountId> {
     pub module: Vec<u8>,
 }
 
-impl<AccountId: Decode> TryFrom<InternalModuleId> for MoveModuleId<AccountId> {
-    type Error = codec::Error;
+impl<AccountId: DecodeT> TryFrom<InternalModuleId> for MoveModuleId<AccountId> {
+    type Error = parity_scale_codec::Error;
 
     fn try_from(id: InternalModuleId) -> Result<Self, Self::Error> {
         Ok(Self {
@@ -25,7 +26,7 @@ impl<AccountId: Decode> TryFrom<InternalModuleId> for MoveModuleId<AccountId> {
 }
 
 #[derive(Clone, PartialEq, Encode, Decode, Debug)]
-pub enum MoveTypeTag<AccountId: Decode> {
+pub enum MoveTypeTag<AccountId: DecodeT> {
     Bool,
     U8,
     U64,
@@ -36,8 +37,8 @@ pub enum MoveTypeTag<AccountId: Decode> {
     Struct(MoveStructTag<AccountId>),
 }
 
-impl<AccountId: Decode> TryFrom<InternalTypeTag> for MoveTypeTag<AccountId> {
-    type Error = codec::Error;
+impl<AccountId: DecodeT> TryFrom<InternalTypeTag> for MoveTypeTag<AccountId> {
+    type Error = parity_scale_codec::Error;
 
     fn try_from(tt: InternalTypeTag) -> Result<Self, Self::Error> {
         Ok(match tt {
@@ -52,8 +53,8 @@ impl<AccountId: Decode> TryFrom<InternalTypeTag> for MoveTypeTag<AccountId> {
         })
     }
 }
-impl<AccountId: Decode> TryFrom<Box<InternalTypeTag>> for MoveTypeTag<AccountId> {
-    type Error = codec::Error;
+impl<AccountId: DecodeT> TryFrom<Box<InternalTypeTag>> for MoveTypeTag<AccountId> {
+    type Error = parity_scale_codec::Error;
 
     fn try_from(tt: Box<InternalTypeTag>) -> Result<Self, Self::Error> {
         Ok(match *tt {
@@ -70,7 +71,7 @@ impl<AccountId: Decode> TryFrom<Box<InternalTypeTag>> for MoveTypeTag<AccountId>
 }
 
 #[derive(Clone, PartialEq, Encode, Decode, Debug)]
-pub struct MoveStructTag<AccountId: Decode /* TryFrom<AccountAddress> */> {
+pub struct MoveStructTag<AccountId: DecodeT /* TryFrom<AccountAddress> */> {
     pub owner: AccountId,
     pub module: Vec<u8>, /* from Identifier, use Text in web-UI */
     pub name: Vec<u8>,   /* from Identifier, use Text in web-UI */
@@ -79,7 +80,7 @@ pub struct MoveStructTag<AccountId: Decode /* TryFrom<AccountAddress> */> {
     pub ty_params: Vec<()>,
 }
 
-impl<AccountId: Decode> MoveStructTag<AccountId> {
+impl<AccountId: DecodeT> MoveStructTag<AccountId> {
     pub fn new(
         owner: AccountId,
         module: Identifier,
@@ -95,8 +96,8 @@ impl<AccountId: Decode> MoveStructTag<AccountId> {
     }
 }
 
-impl<AccountId: Decode> TryFrom<InternalStructTag> for MoveStructTag<AccountId> {
-    type Error = codec::Error;
+impl<AccountId: DecodeT> TryFrom<InternalStructTag> for MoveStructTag<AccountId> {
+    type Error = parity_scale_codec::Error;
 
     fn try_from(st: InternalStructTag) -> Result<Self, Self::Error> {
         let mut type_params = Vec::new();
