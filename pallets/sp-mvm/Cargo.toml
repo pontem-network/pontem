@@ -14,54 +14,60 @@ targets = ["x86_64-unknown-linux-gnu"]
 version = "0.4"
 default-features = false
 
-[dependencies.codec]
-version = "2.0.0"
+[dependencies.parity-scale-codec]
+version = "2.2.0"
 default-features = false
-features = ["derive"]
 package = "parity-scale-codec"
 
+[dependencies.parity-scale-codec-derive]
+version = "2.2.0"
+default-features = false
+package = "parity-scale-codec-derive"
 
 # Move, addition deps for addrs & results:
 
 [dependencies.move-vm]
 package = "mvm"
 git = "https://github.com/pontem-network/sp-move-vm.git"
-rev = "1c94891be56ec67eb04a8d1bd21775219d526f48"
+rev = "e84b6eab01fb6e2520d86ba6a5fe9466404b12fe"
 default-features = false
+features = [ "move_stdlib" ]
 
 [dependencies.vm]
 git = "https://github.com/pontem-network/sp-move-vm.git"
-rev = "1c94891be56ec67eb04a8d1bd21775219d526f48"
+rev = "e84b6eab01fb6e2520d86ba6a5fe9466404b12fe"
 default-features = false
 
 [dependencies.move-vm-runtime]
 git = "https://github.com/pontem-network/sp-move-vm.git"
-rev = "1c94891be56ec67eb04a8d1bd21775219d526f48"
+rev = "e84b6eab01fb6e2520d86ba6a5fe9466404b12fe"
 default-features = false
 
 [dependencies.move-core-types]
 git = "https://github.com/pontem-network/sp-move-vm.git"
-rev = "1c94891be56ec67eb04a8d1bd21775219d526f48"
+rev = "e84b6eab01fb6e2520d86ba6a5fe9466404b12fe"
 default-features = false
 
 [dependencies.move-vm-types]
 git = "https://github.com/pontem-network/sp-move-vm.git"
-rev = "1c94891be56ec67eb04a8d1bd21775219d526f48"
+rev = "e84b6eab01fb6e2520d86ba6a5fe9466404b12fe"
 default-features = false
 
 [dependencies]
+serde = { version = "1.0", optional = true }
 once_cell = { default-features = false, version = "1.5.2" }
 # substrate:
 frame-support = { default-features = false, version = "3.0.0" }
 frame-system = { default-features = false, version = "3.0.0" }
 frame-benchmarking = { default-features = false, optional = true, version = '3.1.0' }
+pallet-multisig = { default-features = false, version = '3.0.0' }
 sp-std = { default-features = false, version = "3.0.0" }
 sp-core = { default-features = false, version = "3.0.0" }
 timestamp = { default-features = false, version = "3.0.0", package = "pallet-timestamp" }
 balances = { default-features = false, version = "3.0.0", package = "pallet-balances" }
 # logging, `sp_runtime::print`:
 sp-runtime = { default-features = false, version = "3.0.0" }
-
+getrandom = { version = "0.2.3", optional = true }
 sp-io = { default-features = false, version = "3.0.0" }
 
 # serde is for lcs/bcs only
@@ -71,7 +77,7 @@ serde-alt = { version = "1", default-features = false, package = "alt_serde", fe
 package = "bcs"
 default-features = false
 git = "https://github.com/pontem-network/sp-move-vm.git"
-rev = "1c94891be56ec67eb04a8d1bd21775219d526f48"
+rev = "e84b6eab01fb6e2520d86ba6a5fe9466404b12fe"
 optional = true
 
 
@@ -80,6 +86,13 @@ optional = true
 # used for tests (std) only
 serde = { package = "serde", version = "1.0.119" }
 bcs = { package = "bcs", version = "0.1" }
+env_logger = "*"
+test-env-log = "*"
+
+[dependencies.diem-types]
+git = "https://github.com/pontem-network/sp-move-vm.git"
+rev = "e84b6eab01fb6e2520d86ba6a5fe9466404b12fe"
+default-features = false
 
 
 [features]
@@ -88,6 +101,7 @@ default = [
 ]
 no-vm-static = []
 std = [
+    "serde",
     "log/std",
     "once_cell/std",
     "vm/std",
@@ -98,12 +112,14 @@ std = [
     "sp-std/std",
     "sp-core/std",
     "sp-runtime/std",
-    "codec/std",
+    "parity-scale-codec/std",
+    "pallet-multisig/std",
     "frame-support/std",
     "frame-system/std",
     "frame-benchmarking/std",
     "move-vm-types/std",
     "timestamp/std",
+    "getrandom/js",
     "balances/std",
 ]
 

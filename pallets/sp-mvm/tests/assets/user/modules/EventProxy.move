@@ -1,13 +1,16 @@
 module EventProxy {
     use 0x01::Event;
 
-    struct U64 { val: u64 }
+    struct U64 has store, drop, copy { val: u64 }
 
-    public fun emit_event(addr: &signer, val: u64) {
-        Event::emit<U64>(addr, U64 { val })
-    }
+    public fun emit_event(acc: &signer, val: u64) {
+        Event::publish_generator(acc);
 
-    public fun create_val(val: u64): U64 {
-        U64 { val }
+        let event_handle = Event::new_event_handle(acc);
+        Event::emit_event(
+            &mut event_handle,
+            U64 { val }
+        );
+        Event::destroy_handle(event_handle);
     }
 }
