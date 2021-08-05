@@ -7,8 +7,8 @@ RUN apt-get update && \
 SHELL ["/bin/bash", "-c"]
 
 WORKDIR /opt/build
-ARG DOVE_RELEASE=1.1.5
-ARG DOVE_VERSION=1.1.5
+ARG DOVE_RELEASE=1.2.8
+ARG DOVE_VERSION=1.2.8
 # add dove
 RUN curl -sL --fail -o "/usr/local/cargo/bin/dove" "https://github.com/pontem-network/move-tools/releases/download/${DOVE_RELEASE}/dove-${DOVE_VERSION}-linux-x86_64" && \
 	chmod +x /usr/local/cargo/bin/dove && \
