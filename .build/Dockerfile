@@ -25,6 +25,7 @@ RUN curl -sL --fail -o "/usr/local/bin/dove" "https://github.com/pontem-network/
     dove -V
 COPY ./scripts/ ./scripts/
 COPY ./Makefile ./
+RUN cargo clean -p mv-node
 RUN --mount=type=cache,target=/usr/local/cargo/registry \
 	--mount=type=cache,target=/usr/local/cargo/git \
 	--mount=type=cache,target=/opt/build/target \
