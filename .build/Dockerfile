@@ -1,8 +1,18 @@
-FROM rust:1.49 as build
+FROM ubuntu:20.04 as build
 
+# RUN apk add curl git clang
+ENV TZ=Europe/Moscow
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 RUN apt-get update && \
 	apt-get dist-upgrade -y -o Dpkg::Options::="--force-confold" && \
-	apt-get install -y cmake pkg-config libssl-dev git clang bash
+	apt-get install -y cmake pkg-config libssl-dev git clang bash build-essential libc6 libc-bin curl
+
+ENV PATH="${PATH}:/root/.cargo/bin"
+RUN curl -o "/tmp/rust.sh" --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs && \
+	chmod +x /tmp/rust.sh && \
+	/tmp/rust.sh -y
+RUN rustup update nightly && \
+	rustup update stable
 
 SHELL ["/bin/bash", "-c"]
 
