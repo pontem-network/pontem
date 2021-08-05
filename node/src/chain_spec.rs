@@ -1,7 +1,9 @@
 use sp_core::{Pair, Public, sr25519};
 use mv_node_runtime::{
-    AccountId, AuraConfig, BalancesConfig, GenesisConfig, GrandpaConfig, SudoConfig,
-    SystemConfig, VestingConfig, WASM_BINARY, Signature, PONT, DECIMALS, MvmConfig,
+    AuraConfig, BalancesConfig, GenesisConfig, GrandpaConfig, SudoConfig, SystemConfig,
+    VestingConfig, WASM_BINARY, MvmConfig,
+    primitives::{AccountId, Signature},
+    constants::currency::{PONT, DECIMALS},
 };
 use sp_consensus_aura::sr25519::AuthorityId as AuraId;
 use sp_finality_grandpa::AuthorityId as GrandpaId;
