@@ -357,7 +357,7 @@ pub mod pallet {
                 }
 
                 let signers = signers
-                    .into_iter()
+                    .iter()
                     .map(addr::account_to_bytes)
                     .map(AccountAddress::new)
                     .collect();
