@@ -36,6 +36,8 @@
 
 #![allow(unused_parens)]
 #![allow(unused_imports)]
+#![allow(clippy::unnecessary_cast)]
+#![allow(clippy::wrong_self_convention)]
 
 use frame_support::{
     traits::Get,

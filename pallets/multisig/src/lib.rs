@@ -274,6 +274,7 @@ pub mod pallet {
                 dispatch_info.class,
             )
         })]
+        #[allow(clippy::wrong_self_convention)]
         pub fn as_multi_threshold_1(
             origin: OriginFor<T>,
             other_signatories: Vec<T::AccountId>,
@@ -309,7 +310,7 @@ pub mod pallet {
                         let weight_used = T::WeightInfo::as_multi_threshold_1(call_len as u32)
                             .saturating_add(actual_weight);
                         let post_info = Some(weight_used).into();
-                        let error = err.error.into();
+                        let error = err.error;
                         DispatchErrorWithPostInfo { post_info, error }
                     }
                     None => err,
@@ -372,6 +373,7 @@ pub mod pallet {
             .max(T::WeightInfo::as_multi_complete(s, z))
             .saturating_add(*max_weight)
         })]
+        #[allow(clippy::wrong_self_convention)]
         pub fn as_multi(
             origin: OriginFor<T>,
             threshold: u16,
@@ -736,7 +738,7 @@ impl<T: Config> Pallet<T> {
                     Decode::decode(&mut &data[..]).ok().map(|d| (d, data.len()))
                 })
             },
-            |data| Decode::decode(&mut &data[..]).ok().map(|d| (d, data.len())),
+            |data| Decode::decode(&mut &*data).ok().map(|d| (d, data.len())),
         )
     }
 
