@@ -73,6 +73,7 @@ cumulus-primitives-timestamp = { default-features = false, git = 'https://github
 # local dependencies
 sp-mvm = { path = '../pallets/sp-mvm', default-features = false }
 sp-mvm-rpc-runtime = { path = '../pallets/sp-mvm/rpc/runtime', default-features = false }
+parachain-staking = { path = '../pallets/parachain-staking', default-features = false }
 
 [features]
 default = ['std']

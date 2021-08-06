@@ -38,7 +38,7 @@ use pallet_xcm::XcmPassthrough;
 pub use sp_runtime::BuildStorage;
 pub use pallet_timestamp::Call as TimestampCall;
 pub use pallet_balances::Call as BalancesCall;
-pub use sp_runtime::{Permill, Perbill, MultiAddress};
+pub use sp_runtime::{Permill, Percent, Perbill, MultiAddress};
 pub use sp_consensus_aura::sr25519::AuthorityId as AuraId;
 pub use pallet_vesting::Call as VestingCall;
 pub use frame_support::{
@@ -51,12 +51,13 @@ pub use frame_support::{
         },
     },
 };
-use frame_system::limits::{BlockLength, BlockWeights};
+use frame_system::{EnsureRoot, limits::{BlockLength, BlockWeights}};
 
 /// Import the Move-pallet.
 pub use sp_mvm;
 pub use sp_mvm::gas::{GasWeightMapping};
 pub use sp_mvm_rpc_runtime::types::MVMApiEstimation;
+pub use parachain_staking::{InflationInfo, Range};
 
 /// An index to a block.
 pub type BlockNumber = u32;
@@ -310,6 +311,59 @@ impl cumulus_pallet_parachain_system::Config for Runtime {
 
 impl parachain_info::Config for Runtime {}
 
+
+parameter_types! {
+	/// Minimum round length is 2 minutes (10 * 12 second block times)
+	pub const MinBlocksPerRound: u32 = 10;
+	/// Default BlocksPerRound is every hour (300 * 12 second block times)
+	pub const DefaultBlocksPerRound: u32 = 300;
+	/// Collator candidate exits are delayed by 2 hours (2 * 300 * block_time)
+	pub const LeaveCandidatesDelay: u32 = 2;
+	/// Nominator exits are delayed by 2 hours (2 * 300 * block_time)
+	pub const LeaveNominatorsDelay: u32 = 2;
+	/// Nomination revocations are delayed by 2 hours (2 * 300 * block_time)
+	pub const RevokeNominationDelay: u32 = 2;
+	/// Reward payments are delayed by 2 hours (2 * 300 * block_time)
+	pub const RewardPaymentDelay: u32 = 2;
+	/// Minimum 8 collators selected per round, default at genesis and minimum forever after
+	pub const MinSelectedCandidates: u32 = 8;
+	/// Maximum 10 nominators per collator
+	pub const MaxNominatorsPerCollator: u32 = 10;
+	/// Maximum 25 collators per nominator
+	pub const MaxCollatorsPerNominator: u32 = 25;
+	/// Default fixed percent a collator takes off the top of due rewards is 20%
+	pub const DefaultCollatorCommission: Perbill = Perbill::from_percent(20);
+	/// Default percent of inflation set aside for parachain bond every round
+	pub const DefaultParachainBondReservePercent: Percent = Percent::from_percent(30);
+	/// Minimum stake required to become a collator is 1_000
+	pub const MinCollatorStk: u128 = 1000 * PONT;
+	/// Minimum stake required to be reserved to be a candidate is 100
+	pub const MinCollatorCandidateStk: u128 = 100 * PONT;
+	/// Minimum stake required to be reserved to be a nominator is 5
+	pub const MinNominatorStk: u128 = 1 * PONT;
+}
+impl parachain_staking::Config for Runtime {
+	type Event = Event;
+	type Currency = Balances;
+	type MonetaryGovernanceOrigin = EnsureRoot<AccountId>;
+	type MinBlocksPerRound = MinBlocksPerRound;
+	type DefaultBlocksPerRound = DefaultBlocksPerRound;
+	type LeaveCandidatesDelay = LeaveCandidatesDelay;
+	type LeaveNominatorsDelay = LeaveNominatorsDelay;
+	type RevokeNominationDelay = RevokeNominationDelay;
+	type RewardPaymentDelay = RewardPaymentDelay;
+	type MinSelectedCandidates = MinSelectedCandidates;
+	type MaxNominatorsPerCollator = MaxNominatorsPerCollator;
+	type MaxCollatorsPerNominator = MaxCollatorsPerNominator;
+	type DefaultCollatorCommission = DefaultCollatorCommission;
+	type DefaultParachainBondReservePercent = DefaultParachainBondReservePercent;
+	type MinCollatorStk = MinCollatorStk;
+	type MinCollatorCandidateStk = MinCollatorCandidateStk;
+	type MinNomination = MinNominatorStk;
+	type MinNominatorStk = MinNominatorStk;
+	type WeightInfo = parachain_staking::weights::SubstrateWeight<Runtime>;
+}
+
 impl cumulus_pallet_aura_ext::Config for Runtime {}
 
 impl pallet_randomness_collective_flip::Config for Runtime {}
@@ -445,7 +499,7 @@ impl cumulus_pallet_xcmp_queue::Config for Runtime {
 impl cumulus_pallet_dmp_queue::Config for Runtime {
     type Event = Event;
     type XcmExecutor = XcmExecutor<XcmConfig>;
-    type ExecuteOverweightOrigin = frame_system::EnsureRoot<AccountId>;
+    type ExecuteOverweightOrigin = EnsureRoot<AccountId>;
 }
 
 impl pallet_aura::Config for Runtime {
@@ -522,6 +576,8 @@ construct_runtime!(
         Vesting: pallet_vesting::{Pallet, Call, Storage, Config<T>, Event<T>},
         Aura: pallet_aura::{Pallet, Config<T>},
         AuraExt: cumulus_pallet_aura_ext::{Pallet, Config},
+
+        ParachainStaking: parachain_staking::{Pallet, Call, Storage, Event<T>, Config<T>} = 40,
 
         // XCM helpers
         XcmpQueue: cumulus_pallet_xcmp_queue::{Pallet, Call, Storage, Event<T>} = 50,

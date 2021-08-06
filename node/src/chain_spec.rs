@@ -2,13 +2,14 @@ use cumulus_primitives_core::ParaId;
 use sc_service::ChainType;
 use sp_core::{sr25519, Pair, Public};
 use sc_chain_spec::{ChainSpecExtension, ChainSpecGroup};
-use sp_runtime::traits::{IdentifyAccount, Verify};
+use sp_runtime::{traits::{IdentifyAccount, Verify}, Perbill};
 use mv_node_runtime::{
-    GenesisConfig, SudoConfig, SystemConfig, BalancesConfig, WASM_BINARY, AccountId, Signature,
-    ParachainInfoConfig, AuraId, AuraConfig, VestingConfig, PONT, DECIMALS,
+    GenesisConfig, SudoConfig, SystemConfig, BalancesConfig, WASM_BINARY, AccountId, Signature, ParachainStakingConfig,
+    ParachainInfoConfig, AuraId, AuraConfig, VestingConfig, PONT, DECIMALS, InflationInfo, Range, Balance,
 };
 use serde::{Serialize, Deserialize};
 use serde_json::json;
+use nimbus_primitives::NimbusId;
 
 /// Address format for Pontem.
 /// 42 is a placeholder for any Substrate-based chain.
@@ -80,6 +81,16 @@ pub fn development_config(id: ParaId) -> Result<ChainSpec, String> {
                     get_from_seed::<AuraId>("Alice"),
                     get_from_seed::<AuraId>("Bob"),
                 ],
+                // Candidates
+                vec![
+                    (
+                        get_account_id_from_seed::<sr25519::Public>("Alice"),
+                        get_from_seed::<NimbusId>("Alice"),
+                        10_000 * PONT,
+                    )
+                ],
+                // Nominators
+                vec![],
                 // Pre-funded accounts
                 vec![
                     get_account_id_from_seed::<sr25519::Public>("Alice"),
@@ -124,6 +135,16 @@ pub fn local_testnet_config(id: ParaId) -> Result<ChainSpec, String> {
                     get_from_seed::<AuraId>("Alice"),
                     get_from_seed::<AuraId>("Bob"),
                 ],
+                // Candidates
+                vec![
+                    (
+                        get_account_id_from_seed::<sr25519::Public>("Alice"),
+                        get_from_seed::<NimbusId>("Alice"),
+                        10_000 * PONT,
+                    )
+                ],
+                // Nominators
+                vec![],
                 // Pre-funded accounts
                 vec![
                     get_account_id_from_seed::<sr25519::Public>("Alice"),
@@ -163,6 +184,8 @@ fn testnet_genesis(
     wasm_binary: &[u8],
     root_key: AccountId,
     initial_authorities: Vec<AuraId>,
+	candidates: Vec<(AccountId, NimbusId, Balance)>,
+	nominations: Vec<(AccountId, AccountId, Balance)>,
     endowed_accounts: Vec<AccountId>,
     id: ParaId,
 ) -> GenesisConfig {
@@ -177,7 +200,7 @@ fn testnet_genesis(
             balances: endowed_accounts
                 .iter()
                 .cloned()
-                .map(|k| (k, 1000 * PONT))
+                .map(|k| (k, 100_000 * PONT))
                 .collect(),
         },
         parachain_system: Default::default(),
@@ -189,6 +212,15 @@ fn testnet_genesis(
         aura: AuraConfig {
             authorities: initial_authorities,
         },
+        parachain_staking: ParachainStakingConfig {
+			candidates: candidates
+				.iter()
+				.cloned()
+				.map(|(account, _, bond)| (account, bond))
+				.collect(),
+			nominations,
+			inflation_config: pontem_inflation_config(),
+		},
         aura_ext: Default::default(),
         vesting: VestingConfig {
             // Move 10 PONT under vesting for each account since block 100 and till block 1000.
@@ -199,4 +231,26 @@ fn testnet_genesis(
                 .collect(),
         },
     }
+}
+
+// Pontem inflation.
+pub fn pontem_inflation_config() -> InflationInfo<Balance> {
+	InflationInfo {
+		expect: Range {
+			min: 100_000 * PONT,
+			ideal: 200_000 * PONT,
+			max: 500_000 * PONT,
+		},
+		annual: Range {
+			min: Perbill::from_percent(4),
+			ideal: Perbill::from_percent(5),
+			max: Perbill::from_percent(5),
+		},
+		// 8766 rounds (hours) in a year
+		round: Range {
+			min: Perbill::from_parts(Perbill::from_percent(4).deconstruct() / 8766),
+			ideal: Perbill::from_parts(Perbill::from_percent(5).deconstruct() / 8766),
+			max: Perbill::from_parts(Perbill::from_percent(5).deconstruct() / 8766),
+		},
+	}
 }
