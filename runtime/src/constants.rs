@@ -1,12 +1,13 @@
+// Currency constants.
 pub mod currency {
     use crate::primitives::Balance;
 
     // Currencies constants.
     // Decimals
-    pub const DECIMALS: u32 = 18;
+    pub const DECIMALS: u32 = 10;
 
     // 1 PONT.
-    pub const PONT: Balance = u128::pow(10, DECIMALS);
+    pub const PONT: Balance = u64::pow(10, DECIMALS);
 }
 
 pub mod time {

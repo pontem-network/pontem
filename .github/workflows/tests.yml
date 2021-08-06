@@ -27,9 +27,9 @@ jobs:
       matrix:
         cfg:
           - os: macos-latest
-            dove: 1.2.7
+            dove: 1.2.8
           - os: ubuntu-latest
-            dove: 1.2.7
+            dove: 1.2.8
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -85,7 +85,7 @@ jobs:
         os:
           - ubuntu-latest
         dove:
-          - 1.2.7
+          - 1.2.8
 
     steps:
       - name: Checkout repository
@@ -137,7 +137,7 @@ jobs:
           - macos-latest
           - ubuntu-latest
         dove:
-          - 1.2.7
+          - 1.2.8
 
     steps:
       - name: Checkout repository

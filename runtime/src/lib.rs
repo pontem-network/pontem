@@ -24,6 +24,15 @@ use sp_version::RuntimeVersion;
 #[cfg(feature = "std")]
 use sp_version::NativeVersion;
 
+pub mod constants;
+use constants::{currency::*, time::*};
+pub mod primitives;
+use primitives::*;
+pub mod traits;
+use traits::{U64CurrencyToVote, MoveVMGasWeightMapping};
+
+pub use sp_mvm::gas::GasWeightMapping;
+
 // A few exports that help ease life for downstream crates.
 #[cfg(any(feature = "std", test))]
 pub use sp_runtime::BuildStorage;
@@ -34,24 +43,18 @@ pub use sp_runtime::{Permill, Perbill};
 pub use pallet_staking::StakerStatus;
 pub use frame_support::{
     construct_runtime, parameter_types, StorageValue,
-    traits::{KeyOwnerProofSystem, Randomness, U128CurrencyToVote},
+    traits::{KeyOwnerProofSystem, Randomness},
     weights::{
         Weight, IdentityFee,
         constants::{
-            BlockExecutionWeight, ExtrinsicBaseWeight, RocksDbWeight, WEIGHT_PER_SECOND,
+            WEIGHT_PER_SECOND, BlockExecutionWeight, ExtrinsicBaseWeight, RocksDbWeight,
         },
     },
 };
 
-pub mod constants;
-use constants::{currency::*, time::*};
-pub mod primitives;
-use primitives::*;
-
 use pallet_transaction_payment::CurrencyAdapter;
 
 /// Import the Move-pallet.
-pub use sp_mvm::gas::{GasWeightMapping};
 pub use sp_mvm_rpc_runtime::types::MVMApiEstimation;
 
 /// Opaque types. These are used by the CLI to instantiate machinery that don't need to know
@@ -269,7 +272,7 @@ parameter_types! {
 impl pallet_staking::Config for Runtime {
     type Currency = Balances;
     type UnixTime = Timestamp;
-    type CurrencyToVote = U128CurrencyToVote;
+    type CurrencyToVote = U64CurrencyToVote;
     type RewardRemainder = (); // TODO: should go to treasury.
     type Event = Event;
     type Slash = (); // TODO: should to treasury.
@@ -305,7 +308,7 @@ impl pallet_timestamp::Config for Runtime {
 
 parameter_types! {
     // 1 PONT.
-    pub const MinVestedTransfer: Balance = PONT;
+    pub const MinVestedTransfer: Balance = 1 * PONT;
 }
 
 impl pallet_vesting::Config for Runtime {
@@ -369,29 +372,6 @@ impl pallet_multisig::Config for Runtime {
     type DepositFactor = MultisigCostPerFact;
 
     type WeightInfo = ();
-}
-
-/// By inheritance from Moonbeam and from Dfinance (based on validators statistic), we believe max 4125000 gas is currently enough for block.
-/// In the same time we use same 500ms Weight as Max Block Weight, from which 75% only are used for transactions.
-/// So our max gas is GAS_PER_SECOND * 0.500 * 0.65 => 4125000.
-pub const GAS_PER_SECOND: u64 = 11_000_000;
-
-/// Approximate ratio of the amount of Weight per Gas.
-/// u64 works for approximations because Weight is a very small unit compared to gas.
-pub const WEIGHT_PER_GAS: u64 = WEIGHT_PER_SECOND / GAS_PER_SECOND;
-
-pub struct MoveVMGasWeightMapping;
-
-// Just use provided gas.
-impl GasWeightMapping for MoveVMGasWeightMapping {
-    fn gas_to_weight(gas: u64) -> Weight {
-        gas.saturating_mul(WEIGHT_PER_GAS)
-    }
-
-    fn weight_to_gas(weight: Weight) -> u64 {
-        use core::convert::TryFrom;
-        u64::try_from(weight.wrapping_div(WEIGHT_PER_GAS)).unwrap_or(u32::MAX as u64)
-    }
 }
 
 /// Configure the Move-pallet in pallets/sp-mvm.
