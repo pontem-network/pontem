@@ -227,7 +227,7 @@ fn testnet_genesis(
             vesting: endowed_accounts
                 .iter()
                 .cloned()
-                .map(|k| (k, 100, 1000, 10 * PONT))
+                .map(|k| (k, 100, 1000, 90_000 * PONT)) // K - address, 100 - when vesting starts, 1000 - how much blocks for vesting, 10 * PONT - free balance.
                 .collect(),
         },
     }
