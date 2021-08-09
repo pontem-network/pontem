@@ -195,7 +195,7 @@ fn testnet_genesis(
             vesting: endowed_accounts
                 .iter()
                 .cloned()
-                .map(|k| (k, 100, 1000, 10 * PONT))
+                .map(|k| (k, 100, 1000, 990 * PONT))
                 .collect(),
         }),
     }
