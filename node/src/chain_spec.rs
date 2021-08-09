@@ -2,10 +2,14 @@ use cumulus_primitives_core::ParaId;
 use sc_service::ChainType;
 use sp_core::{sr25519, Pair, Public};
 use sc_chain_spec::{ChainSpecExtension, ChainSpecGroup};
-use sp_runtime::{traits::{IdentifyAccount, Verify}, Perbill};
+use sp_runtime::{
+    traits::{IdentifyAccount, Verify},
+    Perbill,
+};
 use mv_node_runtime::{
-    GenesisConfig, SudoConfig, SystemConfig, BalancesConfig, WASM_BINARY, AccountId, Signature, ParachainStakingConfig,
-    ParachainInfoConfig, VestingConfig, PONT, DECIMALS, InflationInfo, Range, Balance, AuthorFilterConfig, AuthorMappingConfig,
+    GenesisConfig, SudoConfig, SystemConfig, BalancesConfig, WASM_BINARY, AccountId, Signature,
+    ParachainStakingConfig, ParachainInfoConfig, VestingConfig, PONT, DECIMALS, InflationInfo,
+    Range, Balance, AuthorFilterConfig, AuthorMappingConfig,
 };
 use serde::{Serialize, Deserialize};
 use serde_json::json;
@@ -78,13 +82,11 @@ pub fn development_config(id: ParaId) -> Result<ChainSpec, String> {
                 // Sudo account
                 get_account_id_from_seed::<sr25519::Public>("Alice"),
                 // Candidates
-                vec![
-                    (
-                        get_account_id_from_seed::<sr25519::Public>("Alice"),
-                        get_from_seed::<NimbusId>("Alice"),
-                        10_000 * PONT,
-                    )
-                ],
+                vec![(
+                    get_account_id_from_seed::<sr25519::Public>("Alice"),
+                    get_from_seed::<NimbusId>("Alice"),
+                    10_000 * PONT,
+                )],
                 // Nominators
                 vec![],
                 // Pre-funded accounts
@@ -128,13 +130,11 @@ pub fn local_testnet_config(id: ParaId) -> Result<ChainSpec, String> {
                 // Sudo account
                 get_account_id_from_seed::<sr25519::Public>("Alice"),
                 // Candidates
-                vec![
-                    (
-                        get_account_id_from_seed::<sr25519::Public>("Alice"),
-                        get_from_seed::<NimbusId>("Alice"),
-                        10_000 * PONT,
-                    )
-                ],
+                vec![(
+                    get_account_id_from_seed::<sr25519::Public>("Alice"),
+                    get_from_seed::<NimbusId>("Alice"),
+                    10_000 * PONT,
+                )],
                 // Nominators
                 vec![],
                 // Pre-funded accounts
@@ -175,8 +175,8 @@ pub fn local_testnet_config(id: ParaId) -> Result<ChainSpec, String> {
 fn testnet_genesis(
     wasm_binary: &[u8],
     root_key: AccountId,
-	candidates: Vec<(AccountId, NimbusId, Balance)>,
-	nominations: Vec<(AccountId, AccountId, Balance)>,
+    candidates: Vec<(AccountId, NimbusId, Balance)>,
+    nominations: Vec<(AccountId, AccountId, Balance)>,
     endowed_accounts: Vec<AccountId>,
     id: ParaId,
 ) -> GenesisConfig {
@@ -201,24 +201,24 @@ fn testnet_genesis(
             key: root_key,
         },
         parachain_staking: ParachainStakingConfig {
-			candidates: candidates
-				.iter()
-				.cloned()
-				.map(|(account, _, bond)| (account, bond))
-				.collect(),
-			nominations,
-			inflation_config: pontem_inflation_config(),
-		},
+            candidates: candidates
+                .iter()
+                .cloned()
+                .map(|(account, _, bond)| (account, bond))
+                .collect(),
+            nominations,
+            inflation_config: pontem_inflation_config(),
+        },
         author_filter: AuthorFilterConfig {
-			eligible_ratio: sp_runtime::Percent::from_percent(50),
-		},
-		author_mapping: AuthorMappingConfig {
-			mappings: candidates
-				.iter()
-				.cloned()
-				.map(|(account_id, author_id, _)| (author_id, account_id))
-				.collect(),
-		},
+            eligible_ratio: sp_runtime::Percent::from_percent(50),
+        },
+        author_mapping: AuthorMappingConfig {
+            mappings: candidates
+                .iter()
+                .cloned()
+                .map(|(account_id, author_id, _)| (author_id, account_id))
+                .collect(),
+        },
         vesting: VestingConfig {
             // Move 10 PONT under vesting for each account since block 100 and till block 1000.
             vesting: endowed_accounts
@@ -232,22 +232,22 @@ fn testnet_genesis(
 
 // Pontem inflation.
 pub fn pontem_inflation_config() -> InflationInfo<Balance> {
-	InflationInfo {
-		expect: Range {
-			min: 100_000 * PONT,
-			ideal: 200_000 * PONT,
-			max: 500_000 * PONT,
-		},
-		annual: Range {
-			min: Perbill::from_percent(4),
-			ideal: Perbill::from_percent(5),
-			max: Perbill::from_percent(5),
-		},
-		// 8766 rounds (hours) in a year
-		round: Range {
-			min: Perbill::from_parts(Perbill::from_percent(4).deconstruct() / 8766),
-			ideal: Perbill::from_parts(Perbill::from_percent(5).deconstruct() / 8766),
-			max: Perbill::from_parts(Perbill::from_percent(5).deconstruct() / 8766),
-		},
-	}
+    InflationInfo {
+        expect: Range {
+            min: 100_000 * PONT,
+            ideal: 200_000 * PONT,
+            max: 500_000 * PONT,
+        },
+        annual: Range {
+            min: Perbill::from_percent(4),
+            ideal: Perbill::from_percent(5),
+            max: Perbill::from_percent(5),
+        },
+        // 8766 rounds (hours) in a year
+        round: Range {
+            min: Perbill::from_parts(Perbill::from_percent(4).deconstruct() / 8766),
+            ideal: Perbill::from_parts(Perbill::from_percent(5).deconstruct() / 8766),
+            max: Perbill::from_parts(Perbill::from_percent(5).deconstruct() / 8766),
+        },
+    }
 }

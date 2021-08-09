@@ -7,7 +7,7 @@
 include!(concat!(env!("OUT_DIR"), "/wasm_binary.rs"));
 
 use sp_std::prelude::*;
-use sp_core::{crypto::KeyTypeId, OpaqueMetadata};
+use sp_core::OpaqueMetadata;
 use sp_runtime::{
     traits::{
         ConvertInto, AccountIdLookup, BlakeTwo256, Block as BlockT, IdentifyAccount, Verify,
@@ -53,7 +53,10 @@ pub use frame_support::{
         },
     },
 };
-use frame_system::{EnsureRoot, limits::{BlockLength, BlockWeights}};
+use frame_system::{
+    EnsureRoot,
+    limits::{BlockLength, BlockWeights},
+};
 
 /// Import the Move-pallet.
 pub use sp_mvm;
@@ -313,87 +316,86 @@ impl cumulus_pallet_parachain_system::Config for Runtime {
 
 impl parachain_info::Config for Runtime {}
 
-
 parameter_types! {
-	/// Minimum round length is 2 minutes (10 * 12 second block times)
-	pub const MinBlocksPerRound: u32 = 10;
-	/// Default BlocksPerRound is every hour (300 * 12 second block times)
-	pub const DefaultBlocksPerRound: u32 = 300;
-	/// Collator candidate exits are delayed by 2 hours (2 * 300 * block_time)
-	pub const LeaveCandidatesDelay: u32 = 2;
-	/// Nominator exits are delayed by 2 hours (2 * 300 * block_time)
-	pub const LeaveNominatorsDelay: u32 = 2;
-	/// Nomination revocations are delayed by 2 hours (2 * 300 * block_time)
-	pub const RevokeNominationDelay: u32 = 2;
-	/// Reward payments are delayed by 2 hours (2 * 300 * block_time)
-	pub const RewardPaymentDelay: u32 = 2;
-	/// Minimum 8 collators selected per round, default at genesis and minimum forever after
-	pub const MinSelectedCandidates: u32 = 8;
-	/// Maximum 10 nominators per collator
-	pub const MaxNominatorsPerCollator: u32 = 10;
-	/// Maximum 25 collators per nominator
-	pub const MaxCollatorsPerNominator: u32 = 25;
-	/// Default fixed percent a collator takes off the top of due rewards is 20%
-	pub const DefaultCollatorCommission: Perbill = Perbill::from_percent(20);
-	/// Default percent of inflation set aside for parachain bond every round
-	pub const DefaultParachainBondReservePercent: Percent = Percent::from_percent(30);
-	/// Minimum stake required to become a collator is 1_000
-	pub const MinCollatorStk: u128 = 1000 * PONT;
-	/// Minimum stake required to be reserved to be a candidate is 100
-	pub const MinCollatorCandidateStk: u128 = 100 * PONT;
-	/// Minimum stake required to be reserved to be a nominator is 5
-	pub const MinNominatorStk: u128 = 1 * PONT;
+    /// Minimum round length is 2 minutes (10 * 12 second block times)
+    pub const MinBlocksPerRound: u32 = 10;
+    /// Default BlocksPerRound is every hour (300 * 12 second block times)
+    pub const DefaultBlocksPerRound: u32 = 300;
+    /// Collator candidate exits are delayed by 2 hours (2 * 300 * block_time)
+    pub const LeaveCandidatesDelay: u32 = 2;
+    /// Nominator exits are delayed by 2 hours (2 * 300 * block_time)
+    pub const LeaveNominatorsDelay: u32 = 2;
+    /// Nomination revocations are delayed by 2 hours (2 * 300 * block_time)
+    pub const RevokeNominationDelay: u32 = 2;
+    /// Reward payments are delayed by 2 hours (2 * 300 * block_time)
+    pub const RewardPaymentDelay: u32 = 2;
+    /// Minimum 8 collators selected per round, default at genesis and minimum forever after
+    pub const MinSelectedCandidates: u32 = 8;
+    /// Maximum 10 nominators per collator
+    pub const MaxNominatorsPerCollator: u32 = 10;
+    /// Maximum 25 collators per nominator
+    pub const MaxCollatorsPerNominator: u32 = 25;
+    /// Default fixed percent a collator takes off the top of due rewards is 20%
+    pub const DefaultCollatorCommission: Perbill = Perbill::from_percent(20);
+    /// Default percent of inflation set aside for parachain bond every round
+    pub const DefaultParachainBondReservePercent: Percent = Percent::from_percent(30);
+    /// Minimum stake required to become a collator is 1_000
+    pub const MinCollatorStk: u128 = 1000 * PONT;
+    /// Minimum stake required to be reserved to be a candidate is 100
+    pub const MinCollatorCandidateStk: u128 = 100 * PONT;
+    /// Minimum stake required to be reserved to be a nominator is 5
+    pub const MinNominatorStk: u128 = 1 * PONT;
 }
 impl parachain_staking::Config for Runtime {
-	type Event = Event;
-	type Currency = Balances;
-	type MonetaryGovernanceOrigin = EnsureRoot<AccountId>;
-	type MinBlocksPerRound = MinBlocksPerRound;
-	type DefaultBlocksPerRound = DefaultBlocksPerRound;
-	type LeaveCandidatesDelay = LeaveCandidatesDelay;
-	type LeaveNominatorsDelay = LeaveNominatorsDelay;
-	type RevokeNominationDelay = RevokeNominationDelay;
-	type RewardPaymentDelay = RewardPaymentDelay;
-	type MinSelectedCandidates = MinSelectedCandidates;
-	type MaxNominatorsPerCollator = MaxNominatorsPerCollator;
-	type MaxCollatorsPerNominator = MaxCollatorsPerNominator;
-	type DefaultCollatorCommission = DefaultCollatorCommission;
-	type DefaultParachainBondReservePercent = DefaultParachainBondReservePercent;
-	type MinCollatorStk = MinCollatorStk;
-	type MinCollatorCandidateStk = MinCollatorCandidateStk;
-	type MinNomination = MinNominatorStk;
-	type MinNominatorStk = MinNominatorStk;
-	type WeightInfo = parachain_staking::weights::SubstrateWeight<Runtime>;
+    type Event = Event;
+    type Currency = Balances;
+    type MonetaryGovernanceOrigin = EnsureRoot<AccountId>;
+    type MinBlocksPerRound = MinBlocksPerRound;
+    type DefaultBlocksPerRound = DefaultBlocksPerRound;
+    type LeaveCandidatesDelay = LeaveCandidatesDelay;
+    type LeaveNominatorsDelay = LeaveNominatorsDelay;
+    type RevokeNominationDelay = RevokeNominationDelay;
+    type RewardPaymentDelay = RewardPaymentDelay;
+    type MinSelectedCandidates = MinSelectedCandidates;
+    type MaxNominatorsPerCollator = MaxNominatorsPerCollator;
+    type MaxCollatorsPerNominator = MaxCollatorsPerNominator;
+    type DefaultCollatorCommission = DefaultCollatorCommission;
+    type DefaultParachainBondReservePercent = DefaultParachainBondReservePercent;
+    type MinCollatorStk = MinCollatorStk;
+    type MinCollatorCandidateStk = MinCollatorCandidateStk;
+    type MinNomination = MinNominatorStk;
+    type MinNominatorStk = MinNominatorStk;
+    type WeightInfo = parachain_staking::weights::SubstrateWeight<Runtime>;
 }
 
 // The pallet connect authors mapping, slots, and implement block executor for nimbus consensus.
 impl pallet_author_inherent::Config for Runtime {
-	type AuthorId = NimbusId;
-	type SlotBeacon = RelaychainBlockNumberProvider<Self>;
-	type AccountLookup = AuthorMapping;
-	type EventHandler = ParachainStaking;
-	type CanAuthor = AuthorFilter;
+    type AuthorId = NimbusId;
+    type SlotBeacon = RelaychainBlockNumberProvider<Self>;
+    type AccountLookup = AuthorMapping;
+    type EventHandler = ParachainStaking;
+    type CanAuthor = AuthorFilter;
 }
 
 parameter_types! {
-	pub const DepositAmount: Balance = 1 * PONT;
+    pub const DepositAmount: Balance = 1 * PONT;
 }
 // This is a simple session key manager. It should probably either work with, or be replaced
 // entirely by pallet sessions.
 // We need author mapping to connect Nimbus Ids with Account Ids, all collators should register his AuthorId.
 impl pallet_author_mapping::Config for Runtime {
-	type Event = Event;
-	type AuthorId = NimbusId;
-	type DepositCurrency = Balances;
-	type DepositAmount = DepositAmount;
-	type WeightInfo = pallet_author_mapping::weights::SubstrateWeight<Runtime>;
+    type Event = Event;
+    type AuthorId = NimbusId;
+    type DepositCurrency = Balances;
+    type DepositAmount = DepositAmount;
+    type WeightInfo = pallet_author_mapping::weights::SubstrateWeight<Runtime>;
 }
 
 // Filter slots between collators (in nutshell author slot filter pallet chooses who's producer for each slot).
 impl pallet_author_slot_filter::Config for Runtime {
-	type Event = Event;
-	type RandomnessSource = RandomnessCollectiveFlip;
-	type PotentialAuthors = ParachainStaking;
+    type Event = Event;
+    type RandomnessSource = RandomnessCollectiveFlip;
+    type PotentialAuthors = ParachainStaking;
 }
 
 impl pallet_randomness_collective_flip::Config for Runtime {}
@@ -601,10 +603,10 @@ construct_runtime!(
         Balances: pallet_balances::{Pallet, Call, Storage, Config<T>, Event<T>} = 30,
         Vesting: pallet_vesting::{Pallet, Call, Storage, Config<T>, Event<T>},
 
-        ParachainStaking: parachain_staking::{Pallet, Call, Storage, Event<T>, Config<T>} = 40,        
+        ParachainStaking: parachain_staking::{Pallet, Call, Storage, Event<T>, Config<T>} = 40,
         AuthorInherent: pallet_author_inherent::{Pallet, Call, Storage, Inherent} = 41,
-		AuthorFilter: pallet_author_slot_filter::{Pallet, Call, Storage, Event, Config} = 42,
-		AuthorMapping: pallet_author_mapping::{Pallet, Call, Config<T>, Storage, Event<T>} = 43,
+        AuthorFilter: pallet_author_slot_filter::{Pallet, Call, Storage, Event, Config} = 42,
+        AuthorMapping: pallet_author_mapping::{Pallet, Call, Config<T>, Storage, Event<T>} = 43,
 
         // XCM helpers
         XcmpQueue: cumulus_pallet_xcmp_queue::{Pallet, Call, Storage, Event<T>} = 50,
@@ -768,6 +770,18 @@ impl_runtime_apis! {
         }
     }
 
+    impl sp_session::SessionKeys<Block> for Runtime {
+        fn decode_session_keys(
+            encoded: Vec<u8>,
+        ) -> Option<Vec<(Vec<u8>, sp_core::crypto::KeyTypeId)>> {
+            SessionKeys::decode_into_raw_public_keys(&encoded)
+        }
+
+        fn generate_session_keys(seed: Option<Vec<u8>>) -> Vec<u8> {
+            SessionKeys::generate(seed)
+        }
+    }
+
     impl nimbus_primitives::AuthorFilterAPI<Block, NimbusId> for Runtime {
         fn can_author(
             author: NimbusId,
@@ -779,7 +793,7 @@ impl_runtime_apis! {
             // the state it will be in when the next block is being executed.
             use frame_support::traits::OnInitialize;
             use nimbus_primitives::CanAuthor;
-            
+
             System::initialize(
                 &(parent_header.number + 1),
                 &parent_header.hash(),
