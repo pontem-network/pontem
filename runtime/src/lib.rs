@@ -20,6 +20,9 @@ use sp_version::RuntimeVersion;
 #[cfg(feature = "std")]
 use sp_version::NativeVersion;
 
+use cumulus_pallet_parachain_system::RelaychainBlockNumberProvider;
+use nimbus_primitives::NimbusId;
+
 // Polkadot & XCM imports
 use polkadot_parachain::primitives::Sibling;
 use xcm::v0::{MultiAsset, MultiLocation, MultiLocation::*, Junction::*, BodyId, NetworkId, Xcm};
@@ -39,7 +42,6 @@ pub use sp_runtime::BuildStorage;
 pub use pallet_timestamp::Call as TimestampCall;
 pub use pallet_balances::Call as BalancesCall;
 pub use sp_runtime::{Permill, Percent, Perbill, MultiAddress};
-pub use sp_consensus_aura::sr25519::AuthorityId as AuraId;
 pub use pallet_vesting::Call as VestingCall;
 pub use frame_support::{
     construct_runtime, parameter_types, StorageValue, match_type,
@@ -89,7 +91,7 @@ const MAXIMUM_BLOCK_WEIGHT: Weight = WEIGHT_PER_SECOND / 2;
 
 impl_opaque_keys! {
     pub struct SessionKeys {
-        pub aura: Aura,
+        pub nimbus: AuthorInherent,
     }
 }
 
@@ -364,7 +366,35 @@ impl parachain_staking::Config for Runtime {
 	type WeightInfo = parachain_staking::weights::SubstrateWeight<Runtime>;
 }
 
-impl cumulus_pallet_aura_ext::Config for Runtime {}
+// The pallet connect authors mapping, slots, and implement block executor for nimbus consensus.
+impl pallet_author_inherent::Config for Runtime {
+	type AuthorId = NimbusId;
+	type SlotBeacon = RelaychainBlockNumberProvider<Self>;
+	type AccountLookup = AuthorMapping;
+	type EventHandler = ParachainStaking;
+	type CanAuthor = AuthorFilter;
+}
+
+parameter_types! {
+	pub const DepositAmount: Balance = 1 * PONT;
+}
+// This is a simple session key manager. It should probably either work with, or be replaced
+// entirely by pallet sessions.
+// We need author mapping to connect Nimbus Ids with Account Ids, all collators should register his AuthorId.
+impl pallet_author_mapping::Config for Runtime {
+	type Event = Event;
+	type AuthorId = NimbusId;
+	type DepositCurrency = Balances;
+	type DepositAmount = DepositAmount;
+	type WeightInfo = pallet_author_mapping::weights::SubstrateWeight<Runtime>;
+}
+
+// Filter slots between collators (in nutshell author slot filter pallet chooses who's producer for each slot).
+impl pallet_author_slot_filter::Config for Runtime {
+	type Event = Event;
+	type RandomnessSource = RandomnessCollectiveFlip;
+	type PotentialAuthors = ParachainStaking;
+}
 
 impl pallet_randomness_collective_flip::Config for Runtime {}
 
@@ -502,10 +532,6 @@ impl cumulus_pallet_dmp_queue::Config for Runtime {
     type ExecuteOverweightOrigin = EnsureRoot<AccountId>;
 }
 
-impl pallet_aura::Config for Runtime {
-    type AuthorityId = AuraId;
-}
-
 /// By inheritance from Moonbeam and from Dfinance (based on validators statistic), we believe max 4125000 gas is currently enough for block.
 /// In the same time we use same 500ms Weight as Max Block Weight, from which 75% only are used for transactions.
 /// So our max gas is GAS_PER_SECOND * 0.500 * 0.65 => 4125000.
@@ -574,10 +600,11 @@ construct_runtime!(
 
         Balances: pallet_balances::{Pallet, Call, Storage, Config<T>, Event<T>} = 30,
         Vesting: pallet_vesting::{Pallet, Call, Storage, Config<T>, Event<T>},
-        Aura: pallet_aura::{Pallet, Config<T>},
-        AuraExt: cumulus_pallet_aura_ext::{Pallet, Config},
 
-        ParachainStaking: parachain_staking::{Pallet, Call, Storage, Event<T>, Config<T>} = 40,
+        ParachainStaking: parachain_staking::{Pallet, Call, Storage, Event<T>, Config<T>} = 40,        
+        AuthorInherent: pallet_author_inherent::{Pallet, Call, Storage, Inherent} = 41,
+		AuthorFilter: pallet_author_slot_filter::{Pallet, Call, Storage, Event, Config} = 42,
+		AuthorMapping: pallet_author_mapping::{Pallet, Call, Config<T>, Storage, Event<T>} = 43,
 
         // XCM helpers
         XcmpQueue: cumulus_pallet_xcmp_queue::{Pallet, Call, Storage, Event<T>} = 50,
@@ -681,28 +708,6 @@ impl_runtime_apis! {
         }
     }
 
-    impl sp_session::SessionKeys<Block> for Runtime {
-        fn generate_session_keys(seed: Option<Vec<u8>>) -> Vec<u8> {
-            SessionKeys::generate(seed)
-        }
-
-        fn decode_session_keys(
-            encoded: Vec<u8>,
-        ) -> Option<Vec<(Vec<u8>, KeyTypeId)>> {
-            SessionKeys::decode_into_raw_public_keys(&encoded)
-        }
-    }
-
-    impl sp_consensus_aura::AuraApi<Block, AuraId> for Runtime {
-        fn slot_duration() -> sp_consensus_aura::SlotDuration {
-            sp_consensus_aura::SlotDuration::from_millis(Aura::slot_duration())
-        }
-
-        fn authorities() -> Vec<AuraId> {
-            Aura::authorities()
-        }
-    }
-
     impl cumulus_primitives_core::CollectCollationInfo<Block> for Runtime {
         fn collect_collation_info() -> cumulus_primitives_core::CollationInfo {
             ParachainSystem::collect_collation_info()
@@ -763,6 +768,31 @@ impl_runtime_apis! {
         }
     }
 
+    impl nimbus_primitives::AuthorFilterAPI<Block, NimbusId> for Runtime {
+        fn can_author(
+            author: NimbusId,
+            slot: u32,
+            parent_header: &<Block as BlockT>::Header
+        ) -> bool {
+            // The Moonbeam runtimes use an entropy source that needs to do some accounting
+            // work during block initialization. Therefore we initialize it here to match
+            // the state it will be in when the next block is being executed.
+            use frame_support::traits::OnInitialize;
+            use nimbus_primitives::CanAuthor;
+            
+            System::initialize(
+                &(parent_header.number + 1),
+                &parent_header.hash(),
+                &parent_header.digest,
+                frame_system::InitKind::Inspection
+            );
+            RandomnessCollectiveFlip::on_initialize(System::block_number());
+
+            // And now the actual prediction call
+            AuthorInherent::can_author(&author, &slot)
+        }
+    }
+
     #[cfg(feature = "runtime-benchmarks")]
     impl frame_benchmarking::Benchmark<Block> for Runtime {
         fn dispatch_benchmark(
@@ -803,6 +833,6 @@ impl_runtime_apis! {
 
 cumulus_pallet_parachain_system::register_validate_block!(
     Runtime = Runtime,
-    BlockExecutor = cumulus_pallet_aura_ext::BlockExecutor::<Runtime, Executive>,
+    BlockExecutor = pallet_author_inherent::BlockExecutor::<Runtime, Executive>,
     CheckInherents = CheckInherents,
 );

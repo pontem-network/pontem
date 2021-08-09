@@ -30,9 +30,7 @@ frame-support = { default-features = false, git = 'http://github.com/paritytech/
 frame-system = { default-features = false, git = 'http://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.8' }
 frame-system-benchmarking = { default-features = false, optional = true, git = 'http://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.8' }
 frame-system-rpc-runtime-api = { default-features = false, git = 'http://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.8' }
-pallet-aura = { default-features = false, git = 'http://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.8' }
 pallet-balances = { default-features = false, git = 'http://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.8' }
-pallet-grandpa = { default-features = false, git = 'http://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.8' }
 pallet-randomness-collective-flip = { default-features = false, git = 'http://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.8' }
 pallet-sudo = { default-features = false, git = 'http://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.8' }
 pallet-timestamp = { default-features = false, git = 'http://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.8' }
@@ -43,7 +41,6 @@ pallet-vesting = { default-features = false, git = 'http://github.com/paritytech
 # Substrate Primitives dependencies
 sp-api = { default-features = false, git = 'http://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.8' }
 sp-block-builder = { default-features = false, git = 'http://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.8' }
-sp-consensus-aura = { default-features = false, version = '0.9.0', git = 'http://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.8' }
 sp-core = { default-features = false, git = 'http://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.8' }
 sp-inherents = { default-features = false, git = 'http://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.8' }
 sp-offchain = { default-features = false, git = 'http://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.8' }
@@ -60,20 +57,23 @@ xcm-executor = { default-features = false, git = 'https://github.com/paritytech/
 polkadot-parachain = { default-features = false, git = 'https://github.com/paritytech/polkadot.git', branch = 'release-v0.9.8' }
 
 # Cumulus Dependencies
-parachain-info = { default-features = false, git = 'https://github.com/paritytech/cumulus.git', branch = 'polkadot-v0.9.8' }
-cumulus-pallet-parachain-system = { default-features = false, git = 'https://github.com/paritytech/cumulus.git', branch = 'polkadot-v0.9.8' }
-cumulus-pallet-xcm = { default-features = false, git = 'https://github.com/paritytech/cumulus.git', branch = 'polkadot-v0.9.8' }
-cumulus-pallet-aura-ext = { default-features = false, git = 'https://github.com/paritytech/cumulus.git', branch = 'polkadot-v0.9.8' }
-cumulus-pallet-xcmp-queue = { default-features = false, git = 'https://github.com/paritytech/cumulus.git', branch = 'polkadot-v0.9.8' }
-cumulus-pallet-dmp-queue = { default-features = false, git = 'https://github.com/paritytech/cumulus.git', branch = 'polkadot-v0.9.8' }
-cumulus-primitives-utility = { default-features = false, git = 'https://github.com/paritytech/cumulus.git', branch = 'polkadot-v0.9.8' }
-cumulus-primitives-core = { default-features = false, git = 'https://github.com/paritytech/cumulus.git', branch = 'polkadot-v0.9.8' }
-cumulus-primitives-timestamp = { default-features = false, git = 'https://github.com/paritytech/cumulus.git', branch = 'polkadot-v0.9.8' }
+parachain-info = { default-features = false, git = 'https://github.com/purestake/cumulus', branch = 'joshy-np098' }
+cumulus-pallet-parachain-system = { default-features = false, git = 'https://github.com/purestake/cumulus', branch = 'joshy-np098' }
+cumulus-pallet-xcm = { default-features = false, git = 'https://github.com/purestake/cumulus', branch = 'joshy-np098' }
+cumulus-pallet-xcmp-queue = { default-features = false, git = 'https://github.com/purestake/cumulus', branch = 'joshy-np098' }
+cumulus-pallet-dmp-queue = { default-features = false, git = 'https://github.com/purestake/cumulus', branch = 'joshy-np098' }
+cumulus-primitives-utility = { default-features = false, git = 'https://github.com/purestake/cumulus', branch = 'joshy-np098' }
+cumulus-primitives-core = { default-features = false, git = 'https://github.com/purestake/cumulus', branch = 'joshy-np098' }
+cumulus-primitives-timestamp = { default-features = false, git = 'https://github.com/purestake/cumulus', branch = 'joshy-np098' }
+nimbus-primitives = { default-features = false, git = "https://github.com/purestake/cumulus", branch = "joshy-np098" }
+pallet-author-slot-filter =  { default-features = false, git = "https://github.com/purestake/cumulus", branch = 'joshy-np098' }
+pallet-author-inherent = { default-features = false, git = 'https://github.com/purestake/cumulus', branch = 'joshy-np098' }
 
 # local dependencies
 sp-mvm = { path = '../pallets/sp-mvm', default-features = false }
 sp-mvm-rpc-runtime = { path = '../pallets/sp-mvm/rpc/runtime', default-features = false }
 parachain-staking = { path = '../pallets/parachain-staking', default-features = false }
+pallet-author-mapping = { path = "../pallets/author-mapping", default-features = false }
 
 [features]
 default = ['std']
@@ -98,9 +98,7 @@ std = [
     'frame-support/std',
     'frame-system/std',
     'frame-system-rpc-runtime-api/std',
-    'pallet-aura/std',
     'pallet-balances/std',
-    'pallet-grandpa/std',
     'pallet-randomness-collective-flip/std',
     'pallet-sudo/std',
     'pallet-timestamp/std',
@@ -110,14 +108,12 @@ std = [
     'cumulus-pallet-parachain-system/std',
     'cumulus-pallet-xcm/std',
     'cumulus-pallet-xcmp-queue/std',
-    'cumulus-pallet-aura-ext/std',
     'cumulus-primitives-utility/std',
     'cumulus-primitives-core/std',
     'cumulus-primitives-timestamp/std',
     'pallet-vesting/std',
     'sp-api/std',
     'sp-block-builder/std',
-    'sp-consensus-aura/std',
     'sp-core/std',
     'sp-inherents/std',
     'sp-offchain/std',
@@ -129,5 +125,9 @@ std = [
     'sp-mvm/std',
     'xcm/std',
     'xcm-builder/std',
-    'xcm-executor/std'
+    'xcm-executor/std',
+    'nimbus-primitives/std',
+    'pallet-author-slot-filter/std',
+    'pallet-author-inherent/std',
+    'parachain-staking/std',
 ]

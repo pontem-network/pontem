@@ -5,7 +5,7 @@ use sc_chain_spec::{ChainSpecExtension, ChainSpecGroup};
 use sp_runtime::{traits::{IdentifyAccount, Verify}, Perbill};
 use mv_node_runtime::{
     GenesisConfig, SudoConfig, SystemConfig, BalancesConfig, WASM_BINARY, AccountId, Signature, ParachainStakingConfig,
-    ParachainInfoConfig, AuraId, AuraConfig, VestingConfig, PONT, DECIMALS, InflationInfo, Range, Balance,
+    ParachainInfoConfig, VestingConfig, PONT, DECIMALS, InflationInfo, Range, Balance, AuthorFilterConfig, AuthorMappingConfig,
 };
 use serde::{Serialize, Deserialize};
 use serde_json::json;
@@ -77,10 +77,6 @@ pub fn development_config(id: ParaId) -> Result<ChainSpec, String> {
                 wasm_binary,
                 // Sudo account
                 get_account_id_from_seed::<sr25519::Public>("Alice"),
-                vec![
-                    get_from_seed::<AuraId>("Alice"),
-                    get_from_seed::<AuraId>("Bob"),
-                ],
                 // Candidates
                 vec![
                     (
@@ -131,10 +127,6 @@ pub fn local_testnet_config(id: ParaId) -> Result<ChainSpec, String> {
                 wasm_binary,
                 // Sudo account
                 get_account_id_from_seed::<sr25519::Public>("Alice"),
-                vec![
-                    get_from_seed::<AuraId>("Alice"),
-                    get_from_seed::<AuraId>("Bob"),
-                ],
                 // Candidates
                 vec![
                     (
@@ -183,7 +175,6 @@ pub fn local_testnet_config(id: ParaId) -> Result<ChainSpec, String> {
 fn testnet_genesis(
     wasm_binary: &[u8],
     root_key: AccountId,
-    initial_authorities: Vec<AuraId>,
 	candidates: Vec<(AccountId, NimbusId, Balance)>,
 	nominations: Vec<(AccountId, AccountId, Balance)>,
     endowed_accounts: Vec<AccountId>,
@@ -209,9 +200,6 @@ fn testnet_genesis(
             // Assign network admin rights.
             key: root_key,
         },
-        aura: AuraConfig {
-            authorities: initial_authorities,
-        },
         parachain_staking: ParachainStakingConfig {
 			candidates: candidates
 				.iter()
@@ -221,7 +209,16 @@ fn testnet_genesis(
 			nominations,
 			inflation_config: pontem_inflation_config(),
 		},
-        aura_ext: Default::default(),
+        author_filter: AuthorFilterConfig {
+			eligible_ratio: sp_runtime::Percent::from_percent(50),
+		},
+		author_mapping: AuthorMappingConfig {
+			mappings: candidates
+				.iter()
+				.cloned()
+				.map(|(account_id, author_id, _)| (author_id, account_id))
+				.collect(),
+		},
         vesting: VestingConfig {
             // Move 10 PONT under vesting for each account since block 100 and till block 1000.
             vesting: endowed_accounts

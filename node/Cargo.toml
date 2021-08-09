@@ -38,7 +38,6 @@ sc-basic-authorship = { git = 'http://github.com/paritytech/substrate.git', bran
 sc-cli = { git = 'http://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.8', features = ['wasmtime'] }
 sc-client-api = { git = 'http://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.8' }
 sc-consensus = { git = 'http://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.8' }
-sc-consensus-aura = { git = 'http://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.8' }
 sc-executor = { git = 'http://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.8', features = ['wasmtime'] }
 sc-finality-grandpa = { git = 'http://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.8' }
 sc-keystore = { git = 'http://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.8' }
@@ -56,7 +55,6 @@ sp-api = { git = 'http://github.com/paritytech/substrate.git', branch = 'polkado
 sp-block-builder = { git = 'http://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.8' }
 sp-blockchain = { git = 'http://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.8' }
 sp-consensus = { git = 'http://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.8' }
-sp-consensus-aura = { git = 'http://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.8' }
 sp-core = { git = 'http://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.8' }
 sp-finality-grandpa = { git = 'http://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.8' }
 sp-inherents = { git = 'http://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.8' }
@@ -69,13 +67,15 @@ sp-keystore = { git = 'http://github.com/paritytech/substrate.git', branch = 'po
 nimbus-primitives = { git = "https://github.com/purestake/cumulus", branch = "joshy-np098" }
 
 # Cumulus dependencies
-cumulus-client-consensus-aura = { git = 'http://github.com/paritytech/cumulus.git', branch = 'polkadot-v0.9.8' }
-cumulus-client-consensus-common = { git = 'http://github.com/paritytech/cumulus.git', branch = 'polkadot-v0.9.8' }
-cumulus-client-network = { git = 'http://github.com/paritytech/cumulus.git', branch = 'polkadot-v0.9.8' }
-cumulus-client-service = { git = 'http://github.com/paritytech/cumulus.git', branch = 'polkadot-v0.9.8' }
-cumulus-client-cli = { git = 'http://github.com/paritytech/cumulus.git', branch = 'polkadot-v0.9.8' }
-cumulus-primitives-core = { git = 'http://github.com/paritytech/cumulus.git', branch = 'polkadot-v0.9.8' }
-cumulus-primitives-parachain-inherent = { git = 'http://github.com/paritytech/cumulus.git', branch = 'polkadot-v0.9.8' }
+cumulus-client-consensus-relay-chain = { git = "https://github.com/purestake/cumulus", branch = "joshy-np098" }
+cumulus-client-consensus-common = { git = "https://github.com/purestake/cumulus", branch = 'joshy-np098' }
+cumulus-client-network = { git = 'https://github.com/purestake/cumulus', branch = 'joshy-np098' }
+cumulus-client-service = { git = 'https://github.com/purestake/cumulus', branch = 'joshy-np098' }
+cumulus-client-cli = { git = 'https://github.com/purestake/cumulus', branch = 'joshy-np098' }
+cumulus-primitives-core = { git = 'https://github.com/purestake/cumulus', branch = 'joshy-np098' }
+cumulus-primitives-parachain-inherent = { git = 'https://github.com/purestake/cumulus', branch = 'joshy-np098' }
+nimbus-consensus = { git = "https://github.com/purestake/cumulus", branch = "joshy-np098" }
+
 
 # Polkadot dependencies
 polkadot-primitives = { git = 'http://github.com/paritytech/polkadot.git', branch = 'release-v0.9.8' }
