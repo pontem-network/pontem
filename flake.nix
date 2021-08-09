@@ -8,7 +8,13 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
     utils.url = "github:numtide/flake-utils";
 
-    move-tools.url = "github:pontem-network/move-tools";
+    move-tools = {
+      url = "github:pontem-network/move-tools"; 
+      # Nested flake locks are not working correctly for the time being 
+      # (Nix PR fixing this is here: https://github.com/NixOS/nix/pull/4641)
+      # Thus we rely on flake-compat. 
+      flake = false;
+    };
 
   };
 
@@ -19,6 +25,8 @@
         fenixArch = fenix.packages.${system};
         rustTargets = fenixArch.targets;
         llvmPackagesR = pkgs.llvmPackages_12;
+
+        dove = (import move-tools).defaultPackage."${system}";
 
         rustToolchain = fenixArch.stable;
         rustToolchainWasm = rustTargets.wasm32-unknown-unknown.latest;
