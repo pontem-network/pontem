@@ -49,7 +49,7 @@ pub use frame_support::{
 =======
 pub use sp_runtime::{Permill, Perbill, ModuleId};
 pub use frame_support::{
-    construct_runtime, parameter_types, ord_parameter_types, StorageValue,
+    construct_runtime, parameter_types, StorageValue,
     traits::{KeyOwnerProofSystem, Randomness, Contains},
 >>>>>>> 795bcd5 (added treasury, democracy, scheduler pallets)
     weights::{
