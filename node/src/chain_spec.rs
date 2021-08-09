@@ -12,6 +12,7 @@ use mv_node_runtime::{
     AuthorMappingConfig,
     primitives::{AccountId, Signature, Balance},
     constants::currency::{PONT, DECIMALS},
+    primitives::{AccountId, Signature},
 };
 use serde::{Serialize, Deserialize};
 use serde_json::json;
@@ -241,6 +242,9 @@ fn testnet_genesis(
                 .map(|k| (k, 100, 1000, 90_000 * PONT)) // K - address, 100 - when vesting starts, 1000 - how much blocks for vesting, 10 * PONT - free balance.
                 .collect(),
         },
+        pallet_treasury: None,
+        pallet_democracy: None,
+        pallet_scheduler: None,
     }
 }
 

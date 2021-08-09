@@ -6,6 +6,7 @@
 #[cfg(feature = "std")]
 include!(concat!(env!("OUT_DIR"), "/wasm_binary.rs"));
 
+use frame_system::{EnsureNever, EnsureRoot};
 use sp_std::prelude::*;
 use sp_core::OpaqueMetadata;
 use sp_runtime::{
@@ -41,9 +42,16 @@ pub use pallet_timestamp::Call as TimestampCall;
 pub use pallet_balances::Call as BalancesCall;
 pub use sp_runtime::{Permill, Percent, Perbill, MultiAddress};
 pub use pallet_vesting::Call as VestingCall;
+<<<<<<< HEAD
 pub use frame_support::{
     construct_runtime, parameter_types, StorageValue, match_type,
     traits::{KeyOwnerProofSystem, Randomness, All, IsInVec},
+=======
+pub use sp_runtime::{Permill, Perbill, ModuleId};
+pub use frame_support::{
+    construct_runtime, parameter_types, ord_parameter_types, StorageValue,
+    traits::{KeyOwnerProofSystem, Randomness, Contains},
+>>>>>>> 795bcd5 (added treasury, democracy, scheduler pallets)
     weights::{
         Weight, IdentityFee, DispatchClass,
         constants::{
@@ -196,6 +204,96 @@ impl frame_system::Config for Runtime {
     /// What to do if the user wants the code set to something. Just use `()` unless you are in
     /// cumulus.
     type OnSetCode = cumulus_pallet_parachain_system::ParachainSetCode<Self>;
+}
+
+parameter_types! {
+    pub const LaunchPeriod: BlockNumber = 2;
+    pub const VotingPeriod: BlockNumber = 2;
+    pub const FastTrackVotingPeriod: BlockNumber = 2;
+    pub const EnactmentPeriod: BlockNumber = 2;
+    pub const CooloffPeriod: BlockNumber = 2;
+
+    pub const MinimumDeposit: Balance = 1;
+    pub const PreimageByteDeposit: BlockNumber = 0;
+
+    pub const MaxVotes: u32 = 100;
+    pub const MaxProposals: u32 = 100;
+    pub const InstantAllowed: bool = false;
+}
+
+impl pallet_democracy::Config for Runtime {
+    type Proposal = Call;
+    type Event = Event;
+    type Currency = pallet_balances::Pallet<Self>;
+    type EnactmentPeriod = EnactmentPeriod;
+    type LaunchPeriod = LaunchPeriod;
+    type VotingPeriod = VotingPeriod;
+    type FastTrackVotingPeriod = FastTrackVotingPeriod;
+    type MinimumDeposit = MinimumDeposit;
+
+    // STOPSHIP: needs to be reconfigured!
+
+    type ExternalOrigin = EnsureRoot<AccountId>;
+    type ExternalMajorityOrigin = EnsureRoot<AccountId>;
+    type ExternalDefaultOrigin = EnsureRoot<AccountId>;
+    type FastTrackOrigin = EnsureRoot<AccountId>;
+    type CancellationOrigin = EnsureRoot<AccountId>;
+    type BlacklistOrigin = EnsureRoot<AccountId>;
+    type CancelProposalOrigin = EnsureRoot<AccountId>;
+    type VetoOrigin = EnsureNever<AccountId>;
+    type OperationalPreimageOrigin = EnsureNever<AccountId>;
+
+    type CooloffPeriod = CooloffPeriod;
+    type PreimageByteDeposit = PreimageByteDeposit;
+    type Slash = ();
+    type InstantOrigin = EnsureRoot<AccountId>;
+    type InstantAllowed = InstantAllowed;
+    type Scheduler = Scheduler;
+    type MaxVotes = MaxVotes;
+    type PalletsOrigin = OriginCaller;
+    type WeightInfo = ();
+    type MaxProposals = MaxProposals;
+}
+
+parameter_types! {
+    pub const SpendPeriod: BlockNumber = 2;
+    pub const BountyUpdatePeriod: BlockNumber = 20;
+    pub const TreasuryModuleId: ModuleId = ModuleId(*b"py/trsry");
+    pub const ProposalBond: Permill = Permill::from_percent(5);
+    pub const ProposalBondMinimum: Balance = 1;
+    pub const Burn: Permill = Permill::from_percent(50);
+    pub const BountyCuratorDeposit: Permill = Permill::from_percent(50);
+    pub const MaxApprovals: u32 = 100;
+}
+
+impl pallet_treasury::Config for Runtime {
+    type Currency = pallet_balances::Pallet<Self>;
+    type ApproveOrigin = EnsureRoot<AccountId>;
+    type RejectOrigin = EnsureRoot<AccountId>;
+    type ModuleId = TreasuryModuleId;
+    type Event = Event;
+    type OnSlash = ();
+    type ProposalBond = ProposalBond;
+    type ProposalBondMinimum = ProposalBondMinimum;
+    type SpendPeriod = SpendPeriod;
+    type Burn = Burn;
+    type BurnDestination = (); // Just gets burned.
+    type WeightInfo = ();
+    type SpendFunds = ();
+}
+
+parameter_types! {
+    pub MaximumSchedulerWeight: Weight = Perbill::from_percent(80) * BlockWeights::get().max_block;
+}
+impl pallet_scheduler::Config for Runtime {
+    type Event = Event;
+    type Origin = Origin;
+    type PalletsOrigin = OriginCaller;
+    type Call = Call;
+    type MaximumWeight = MaximumSchedulerWeight;
+    type ScheduleOrigin = EnsureRoot<AccountId>;
+    type MaxScheduledPerBlock = ();
+    type WeightInfo = ();
 }
 
 parameter_types! {
@@ -575,6 +673,7 @@ construct_runtime!(
         NodeBlock = generic::Block<Header, sp_runtime::OpaqueExtrinsic>,
         UncheckedExtrinsic = UncheckedExtrinsic
     {
+<<<<<<< HEAD
         System: frame_system::{Pallet, Call, Config, Storage, Event<T>},
         RandomnessCollectiveFlip: pallet_randomness_collective_flip::{Pallet, Storage},
         Timestamp: pallet_timestamp::{Pallet, Call, Storage, Inherent},
@@ -602,6 +701,22 @@ construct_runtime!(
         Mvm: sp_mvm::{Pallet, Call, Storage, Config<T>, Event<T>},
 
         MultiSig: pallet_multisig::{Pallet, Call, Origin<T>, Storage, Event<T>},
+=======
+        System: frame_system::{Module, Call, Config, Storage, Event<T>},
+        RandomnessCollectiveFlip: pallet_randomness_collective_flip::{Module, Call, Storage},
+        Timestamp: pallet_timestamp::{Module, Call, Storage, Inherent},
+        Aura: pallet_aura::{Module, Config<T> /* ,Inherent */},
+        Grandpa: pallet_grandpa::{Module, Call, Storage, Config, Event},
+        Balances: pallet_balances::{Module, Call, Storage, Config<T>, Event<T>},
+        TransactionPayment: pallet_transaction_payment::{Module, Storage},
+        Sudo: pallet_sudo::{Module, Call, Config<T>, Storage, Event<T>},
+        Mvm: sp_mvm::{Module, Call, Config<T>, Storage, Event<T>},
+        Vesting: pallet_vesting::{Module, Call, Storage, Config<T>, Event<T>},
+        MultiSig:  pallet_multisig::{Module, Call, Storage, Event<T>},
+        Scheduler: pallet_scheduler::{Call, Storage, Config, Event<T>},
+        Treasury: pallet_treasury::{Call, Storage, Config, Event<T>},
+        Democracy: pallet_democracy::{Call, Storage, Config, Event<T>},
+>>>>>>> 795bcd5 (added treasury, democracy, scheduler pallets)
     }
 );
 
