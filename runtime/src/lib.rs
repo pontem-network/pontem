@@ -42,16 +42,11 @@ pub use pallet_timestamp::Call as TimestampCall;
 pub use pallet_balances::Call as BalancesCall;
 pub use sp_runtime::{Permill, Percent, Perbill, MultiAddress};
 pub use pallet_vesting::Call as VestingCall;
-<<<<<<< HEAD
+
+pub use sp_runtime::{Permill, Perbill, ModuleId};
 pub use frame_support::{
     construct_runtime, parameter_types, StorageValue, match_type,
     traits::{KeyOwnerProofSystem, Randomness, All, IsInVec},
-=======
-pub use sp_runtime::{Permill, Perbill, ModuleId};
-pub use frame_support::{
-    construct_runtime, parameter_types, StorageValue,
-    traits::{KeyOwnerProofSystem, Randomness, Contains},
->>>>>>> 795bcd5 (added treasury, democracy, scheduler pallets)
     weights::{
         Weight, IdentityFee, DispatchClass,
         constants::{
@@ -673,7 +668,7 @@ construct_runtime!(
         NodeBlock = generic::Block<Header, sp_runtime::OpaqueExtrinsic>,
         UncheckedExtrinsic = UncheckedExtrinsic
     {
-<<<<<<< HEAD
+
         System: frame_system::{Pallet, Call, Config, Storage, Event<T>},
         RandomnessCollectiveFlip: pallet_randomness_collective_flip::{Pallet, Storage},
         Timestamp: pallet_timestamp::{Pallet, Call, Storage, Inherent},
@@ -701,22 +696,11 @@ construct_runtime!(
         Mvm: sp_mvm::{Pallet, Call, Storage, Config<T>, Event<T>},
 
         MultiSig: pallet_multisig::{Pallet, Call, Origin<T>, Storage, Event<T>},
-=======
-        System: frame_system::{Module, Call, Config, Storage, Event<T>},
-        RandomnessCollectiveFlip: pallet_randomness_collective_flip::{Module, Call, Storage},
-        Timestamp: pallet_timestamp::{Module, Call, Storage, Inherent},
-        Aura: pallet_aura::{Module, Config<T> /* ,Inherent */},
-        Grandpa: pallet_grandpa::{Module, Call, Storage, Config, Event},
-        Balances: pallet_balances::{Module, Call, Storage, Config<T>, Event<T>},
-        TransactionPayment: pallet_transaction_payment::{Module, Storage},
-        Sudo: pallet_sudo::{Module, Call, Config<T>, Storage, Event<T>},
-        Mvm: sp_mvm::{Module, Call, Config<T>, Storage, Event<T>},
-        Vesting: pallet_vesting::{Module, Call, Storage, Config<T>, Event<T>},
-        MultiSig:  pallet_multisig::{Module, Call, Storage, Event<T>},
-        Scheduler: pallet_scheduler::{Call, Storage, Config, Event<T>},
-        Treasury: pallet_treasury::{Call, Storage, Config, Event<T>},
-        Democracy: pallet_democracy::{Call, Storage, Config, Event<T>},
->>>>>>> 795bcd5 (added treasury, democracy, scheduler pallets)
+
+        Scheduler: pallet_scheduler::{Module, Call, Storage, Config, Event<T>},
+        Treasury: pallet_treasury::{Module, Call, Storage, Config, Event<T>},
+        Democracy: pallet_democracy::{Module, Call, Storage, Config, Event<T>},
+
     }
 );
 
