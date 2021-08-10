@@ -207,11 +207,11 @@ impl frame_system::Config for Runtime {
 }
 
 parameter_types! {
-    pub const LaunchPeriod: BlockNumber = 2;
-    pub const VotingPeriod: BlockNumber = 2;
-    pub const FastTrackVotingPeriod: BlockNumber = 2;
-    pub const EnactmentPeriod: BlockNumber = 2;
-    pub const CooloffPeriod: BlockNumber = 2;
+    pub const LaunchPeriod: BlockNumber = 20;
+    pub const VotingPeriod: BlockNumber = 20;
+    pub const FastTrackVotingPeriod: BlockNumber = 20;
+    pub const EnactmentPeriod: BlockNumber = 20;
+    pub const CooloffPeriod: BlockNumber = 20;
 
     pub const MinimumDeposit: Balance = 1;
     pub const PreimageByteDeposit: BlockNumber = 0;
@@ -256,7 +256,7 @@ impl pallet_democracy::Config for Runtime {
 }
 
 parameter_types! {
-    pub const SpendPeriod: BlockNumber = 2;
+    pub const SpendPeriod: BlockNumber = 20;
     pub const BountyUpdatePeriod: BlockNumber = 20;
     pub const TreasuryModuleId: ModuleId = ModuleId(*b"py/trsry");
     pub const ProposalBond: Permill = Permill::from_percent(5);
