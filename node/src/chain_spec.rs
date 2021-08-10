@@ -232,22 +232,24 @@ fn testnet_genesis(
 
 // Pontem inflation.
 pub fn pontem_inflation_config() -> InflationInfo<Balance> {
+    // Let's say we have 100M PONT coins.
     InflationInfo {
+        // How much staked PONTs we expect.
         expect: Range {
-            min: 100_000 * PONT,
-            ideal: 200_000 * PONT,
-            max: 500_000 * PONT,
+            min: 10_000_000 * PONT,   // We expect to have staked at least 10M PONT coins.
+            ideal: 25_000_000 * PONT, // We expect to have staked ideal 25M PONT coins.
+            max: 50_000_000 * PONT,   // We expect to have staked maximum 50M PONT coins.
         },
         annual: Range {
-            min: Perbill::from_percent(4),
-            ideal: Perbill::from_percent(5),
-            max: Perbill::from_percent(5),
+            min: Perbill::from_percent(10),   // We expect minimum inflation is 10%.
+            ideal: Perbill::from_percent(15), // We expect ideal inflation is 15%.
+            max: Perbill::from_percent(20),   // We expect max inflation is 20%.
         },
         // 8766 rounds (hours) in a year
         round: Range {
-            min: Perbill::from_parts(Perbill::from_percent(4).deconstruct() / 8766),
-            ideal: Perbill::from_parts(Perbill::from_percent(5).deconstruct() / 8766),
-            max: Perbill::from_parts(Perbill::from_percent(5).deconstruct() / 8766),
+            min: Perbill::from_parts(Perbill::from_percent(10).deconstruct() / 8766),
+            ideal: Perbill::from_parts(Perbill::from_percent(15).deconstruct() / 8766),
+            max: Perbill::from_parts(Perbill::from_percent(20).deconstruct() / 8766),
         },
     }
 }
