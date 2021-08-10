@@ -37,12 +37,11 @@
 		{
 			"bin": "./target/release/mv-node",
 			"id": "2000",
-			"balance": "1000000000000000000000",
 			"nodes": [
 				{
-					"wsPort": 9988,
-					"port": 31200,
-					"flags": ["--alice", "--", "--execution=wasm"]
+					"wsPort": 9946,
+					"port": 40335,
+					"flags": ["--keystore-path=~/.pontem/keystore-1", "--alice", "--", "--execution=wasm"]
 				}
 			]
 		}
