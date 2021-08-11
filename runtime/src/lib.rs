@@ -10,9 +10,9 @@ use sp_std::prelude::*;
 use sp_core::{crypto::KeyTypeId, OpaqueMetadata};
 use sp_runtime::{
     traits::{
-        ConvertInto, AccountIdLookup, BlakeTwo256, Block as BlockT, IdentifyAccount, Verify,
+        ConvertInto, AccountIdLookup, BlakeTwo256, Block as BlockT,
     },
-    ApplyExtrinsicResult, generic, create_runtime_str, impl_opaque_keys, MultiSignature,
+    ApplyExtrinsicResult, generic, create_runtime_str, impl_opaque_keys,
     transaction_validity::{TransactionValidity, TransactionSource},
 };
 use sp_api::impl_runtime_apis;
@@ -54,35 +54,14 @@ pub use frame_support::{
 use frame_system::limits::{BlockLength, BlockWeights};
 
 /// Import the Move-pallet.
-pub use sp_mvm;
 pub use sp_mvm::gas::{GasWeightMapping};
 pub use sp_mvm_rpc_runtime::types::MVMApiEstimation;
 
-/// An index to a block.
-pub type BlockNumber = u32;
+pub mod constants;
+use constants::{currency::*, time::*};
+pub mod primitives;
+use primitives::*;
 
-/// Alias to 512-bit hash when used in the context of a transaction signature on the chain.
-pub type Signature = MultiSignature;
-
-/// Some way of identifying an account on the chain. We intentionally make it equivalent
-/// to the public key of our transaction signing scheme.
-pub type AccountId = <<Signature as Verify>::Signer as IdentifyAccount>::AccountId;
-
-/// The type for looking up accounts. We don't expect more than 4 billion of them, but you
-/// never know...
-pub type AccountIndex = u32;
-
-/// Balance of an account.
-pub type Balance = u128;
-
-/// Index of a transaction in the chain.
-pub type Index = u32;
-
-/// A hash of some data used by the chain.
-pub type Hash = sp_core::H256;
-
-/// Digest item type.
-pub type DigestItem = generic::DigestItem<Hash>;
 /// We allow for 0.5 seconds of compute with a 6 second average block time.
 const MAXIMUM_BLOCK_WEIGHT: Weight = WEIGHT_PER_SECOND / 2;
 
@@ -110,27 +89,10 @@ pub const VERSION: RuntimeVersion = RuntimeVersion {
     transaction_version: 1,
 };
 
-/// This determines the average expected block time that we are targeting.
-/// Blocks will be produced at a minimum duration defined by `SLOT_DURATION`.
-/// `SLOT_DURATION` is picked up by `pallet_timestamp` which is in turn picked
-/// up by `pallet_aura` to implement `fn slot_duration()`.
-///
-/// Change this to adjust the block time.
-pub const MILLISECS_PER_BLOCK: u64 = 6000;
-
-pub const SLOT_DURATION: u64 = MILLISECS_PER_BLOCK;
-
-// Time is measured by number of blocks.
-pub const MINUTES: BlockNumber = 60_000 / (MILLISECS_PER_BLOCK as BlockNumber);
-pub const HOURS: BlockNumber = MINUTES * 60;
-pub const DAYS: BlockNumber = HOURS * 24;
-
 /// 1 in 4 blocks (on average) will be primary babe blocks
 pub const PRIMARY_PROBABILITY: (u64, u64) = (1, 4);
 
 // Currencies constants.
-pub const DECIMALS: u32 = 18;
-pub const PONT: Balance = u128::pow(10, DECIMALS);
 pub const UNIT: Balance = PONT;
 pub const MILLIUNIT: Balance = UNIT / 1_000;
 pub const MICROUNIT: Balance = MILLIUNIT / 1_000;
@@ -245,12 +207,12 @@ impl pallet_timestamp::Config for Runtime {
 }
 
 parameter_types! {
-    pub const ExistentialDeposit: u128 = 1 * MILLIUNIT;
-    pub const TransferFee: u128 = 1 * MILLIUNIT;
-    pub const CreationFee: u128 = 1 * MILLIUNIT;
-    pub const TransactionByteFee: u128 = 1 * MILLIUNIT;
+    pub const ExistentialDeposit: u64 = 500;
+    pub const TransferFee: u64 = 1 * MILLIUNIT;
+    pub const CreationFee: u64 = 1 * MILLIUNIT;
+    pub const TransactionByteFee: u64 = 1 * MILLIUNIT;
     // 1 PONT.
-    pub const MinVestedTransfer: Balance = PONT;
+    pub const MinVestedTransfer: Balance = 1 * PONT;
 }
 
 impl pallet_vesting::Config for Runtime {
@@ -375,7 +337,7 @@ parameter_types! {
     // One XCM operation is 1_000_000 weight - almost certainly a conservative estimate.
     pub UnitWeightCost: Weight = 1_000_000;
     // One UNIT buys 1 second of weight.
-    pub const WeightPrice: (MultiLocation, u128) = (X1(Parent), UNIT);
+    pub const WeightPrice: (MultiLocation, u128) = (X1(Parent), UNIT as u128);
 }
 
 match_type! {
@@ -450,6 +412,28 @@ impl cumulus_pallet_dmp_queue::Config for Runtime {
 
 impl pallet_aura::Config for Runtime {
     type AuthorityId = AuraId;
+}
+
+parameter_types! {
+    pub const MultisigCostPerSig: Balance = 500;
+    pub const MultisigCostPerFact: Balance = 500;
+    pub const MaxSigners: u16 = 16;
+}
+
+impl pallet_multisig::Config for Runtime {
+    type Event = Event;
+
+    type Call = Call;
+
+    type Currency = Balances;
+
+    type MaxSignatories = MaxSigners;
+
+    type DepositBase = MultisigCostPerSig;
+
+    type DepositFactor = MultisigCostPerFact;
+
+    type WeightInfo = ();
 }
 
 /// By inheritance from Moonbeam and from Dfinance (based on validators statistic), we believe max 4125000 gas is currently enough for block.
@@ -530,7 +514,9 @@ construct_runtime!(
         DmpQueue: cumulus_pallet_dmp_queue::{Pallet, Call, Storage, Event<T>} = 53,
 
         // Move VM
-        Mvm: sp_mvm::{Pallet, Call, Storage, Event<T>},
+        Mvm: sp_mvm::{Pallet, Call, Storage, Config<T>, Event<T>},
+
+        MultiSig: pallet_multisig::{Pallet, Call, Storage, Event<T>},
     }
 );
 

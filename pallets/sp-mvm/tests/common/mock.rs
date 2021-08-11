@@ -8,13 +8,15 @@ use frame_support::{
     parameter_types,
     weights::{Weight, constants::WEIGHT_PER_SECOND},
 };
+use std::include_bytes;
 use frame_support::traits::{OnInitialize, OnFinalize};
 use sp_runtime::traits::{BlakeTwo256, IdentityLookup};
 use sp_runtime::{testing::Header};
-use move_vm::data::Oracle;
 
 use super::addr::origin_ps_acc;
 use super::addr::root_ps_acc;
+use super::addr::alice_acc;
+use super::vm_config::build as build_vm_config;
 
 type UncheckedExtrinsic = frame_system::mocking::MockUncheckedExtrinsic<Test>;
 type Block = frame_system::mocking::MockBlock<Test>;
@@ -23,7 +25,7 @@ type Block = frame_system::mocking::MockBlock<Test>;
 pub const INITIAL_BALANCE: <Test as balances::Config>::Balance = 42000;
 
 /// Balance of an account.
-pub type Balance = u128;
+pub type Balance = u64;
 
 // Unit = the base number of indivisible units for balances
 pub const UNIT: Balance = 1_000_000_000_000;
@@ -41,6 +43,7 @@ frame_support::construct_runtime!(
         Timestamp: timestamp::{Pallet, Call, Storage, Inherent},
         Balances: balances::{Pallet, Call, Storage, Config<T>, Event<T>},
         Mvm: sp_mvm::{Pallet, Call, Storage, Event<T>},
+        Multisig: pallet_multisig::{Pallet, Call, Storage, Event<T>},
         // Sudo: pallet_sudo::{Module, Call, Config<T>, Storage, Event<T>},
     }
 );
@@ -117,10 +120,10 @@ impl timestamp::Config for Test {
 // --- balances --- //
 
 parameter_types! {
-    pub const ExistentialDeposit: u128 = 1 * MILLIUNIT;
-    pub const TransferFee: u128 = 1 * MILLIUNIT;
-    pub const CreationFee: u128 = 1 * MILLIUNIT;
-    pub const TransactionByteFee: u128 = 1 * MILLIUNIT;
+    pub const ExistentialDeposit: u64 = 1;
+    pub const TransferFee: u64 = 1 * MILLIUNIT;
+    pub const CreationFee: u64 = 1 * MILLIUNIT;
+    pub const TransactionByteFee: u64 = 1 * MILLIUNIT;
     pub const MaxLocks: u32 = 50;
     pub const MaxReserves: u32 = 50;
 }
@@ -128,7 +131,7 @@ parameter_types! {
 impl balances::Config for Test {
     type MaxLocks = MaxLocks;
     /// The type for recording an account's balance.
-    type Balance = u128;
+    type Balance = Balance;
     /// The ubiquitous event type.
     type Event = Event;
     type DustRemoval = ();
@@ -147,19 +150,25 @@ impl sp_mvm::Config for Test {
     type GasWeightMapping = MoveVMGasWeightMapping;
 }
 
+parameter_types! {
+    pub const DepositBase: u64 = 0;
+    pub const DepositFactor: u64 = 0;
+    pub const MaxSignatories: u16 = 16;
+}
+
+impl pallet_multisig::Config for Test {
+    type Event = Event;
+    type Call = Call;
+    type Currency = Balances;
+    type DepositBase = DepositBase;
+    type DepositFactor = DepositFactor;
+    type MaxSignatories = MaxSignatories;
+    type WeightInfo = ();
+}
+
 pub type Sys = system::Pallet<Test>;
 pub type Time = timestamp::Pallet<Test>;
 pub type MoveEvent = sp_mvm::Event<Test>;
-
-// TODO: use this `MockOracle` instead of the real one
-#[derive(Clone, Copy, Default)]
-pub struct MockOracle(pub Option<u128>);
-
-impl Oracle for MockOracle {
-    fn get_price(&self, _ticker: &str) -> Option<u128> {
-        self.0
-    }
-}
 
 /// Build genesis storage according to the mock runtime.
 pub fn new_test_ext() -> sp_io::TestExternalities {
@@ -167,7 +176,7 @@ pub fn new_test_ext() -> sp_io::TestExternalities {
         .build_storage::<Test>()
         .expect("Frame system builds valid default genesis config");
     /*
-    let negative = <balances::Module<T> as Currency<T::AccountId>>::withdraw(
+    let negative = <balances::Pallet<T> as Currency<T::AccountId>>::withdraw(
         &address,
         amount.try_into().ok().unwrap(),
         WithdrawReasons::RESERVE,
@@ -180,6 +189,7 @@ pub fn new_test_ext() -> sp_io::TestExternalities {
         balances: vec![
             (root_ps_acc(), INITIAL_BALANCE),
             (origin_ps_acc(), INITIAL_BALANCE),
+            (alice_acc(), INITIAL_BALANCE),
         ],
         // balances: Vec::<(
         //     <Test as system::Config>::AccountId,
@@ -187,7 +197,19 @@ pub fn new_test_ext() -> sp_io::TestExternalities {
         // )>::new(),
     }
     .assimilate_storage(&mut sys)
-    .expect("Pallet balances storage can be assimilated");
+    .expect("Pallet balances storage can't be assimilated");
+
+    let vm_config = build_vm_config();
+
+    sp_mvm::GenesisConfig::<Test> {
+        stdlib: include_bytes!("../assets/stdlib/artifacts/bundles/move-stdlib.pac").to_vec(),
+        init_module: vm_config.0.clone(),
+        init_func: vm_config.1.clone(),
+        init_args: vm_config.2.clone(),
+        ..Default::default()
+    }
+    .assimilate_storage(&mut sys)
+    .expect("Pallet mvm storage can't be assimilated");
 
     sys.into()
 }

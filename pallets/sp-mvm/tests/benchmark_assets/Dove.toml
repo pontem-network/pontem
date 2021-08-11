@@ -2,5 +2,5 @@
 name = "benchmark_assets"
 
 dependencies = [
-    { git = "https://github.com/pontem-network/move-stdlib.git", rev = "0fb6bf83ca3c3a826f0df59ebbe62296515ca0ef" }
+    { git = "https://github.com/pontem-network/move-stdlib.git", rev = "7f200e70d2fc98863ecc8e004e9ee2255e97bf5a" }
 ]

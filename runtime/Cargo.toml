@@ -36,6 +36,7 @@ pallet-grandpa = { default-features = false, git = 'http://github.com/paritytech
 pallet-randomness-collective-flip = { default-features = false, git = 'http://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.8' }
 pallet-sudo = { default-features = false, git = 'http://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.8' }
 pallet-timestamp = { default-features = false, git = 'http://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.8' }
+pallet-multisig = { default-features = false, git = 'http://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.8' }
 pallet-transaction-payment = { default-features = false, git = 'http://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.8' }
 pallet-transaction-payment-rpc-runtime-api = { default-features = false, git = 'http://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.8' }
 pallet-vesting = { default-features = false, git = 'http://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.8' }
@@ -114,6 +115,7 @@ std = [
     'cumulus-primitives-core/std',
     'cumulus-primitives-timestamp/std',
     'pallet-vesting/std',
+	"pallet-multisig/std",
     'sp-api/std',
     'sp-block-builder/std',
     'sp-consensus-aura/std',

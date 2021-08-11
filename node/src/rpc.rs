@@ -7,7 +7,9 @@
 
 use std::sync::Arc;
 
-use mv_node_runtime::{AccountId, Balance, Index};
+use mv_node_runtime::{
+    primitives::{AccountId, Balance, Index},
+};
 use sp_api::ProvideRuntimeApi;
 use sp_blockchain::HeaderBackend;
 use sp_block_builder::BlockBuilder;

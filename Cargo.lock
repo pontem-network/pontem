@@ -470,7 +470,15 @@ checksum = "904dfeac50f3cdaba28fc6f57fdcddb75f49ed61346676a78c4ffe55877802fd"
 [[package]]
 name = "bcs"
 version = "0.1.1"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=1c94891be56ec67eb04a8d1bd21775219d526f48#1c94891be56ec67eb04a8d1bd21775219d526f48"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b#231b333e6830a50cadbf6b338ca4a7f33216522b"
+dependencies = [
+ "alt_serde",
+]
+
+[[package]]
+name = "bcs"
+version = "0.1.1"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe#e84b6eab01fb6e2520d86ba6a5fe9466404b12fe"
 dependencies = [
  "alt_serde",
 ]
@@ -503,7 +511,7 @@ dependencies = [
  "futures 0.3.15",
  "hex",
  "log",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "parking_lot 0.11.1",
  "sc-client-api",
  "sc-keystore",
@@ -535,7 +543,7 @@ dependencies = [
  "jsonrpc-derive 15.1.0",
  "jsonrpc-pubsub 15.1.0",
  "log",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "sc-rpc",
  "serde",
  "serde_json",
@@ -548,7 +556,7 @@ name = "beefy-primitives"
 version = "0.1.0"
 source = "git+https://github.com/paritytech/grandpa-bridge-gadget?branch=polkadot-v0.9.8#55ae3329847e0bbde51c9d45991d99f444777555"
 dependencies = [
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "sp-api",
  "sp-application-crypto",
  "sp-core",
@@ -592,22 +600,12 @@ checksum = "cf1de2fe8c75bc145a2f577add951f8134889b4795d47466a54a5c846d691693"
 
 [[package]]
 name = "bitvec"
-version = "0.17.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "41262f11d771fd4a61aa3ce019fca363b4b6c282fca9da2a31186d3965a47a5c"
-dependencies = [
- "either",
- "radium 0.3.0",
-]
-
-[[package]]
-name = "bitvec"
 version = "0.20.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7774144344a4faa177370406a7ff5f1da24303817368584c6206c8303eb07848"
 dependencies = [
  "funty",
- "radium 0.6.2",
+ "radium",
  "tap",
  "wyz",
 ]
@@ -733,9 +731,17 @@ dependencies = [
 [[package]]
 name = "borrow-graph"
 version = "0.0.1"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=1c94891be56ec67eb04a8d1bd21775219d526f48#1c94891be56ec67eb04a8d1bd21775219d526f48"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b#231b333e6830a50cadbf6b338ca4a7f33216522b"
 dependencies = [
- "mirai-annotations",
+ "mirai-annotations 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
+]
+
+[[package]]
+name = "borrow-graph"
+version = "0.0.1"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe#e84b6eab01fb6e2520d86ba6a5fe9466404b12fe"
+dependencies = [
+ "mirai-annotations 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe)",
 ]
 
 [[package]]
@@ -745,7 +751,7 @@ source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a
 dependencies = [
  "finality-grandpa",
  "frame-support",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "serde",
  "sp-core",
  "sp-finality-grandpa",
@@ -758,12 +764,12 @@ name = "bp-messages"
 version = "0.1.0"
 source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
- "bitvec 0.20.4",
+ "bitvec",
  "bp-runtime",
  "frame-support",
  "frame-system",
  "impl-trait-for-tuples",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "serde",
  "sp-std",
 ]
@@ -777,7 +783,7 @@ dependencies = [
  "bp-runtime",
  "frame-support",
  "frame-system",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "sp-api",
  "sp-core",
  "sp-runtime",
@@ -794,7 +800,7 @@ dependencies = [
  "bp-polkadot-core",
  "bp-runtime",
  "frame-support",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "smallvec 1.6.1",
  "sp-api",
  "sp-runtime",
@@ -810,7 +816,7 @@ dependencies = [
  "frame-support",
  "hash-db",
  "num-traits",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "sp-core",
  "sp-io",
  "sp-runtime",
@@ -827,7 +833,7 @@ dependencies = [
  "bp-header-chain",
  "ed25519-dalek",
  "finality-grandpa",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "sp-application-crypto",
  "sp-finality-grandpa",
  "sp-runtime",
@@ -843,7 +849,7 @@ dependencies = [
  "bp-polkadot-core",
  "bp-rococo",
  "bp-runtime",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "sp-api",
  "sp-runtime",
  "sp-std",
@@ -881,12 +887,6 @@ checksum = "9c59e7af012c713f529e7a3ee57ce9b31ddd858d4b512923602f74608b009631"
 
 [[package]]
 name = "byte-slice-cast"
-version = "0.3.5"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b0a5e3906bcbf133e33c1d4d95afc664ad37fbdb9f6568d8043e7ea8c27d93d3"
-
-[[package]]
-name = "byte-slice-cast"
 version = "1.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "65c1bf4a04a88c54f589125563643d773f3254b5c38571395e2b591c693bbc81"
@@ -900,15 +900,29 @@ checksum = "e3b5ca7a04898ad4bcd41c90c5285445ff5b791899bb1b0abdd2a2aa791211d7"
 [[package]]
 name = "bytecode-verifier"
 version = "0.1.0"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=1c94891be56ec67eb04a8d1bd21775219d526f48#1c94891be56ec67eb04a8d1bd21775219d526f48"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b#231b333e6830a50cadbf6b338ca4a7f33216522b"
 dependencies = [
  "anyhow",
- "borrow-graph",
+ "borrow-graph 0.0.1 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
  "hashbrown 0.9.1",
- "mirai-annotations",
- "move-core-types",
+ "mirai-annotations 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
+ "move-core-types 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
  "petgraph 0.5.1 (git+https://github.com/pontem-network/petgraph.git)",
- "vm",
+ "vm 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
+]
+
+[[package]]
+name = "bytecode-verifier"
+version = "0.1.0"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe#e84b6eab01fb6e2520d86ba6a5fe9466404b12fe"
+dependencies = [
+ "anyhow",
+ "borrow-graph 0.0.1 (git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe)",
+ "hashbrown 0.9.1",
+ "mirai-annotations 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe)",
+ "move-core-types 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe)",
+ "petgraph 0.5.1 (git+https://github.com/pontem-network/petgraph.git)",
+ "vm 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe)",
 ]
 
 [[package]]
@@ -1003,7 +1017,15 @@ dependencies = [
 [[package]]
 name = "cell"
 version = "0.1.0"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=1c94891be56ec67eb04a8d1bd21775219d526f48#1c94891be56ec67eb04a8d1bd21775219d526f48"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b#231b333e6830a50cadbf6b338ca4a7f33216522b"
+dependencies = [
+ "once_cell",
+]
+
+[[package]]
+name = "cell"
+version = "0.1.0"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe#e84b6eab01fb6e2520d86ba6a5fe9466404b12fe"
 dependencies = [
  "once_cell",
 ]
@@ -1482,7 +1504,7 @@ dependencies = [
  "cumulus-client-network",
  "cumulus-primitives-core",
  "futures 0.3.15",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "parking_lot 0.10.2",
  "polkadot-node-primitives",
  "polkadot-node-subsystem",
@@ -1506,7 +1528,7 @@ dependencies = [
  "cumulus-client-consensus-common",
  "cumulus-primitives-core",
  "futures 0.3.15",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "parking_lot 0.10.2",
  "polkadot-client",
  "sc-client-api",
@@ -1535,7 +1557,7 @@ dependencies = [
  "async-trait",
  "dyn-clone",
  "futures 0.3.15",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "polkadot-primitives",
  "polkadot-runtime",
  "sc-client-api",
@@ -1559,7 +1581,7 @@ dependencies = [
  "derive_more",
  "futures 0.3.15",
  "futures-timer 3.0.2",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "parking_lot 0.10.2",
  "polkadot-client",
  "polkadot-node-primitives",
@@ -1583,7 +1605,7 @@ dependencies = [
  "cumulus-primitives-core",
  "futures 0.3.15",
  "futures-timer 3.0.2",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "polkadot-node-primitives",
  "polkadot-node-subsystem",
  "polkadot-overseer",
@@ -1607,7 +1629,7 @@ dependencies = [
  "cumulus-client-consensus-common",
  "cumulus-client-pov-recovery",
  "cumulus-primitives-core",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "parking_lot 0.10.2",
  "polkadot-overseer",
  "polkadot-primitives",
@@ -1635,7 +1657,7 @@ dependencies = [
  "frame-support",
  "frame-system",
  "pallet-aura",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "serde",
  "sp-application-crypto",
  "sp-consensus-aura",
@@ -1652,7 +1674,7 @@ dependencies = [
  "frame-support",
  "frame-system",
  "log",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "rand 0.8.4",
  "rand_chacha 0.3.1",
  "sp-io",
@@ -1675,7 +1697,7 @@ dependencies = [
  "frame-system",
  "log",
  "pallet-balances",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "polkadot-parachain",
  "serde",
  "sp-core",
@@ -1709,7 +1731,7 @@ dependencies = [
  "cumulus-primitives-core",
  "frame-support",
  "frame-system",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "serde",
  "sp-io",
  "sp-runtime",
@@ -1726,7 +1748,7 @@ dependencies = [
  "frame-support",
  "frame-system",
  "log",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "rand 0.8.4",
  "rand_chacha 0.3.1",
  "sp-runtime",
@@ -1742,7 +1764,7 @@ source = "git+http://github.com/paritytech/cumulus.git?branch=polkadot-v0.9.8#4e
 dependencies = [
  "frame-support",
  "impl-trait-for-tuples",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "polkadot-core-primitives",
  "polkadot-parachain",
  "polkadot-primitives",
@@ -1761,7 +1783,7 @@ dependencies = [
  "async-trait",
  "cumulus-primitives-core",
  "cumulus-test-relay-sproof-builder",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "polkadot-client",
  "sc-client-api",
  "sp-api",
@@ -1793,7 +1815,7 @@ dependencies = [
  "cumulus-primitives-core",
  "frame-support",
  "impl-trait-for-tuples",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "polkadot-core-primitives",
  "polkadot-parachain",
  "polkadot-primitives",
@@ -1809,7 +1831,7 @@ version = "0.1.0"
 source = "git+http://github.com/paritytech/cumulus.git?branch=polkadot-v0.9.8#4e51d32fdc4636f2d207204a25534e01d5fddf75"
 dependencies = [
  "cumulus-primitives-core",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "polkadot-primitives",
  "sp-runtime",
  "sp-state-machine",
@@ -1894,31 +1916,58 @@ dependencies = [
 
 [[package]]
 name = "diem-crypto"
-version = "0.1.0"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=1c94891be56ec67eb04a8d1bd21775219d526f48#1c94891be56ec67eb04a8d1bd21775219d526f48"
+version = "0.0.1"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b#231b333e6830a50cadbf6b338ca4a7f33216522b"
 dependencies = [
  "alt_serde",
  "anyhow",
- "bcs 0.1.1",
- "bytes 0.5.6",
- "cell",
- "diem-crypto-derive",
- "diem-nibble",
+ "bcs 0.1.1 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
+ "bytes 1.0.1",
+ "cell 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
+ "diem-crypto-derive 0.0.1 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
+ "diem-nibble 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
  "ed25519-dalek",
  "hex",
- "mirai-annotations",
+ "mirai-annotations 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
  "rand 0.7.3",
  "rand_core 0.5.1",
  "serde_bytes",
- "short-hex-str",
+ "static_assertions",
+ "tiny-keccak",
+]
+
+[[package]]
+name = "diem-crypto"
+version = "0.0.1"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe#e84b6eab01fb6e2520d86ba6a5fe9466404b12fe"
+dependencies = [
+ "alt_serde",
+ "anyhow",
+ "bcs 0.1.1 (git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe)",
+ "bytes 1.0.1",
+ "cell 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe)",
+ "diem-nibble 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe)",
+ "ed25519-dalek",
+ "hex",
+ "mirai-annotations 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe)",
  "static_assertions",
  "tiny-keccak",
 ]
 
 [[package]]
 name = "diem-crypto-derive"
-version = "0.1.0"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=1c94891be56ec67eb04a8d1bd21775219d526f48#1c94891be56ec67eb04a8d1bd21775219d526f48"
+version = "0.0.1"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b#231b333e6830a50cadbf6b338ca4a7f33216522b"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn",
+]
+
+[[package]]
+name = "diem-crypto-derive"
+version = "0.0.1"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe#e84b6eab01fb6e2520d86ba6a5fe9466404b12fe"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -1928,9 +1977,49 @@ dependencies = [
 [[package]]
 name = "diem-nibble"
 version = "0.1.0"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=1c94891be56ec67eb04a8d1bd21775219d526f48#1c94891be56ec67eb04a8d1bd21775219d526f48"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b#231b333e6830a50cadbf6b338ca4a7f33216522b"
 dependencies = [
  "alt_serde",
+]
+
+[[package]]
+name = "diem-nibble"
+version = "0.1.0"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe#e84b6eab01fb6e2520d86ba6a5fe9466404b12fe"
+dependencies = [
+ "alt_serde",
+]
+
+[[package]]
+name = "diem-types"
+version = "0.0.1"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b#231b333e6830a50cadbf6b338ca4a7f33216522b"
+dependencies = [
+ "alt_serde",
+ "anyhow",
+ "bcs 0.1.1 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
+ "cell 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
+ "diem-crypto 0.0.1 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
+ "diem-crypto-derive 0.0.1 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
+ "hashbrown 0.9.1",
+ "hex",
+ "move-core-types 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
+]
+
+[[package]]
+name = "diem-types"
+version = "0.0.1"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe#e84b6eab01fb6e2520d86ba6a5fe9466404b12fe"
+dependencies = [
+ "alt_serde",
+ "anyhow",
+ "bcs 0.1.1 (git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe)",
+ "cell 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe)",
+ "diem-crypto 0.0.1 (git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe)",
+ "diem-crypto-derive 0.0.1 (git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe)",
+ "hashbrown 0.9.1",
+ "hex",
+ "move-core-types 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe)",
 ]
 
 [[package]]
@@ -2071,6 +2160,26 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7c5f0096a91d210159eceb2ff5e1c4da18388a170e1e3ce948aac9c8fdbbf595"
 dependencies = [
  "heck",
+ "proc-macro2",
+ "quote",
+ "syn",
+]
+
+[[package]]
+name = "enum-iterator"
+version = "0.6.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c79a6321a1197d7730510c7e3f6cb80432dfefecb32426de8cea0aa19b4bb8d7"
+dependencies = [
+ "enum-iterator-derive",
+]
+
+[[package]]
+name = "enum-iterator-derive"
+version = "0.6.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1e94aa31f7c0dc764f57896dc615ddd76fc13b0d5dca7eb6cc5e018a5a09ec06"
+dependencies = [
  "proc-macro2",
  "quote",
  "syn",
@@ -2240,6 +2349,16 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e88a8acf291dafb59c2d96e8f59828f3838bb1a70398823ade51a84de6a6deed"
 
 [[package]]
+name = "fallible"
+version = "0.1.0"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b#231b333e6830a50cadbf6b338ca4a7f33216522b"
+
+[[package]]
+name = "fallible"
+version = "0.1.0"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe#e84b6eab01fb6e2520d86ba6a5fe9466404b12fe"
+
+[[package]]
 name = "fallible-iterator"
 version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2300,7 +2419,7 @@ dependencies = [
  "futures-timer 3.0.2",
  "log",
  "num-traits",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "parking_lot 0.11.1",
 ]
 
@@ -2352,7 +2471,7 @@ name = "fork-tree"
 version = "3.0.0"
 source = "git+http://github.com/paritytech/substrate.git?branch=polkadot-v0.9.8#1b758b2a8d151d97d2242260c465b6df9cb8a7a4"
 dependencies = [
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
 ]
 
 [[package]]
@@ -2374,7 +2493,7 @@ dependencies = [
  "frame-system",
  "linregress",
  "log",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "paste",
  "sp-api",
  "sp-io",
@@ -2393,7 +2512,7 @@ dependencies = [
  "chrono",
  "frame-benchmarking",
  "handlebars",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "sc-cli",
  "sc-client-db",
  "sc-executor",
@@ -2414,7 +2533,7 @@ source = "git+http://github.com/paritytech/substrate.git?branch=polkadot-v0.9.8#
 dependencies = [
  "frame-support",
  "frame-system",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "sp-arithmetic",
  "sp-npos-elections",
  "sp-std",
@@ -2427,7 +2546,7 @@ source = "git+http://github.com/paritytech/substrate.git?branch=polkadot-v0.9.8#
 dependencies = [
  "frame-support",
  "frame-system",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "sp-core",
  "sp-io",
  "sp-runtime",
@@ -2440,7 +2559,7 @@ name = "frame-metadata"
 version = "13.0.0"
 source = "git+http://github.com/paritytech/substrate.git?branch=polkadot-v0.9.8#1b758b2a8d151d97d2242260c465b6df9cb8a7a4"
 dependencies = [
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "serde",
  "sp-core",
  "sp-std",
@@ -2458,7 +2577,7 @@ dependencies = [
  "log",
  "max-encoded-len",
  "once_cell",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "paste",
  "serde",
  "smallvec 1.6.1",
@@ -2515,7 +2634,7 @@ dependencies = [
  "frame-support",
  "impl-trait-for-tuples",
  "log",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "serde",
  "sp-core",
  "sp-io",
@@ -2532,7 +2651,7 @@ dependencies = [
  "frame-benchmarking",
  "frame-support",
  "frame-system",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "sp-core",
  "sp-runtime",
  "sp-std",
@@ -2543,7 +2662,7 @@ name = "frame-system-rpc-runtime-api"
 version = "3.0.0"
 source = "git+http://github.com/paritytech/substrate.git?branch=polkadot-v0.9.8#1b758b2a8d151d97d2242260c465b6df9cb8a7a4"
 dependencies = [
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "sp-api",
 ]
 
@@ -2553,7 +2672,7 @@ version = "0.9.0"
 source = "git+http://github.com/paritytech/substrate.git?branch=polkadot-v0.9.8#1b758b2a8d151d97d2242260c465b6df9cb8a7a4"
 dependencies = [
  "frame-support",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "sp-api",
  "sp-runtime",
  "sp-std",
@@ -2808,8 +2927,10 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7fcd999463524c52659517fe2cea98493cfe485d10565e7b0fb07dbba7ad2753"
 dependencies = [
  "cfg-if 1.0.0",
+ "js-sys",
  "libc",
  "wasi 0.10.0+wasi-snapshot-preview1",
+ "wasm-bindgen",
 ]
 
 [[package]]
@@ -3275,7 +3396,7 @@ version = "0.5.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "161ebdfec3c8e3b52bf61c4f3550a1eea4f9579d10dc1b936f3171ebdcd6c443"
 dependencies = [
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
 ]
 
 [[package]]
@@ -3699,7 +3820,7 @@ version = "0.9.8"
 source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
  "beefy-primitives",
- "bitvec 0.20.4",
+ "bitvec",
  "frame-benchmarking",
  "frame-election-provider-support",
  "frame-executive",
@@ -3747,7 +3868,7 @@ dependencies = [
  "pallet-utility",
  "pallet-vesting",
  "pallet-xcm",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "polkadot-primitives",
  "polkadot-runtime-common",
  "polkadot-runtime-parachains",
@@ -4472,7 +4593,7 @@ source = "git+http://github.com/paritytech/substrate.git?branch=polkadot-v0.9.8#
 dependencies = [
  "impl-trait-for-tuples",
  "max-encoded-len-derive",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "primitive-types",
 ]
 
@@ -4693,7 +4814,12 @@ dependencies = [
 [[package]]
 name = "mirai-annotations"
 version = "0.1.0"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=1c94891be56ec67eb04a8d1bd21775219d526f48#1c94891be56ec67eb04a8d1bd21775219d526f48"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b#231b333e6830a50cadbf6b338ca4a7f33216522b"
+
+[[package]]
+name = "mirai-annotations"
+version = "0.1.0"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe#e84b6eab01fb6e2520d86ba6a5fe9466404b12fe"
 
 [[package]]
 name = "more-asserts"
@@ -4704,29 +4830,66 @@ checksum = "0debeb9fcf88823ea64d64e4a815ab1643f33127d995978e099942ce38f25238"
 [[package]]
 name = "move-core-types"
 version = "0.1.0"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=1c94891be56ec67eb04a8d1bd21775219d526f48#1c94891be56ec67eb04a8d1bd21775219d526f48"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b#231b333e6830a50cadbf6b338ca4a7f33216522b"
 dependencies = [
  "alt_serde",
  "anyhow",
- "bcs 0.1.1",
- "diem-crypto",
- "diem-crypto-derive",
+ "bcs 0.1.1 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
+ "cell 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
+ "diem-crypto 0.0.1 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
+ "diem-crypto-derive 0.0.1 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
+ "enum-iterator",
  "hex",
- "mirai-annotations",
- "parity-scale-codec 1.3.7",
+ "mirai-annotations 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
+ "parity-scale-codec",
+ "parity-scale-codec-derive",
  "rand 0.7.3",
  "rand_core 0.5.1",
  "ref-cast",
- "short-hex-str",
+ "short-hex-str 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
+ "static_assertions",
+]
+
+[[package]]
+name = "move-core-types"
+version = "0.1.0"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe#e84b6eab01fb6e2520d86ba6a5fe9466404b12fe"
+dependencies = [
+ "alt_serde",
+ "anyhow",
+ "bcs 0.1.1 (git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe)",
+ "cell 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe)",
+ "diem-crypto 0.0.1 (git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe)",
+ "diem-crypto-derive 0.0.1 (git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe)",
+ "enum-iterator",
+ "hex",
+ "mirai-annotations 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe)",
+ "parity-scale-codec",
+ "parity-scale-codec-derive",
+ "ref-cast",
+ "short-hex-str 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe)",
  "static_assertions",
 ]
 
 [[package]]
 name = "move-lang"
 version = "0.0.1"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=1c94891be56ec67eb04a8d1bd21775219d526f48#1c94891be56ec67eb04a8d1bd21775219d526f48"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b#231b333e6830a50cadbf6b338ca4a7f33216522b"
 dependencies = [
  "alt_serde",
+ "fallible 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
+ "hashbrown 0.9.1",
+ "hex",
+ "petgraph 0.5.1 (git+https://github.com/pontem-network/petgraph.git)",
+]
+
+[[package]]
+name = "move-lang"
+version = "0.0.1"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe#e84b6eab01fb6e2520d86ba6a5fe9466404b12fe"
+dependencies = [
+ "alt_serde",
+ "fallible 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe)",
  "hashbrown 0.9.1",
  "hex",
  "petgraph 0.5.1 (git+https://github.com/pontem-network/petgraph.git)",
@@ -4735,49 +4898,103 @@ dependencies = [
 [[package]]
 name = "move-vm-natives"
 version = "0.1.0"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=1c94891be56ec67eb04a8d1bd21775219d526f48#1c94891be56ec67eb04a8d1bd21775219d526f48"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b#231b333e6830a50cadbf6b338ca4a7f33216522b"
 dependencies = [
- "cell",
- "diem-crypto",
- "mirai-annotations",
- "move-core-types",
- "move-vm-types",
+ "cell 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
+ "diem-crypto 0.0.1 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
+ "mirai-annotations 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
+ "move-core-types 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
+ "move-vm-types 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
  "sha2 0.9.5",
+ "smallvec 1.6.1",
  "uint 0.8.5",
- "vm",
+ "vm 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
+]
+
+[[package]]
+name = "move-vm-natives"
+version = "0.1.0"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe#e84b6eab01fb6e2520d86ba6a5fe9466404b12fe"
+dependencies = [
+ "cell 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe)",
+ "diem-crypto 0.0.1 (git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe)",
+ "mirai-annotations 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe)",
+ "move-core-types 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe)",
+ "move-vm-types 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe)",
+ "sha2 0.9.5",
+ "smallvec 1.6.1",
+ "uint 0.8.5",
+ "vm 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe)",
 ]
 
 [[package]]
 name = "move-vm-runtime"
 version = "0.1.0"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=1c94891be56ec67eb04a8d1bd21775219d526f48#1c94891be56ec67eb04a8d1bd21775219d526f48"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b#231b333e6830a50cadbf6b338ca4a7f33216522b"
 dependencies = [
  "anyhow",
- "bytecode-verifier",
- "cell",
- "diem-crypto",
+ "bytecode-verifier 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
+ "cell 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
+ "diem-crypto 0.0.1 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
  "hashbrown 0.9.1",
  "hex",
- "mirai-annotations",
- "move-core-types",
- "move-vm-natives",
- "move-vm-types",
- "vm",
+ "log",
+ "mirai-annotations 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
+ "move-core-types 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
+ "move-vm-natives 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
+ "move-vm-types 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
+ "vm 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
+]
+
+[[package]]
+name = "move-vm-runtime"
+version = "0.1.0"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe#e84b6eab01fb6e2520d86ba6a5fe9466404b12fe"
+dependencies = [
+ "anyhow",
+ "bytecode-verifier 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe)",
+ "cell 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe)",
+ "diem-crypto 0.0.1 (git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe)",
+ "hashbrown 0.9.1",
+ "hex",
+ "log",
+ "mirai-annotations 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe)",
+ "move-core-types 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe)",
+ "move-vm-natives 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe)",
+ "move-vm-types 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe)",
+ "vm 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe)",
 ]
 
 [[package]]
 name = "move-vm-types"
 version = "0.1.0"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=1c94891be56ec67eb04a8d1bd21775219d526f48#1c94891be56ec67eb04a8d1bd21775219d526f48"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b#231b333e6830a50cadbf6b338ca4a7f33216522b"
 dependencies = [
  "alt_serde",
- "bcs 0.1.1",
- "diem-crypto",
+ "bcs 0.1.1 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
+ "diem-crypto 0.0.1 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
  "hashbrown 0.9.1",
- "mirai-annotations",
- "move-core-types",
+ "mirai-annotations 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
+ "move-core-types 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
  "sha2 0.9.5",
- "vm",
+ "smallvec 1.6.1",
+ "vm 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
+]
+
+[[package]]
+name = "move-vm-types"
+version = "0.1.0"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe#e84b6eab01fb6e2520d86ba6a5fe9466404b12fe"
+dependencies = [
+ "alt_serde",
+ "bcs 0.1.1 (git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe)",
+ "diem-crypto 0.0.1 (git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe)",
+ "hashbrown 0.9.1",
+ "mirai-annotations 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe)",
+ "move-core-types 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe)",
+ "sha2 0.9.5",
+ "smallvec 1.6.1",
+ "vm 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe)",
 ]
 
 [[package]]
@@ -4858,8 +5075,9 @@ dependencies = [
  "jsonrpc-core 15.1.0",
  "log",
  "mv-node-runtime",
+ "mvm 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe)",
  "pallet-transaction-payment-rpc",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "polkadot-cli",
  "polkadot-parachain",
  "polkadot-primitives",
@@ -4898,6 +5116,7 @@ dependencies = [
  "sp-session",
  "sp-timestamp",
  "sp-transaction-pool",
+ "stdlib-fetch",
  "structopt",
  "substrate-build-script-utils",
  "substrate-frame-rpc-system",
@@ -4926,6 +5145,7 @@ dependencies = [
  "pallet-aura",
  "pallet-balances",
  "pallet-grandpa",
+ "pallet-multisig",
  "pallet-randomness-collective-flip",
  "pallet-sudo",
  "pallet-timestamp",
@@ -4934,7 +5154,7 @@ dependencies = [
  "pallet-vesting",
  "pallet-xcm",
  "parachain-info",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "polkadot-parachain",
  "serde",
  "sp-api",
@@ -4959,21 +5179,49 @@ dependencies = [
 [[package]]
 name = "mvm"
 version = "0.1.0"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=1c94891be56ec67eb04a8d1bd21775219d526f48#1c94891be56ec67eb04a8d1bd21775219d526f48"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b#231b333e6830a50cadbf6b338ca4a7f33216522b"
 dependencies = [
  "alt_serde",
  "anyhow",
- "bcs 0.1.1",
- "diem-crypto",
+ "bcs 0.1.1 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
+ "cell 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
+ "diem-crypto 0.0.1 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
+ "diem-types 0.0.1 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
  "hashbrown 0.9.1",
  "hex",
  "log",
- "move-core-types",
- "move-lang",
- "move-vm-runtime",
- "move-vm-types",
- "parity-scale-codec 1.3.7",
- "vm",
+ "move-core-types 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
+ "move-lang 0.0.1 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
+ "move-vm-runtime 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
+ "move-vm-types 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
+ "parity-scale-codec",
+ "parity-scale-codec-derive",
+ "stdlib 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
+ "vm 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
+]
+
+[[package]]
+name = "mvm"
+version = "0.1.0"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe#e84b6eab01fb6e2520d86ba6a5fe9466404b12fe"
+dependencies = [
+ "alt_serde",
+ "anyhow",
+ "bcs 0.1.1 (git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe)",
+ "cell 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe)",
+ "diem-crypto 0.0.1 (git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe)",
+ "diem-types 0.0.1 (git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe)",
+ "hashbrown 0.9.1",
+ "hex",
+ "log",
+ "move-core-types 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe)",
+ "move-lang 0.0.1 (git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe)",
+ "move-vm-runtime 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe)",
+ "move-vm-types 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe)",
+ "parity-scale-codec",
+ "parity-scale-codec-derive",
+ "stdlib 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe)",
+ "vm 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe)",
 ]
 
 [[package]]
@@ -5113,7 +5361,17 @@ dependencies = [
 [[package]]
 name = "num-variants"
 version = "0.1.0"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=1c94891be56ec67eb04a8d1bd21775219d526f48#1c94891be56ec67eb04a8d1bd21775219d526f48"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b#231b333e6830a50cadbf6b338ca4a7f33216522b"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn",
+]
+
+[[package]]
+name = "num-variants"
+version = "0.1.0"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe#e84b6eab01fb6e2520d86ba6a5fe9466404b12fe"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -5203,7 +5461,7 @@ dependencies = [
  "frame-system",
  "pallet-session",
  "pallet-timestamp",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "sp-application-crypto",
  "sp-consensus-aura",
  "sp-runtime",
@@ -5218,7 +5476,7 @@ dependencies = [
  "frame-support",
  "frame-system",
  "pallet-session",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "sp-application-crypto",
  "sp-authority-discovery",
  "sp-runtime",
@@ -5233,7 +5491,7 @@ dependencies = [
  "frame-support",
  "frame-system",
  "impl-trait-for-tuples",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "sp-authorship",
  "sp-runtime",
  "sp-std",
@@ -5251,7 +5509,7 @@ dependencies = [
  "pallet-authorship",
  "pallet-session",
  "pallet-timestamp",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "sp-application-crypto",
  "sp-consensus-babe",
  "sp-consensus-vrf",
@@ -5272,7 +5530,7 @@ dependencies = [
  "frame-system",
  "log",
  "max-encoded-len",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "sp-runtime",
  "sp-std",
 ]
@@ -5286,7 +5544,7 @@ dependencies = [
  "frame-support",
  "frame-system",
  "pallet-session",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "serde",
  "sp-runtime",
  "sp-std",
@@ -5301,7 +5559,7 @@ dependencies = [
  "frame-support",
  "frame-system",
  "pallet-treasury",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "sp-runtime",
  "sp-std",
 ]
@@ -5319,7 +5577,7 @@ dependencies = [
  "frame-system",
  "log",
  "num-traits",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "serde",
  "sp-finality-grandpa",
  "sp-runtime",
@@ -5336,7 +5594,7 @@ dependencies = [
  "frame-support",
  "frame-system",
  "log",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "sp-core",
  "sp-io",
  "sp-runtime",
@@ -5351,7 +5609,7 @@ dependencies = [
  "frame-benchmarking",
  "frame-support",
  "frame-system",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "serde",
  "sp-io",
  "sp-runtime",
@@ -5368,7 +5626,7 @@ dependencies = [
  "frame-support",
  "frame-system",
  "log",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "rand 0.7.3",
  "sp-arithmetic",
  "sp-core",
@@ -5388,7 +5646,7 @@ dependencies = [
  "frame-support",
  "frame-system",
  "log",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "sp-core",
  "sp-io",
  "sp-npos-elections",
@@ -5404,7 +5662,7 @@ dependencies = [
  "frame-benchmarking",
  "frame-support",
  "frame-system",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "sp-arithmetic",
  "sp-runtime",
  "sp-std",
@@ -5421,7 +5679,7 @@ dependencies = [
  "log",
  "pallet-authorship",
  "pallet-session",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "sp-application-crypto",
  "sp-core",
  "sp-finality-grandpa",
@@ -5441,7 +5699,7 @@ dependencies = [
  "frame-benchmarking",
  "frame-support",
  "frame-system",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "sp-io",
  "sp-runtime",
  "sp-std",
@@ -5457,7 +5715,7 @@ dependencies = [
  "frame-system",
  "log",
  "pallet-authorship",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "sp-application-crypto",
  "sp-core",
  "sp-io",
@@ -5474,7 +5732,7 @@ dependencies = [
  "frame-benchmarking",
  "frame-support",
  "frame-system",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "sp-core",
  "sp-io",
  "sp-keyring",
@@ -5491,7 +5749,7 @@ dependencies = [
  "frame-support",
  "frame-system",
  "log",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "sp-io",
  "sp-runtime",
  "sp-std",
@@ -5507,7 +5765,7 @@ dependencies = [
  "frame-support",
  "frame-system",
  "pallet-mmr-primitives",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "sp-core",
  "sp-io",
  "sp-runtime",
@@ -5522,7 +5780,7 @@ dependencies = [
  "frame-support",
  "frame-system",
  "log",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "serde",
  "sp-api",
  "sp-core",
@@ -5539,7 +5797,7 @@ dependencies = [
  "jsonrpc-core-client 15.1.0",
  "jsonrpc-derive 15.1.0",
  "pallet-mmr-primitives",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "serde",
  "sp-api",
  "sp-blockchain",
@@ -5556,7 +5814,7 @@ dependencies = [
  "frame-benchmarking",
  "frame-support",
  "frame-system",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "sp-core",
  "sp-io",
  "sp-runtime",
@@ -5570,7 +5828,7 @@ source = "git+http://github.com/paritytech/substrate.git?branch=polkadot-v0.9.8#
 dependencies = [
  "frame-support",
  "frame-system",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "sp-io",
  "sp-runtime",
  "sp-std",
@@ -5585,7 +5843,7 @@ dependencies = [
  "frame-system",
  "log",
  "pallet-balances",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "serde",
  "sp-runtime",
  "sp-staking",
@@ -5608,7 +5866,7 @@ dependencies = [
  "pallet-offences",
  "pallet-session",
  "pallet-staking",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "sp-runtime",
  "sp-staking",
  "sp-std",
@@ -5623,7 +5881,7 @@ dependencies = [
  "frame-support",
  "frame-system",
  "max-encoded-len",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "sp-core",
  "sp-io",
  "sp-runtime",
@@ -5637,7 +5895,7 @@ source = "git+http://github.com/paritytech/substrate.git?branch=polkadot-v0.9.8#
 dependencies = [
  "frame-support",
  "frame-system",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "safe-mix",
  "sp-runtime",
  "sp-std",
@@ -5651,7 +5909,7 @@ dependencies = [
  "enumflags2",
  "frame-support",
  "frame-system",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "sp-io",
  "sp-runtime",
  "sp-std",
@@ -5666,7 +5924,7 @@ dependencies = [
  "frame-support",
  "frame-system",
  "log",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "sp-io",
  "sp-runtime",
  "sp-std",
@@ -5682,7 +5940,7 @@ dependencies = [
  "impl-trait-for-tuples",
  "log",
  "pallet-timestamp",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "sp-core",
  "sp-io",
  "sp-runtime",
@@ -5715,7 +5973,7 @@ source = "git+http://github.com/paritytech/substrate.git?branch=polkadot-v0.9.8#
 dependencies = [
  "frame-support",
  "frame-system",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "rand_chacha 0.2.2",
  "sp-runtime",
  "sp-std",
@@ -5733,7 +5991,7 @@ dependencies = [
  "log",
  "pallet-authorship",
  "pallet-session",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "paste",
  "rand_chacha 0.2.2",
  "serde",
@@ -5772,7 +6030,7 @@ source = "git+http://github.com/paritytech/substrate.git?branch=polkadot-v0.9.8#
 dependencies = [
  "frame-support",
  "frame-system",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "sp-io",
  "sp-runtime",
  "sp-std",
@@ -5788,7 +6046,7 @@ dependencies = [
  "frame-system",
  "impl-trait-for-tuples",
  "log",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "sp-inherents",
  "sp-io",
  "sp-runtime",
@@ -5805,7 +6063,7 @@ dependencies = [
  "frame-support",
  "frame-system",
  "pallet-treasury",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "serde",
  "sp-runtime",
  "sp-std",
@@ -5818,7 +6076,7 @@ source = "git+http://github.com/paritytech/substrate.git?branch=polkadot-v0.9.8#
 dependencies = [
  "frame-support",
  "frame-system",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "serde",
  "smallvec 1.6.1",
  "sp-core",
@@ -5836,7 +6094,7 @@ dependencies = [
  "jsonrpc-core-client 15.1.0",
  "jsonrpc-derive 15.1.0",
  "pallet-transaction-payment-rpc-runtime-api",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "sp-api",
  "sp-blockchain",
  "sp-core",
@@ -5850,7 +6108,7 @@ version = "3.0.0"
 source = "git+http://github.com/paritytech/substrate.git?branch=polkadot-v0.9.8#1b758b2a8d151d97d2242260c465b6df9cb8a7a4"
 dependencies = [
  "pallet-transaction-payment",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "sp-api",
  "sp-runtime",
 ]
@@ -5865,7 +6123,7 @@ dependencies = [
  "frame-system",
  "impl-trait-for-tuples",
  "pallet-balances",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "serde",
  "sp-runtime",
  "sp-std",
@@ -5879,7 +6137,7 @@ dependencies = [
  "frame-benchmarking",
  "frame-support",
  "frame-system",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "sp-core",
  "sp-io",
  "sp-runtime",
@@ -5895,7 +6153,7 @@ dependencies = [
  "frame-benchmarking",
  "frame-support",
  "frame-system",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "sp-runtime",
  "sp-std",
 ]
@@ -5907,7 +6165,7 @@ source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a
 dependencies = [
  "frame-support",
  "frame-system",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "serde",
  "sp-runtime",
  "sp-std",
@@ -5923,7 +6181,7 @@ dependencies = [
  "cumulus-primitives-core",
  "frame-support",
  "frame-system",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "serde",
 ]
 
@@ -5964,41 +6222,16 @@ dependencies = [
 
 [[package]]
 name = "parity-scale-codec"
-version = "1.3.7"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a4b26b16c7687c3075982af47719e481815df30bc544f7a6690763a25ca16e9d"
-dependencies = [
- "arrayvec 0.5.2",
- "bitvec 0.17.4",
- "byte-slice-cast 0.3.5",
- "parity-scale-codec-derive 1.2.3",
- "serde",
-]
-
-[[package]]
-name = "parity-scale-codec"
 version = "2.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8975095a2a03bbbdc70a74ab11a4f76a6d0b84680d87c68d722531b0ac28e8a9"
 dependencies = [
  "arrayvec 0.7.1",
- "bitvec 0.20.4",
- "byte-slice-cast 1.0.0",
+ "bitvec",
+ "byte-slice-cast",
  "impl-trait-for-tuples",
- "parity-scale-codec-derive 2.2.0",
+ "parity-scale-codec-derive",
  "serde",
-]
-
-[[package]]
-name = "parity-scale-codec-derive"
-version = "1.2.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c41512944b1faff334a5f1b9447611bf4ef40638ccb6328173dacefb338e878c"
-dependencies = [
- "proc-macro-crate 0.1.5",
- "proc-macro2",
- "quote",
- "syn",
 ]
 
 [[package]]
@@ -6397,7 +6630,7 @@ source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a
 dependencies = [
  "futures 0.3.15",
  "lru",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "polkadot-erasure-coding",
  "polkadot-node-core-runtime-api",
  "polkadot-node-network-protocol",
@@ -6420,7 +6653,7 @@ source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a
 dependencies = [
  "futures 0.3.15",
  "lru",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "polkadot-erasure-coding",
  "polkadot-node-network-protocol",
  "polkadot-node-primitives",
@@ -6507,7 +6740,7 @@ name = "polkadot-core-primitives"
 version = "0.9.8"
 source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "parity-util-mem",
  "sp-core",
  "sp-runtime",
@@ -6519,7 +6752,7 @@ name = "polkadot-erasure-coding"
 version = "0.9.8"
 source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "polkadot-node-primitives",
  "polkadot-primitives",
  "reed-solomon-novelpoly",
@@ -6553,7 +6786,7 @@ source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a
 dependencies = [
  "async-trait",
  "futures 0.3.15",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "parking_lot 0.11.1",
  "polkadot-node-network-protocol",
  "polkadot-node-subsystem",
@@ -6572,7 +6805,7 @@ version = "0.1.0"
 source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
  "futures 0.3.15",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "polkadot-erasure-coding",
  "polkadot-node-primitives",
  "polkadot-node-subsystem",
@@ -6589,14 +6822,14 @@ name = "polkadot-node-core-approval-voting"
 version = "0.1.0"
 source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
- "bitvec 0.20.4",
+ "bitvec",
  "derive_more",
  "futures 0.3.15",
  "futures-timer 3.0.2",
  "kvdb",
  "lru",
  "merlin",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "polkadot-node-jaeger",
  "polkadot-node-primitives",
  "polkadot-node-subsystem",
@@ -6619,11 +6852,11 @@ name = "polkadot-node-core-av-store"
 version = "0.1.0"
 source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
- "bitvec 0.20.4",
+ "bitvec",
  "futures 0.3.15",
  "futures-timer 3.0.2",
  "kvdb",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "polkadot-erasure-coding",
  "polkadot-node-primitives",
  "polkadot-node-subsystem",
@@ -6639,7 +6872,7 @@ name = "polkadot-node-core-backing"
 version = "0.1.0"
 source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
- "bitvec 0.20.4",
+ "bitvec",
  "futures 0.3.15",
  "polkadot-erasure-coding",
  "polkadot-node-primitives",
@@ -6674,7 +6907,7 @@ source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a
 dependencies = [
  "async-trait",
  "futures 0.3.15",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "polkadot-node-core-pvf",
  "polkadot-node-primitives",
  "polkadot-node-subsystem",
@@ -6723,7 +6956,7 @@ name = "polkadot-node-core-provisioner"
 version = "0.1.0"
 source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
- "bitvec 0.20.4",
+ "bitvec",
  "futures 0.3.15",
  "futures-timer 3.0.2",
  "polkadot-node-subsystem",
@@ -6745,7 +6978,7 @@ dependencies = [
  "futures 0.3.15",
  "futures-timer 3.0.2",
  "libc",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "pin-project 1.0.7",
  "polkadot-core-primitives",
  "polkadot-parachain",
@@ -6789,7 +7022,7 @@ dependencies = [
  "lazy_static",
  "log",
  "mick-jaeger",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "parking_lot 0.11.1",
  "polkadot-node-primitives",
  "polkadot-primitives",
@@ -6804,7 +7037,7 @@ version = "0.1.0"
 source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
  "futures 0.3.15",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "polkadot-node-jaeger",
  "polkadot-node-primitives",
  "polkadot-primitives",
@@ -6819,7 +7052,7 @@ version = "0.1.0"
 source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
  "futures 0.3.15",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "polkadot-parachain",
  "polkadot-primitives",
  "polkadot-statement-table",
@@ -6849,7 +7082,7 @@ dependencies = [
  "lazy_static",
  "log",
  "mick-jaeger",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "parking_lot 0.11.1",
  "pin-project 1.0.7",
  "polkadot-node-jaeger",
@@ -6877,7 +7110,7 @@ dependencies = [
  "itertools 0.10.1",
  "lru",
  "metered-channel",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "pin-project 1.0.7",
  "polkadot-node-jaeger",
  "polkadot-node-network-protocol",
@@ -6919,7 +7152,7 @@ version = "0.9.8"
 source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
  "derive_more",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "parity-util-mem",
  "polkadot-core-primitives",
  "serde",
@@ -6933,10 +7166,10 @@ name = "polkadot-primitives"
 version = "0.9.8"
 source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
- "bitvec 0.20.4",
+ "bitvec",
  "frame-system",
  "hex-literal",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "parity-util-mem",
  "polkadot-core-primitives",
  "polkadot-parachain",
@@ -6990,7 +7223,7 @@ dependencies = [
  "jsonrpc-core 15.1.0",
  "pallet-mmr-rpc",
  "pallet-transaction-payment-rpc",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "polkadot-primitives",
  "sc-chain-spec",
  "sc-client-api",
@@ -7019,7 +7252,7 @@ version = "0.9.8"
 source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
  "beefy-primitives",
- "bitvec 0.20.4",
+ "bitvec",
  "frame-benchmarking",
  "frame-election-provider-support",
  "frame-executive",
@@ -7063,7 +7296,7 @@ dependencies = [
  "pallet-treasury",
  "pallet-utility",
  "pallet-vesting",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "polkadot-primitives",
  "polkadot-runtime-common",
  "rustc-hex",
@@ -7095,7 +7328,7 @@ version = "0.9.8"
 source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
  "beefy-primitives",
- "bitvec 0.20.4",
+ "bitvec",
  "frame-benchmarking",
  "frame-support",
  "frame-system",
@@ -7115,7 +7348,7 @@ dependencies = [
  "pallet-transaction-payment",
  "pallet-treasury",
  "pallet-vesting",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "polkadot-primitives",
  "polkadot-runtime-parachains",
  "rustc-hex",
@@ -7139,7 +7372,7 @@ name = "polkadot-runtime-parachains"
 version = "0.9.8"
 source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
- "bitvec 0.20.4",
+ "bitvec",
  "derive_more",
  "frame-benchmarking",
  "frame-support",
@@ -7154,7 +7387,7 @@ dependencies = [
  "pallet-staking",
  "pallet-timestamp",
  "pallet-vesting",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "polkadot-primitives",
  "rand 0.8.4",
  "rand_chacha 0.3.1",
@@ -7273,7 +7506,7 @@ dependencies = [
  "arrayvec 0.5.2",
  "futures 0.3.15",
  "indexmap 1.7.0",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "polkadot-node-network-protocol",
  "polkadot-node-primitives",
  "polkadot-node-subsystem",
@@ -7291,7 +7524,7 @@ name = "polkadot-statement-table"
 version = "0.9.8"
 source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "polkadot-primitives",
  "sp-core",
 ]
@@ -7529,12 +7762,6 @@ checksum = "c3d0b9745dc2debf507c8422de05d7226cc1f0644216dfdfead988f9b1ab32a7"
 dependencies = [
  "proc-macro2",
 ]
-
-[[package]]
-name = "radium"
-version = "0.3.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "def50a86306165861203e7f84ecffbbdfdea79f0e51039b33de1e952358c47ac"
 
 [[package]]
 name = "radium"
@@ -7839,7 +8066,7 @@ dependencies = [
  "jsonrpsee-proc-macros",
  "jsonrpsee-ws-client",
  "log",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "serde",
  "serde_json",
  "sp-core",
@@ -7946,7 +8173,7 @@ dependencies = [
  "pallet-transaction-payment-rpc-runtime-api",
  "pallet-utility",
  "pallet-xcm",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "polkadot-parachain",
  "polkadot-primitives",
  "polkadot-runtime-common",
@@ -8149,7 +8376,7 @@ dependencies = [
  "ip_network",
  "libp2p",
  "log",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "prost",
  "prost-build",
  "rand 0.7.3",
@@ -8173,7 +8400,7 @@ dependencies = [
  "futures 0.3.15",
  "futures-timer 3.0.2",
  "log",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "sc-block-builder",
  "sc-client-api",
  "sc-proposer-metrics",
@@ -8193,7 +8420,7 @@ name = "sc-block-builder"
 version = "0.9.0"
 source = "git+http://github.com/paritytech/substrate.git?branch=polkadot-v0.9.8#1b758b2a8d151d97d2242260c465b6df9cb8a7a4"
 dependencies = [
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "sc-client-api",
  "sp-api",
  "sp-block-builder",
@@ -8210,7 +8437,7 @@ version = "3.0.0"
 source = "git+http://github.com/paritytech/substrate.git?branch=polkadot-v0.9.8#1b758b2a8d151d97d2242260c465b6df9cb8a7a4"
 dependencies = [
  "impl-trait-for-tuples",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "sc-chain-spec-derive",
  "sc-consensus-babe",
  "sc-consensus-epochs",
@@ -8247,7 +8474,7 @@ dependencies = [
  "libp2p",
  "log",
  "names",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "rand 0.7.3",
  "regex",
  "rpassword",
@@ -8285,7 +8512,7 @@ dependencies = [
  "kvdb",
  "lazy_static",
  "log",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "parking_lot 0.11.1",
  "sc-executor",
  "sp-api",
@@ -8320,7 +8547,7 @@ dependencies = [
  "linked-hash-map",
  "log",
  "parity-db",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "parity-util-mem",
  "parking_lot 0.11.1",
  "sc-client-api",
@@ -8360,7 +8587,7 @@ dependencies = [
  "futures 0.3.15",
  "futures-timer 3.0.2",
  "log",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "sc-block-builder",
  "sc-client-api",
  "sc-consensus-slots",
@@ -8396,7 +8623,7 @@ dependencies = [
  "num-bigint",
  "num-rational 0.2.4",
  "num-traits",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "parking_lot 0.11.1",
  "pdqselect",
  "rand 0.7.3",
@@ -8457,7 +8684,7 @@ version = "0.9.0"
 source = "git+http://github.com/paritytech/substrate.git?branch=polkadot-v0.9.8#1b758b2a8d151d97d2242260c465b6df9cb8a7a4"
 dependencies = [
  "fork-tree",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "sc-client-api",
  "sc-consensus",
  "sp-blockchain",
@@ -8474,7 +8701,7 @@ dependencies = [
  "futures-timer 3.0.2",
  "impl-trait-for-tuples",
  "log",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "sc-client-api",
  "sc-telemetry",
  "sp-api",
@@ -8512,7 +8739,7 @@ dependencies = [
  "lazy_static",
  "libsecp256k1",
  "log",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "parity-wasm 0.42.2",
  "parking_lot 0.11.1",
  "sc-executor-common",
@@ -8538,7 +8765,7 @@ version = "0.9.0"
 source = "git+http://github.com/paritytech/substrate.git?branch=polkadot-v0.9.8#1b758b2a8d151d97d2242260c465b6df9cb8a7a4"
 dependencies = [
  "derive_more",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "pwasm-utils",
  "sc-allocator",
  "sp-core",
@@ -8555,7 +8782,7 @@ version = "0.9.0"
 source = "git+http://github.com/paritytech/substrate.git?branch=polkadot-v0.9.8#1b758b2a8d151d97d2242260c465b6df9cb8a7a4"
 dependencies = [
  "log",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "sc-allocator",
  "sc-executor-common",
  "sp-core",
@@ -8572,7 +8799,7 @@ dependencies = [
  "cfg-if 1.0.0",
  "libc",
  "log",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "parity-wasm 0.42.2",
  "sc-allocator",
  "sc-executor-common",
@@ -8597,7 +8824,7 @@ dependencies = [
  "futures-timer 3.0.2",
  "linked-hash-map",
  "log",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "parking_lot 0.11.1",
  "pin-project 1.0.7",
  "rand 0.7.3",
@@ -8637,7 +8864,7 @@ dependencies = [
  "jsonrpc-derive 15.1.0",
  "jsonrpc-pubsub 15.1.0",
  "log",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "sc-client-api",
  "sc-finality-grandpa",
  "sc-rpc",
@@ -8657,7 +8884,7 @@ dependencies = [
  "futures 0.3.15",
  "log",
  "num-traits",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "parking_lot 0.11.1",
  "prost",
  "sc-client-api",
@@ -8714,7 +8941,7 @@ source = "git+http://github.com/paritytech/substrate.git?branch=polkadot-v0.9.8#
 dependencies = [
  "hash-db",
  "lazy_static",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "parking_lot 0.11.1",
  "sc-client-api",
  "sc-executor",
@@ -8753,7 +8980,7 @@ dependencies = [
  "log",
  "lru",
  "nohash-hasher",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "parking_lot 0.11.1",
  "pin-project 1.0.7",
  "prost",
@@ -8810,7 +9037,7 @@ dependencies = [
  "hyper-rustls",
  "log",
  "num_cpus",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "parking_lot 0.11.1",
  "rand 0.7.3",
  "sc-client-api",
@@ -8856,7 +9083,7 @@ dependencies = [
  "jsonrpc-core 15.1.0",
  "jsonrpc-pubsub 15.1.0",
  "log",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "parking_lot 0.11.1",
  "sc-block-builder",
  "sc-chain-spec",
@@ -8893,7 +9120,7 @@ dependencies = [
  "jsonrpc-derive 15.1.0",
  "jsonrpc-pubsub 15.1.0",
  "log",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "parking_lot 0.11.1",
  "sc-chain-spec",
  "serde",
@@ -8940,7 +9167,7 @@ dependencies = [
  "jsonrpc-pubsub 15.1.0",
  "lazy_static",
  "log",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "parity-util-mem",
  "parking_lot 0.11.1",
  "pin-project 1.0.7",
@@ -8996,7 +9223,7 @@ version = "0.9.0"
 source = "git+http://github.com/paritytech/substrate.git?branch=polkadot-v0.9.8#1b758b2a8d151d97d2242260c465b6df9cb8a7a4"
 dependencies = [
  "log",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "parity-util-mem",
  "parity-util-mem-derive",
  "parking_lot 0.11.1",
@@ -9123,7 +9350,7 @@ dependencies = [
  "futures 0.3.15",
  "intervalier",
  "log",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "parity-util-mem",
  "parking_lot 0.11.1",
  "sc-client-api",
@@ -9428,10 +9655,19 @@ checksum = "7fdf1b9db47230893d76faad238fd6097fd6d6a9245cd7a4d90dbd639536bbd2"
 [[package]]
 name = "short-hex-str"
 version = "0.1.0"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=1c94891be56ec67eb04a8d1bd21775219d526f48#1c94891be56ec67eb04a8d1bd21775219d526f48"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b#231b333e6830a50cadbf6b338ca4a7f33216522b"
 dependencies = [
  "alt_serde",
- "mirai-annotations",
+ "mirai-annotations 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
+]
+
+[[package]]
+name = "short-hex-str"
+version = "0.1.0"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe#e84b6eab01fb6e2520d86ba6a5fe9466404b12fe"
+dependencies = [
+ "alt_serde",
+ "mirai-annotations 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe)",
 ]
 
 [[package]]
@@ -9492,7 +9728,7 @@ version = "0.9.8"
 source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
  "enumn",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "paste",
  "sp-runtime",
  "sp-std",
@@ -9599,7 +9835,7 @@ source = "git+http://github.com/paritytech/substrate.git?branch=polkadot-v0.9.8#
 dependencies = [
  "hash-db",
  "log",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "sp-api-proc-macro",
  "sp-core",
  "sp-runtime",
@@ -9627,7 +9863,7 @@ version = "3.0.0"
 source = "git+http://github.com/paritytech/substrate.git?branch=polkadot-v0.9.8#1b758b2a8d151d97d2242260c465b6df9cb8a7a4"
 dependencies = [
  "max-encoded-len",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "serde",
  "sp-core",
  "sp-io",
@@ -9641,7 +9877,7 @@ source = "git+http://github.com/paritytech/substrate.git?branch=polkadot-v0.9.8#
 dependencies = [
  "integer-sqrt",
  "num-traits",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "serde",
  "sp-debug-derive",
  "sp-std",
@@ -9653,7 +9889,7 @@ name = "sp-authority-discovery"
 version = "3.0.0"
 source = "git+http://github.com/paritytech/substrate.git?branch=polkadot-v0.9.8#1b758b2a8d151d97d2242260c465b6df9cb8a7a4"
 dependencies = [
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "sp-api",
  "sp-application-crypto",
  "sp-runtime",
@@ -9666,7 +9902,7 @@ version = "3.0.0"
 source = "git+http://github.com/paritytech/substrate.git?branch=polkadot-v0.9.8#1b758b2a8d151d97d2242260c465b6df9cb8a7a4"
 dependencies = [
  "async-trait",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "sp-inherents",
  "sp-runtime",
  "sp-std",
@@ -9677,7 +9913,7 @@ name = "sp-block-builder"
 version = "3.0.0"
 source = "git+http://github.com/paritytech/substrate.git?branch=polkadot-v0.9.8#1b758b2a8d151d97d2242260c465b6df9cb8a7a4"
 dependencies = [
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "sp-api",
  "sp-inherents",
  "sp-runtime",
@@ -9692,7 +9928,7 @@ dependencies = [
  "futures 0.3.15",
  "log",
  "lru",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "parking_lot 0.11.1",
  "sp-api",
  "sp-consensus",
@@ -9712,7 +9948,7 @@ dependencies = [
  "futures-timer 3.0.2",
  "libp2p",
  "log",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "parking_lot 0.11.1",
  "serde",
  "sp-api",
@@ -9735,7 +9971,7 @@ version = "0.9.0"
 source = "git+http://github.com/paritytech/substrate.git?branch=polkadot-v0.9.8#1b758b2a8d151d97d2242260c465b6df9cb8a7a4"
 dependencies = [
  "async-trait",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "sp-api",
  "sp-application-crypto",
  "sp-consensus",
@@ -9753,7 +9989,7 @@ source = "git+http://github.com/paritytech/substrate.git?branch=polkadot-v0.9.8#
 dependencies = [
  "async-trait",
  "merlin",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "serde",
  "sp-api",
  "sp-application-crypto",
@@ -9773,7 +10009,7 @@ name = "sp-consensus-slots"
 version = "0.9.0"
 source = "git+http://github.com/paritytech/substrate.git?branch=polkadot-v0.9.8#1b758b2a8d151d97d2242260c465b6df9cb8a7a4"
 dependencies = [
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "sp-arithmetic",
  "sp-runtime",
 ]
@@ -9783,7 +10019,7 @@ name = "sp-consensus-vrf"
 version = "0.9.0"
 source = "git+http://github.com/paritytech/substrate.git?branch=polkadot-v0.9.8#1b758b2a8d151d97d2242260c465b6df9cb8a7a4"
 dependencies = [
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "schnorrkel",
  "sp-core",
  "sp-runtime",
@@ -9811,7 +10047,7 @@ dependencies = [
  "max-encoded-len",
  "merlin",
  "num-traits",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "parity-util-mem",
  "parking_lot 0.11.1",
  "primitive-types",
@@ -9860,7 +10096,7 @@ version = "0.9.0"
 source = "git+http://github.com/paritytech/substrate.git?branch=polkadot-v0.9.8#1b758b2a8d151d97d2242260c465b6df9cb8a7a4"
 dependencies = [
  "environmental",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "sp-std",
  "sp-storage",
 ]
@@ -9872,7 +10108,7 @@ source = "git+http://github.com/paritytech/substrate.git?branch=polkadot-v0.9.8#
 dependencies = [
  "finality-grandpa",
  "log",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "serde",
  "sp-api",
  "sp-application-crypto",
@@ -9889,7 +10125,7 @@ source = "git+http://github.com/paritytech/substrate.git?branch=polkadot-v0.9.8#
 dependencies = [
  "async-trait",
  "impl-trait-for-tuples",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "sp-core",
  "sp-runtime",
  "sp-std",
@@ -9905,7 +10141,7 @@ dependencies = [
  "hash-db",
  "libsecp256k1",
  "log",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "parking_lot 0.11.1",
  "sp-core",
  "sp-externalities",
@@ -9941,7 +10177,7 @@ dependencies = [
  "derive_more",
  "futures 0.3.15",
  "merlin",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "parking_lot 0.11.1",
  "schnorrkel",
  "serde",
@@ -9963,26 +10199,32 @@ name = "sp-mvm"
 version = "0.3.2"
 dependencies = [
  "alt_serde",
- "bcs 0.1.1",
+ "bcs 0.1.1 (git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe)",
  "bcs 0.1.3",
+ "diem-types 0.0.1 (git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe)",
+ "env_logger 0.8.4",
  "frame-benchmarking",
  "frame-support",
  "frame-system",
+ "getrandom 0.2.3",
  "log",
- "move-core-types",
- "move-vm-runtime",
- "move-vm-types",
- "mvm",
+ "move-core-types 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
+ "move-vm-runtime 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
+ "move-vm-types 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
+ "mvm 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
  "once_cell",
  "pallet-balances",
+ "pallet-multisig",
  "pallet-timestamp",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
+ "parity-scale-codec-derive",
  "serde",
  "sp-core",
  "sp-io",
  "sp-runtime",
  "sp-std",
- "vm",
+ "test-env-log",
+ "vm 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
 ]
 
 [[package]]
@@ -9994,7 +10236,7 @@ dependencies = [
  "jsonrpc-core 15.1.0",
  "jsonrpc-core-client 15.1.0",
  "jsonrpc-derive 15.1.0",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "serde",
  "sp-api",
  "sp-blockchain",
@@ -10008,7 +10250,7 @@ name = "sp-mvm-rpc-runtime"
 version = "0.2.2"
 dependencies = [
  "frame-support",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "sp-api",
  "sp-mvm",
  "sp-runtime",
@@ -10020,7 +10262,7 @@ name = "sp-npos-elections"
 version = "3.0.0"
 source = "git+http://github.com/paritytech/substrate.git?branch=polkadot-v0.9.8#1b758b2a8d151d97d2242260c465b6df9cb8a7a4"
 dependencies = [
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "serde",
  "sp-arithmetic",
  "sp-core",
@@ -10078,7 +10320,7 @@ dependencies = [
  "impl-trait-for-tuples",
  "log",
  "max-encoded-len",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "parity-util-mem",
  "paste",
  "rand 0.7.3",
@@ -10096,7 +10338,7 @@ version = "3.0.0"
 source = "git+http://github.com/paritytech/substrate.git?branch=polkadot-v0.9.8#1b758b2a8d151d97d2242260c465b6df9cb8a7a4"
 dependencies = [
  "impl-trait-for-tuples",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "primitive-types",
  "sp-externalities",
  "sp-runtime-interface-proc-macro",
@@ -10133,7 +10375,7 @@ name = "sp-session"
 version = "3.0.0"
 source = "git+http://github.com/paritytech/substrate.git?branch=polkadot-v0.9.8#1b758b2a8d151d97d2242260c465b6df9cb8a7a4"
 dependencies = [
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "sp-api",
  "sp-core",
  "sp-runtime",
@@ -10146,7 +10388,7 @@ name = "sp-staking"
 version = "3.0.0"
 source = "git+http://github.com/paritytech/substrate.git?branch=polkadot-v0.9.8#1b758b2a8d151d97d2242260c465b6df9cb8a7a4"
 dependencies = [
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "sp-runtime",
  "sp-std",
 ]
@@ -10159,7 +10401,7 @@ dependencies = [
  "hash-db",
  "log",
  "num-traits",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "parking_lot 0.11.1",
  "rand 0.7.3",
  "smallvec 1.6.1",
@@ -10185,7 +10427,7 @@ version = "3.0.0"
 source = "git+http://github.com/paritytech/substrate.git?branch=polkadot-v0.9.8#1b758b2a8d151d97d2242260c465b6df9cb8a7a4"
 dependencies = [
  "impl-serde",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "ref-cast",
  "serde",
  "sp-debug-derive",
@@ -10213,7 +10455,7 @@ dependencies = [
  "async-trait",
  "futures-timer 3.0.2",
  "log",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "sp-api",
  "sp-inherents",
  "sp-runtime",
@@ -10229,7 +10471,7 @@ source = "git+http://github.com/paritytech/substrate.git?branch=polkadot-v0.9.8#
 dependencies = [
  "erased-serde",
  "log",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "parking_lot 0.10.2",
  "serde",
  "serde_json",
@@ -10248,7 +10490,7 @@ dependencies = [
  "derive_more",
  "futures 0.3.15",
  "log",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "serde",
  "sp-api",
  "sp-blockchain",
@@ -10263,7 +10505,7 @@ source = "git+http://github.com/paritytech/substrate.git?branch=polkadot-v0.9.8#
 dependencies = [
  "async-trait",
  "log",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "sp-core",
  "sp-inherents",
  "sp-runtime",
@@ -10278,7 +10520,7 @@ source = "git+http://github.com/paritytech/substrate.git?branch=polkadot-v0.9.8#
 dependencies = [
  "hash-db",
  "memory-db",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "sp-core",
  "sp-std",
  "trie-db",
@@ -10303,7 +10545,7 @@ version = "3.0.0"
 source = "git+http://github.com/paritytech/substrate.git?branch=polkadot-v0.9.8#1b758b2a8d151d97d2242260c465b6df9cb8a7a4"
 dependencies = [
  "impl-serde",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "serde",
  "sp-runtime",
  "sp-std",
@@ -10315,7 +10557,7 @@ name = "sp-version-proc-macro"
 version = "3.0.0"
 source = "git+http://github.com/paritytech/substrate.git?branch=polkadot-v0.9.8#1b758b2a8d151d97d2242260c465b6df9cb8a7a4"
 dependencies = [
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "proc-macro-crate 1.0.0",
  "proc-macro2",
  "quote",
@@ -10328,7 +10570,7 @@ version = "3.0.0"
 source = "git+http://github.com/paritytech/substrate.git?branch=polkadot-v0.9.8#1b758b2a8d151d97d2242260c465b6df9cb8a7a4"
 dependencies = [
  "impl-trait-for-tuples",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "sp-std",
  "wasmi",
 ]
@@ -10387,6 +10629,23 @@ dependencies = [
  "nalgebra",
  "num-traits",
  "rand 0.8.4",
+]
+
+[[package]]
+name = "stdlib"
+version = "0.1.0"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b#231b333e6830a50cadbf6b338ca4a7f33216522b"
+
+[[package]]
+name = "stdlib"
+version = "0.1.0"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe#e84b6eab01fb6e2520d86ba6a5fe9466404b12fe"
+
+[[package]]
+name = "stdlib-fetch"
+version = "1.0.0"
+dependencies = [
+ "anyhow",
 ]
 
 [[package]]
@@ -10491,7 +10750,7 @@ dependencies = [
  "jsonrpc-core-client 15.1.0",
  "jsonrpc-derive 15.1.0",
  "log",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "sc-client-api",
  "sc-rpc-api",
  "serde",
@@ -10623,6 +10882,17 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2dfed899f0eb03f32ee8c6a0aabdb8a7949659e3466561fc0adf54e26d88c5f4"
 dependencies = [
  "winapi-util",
+]
+
+[[package]]
+name = "test-env-log"
+version = "0.2.7"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b3e4b132a630cc8a0d06cfcb400da67adef3d0087a94b3332d4692908f0c2544"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn",
 ]
 
 [[package]]
@@ -11203,7 +11473,7 @@ source = "git+http://github.com/paritytech/substrate.git?branch=polkadot-v0.9.8#
 dependencies = [
  "frame-try-runtime",
  "log",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "remote-externalities",
  "sc-chain-spec",
  "sc-cli",
@@ -11414,16 +11684,32 @@ checksum = "5fecdca9a5291cc2b8dcf7dc02453fee791a280f3743cb0905f8822ae463b3fe"
 [[package]]
 name = "vm"
 version = "0.1.0"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=1c94891be56ec67eb04a8d1bd21775219d526f48#1c94891be56ec67eb04a8d1bd21775219d526f48"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b#231b333e6830a50cadbf6b338ca4a7f33216522b"
 dependencies = [
  "alt_serde",
  "anyhow",
- "diem-crypto",
+ "cell 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
+ "diem-crypto 0.0.1 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
  "hashbrown 0.9.1",
- "mirai-annotations",
- "move-core-types",
- "num-variants",
- "once_cell",
+ "mirai-annotations 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
+ "move-core-types 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
+ "num-variants 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
+ "ref-cast",
+]
+
+[[package]]
+name = "vm"
+version = "0.1.0"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe#e84b6eab01fb6e2520d86ba6a5fe9466404b12fe"
+dependencies = [
+ "alt_serde",
+ "anyhow",
+ "cell 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe)",
+ "diem-crypto 0.0.1 (git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe)",
+ "hashbrown 0.9.1",
+ "mirai-annotations 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe)",
+ "move-core-types 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe)",
+ "num-variants 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe)",
  "ref-cast",
 ]
 
@@ -11873,7 +12159,7 @@ version = "0.9.8"
 source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
  "beefy-primitives",
- "bitvec 0.20.4",
+ "bitvec",
  "frame-benchmarking",
  "frame-election-provider-support",
  "frame-executive",
@@ -11919,7 +12205,7 @@ dependencies = [
  "pallet-utility",
  "pallet-vesting",
  "pallet-xcm",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "polkadot-parachain",
  "polkadot-primitives",
  "polkadot-runtime-common",
@@ -12052,7 +12338,7 @@ source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a
 dependencies = [
  "derivative",
  "impl-trait-for-tuples",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
 ]
 
 [[package]]
@@ -12064,7 +12350,7 @@ dependencies = [
  "frame-system",
  "impl-trait-for-tuples",
  "pallet-transaction-payment",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "polkadot-parachain",
  "sp-arithmetic",
  "sp-io",
@@ -12082,7 +12368,7 @@ dependencies = [
  "frame-support",
  "impl-trait-for-tuples",
  "log",
- "parity-scale-codec 2.2.0",
+ "parity-scale-codec",
  "sp-arithmetic",
  "sp-core",
  "sp-io",

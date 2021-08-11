@@ -15,3 +15,8 @@
 
 # .log files created by polkadot-launch
 *.log
+
+artifacts/
+/node/move/stdlib/
+
+.direnv

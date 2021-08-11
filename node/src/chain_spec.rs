@@ -4,11 +4,16 @@ use sp_core::{sr25519, Pair, Public};
 use sc_chain_spec::{ChainSpecExtension, ChainSpecGroup};
 use sp_runtime::traits::{IdentifyAccount, Verify};
 use mv_node_runtime::{
-    GenesisConfig, SudoConfig, SystemConfig, BalancesConfig, WASM_BINARY, AccountId, Signature,
-    ParachainInfoConfig, AuraId, AuraConfig, VestingConfig, PONT, DECIMALS,
+    GenesisConfig, SudoConfig, SystemConfig, BalancesConfig, WASM_BINARY,
+    ParachainInfoConfig, AuraId, AuraConfig, VestingConfig, MvmConfig,
+    primitives::{AccountId, Signature},
+    constants::currency::{PONT, DECIMALS},
 };
 use serde::{Serialize, Deserialize};
 use serde_json::json;
+use std::include_bytes;
+
+use crate::vm_config::build as build_vm_config;
 
 /// Address format for Pontem.
 /// 42 is a placeholder for any Substrate-based chain.
@@ -166,6 +171,8 @@ fn testnet_genesis(
     endowed_accounts: Vec<AccountId>,
     id: ParaId,
 ) -> GenesisConfig {
+    let vm_config = build_vm_config();
+
     GenesisConfig {
         system: SystemConfig {
             // Add Wasm runtime to storage.
@@ -177,7 +184,7 @@ fn testnet_genesis(
             balances: endowed_accounts
                 .iter()
                 .cloned()
-                .map(|k| (k, 1000 * PONT))
+                .map(|k| (k, 1000 * PONT ))
                 .collect(),
         },
         parachain_system: Default::default(),
@@ -185,6 +192,13 @@ fn testnet_genesis(
         sudo: SudoConfig {
             // Assign network admin rights.
             key: root_key,
+        },
+        mvm: MvmConfig {
+            stdlib: include_bytes!("../move/stdlib/artifacts/bundles/move-stdlib.pac").to_vec(),
+            init_module: vm_config.0.clone(),
+            init_func: vm_config.1.clone(),
+            init_args: vm_config.2.clone(),
+            ..Default::default()
         },
         aura: AuraConfig {
             authorities: initial_authorities,
@@ -195,7 +209,7 @@ fn testnet_genesis(
             vesting: endowed_accounts
                 .iter()
                 .cloned()
-                .map(|k| (k, 100, 1000, 10 * PONT))
+                .map(|k| (k, 100, 1000, 990 * PONT ))
                 .collect(),
         },
     }

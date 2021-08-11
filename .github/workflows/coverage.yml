@@ -27,8 +27,7 @@ jobs:
         cfg:
           - os: self-hosted
             grcov: grcov-linux-x86_64.tar.bz2
-            dove:
-              version: 1.1.4
+            dove: 1.2.8
 
     env:
       SKIP_WASM_BUILD: 1
@@ -64,15 +63,17 @@ jobs:
           cp grcov ~/.cargo/bin/grcov
           rm ${{ matrix.cfg.grcov }}
 
-      - name: Cache
+      - name: cache Dove
         uses: actions/cache@v2
         with:
           path: ~/.dove
-          key: ${{ matrix.cfg.os }}-dove
+          key: ${{ matrix.cfg.os }}-dove-${{ matrix.cfg.dove }}
+
       - name: get Dove
         uses: pontem-network/get-dove@main
         with:
-          version: ${{ matrix.cfg.dove.version }}
+          prerelease: true
+          version: ${{ matrix.cfg.dove }}
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build test resources
