@@ -4,8 +4,8 @@ use sp_core::{sr25519, Pair, Public};
 use sc_chain_spec::{ChainSpecExtension, ChainSpecGroup};
 use sp_runtime::traits::{IdentifyAccount, Verify};
 use mv_node_runtime::{
-    GenesisConfig, SudoConfig, SystemConfig, BalancesConfig, WASM_BINARY,
-    ParachainInfoConfig, AuraId, AuraConfig, VestingConfig, MvmConfig,
+    GenesisConfig, SudoConfig, SystemConfig, BalancesConfig, WASM_BINARY, ParachainInfoConfig,
+    AuraId, AuraConfig, VestingConfig, MvmConfig,
     primitives::{AccountId, Signature},
     constants::currency::{PONT, DECIMALS},
 };
@@ -184,7 +184,7 @@ fn testnet_genesis(
             balances: endowed_accounts
                 .iter()
                 .cloned()
-                .map(|k| (k, 1000 * PONT ))
+                .map(|k| (k, 1000 * PONT))
                 .collect(),
         },
         parachain_system: Default::default(),
@@ -209,7 +209,7 @@ fn testnet_genesis(
             vesting: endowed_accounts
                 .iter()
                 .cloned()
-                .map(|k| (k, 100, 1000, 990 * PONT ))
+                .map(|k| (k, 100, 1000, 990 * PONT))
                 .collect(),
         },
     }
