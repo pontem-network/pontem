@@ -7,7 +7,10 @@
 
 use std::sync::Arc;
 
-use mv_node_runtime::{opaque::Block, AccountId, Balance, Index};
+use mv_node_runtime::{
+    opaque::Block,
+    primitives::{AccountId, Balance, Index},
+};
 use sp_api::ProvideRuntimeApi;
 use sp_blockchain::{Error as BlockChainError, HeaderMetadata, HeaderBackend};
 use sp_block_builder::BlockBuilder;

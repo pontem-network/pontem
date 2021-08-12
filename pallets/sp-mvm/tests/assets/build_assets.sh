@@ -2,7 +2,7 @@
 rm -rf ./stdlib
 git clone https://github.com/pontem-network/move-stdlib.git ./stdlib
 pushd ./stdlib
-git checkout ed4b158bdc339f7de20dc2144dfad606870b1f6f
+git checkout 7f200e70d2fc98863ecc8e004e9ee2255e97bf5a
 dove build --package
 popd
 
@@ -16,7 +16,7 @@ dove tx "store_system_block()"
 dove tx "store_system_timestamp()"
 dove tx "inf_loop()"
 dove tx "store_native_balance()"
-dove tx "transfer(2000)"
+dove tx "transfer(treasury, 5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY, 2000)"
 dove tx "multisig_test()"
 #dove tx "store_native_deposit(false)"
 #dove tx "store_native_deposit(true)" -o=store_native_deposit_reg
