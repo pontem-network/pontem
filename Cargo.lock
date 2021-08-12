@@ -867,7 +867,9 @@ version = "0.2.16"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "90682c8d613ad3373e66de8c6411e0ae2ab2571e879d2efbf73558cc66f21279"
 dependencies = [
+ "lazy_static",
  "memchr",
+ "regex-automata",
 ]
 
 [[package]]
@@ -1164,6 +1166,19 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "30ed07550be01594c6026cff2a1d7fe9c8f683caa798e12b68694ac9e88286a3"
 dependencies = [
  "cache-padded",
+]
+
+[[package]]
+name = "console"
+version = "0.14.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3993e6445baa160675931ec041a5e03ca84b9c6e32a056150d3aa2bdda0a1f45"
+dependencies = [
+ "encode_unicode",
+ "lazy_static",
+ "libc",
+ "terminal_size",
+ "winapi 0.3.9",
 ]
 
 [[package]]
@@ -1488,7 +1503,7 @@ dependencies = [
 [[package]]
 name = "cumulus-client-cli"
 version = "0.1.0"
-source = "git+http://github.com/paritytech/cumulus.git?branch=polkadot-v0.9.8#4e51d32fdc4636f2d207204a25534e01d5fddf75"
+source = "git+https://github.com/purestake/cumulus?branch=joshy-np098#07944252c6a9cf0a2cd5f7d61f04cad1dd3926ef"
 dependencies = [
  "sc-cli",
  "sc-service",
@@ -1498,7 +1513,7 @@ dependencies = [
 [[package]]
 name = "cumulus-client-collator"
 version = "0.1.0"
-source = "git+http://github.com/paritytech/cumulus.git?branch=polkadot-v0.9.8#4e51d32fdc4636f2d207204a25534e01d5fddf75"
+source = "git+https://github.com/purestake/cumulus?branch=joshy-np098#07944252c6a9cf0a2cd5f7d61f04cad1dd3926ef"
 dependencies = [
  "cumulus-client-consensus-common",
  "cumulus-client-network",
@@ -1520,39 +1535,9 @@ dependencies = [
 ]
 
 [[package]]
-name = "cumulus-client-consensus-aura"
-version = "0.1.0"
-source = "git+http://github.com/paritytech/cumulus.git?branch=polkadot-v0.9.8#4e51d32fdc4636f2d207204a25534e01d5fddf75"
-dependencies = [
- "async-trait",
- "cumulus-client-consensus-common",
- "cumulus-primitives-core",
- "futures 0.3.15",
- "parity-scale-codec",
- "parking_lot 0.10.2",
- "polkadot-client",
- "sc-client-api",
- "sc-consensus-aura",
- "sc-consensus-slots",
- "sc-telemetry",
- "sp-api",
- "sp-application-crypto",
- "sp-block-builder",
- "sp-blockchain",
- "sp-consensus",
- "sp-consensus-aura",
- "sp-core",
- "sp-inherents",
- "sp-keystore",
- "sp-runtime",
- "substrate-prometheus-endpoint",
- "tracing",
-]
-
-[[package]]
 name = "cumulus-client-consensus-common"
 version = "0.1.0"
-source = "git+http://github.com/paritytech/cumulus.git?branch=polkadot-v0.9.8#4e51d32fdc4636f2d207204a25534e01d5fddf75"
+source = "git+https://github.com/purestake/cumulus?branch=joshy-np098#07944252c6a9cf0a2cd5f7d61f04cad1dd3926ef"
 dependencies = [
  "async-trait",
  "dyn-clone",
@@ -1574,9 +1559,33 @@ dependencies = [
 ]
 
 [[package]]
+name = "cumulus-client-consensus-relay-chain"
+version = "0.1.0"
+source = "git+https://github.com/purestake/cumulus?branch=joshy-np098#07944252c6a9cf0a2cd5f7d61f04cad1dd3926ef"
+dependencies = [
+ "async-trait",
+ "cumulus-client-consensus-common",
+ "cumulus-primitives-core",
+ "futures 0.3.15",
+ "parity-scale-codec",
+ "parking_lot 0.10.2",
+ "polkadot-client",
+ "sc-client-api",
+ "sp-api",
+ "sp-block-builder",
+ "sp-blockchain",
+ "sp-consensus",
+ "sp-core",
+ "sp-inherents",
+ "sp-runtime",
+ "substrate-prometheus-endpoint",
+ "tracing",
+]
+
+[[package]]
 name = "cumulus-client-network"
 version = "0.1.0"
-source = "git+http://github.com/paritytech/cumulus.git?branch=polkadot-v0.9.8#4e51d32fdc4636f2d207204a25534e01d5fddf75"
+source = "git+https://github.com/purestake/cumulus?branch=joshy-np098#07944252c6a9cf0a2cd5f7d61f04cad1dd3926ef"
 dependencies = [
  "derive_more",
  "futures 0.3.15",
@@ -1600,7 +1609,7 @@ dependencies = [
 [[package]]
 name = "cumulus-client-pov-recovery"
 version = "0.1.0"
-source = "git+http://github.com/paritytech/cumulus.git?branch=polkadot-v0.9.8#4e51d32fdc4636f2d207204a25534e01d5fddf75"
+source = "git+https://github.com/purestake/cumulus?branch=joshy-np098#07944252c6a9cf0a2cd5f7d61f04cad1dd3926ef"
 dependencies = [
  "cumulus-primitives-core",
  "futures 0.3.15",
@@ -1623,7 +1632,7 @@ dependencies = [
 [[package]]
 name = "cumulus-client-service"
 version = "0.1.0"
-source = "git+http://github.com/paritytech/cumulus.git?branch=polkadot-v0.9.8#4e51d32fdc4636f2d207204a25534e01d5fddf75"
+source = "git+https://github.com/purestake/cumulus?branch=joshy-np098#07944252c6a9cf0a2cd5f7d61f04cad1dd3926ef"
 dependencies = [
  "cumulus-client-collator",
  "cumulus-client-consensus-common",
@@ -1649,26 +1658,9 @@ dependencies = [
 ]
 
 [[package]]
-name = "cumulus-pallet-aura-ext"
-version = "0.1.0"
-source = "git+http://github.com/paritytech/cumulus.git?branch=polkadot-v0.9.8#4e51d32fdc4636f2d207204a25534e01d5fddf75"
-dependencies = [
- "frame-executive",
- "frame-support",
- "frame-system",
- "pallet-aura",
- "parity-scale-codec",
- "serde",
- "sp-application-crypto",
- "sp-consensus-aura",
- "sp-runtime",
- "sp-std",
-]
-
-[[package]]
 name = "cumulus-pallet-dmp-queue"
 version = "0.1.0"
-source = "git+http://github.com/paritytech/cumulus.git?branch=polkadot-v0.9.8#4e51d32fdc4636f2d207204a25534e01d5fddf75"
+source = "git+https://github.com/purestake/cumulus?branch=joshy-np098#07944252c6a9cf0a2cd5f7d61f04cad1dd3926ef"
 dependencies = [
  "cumulus-primitives-core",
  "frame-support",
@@ -1687,7 +1679,7 @@ dependencies = [
 [[package]]
 name = "cumulus-pallet-parachain-system"
 version = "0.1.0"
-source = "git+http://github.com/paritytech/cumulus.git?branch=polkadot-v0.9.8#4e51d32fdc4636f2d207204a25534e01d5fddf75"
+source = "git+https://github.com/purestake/cumulus?branch=joshy-np098#07944252c6a9cf0a2cd5f7d61f04cad1dd3926ef"
 dependencies = [
  "cumulus-pallet-parachain-system-proc-macro",
  "cumulus-primitives-core",
@@ -1715,7 +1707,7 @@ dependencies = [
 [[package]]
 name = "cumulus-pallet-parachain-system-proc-macro"
 version = "0.1.0"
-source = "git+http://github.com/paritytech/cumulus.git?branch=polkadot-v0.9.8#4e51d32fdc4636f2d207204a25534e01d5fddf75"
+source = "git+https://github.com/purestake/cumulus?branch=joshy-np098#07944252c6a9cf0a2cd5f7d61f04cad1dd3926ef"
 dependencies = [
  "proc-macro-crate 1.0.0",
  "proc-macro2",
@@ -1726,7 +1718,7 @@ dependencies = [
 [[package]]
 name = "cumulus-pallet-xcm"
 version = "0.1.0"
-source = "git+http://github.com/paritytech/cumulus.git?branch=polkadot-v0.9.8#4e51d32fdc4636f2d207204a25534e01d5fddf75"
+source = "git+https://github.com/purestake/cumulus?branch=joshy-np098#07944252c6a9cf0a2cd5f7d61f04cad1dd3926ef"
 dependencies = [
  "cumulus-primitives-core",
  "frame-support",
@@ -1742,7 +1734,7 @@ dependencies = [
 [[package]]
 name = "cumulus-pallet-xcmp-queue"
 version = "0.1.0"
-source = "git+http://github.com/paritytech/cumulus.git?branch=polkadot-v0.9.8#4e51d32fdc4636f2d207204a25534e01d5fddf75"
+source = "git+https://github.com/purestake/cumulus?branch=joshy-np098#07944252c6a9cf0a2cd5f7d61f04cad1dd3926ef"
 dependencies = [
  "cumulus-primitives-core",
  "frame-support",
@@ -1760,7 +1752,7 @@ dependencies = [
 [[package]]
 name = "cumulus-primitives-core"
 version = "0.1.0"
-source = "git+http://github.com/paritytech/cumulus.git?branch=polkadot-v0.9.8#4e51d32fdc4636f2d207204a25534e01d5fddf75"
+source = "git+https://github.com/purestake/cumulus?branch=joshy-np098#07944252c6a9cf0a2cd5f7d61f04cad1dd3926ef"
 dependencies = [
  "frame-support",
  "impl-trait-for-tuples",
@@ -1778,7 +1770,7 @@ dependencies = [
 [[package]]
 name = "cumulus-primitives-parachain-inherent"
 version = "0.1.0"
-source = "git+http://github.com/paritytech/cumulus.git?branch=polkadot-v0.9.8#4e51d32fdc4636f2d207204a25534e01d5fddf75"
+source = "git+https://github.com/purestake/cumulus?branch=joshy-np098#07944252c6a9cf0a2cd5f7d61f04cad1dd3926ef"
 dependencies = [
  "async-trait",
  "cumulus-primitives-core",
@@ -1799,7 +1791,7 @@ dependencies = [
 [[package]]
 name = "cumulus-primitives-timestamp"
 version = "0.1.0"
-source = "git+http://github.com/paritytech/cumulus.git?branch=polkadot-v0.9.8#4e51d32fdc4636f2d207204a25534e01d5fddf75"
+source = "git+https://github.com/purestake/cumulus?branch=joshy-np098#07944252c6a9cf0a2cd5f7d61f04cad1dd3926ef"
 dependencies = [
  "cumulus-primitives-core",
  "sp-inherents",
@@ -1810,7 +1802,7 @@ dependencies = [
 [[package]]
 name = "cumulus-primitives-utility"
 version = "0.1.0"
-source = "git+http://github.com/paritytech/cumulus.git?branch=polkadot-v0.9.8#4e51d32fdc4636f2d207204a25534e01d5fddf75"
+source = "git+https://github.com/purestake/cumulus?branch=joshy-np098#07944252c6a9cf0a2cd5f7d61f04cad1dd3926ef"
 dependencies = [
  "cumulus-primitives-core",
  "frame-support",
@@ -1828,7 +1820,7 @@ dependencies = [
 [[package]]
 name = "cumulus-test-relay-sproof-builder"
 version = "0.1.0"
-source = "git+http://github.com/paritytech/cumulus.git?branch=polkadot-v0.9.8#4e51d32fdc4636f2d207204a25534e01d5fddf75"
+source = "git+https://github.com/purestake/cumulus?branch=joshy-np098#07944252c6a9cf0a2cd5f7d61f04cad1dd3926ef"
 dependencies = [
  "cumulus-primitives-core",
  "parity-scale-codec",
@@ -2152,6 +2144,12 @@ name = "either"
 version = "1.6.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e78d4f1cc4ae33bbfc157ed5d5a5ef3bc29227303d595861deb238fcec4e9457"
+
+[[package]]
+name = "encode_unicode"
+version = "0.3.6"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a357d28ed41a50f9c765dbfe56cbc04a64e53e5fc58ba79fbc34c10ef3df831f"
 
 [[package]]
 name = "enum-as-inner"
@@ -5064,8 +5062,8 @@ name = "mv-node"
 version = "3.0.0"
 dependencies = [
  "cumulus-client-cli",
- "cumulus-client-consensus-aura",
  "cumulus-client-consensus-common",
+ "cumulus-client-consensus-relay-chain",
  "cumulus-client-network",
  "cumulus-client-service",
  "cumulus-primitives-core",
@@ -5076,6 +5074,8 @@ dependencies = [
  "log",
  "mv-node-runtime",
  "mvm 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe)",
+ "nimbus-consensus",
+ "nimbus-primitives",
  "pallet-transaction-payment-rpc",
  "parity-scale-codec",
  "polkadot-cli",
@@ -5087,7 +5087,6 @@ dependencies = [
  "sc-cli",
  "sc-client-api",
  "sc-consensus",
- "sc-consensus-aura",
  "sc-executor",
  "sc-finality-grandpa",
  "sc-keystore",
@@ -5104,7 +5103,6 @@ dependencies = [
  "sp-block-builder",
  "sp-blockchain",
  "sp-consensus",
- "sp-consensus-aura",
  "sp-core",
  "sp-finality-grandpa",
  "sp-inherents",
@@ -5127,7 +5125,6 @@ dependencies = [
 name = "mv-node-runtime"
 version = "3.0.0"
 dependencies = [
- "cumulus-pallet-aura-ext",
  "cumulus-pallet-dmp-queue",
  "cumulus-pallet-parachain-system",
  "cumulus-pallet-xcm",
@@ -5142,9 +5139,11 @@ dependencies = [
  "frame-system-benchmarking",
  "frame-system-rpc-runtime-api",
  "hex-literal",
- "pallet-aura",
+ "nimbus-primitives",
+ "pallet-author-inherent",
+ "pallet-author-mapping",
+ "pallet-author-slot-filter",
  "pallet-balances",
- "pallet-grandpa",
  "pallet-multisig",
  "pallet-randomness-collective-flip",
  "pallet-sudo",
@@ -5154,12 +5153,12 @@ dependencies = [
  "pallet-vesting",
  "pallet-xcm",
  "parachain-info",
+ "parachain-staking",
  "parity-scale-codec",
  "polkadot-parachain",
  "serde",
  "sp-api",
  "sp-block-builder",
- "sp-consensus-aura",
  "sp-core",
  "sp-inherents",
  "sp-mvm",
@@ -5271,6 +5270,51 @@ dependencies = [
  "cfg-if 0.1.10",
  "libc",
  "winapi 0.3.9",
+]
+
+[[package]]
+name = "nimbus-consensus"
+version = "0.1.0"
+source = "git+https://github.com/purestake/cumulus?branch=joshy-np098#07944252c6a9cf0a2cd5f7d61f04cad1dd3926ef"
+dependencies = [
+ "async-trait",
+ "cumulus-client-consensus-common",
+ "cumulus-primitives-core",
+ "cumulus-primitives-parachain-inherent",
+ "futures 0.3.15",
+ "log",
+ "nimbus-primitives",
+ "parity-scale-codec",
+ "parking_lot 0.9.0",
+ "polkadot-service",
+ "sc-client-api",
+ "sp-api",
+ "sp-application-crypto",
+ "sp-block-builder",
+ "sp-blockchain",
+ "sp-consensus",
+ "sp-core",
+ "sp-inherents",
+ "sp-keystore",
+ "sp-runtime",
+ "substrate-prometheus-endpoint",
+ "tracing",
+]
+
+[[package]]
+name = "nimbus-primitives"
+version = "0.1.0"
+source = "git+https://github.com/purestake/cumulus?branch=joshy-np098#07944252c6a9cf0a2cd5f7d61f04cad1dd3926ef"
+dependencies = [
+ "async-trait",
+ "frame-support",
+ "frame-system",
+ "parity-scale-codec",
+ "sp-api",
+ "sp-application-crypto",
+ "sp-inherents",
+ "sp-runtime",
+ "sp-std",
 ]
 
 [[package]]
@@ -5453,17 +5497,55 @@ dependencies = [
 ]
 
 [[package]]
-name = "pallet-aura"
-version = "3.0.0"
-source = "git+http://github.com/paritytech/substrate.git?branch=polkadot-v0.9.8#1b758b2a8d151d97d2242260c465b6df9cb8a7a4"
+name = "pallet-author-inherent"
+version = "0.1.0"
+source = "git+https://github.com/purestake/cumulus?branch=joshy-np098#07944252c6a9cf0a2cd5f7d61f04cad1dd3926ef"
 dependencies = [
  "frame-support",
  "frame-system",
- "pallet-session",
- "pallet-timestamp",
+ "log",
+ "nimbus-primitives",
  "parity-scale-codec",
+ "sp-api",
  "sp-application-crypto",
- "sp-consensus-aura",
+ "sp-authorship",
+ "sp-inherents",
+ "sp-runtime",
+ "sp-std",
+]
+
+[[package]]
+name = "pallet-author-mapping"
+version = "2.0.3"
+dependencies = [
+ "frame-benchmarking",
+ "frame-support",
+ "frame-system",
+ "log",
+ "nimbus-primitives",
+ "pallet-balances",
+ "parity-scale-codec",
+ "serde",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+ "sp-std",
+]
+
+[[package]]
+name = "pallet-author-slot-filter"
+version = "0.1.0"
+source = "git+https://github.com/purestake/cumulus?branch=joshy-np098#07944252c6a9cf0a2cd5f7d61f04cad1dd3926ef"
+dependencies = [
+ "cumulus-pallet-parachain-system",
+ "frame-support",
+ "frame-system",
+ "log",
+ "nimbus-primitives",
+ "pallet-author-inherent",
+ "parity-scale-codec",
+ "serde",
+ "sp-core",
  "sp-runtime",
  "sp-std",
 ]
@@ -6176,13 +6258,33 @@ dependencies = [
 [[package]]
 name = "parachain-info"
 version = "0.1.0"
-source = "git+http://github.com/paritytech/cumulus.git?branch=polkadot-v0.9.8#4e51d32fdc4636f2d207204a25534e01d5fddf75"
+source = "git+https://github.com/purestake/cumulus?branch=joshy-np098#07944252c6a9cf0a2cd5f7d61f04cad1dd3926ef"
 dependencies = [
  "cumulus-primitives-core",
  "frame-support",
  "frame-system",
  "parity-scale-codec",
  "serde",
+]
+
+[[package]]
+name = "parachain-staking"
+version = "2.1.1"
+dependencies = [
+ "frame-benchmarking",
+ "frame-support",
+ "frame-system",
+ "log",
+ "nimbus-primitives",
+ "pallet-balances",
+ "parity-scale-codec",
+ "serde",
+ "similar-asserts",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+ "sp-std",
+ "substrate-fixed",
 ]
 
 [[package]]
@@ -8578,37 +8680,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "sc-consensus-aura"
-version = "0.9.0"
-source = "git+http://github.com/paritytech/substrate.git?branch=polkadot-v0.9.8#1b758b2a8d151d97d2242260c465b6df9cb8a7a4"
-dependencies = [
- "async-trait",
- "derive_more",
- "futures 0.3.15",
- "futures-timer 3.0.2",
- "log",
- "parity-scale-codec",
- "sc-block-builder",
- "sc-client-api",
- "sc-consensus-slots",
- "sc-telemetry",
- "sp-api",
- "sp-application-crypto",
- "sp-block-builder",
- "sp-blockchain",
- "sp-consensus",
- "sp-consensus-aura",
- "sp-consensus-slots",
- "sp-core",
- "sp-inherents",
- "sp-io",
- "sp-keystore",
- "sp-runtime",
- "sp-version",
- "substrate-prometheus-endpoint",
-]
-
-[[package]]
 name = "sc-consensus-babe"
 version = "0.9.0"
 source = "git+http://github.com/paritytech/substrate.git?branch=polkadot-v0.9.8#1b758b2a8d151d97d2242260c465b6df9cb8a7a4"
@@ -9708,6 +9779,26 @@ dependencies = [
 ]
 
 [[package]]
+name = "similar"
+version = "1.3.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1ad1d488a557b235fc46dae55512ffbfc429d2482b08b4d9435ab07384ca8aec"
+dependencies = [
+ "bstr",
+ "unicode-segmentation",
+]
+
+[[package]]
+name = "similar-asserts"
+version = "1.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "4e6ad120c7cf671a6bae051f6d0240fbefc5b7ca2bb4a43fee351f7fbaecb559"
+dependencies = [
+ "console",
+ "similar",
+]
+
+[[package]]
 name = "slab"
 version = "0.4.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -9963,23 +10054,6 @@ dependencies = [
  "substrate-prometheus-endpoint",
  "thiserror",
  "wasm-timer",
-]
-
-[[package]]
-name = "sp-consensus-aura"
-version = "0.9.0"
-source = "git+http://github.com/paritytech/substrate.git?branch=polkadot-v0.9.8#1b758b2a8d151d97d2242260c465b6df9cb8a7a4"
-dependencies = [
- "async-trait",
- "parity-scale-codec",
- "sp-api",
- "sp-application-crypto",
- "sp-consensus",
- "sp-consensus-slots",
- "sp-inherents",
- "sp-runtime",
- "sp-std",
- "sp-timestamp",
 ]
 
 [[package]]
@@ -10740,6 +10814,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "substrate-fixed"
+version = "0.5.6"
+source = "git+https://github.com/encointer/substrate-fixed#b33d186888c60f38adafcfc0ec3a21aab263aef1"
+dependencies = [
+ "parity-scale-codec",
+ "typenum",
+]
+
+[[package]]
 name = "substrate-frame-rpc-system"
 version = "3.0.0"
 source = "git+http://github.com/paritytech/substrate.git?branch=polkadot-v0.9.8#1b758b2a8d151d97d2242260c465b6df9cb8a7a4"
@@ -10882,6 +10965,16 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2dfed899f0eb03f32ee8c6a0aabdb8a7949659e3466561fc0adf54e26d88c5f4"
 dependencies = [
  "winapi-util",
+]
+
+[[package]]
+name = "terminal_size"
+version = "0.1.17"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "633c1a546cee861a1a6d0dc69ebeca693bf4296661ba7852b9d21d159e0506df"
+dependencies = [
+ "libc",
+ "winapi 0.3.9",
 ]
 
 [[package]]
