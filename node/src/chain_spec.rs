@@ -8,7 +8,8 @@ use sp_runtime::{
 };
 use mv_node_runtime::{
     GenesisConfig, SudoConfig, SystemConfig, BalancesConfig, WASM_BINARY, ParachainInfoConfig,
-    VestingConfig, MvmConfig, ParachainStakingConfig, InflationInfo, Range, AuthorFilterConfig, AuthorMappingConfig,
+    VestingConfig, MvmConfig, ParachainStakingConfig, InflationInfo, Range, AuthorFilterConfig,
+    AuthorMappingConfig,
     primitives::{AccountId, Signature, Balance},
     constants::currency::{PONT, DECIMALS},
 };
@@ -249,14 +250,14 @@ pub fn pontem_inflation_config() -> InflationInfo<Balance> {
     InflationInfo {
         // How much staked PONTs we expect.
         expect: Range {
-            min: 10_000_000 * PONT,   // We expect to have staked at least 10M PONT coins.
+            min: 10_000_000 * PONT, // We expect to have staked at least 10M PONT coins.
             ideal: 25_000_000 * PONT, // We expect to have staked ideal 25M PONT coins.
-            max: 50_000_000 * PONT,   // We expect to have staked maximum 50M PONT coins.
+            max: 50_000_000 * PONT, // We expect to have staked maximum 50M PONT coins.
         },
         annual: Range {
-            min: Perbill::from_percent(10),   // We expect minimum inflation is 10%.
+            min: Perbill::from_percent(10), // We expect minimum inflation is 10%.
             ideal: Perbill::from_percent(15), // We expect ideal inflation is 15%.
-            max: Perbill::from_percent(20),   // We expect max inflation is 20%.
+            max: Perbill::from_percent(20), // We expect max inflation is 20%.
         },
         // 8766 rounds (hours) in a year
         round: Range {
