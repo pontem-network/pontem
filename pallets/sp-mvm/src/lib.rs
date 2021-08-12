@@ -19,7 +19,6 @@ pub mod balance;
 pub mod event;
 pub mod gas;
 pub mod mvm;
-pub mod oracle;
 pub mod result;
 pub mod storage;
 pub mod types;
@@ -51,22 +50,25 @@ pub mod pallet {
     use support::traits::UnixTime;
     use support::dispatch::DispatchResultWithPostInfo;
     use sp_runtime::traits::UniqueSaturatedInto;
-    use codec::{FullCodec, FullEncode};
+    use parity_scale_codec::{FullCodec, FullEncode};
 
     use move_vm::Vm;
     use move_vm::mvm::Mvm;
-    use move_vm::data::ExecutionContext;
+    use move_vm::io::context::ExecutionContext;
     use move_vm::types::Gas;
     use move_vm::types::ModuleTx;
     use move_vm::types::Transaction;
     use move_vm::types::VmResult;
     use move_vm::types::ModulePackage;
+
     use move_core_types::account_address::AccountAddress;
     use move_core_types::language_storage::CORE_CODE_ADDRESS;
 
     /// Configure the pallet by specifying the parameters and types on which it depends.
     #[pallet::config]
-    pub trait Config: frame_system::Config + timestamp::Config + balances::Config {
+    pub trait Config:
+        frame_system::Config + timestamp::Config + balances::Config + pallet_multisig::Config
+    {
         /// Because this pallet emits events, it depends on the runtime's definition of an event.
         type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
 
@@ -95,17 +97,14 @@ pub mod pallet {
     // https://substrate.dev/docs/en/knowledgebase/runtime/events
     #[pallet::event]
     #[pallet::metadata(T::AccountId = "AccountId")]
-    // #[pallet::metadata(T::AccountId = "AccountId", T::Balance = "Balance")]
     #[pallet::generate_deposit(pub fn deposit_event)]
     pub enum Event<T: Config> {
-        // Event documentation should end with an array that provides descriptive names for event parameters.
         /// Event provided by Move VM
-        /// [account, type_tag, message, module]
+        /// [guid, typetag, message]
         Event(
-            T::AccountId, /* transcoded AccountAddress */
-            Vec<u8>,      /* encoded TypeTag as String, use Text in web-UI */
-            Vec<u8>,      /* encoded String, use Text in web-UI */
-            Option<types::MoveModuleId<T::AccountId>>,
+            Vec<u8>, // Event guid
+            Vec<u8>, // Event typetag, encoded as String
+            Vec<u8>, // Actual event payload
         ),
 
         /// Event about successful move-module publishing
@@ -237,6 +236,48 @@ pub mod pallet {
         }
     }
 
+    #[pallet::genesis_config]
+    pub struct GenesisConfig<T: Config> {
+        pub _phantom: std::marker::PhantomData<T>,
+        pub stdlib: Vec<u8>,         // Standard library bytes.
+        pub init_module: Vec<u8>,    // Module name for genesis init.
+        pub init_func: Vec<u8>,      // Init function name.
+        pub init_args: Vec<Vec<u8>>, // Arguments.
+    }
+
+    #[cfg(feature = "std")]
+    impl<T: Config> Default for GenesisConfig<T> {
+        fn default() -> Self {
+            GenesisConfig {
+                _phantom: Default::default(),
+                stdlib: vec![],
+                init_module: vec![],
+                init_func: vec![],
+                init_args: vec![],
+            }
+        }
+    }
+
+    #[pallet::genesis_build]
+    impl<T: Config> GenesisBuild<T> for GenesisConfig<T> {
+        fn build(&self) {
+            let package =
+                ModulePackage::try_from(&self.stdlib[..]).expect("Failed to parse stdlib");
+
+            let genesis_config = move_vm::genesis::build_genesis_config(
+                package.into_tx(CORE_CODE_ADDRESS),
+                Some(move_vm::genesis::InitFuncConfig {
+                    module: self.init_module.clone(),
+                    func: self.init_func.clone(),
+                    args: self.init_args.clone(),
+                }),
+            );
+
+            move_vm::genesis::init_storage(Pallet::<T>::move_vm_storage(), genesis_config)
+                .expect("Unable to initialize storage");
+        }
+    }
+
     #[pallet::hooks]
     impl<T: Config> Hooks<BlockNumberFor<T>> for Pallet<T> {
         #[cfg(not(feature = "no-vm-static"))]
@@ -322,9 +363,17 @@ pub mod pallet {
             let ctx = {
                 let height = frame_system::Pallet::<T>::block_number()
                     .try_into()
-                    .map_err(|_| Error::<T>::NumConversionError)?;
-                let time = <timestamp::Pallet<T> as UnixTime>::now().as_millis() as u64;
-                ExecutionContext::new(time, height as u64)
+                    .map_err(|_| Error::<T>::NumConversionError)?
+                    as u64;
+
+                // Because if we call now().as_millis() during genesis it returns error.
+                // And stdlib initializing during genesis.
+                let time = match height {
+                    0 => 0,
+                    _ => <timestamp::Pallet<T> as UnixTime>::now().as_millis() as u64,
+                };
+
+                ExecutionContext::new(time, height)
             };
 
             let res = vm.execute_script(gas, ctx, tx, dry_run);
@@ -366,10 +415,7 @@ pub mod pallet {
 
     impl<T: Config> event::DepositMoveEvent for Pallet<T> {
         fn deposit_move_event(e: MoveEventArguments) {
-            debug!(
-                "MoveVM Event: {:?} {:?} {:?} {:?}",
-                e.addr, e.caller, e.ty_tag, e.message
-            );
+            debug!("MoveVM Event: {:?} {:?} {:?}", e.guid, e.ty_tag, e.message);
 
             // Emit an event:
             // TODO: dispatch up the error by TryInto. Error is almost impossible but who knows..
@@ -379,17 +425,11 @@ pub mod pallet {
 
     impl<T: Config> mvm::TryCreateMoveVm<T> for Pallet<T> {
         #[cfg(not(feature = "no-vm-static"))]
-        type Vm = Mvm<
-            boxed::StorageAdapter,
-            event::DefaultEventHandler,
-            oracle::DummyOracle,
-            boxed::BalancesAdapter,
-        >;
+        type Vm = Mvm<boxed::StorageAdapter, event::DefaultEventHandler, boxed::BalancesAdapter>;
         #[cfg(feature = "no-vm-static")]
         type Vm = Mvm<
             StorageAdapter<VMStorage<T>>,
             event::DefaultEventHandler,
-            oracle::DummyOracle,
             balance::BalancesAdapter<T>,
         >;
         type Error = Error<T>;
@@ -399,7 +439,6 @@ pub mod pallet {
             Mvm::new(
                 Self::move_vm_storage().into(),
                 Self::create_move_event_handler(),
-                Default::default(),
                 balance::BalancesAdapter::<T>::new().into(),
             )
             .map_err(|err| {
@@ -759,5 +798,87 @@ pub mod pallet {
         VmMaxValueDepthReached,
         /// Unknown status.
         UnknownStatus,
+
+        // Documentation_missing
+        BadTransactionFeeCurrency,
+        // Documentation_missing
+        FeatureUnderGating,
+        // Documentation_missing
+        FieldMissingTypeAbility,
+        // Documentation_missing
+        PopWithoutDropAbility,
+        // Documentation_missing
+        CopylocWithoutCopyAbility,
+        // Documentation_missing
+        ReadrefWithoutCopyAbility,
+        // Documentation_missing
+        WriterefWithoutDropAbility,
+        // Documentation_missing
+        ExistsWithoutKeyAbilityOrBadArgument,
+        // Documentation_missing
+        BorrowglobalWithoutKeyAbility,
+        // Documentation_missing
+        MovefromWithoutKeyAbility,
+        // Documentation_missing
+        MovetoWithoutKeyAbility,
+        // Documentation_missing
+        MissingAcquiresAnnotation,
+        // Documentation_missing
+        ExtraneousAcquiresAnnotation,
+        // Documentation_missing
+        DuplicateAcquiresAnnotation,
+        // Documentation_missing
+        InvalidAcquiresAnnotation,
+        // Documentation_missing
+        ConstraintNotSatisfied,
+        // Documentation_missing
+        UnsafeRetUnusedValuesWithoutDrop,
+        // Documentation_missing
+        BackwardIncompatibleModuleUpdate,
+        // Documentation_missing
+        CyclicModuleDependency,
+        // Documentation_missing
+        NumberOfArgumentsMismatch,
+        // Documentation_missing
+        InvalidParamTypeForDeserialization,
+        // Documentation_missing
+        FailedToDeserializeArgument,
+        // Documentation_missing
+        NumberOfSignerArgumentsMismatch,
+        // Documentation_missing
+        CalledScriptVisibleFromNonScriptVisible,
+        // Documentation_missing
+        ExecuteScriptFunctionCalledOnNonScriptVisible,
+        // Documentation_missing
+        InvalidFriendDeclWithSelf,
+        // Documentation_missing
+        InvalidFriendDeclWithModulesOutsideAccountAddress,
+        // Documentation_missing
+        InvalidFriendDeclWithModulesInDependencies,
+        // Documentation_missing
+        CyclicModuleFriendship,
+        // Documentation_missing
+        UnknownAbility,
+        // Documentation_missing
+        InvalidFlagBits,
+    }
+}
+
+#[cfg(feature = "std")]
+use frame_support::traits::GenesisBuild;
+#[cfg(feature = "std")]
+impl<T: Config> GenesisConfig<T> {
+    /// Direct implementation of `GenesisBuild::build_storage`.
+    ///
+    /// Kept in order not to break dependency.
+    pub fn build_storage(&self) -> Result<sp_runtime::Storage, String> {
+        <Self as GenesisBuild<T>>::build_storage(self)
+    }
+
+    /// Direct implementation of `GenesisBuild::assimilate_storage`.
+    ///
+    /// Kept in order not to break dependency.
+    pub fn assimilate_storage(&self, storage: &mut sp_runtime::Storage) -> Result<(), String> {
+        <Self as GenesisBuild<T>>::assimilate_storage(self, storage)
     }
 }

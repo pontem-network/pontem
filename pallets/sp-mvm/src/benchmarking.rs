@@ -10,7 +10,7 @@ use frame_system::RawOrigin;
 use move_core_types::account_address::AccountAddress;
 use move_core_types::identifier::Identifier;
 use move_core_types::language_storage::{CORE_CODE_ADDRESS, ModuleId, StructTag};
-use move_vm::data::AccessKey;
+use move_vm::io::key::AccessKey;
 use sp_std::prelude::*;
 
 use crate::benchmarking::store::container;
@@ -35,7 +35,7 @@ benchmarks! {
     publish_empty_module {
         let s in 0 .. 100;
         let caller: T::AccountId = whitelisted_caller();
-        let module = include_bytes!("../tests/benchmark_assets/target/modules/2_Empty.mv").to_vec();
+        let module = include_bytes!("../tests/benchmark_assets/artifacts/modules/2_Empty.mv").to_vec();
     }: publish_module(RawOrigin::Signed(caller), module, 100_000_000)
     verify {
         assert!(VMStorage::<T>::contains_key(module_access("Empty")));
@@ -46,7 +46,7 @@ benchmarks! {
             VMStorage::<T>::insert(module_access_core(name), module);
         }
         let caller: T::AccountId = whitelisted_caller();
-        let module = include_bytes!("../tests/benchmark_assets/target/modules/22_StdImport.mv").to_vec();
+        let module = include_bytes!("../tests/benchmark_assets/artifacts/modules/51_StdImport.mv").to_vec();
     }: publish_module(RawOrigin::Signed(caller), module, 100_000_000)
     verify {
         assert!(VMStorage::<T>::contains_key(module_access("StdImport")));
@@ -54,7 +54,7 @@ benchmarks! {
     publish_s_module {
         let s in 0 .. 100;
         let caller: T::AccountId = whitelisted_caller();
-        let module = include_bytes!("../tests/benchmark_assets/target/modules/6_S.mv").to_vec();
+        let module = include_bytes!("../tests/benchmark_assets/artifacts/modules/6_S.mv").to_vec();
     }: publish_module(RawOrigin::Signed(caller), module, 100_000_000)
     verify {
         assert!(VMStorage::<T>::contains_key(module_access("S")));
@@ -62,7 +62,7 @@ benchmarks! {
     publish_m_module {
         let s in 0 .. 100;
         let caller: T::AccountId = whitelisted_caller();
-        let module = include_bytes!("../tests/benchmark_assets/target/modules/5_M.mv").to_vec();
+        let module = include_bytes!("../tests/benchmark_assets/artifacts/modules/5_M.mv").to_vec();
     }: publish_module(RawOrigin::Signed(caller), module, 100_000_000)
     verify {
         assert!(VMStorage::<T>::contains_key(module_access("M")));
@@ -70,7 +70,7 @@ benchmarks! {
     publish_l_module {
         let s in 0 .. 100;
         let caller: T::AccountId = whitelisted_caller();
-        let module = include_bytes!("../tests/benchmark_assets/target/modules/4_L.mv").to_vec();
+        let module = include_bytes!("../tests/benchmark_assets/artifacts/modules/4_L.mv").to_vec();
     }: publish_module(RawOrigin::Signed(caller), module, 100_000_000)
     verify {
         assert!(VMStorage::<T>::contains_key(module_access("L")));
@@ -78,7 +78,7 @@ benchmarks! {
     execute_many_params {
         let s in 0 .. 100;
         let caller: T::AccountId = whitelisted_caller();
-        let tx = include_bytes!("../tests/benchmark_assets/target/transactions/many_params.mvt").to_vec();
+        let tx = include_bytes!("../tests/benchmark_assets/artifacts/transactions/many_params.mvt").to_vec();
     }: execute(RawOrigin::Signed(caller), tx, 500_000)
     verify {
         // no-op
@@ -88,9 +88,9 @@ benchmarks! {
          for (name, module) in stdlib() {
             VMStorage::<T>::insert(module_access_core(name), module);
         }
-        VMStorage::<T>::insert(module_access_core("Store"), include_bytes!("../tests/benchmark_assets/target/modules/1_Store.mv").to_vec());
+        VMStorage::<T>::insert(module_access_core("Store"), include_bytes!("../tests/benchmark_assets/artifacts/modules/1_Store.mv").to_vec());
         let caller: T::AccountId = whitelisted_caller();
-        let tx = include_bytes!("../tests/benchmark_assets/target/transactions/store.mvt").to_vec();
+        let tx = include_bytes!("../tests/benchmark_assets/artifacts/transactions/store.mvt").to_vec();
     }: execute(RawOrigin::Signed(caller), tx, 500_000)
     verify {
 
@@ -122,9 +122,9 @@ benchmarks! {
 
         VMStorage::<T>::insert(ak.as_ref().to_vec(), bcs::to_bytes(&container()).unwrap());
 
-        VMStorage::<T>::insert(module_access_core("Store"), include_bytes!("../tests/benchmark_assets/target/modules/1_Store.mv").to_vec());
+        VMStorage::<T>::insert(module_access_core("Store"), include_bytes!("../tests/benchmark_assets/artifacts/modules/1_Store.mv").to_vec());
         let caller: T::AccountId = whitelisted_caller();
-        let tx = include_bytes!("../tests/benchmark_assets/target/transactions/load.mvt").to_vec();
+        let tx = include_bytes!("../tests/benchmark_assets/artifacts/transactions/load.mvt").to_vec();
     }: execute(RawOrigin::Signed(caller), tx, 500_000)
     verify {
     }
@@ -134,21 +134,21 @@ benchmarks! {
             VMStorage::<T>::insert(module_access_core(name), module);
         }
         let caller: T::AccountId = whitelisted_caller();
-        let tx = include_bytes!("../tests/benchmark_assets/target/transactions/store_events.mvt").to_vec();
+        let tx = include_bytes!("../tests/benchmark_assets/artifacts/transactions/store_events.mvt").to_vec();
     }: execute(RawOrigin::Signed(caller), tx, 500_000)
     verify {
     }
     execute_vec_input {
         let s in 0 .. 100;
         let caller: T::AccountId = whitelisted_caller();
-        let tx = include_bytes!("../tests/benchmark_assets/target/transactions/vector_input.mvt").to_vec();
+        let tx = include_bytes!("../tests/benchmark_assets/artifacts/transactions/vector_input.mvt").to_vec();
     }: execute(RawOrigin::Signed(caller), tx, 500_000)
     verify {
     }
     execute_loop {
         let s in 0 .. 100;
         let caller: T::AccountId = whitelisted_caller();
-        let tx = include_bytes!("../tests/benchmark_assets/target/transactions/lp.mvt").to_vec();
+        let tx = include_bytes!("../tests/benchmark_assets/artifacts/transactions/lp.mvt").to_vec();
     }: execute(RawOrigin::Signed(caller), tx, 100_000_000)
     verify {
     }
@@ -175,68 +175,183 @@ pub fn stdlib() -> Vec<(&'static str, Vec<u8>)> {
     vec![
         (
             "Signer",
-            include_bytes!("../tests/benchmark_assets/target/modules/0_Signer.mv").to_vec(),
+            include_bytes!("../tests/benchmark_assets/stdlib/artifacts/modules/0_Signer.mv").to_vec()
         ),
         (
-            "Event",
-            include_bytes!("../tests/benchmark_assets/target/modules/7_Event.mv").to_vec(),
+            "Option",
+            include_bytes!("../tests/benchmark_assets/stdlib/artifacts/modules/10_Option.mv").to_vec()
         ),
         (
-            "Pontem",
-            include_bytes!("../tests/benchmark_assets/target/modules/8_Pontem.mv").to_vec(),
+            "ValidatorConfig",
+            include_bytes!("../tests/benchmark_assets/stdlib/artifacts/modules/11_ValidatorConfig.mv").to_vec()
         ),
         (
-            "Account",
-            include_bytes!("../tests/benchmark_assets/target/modules/9_Account.mv").to_vec(),
+            "AccountLimits",
+            include_bytes!("../tests/benchmark_assets/stdlib/artifacts/modules/12_AccountLimits.mv").to_vec()
         ),
         (
-            "Vector",
-            include_bytes!("../tests/benchmark_assets/target/modules/10_Vector.mv").to_vec(),
-        ),
-        (
-            "Compare",
-            include_bytes!("../tests/benchmark_assets/target/modules/11_Compare.mv").to_vec(),
-        ),
-        (
-            "U256",
-            include_bytes!("../tests/benchmark_assets/target/modules/12_U256.mv").to_vec(),
-        ),
-        (
-            "Math",
-            include_bytes!("../tests/benchmark_assets/target/modules/13_Math.mv").to_vec(),
-        ),
-        (
-            "Offer",
-            include_bytes!("../tests/benchmark_assets/target/modules/14_Offer.mv").to_vec(),
-        ),
-        (
-            "Time",
-            include_bytes!("../tests/benchmark_assets/target/modules/15_Time.mv").to_vec(),
-        ),
-        (
-            "Security",
-            include_bytes!("../tests/benchmark_assets/target/modules/16_Security.mv").to_vec(),
-        ),
-        (
-            "PONT",
-            include_bytes!("../tests/benchmark_assets/target/modules/17_PONT.mv").to_vec(),
+            "VASP",
+            include_bytes!("../tests/benchmark_assets/stdlib/artifacts/modules/13_VASP.mv").to_vec()
         ),
         (
             "FixedPoint32",
-            include_bytes!("../tests/benchmark_assets/target/modules/18_FixedPoint32.mv")
-                .to_vec(),
+            include_bytes!("../tests/benchmark_assets/stdlib/artifacts/modules/14_FixedPoint32.mv").to_vec()
         ),
         (
-            "Debug",
-            include_bytes!("../tests/benchmark_assets/target/modules/19_Debug.mv").to_vec(),
+            "BCS",
+            include_bytes!("../tests/benchmark_assets/stdlib/artifacts/modules/15_BCS.mv").to_vec()
         ),
         (
-            "Coins",
-            include_bytes!("../tests/benchmark_assets/target/modules/20_Coins.mv").to_vec(),
+            "Event",
+            include_bytes!("../tests/benchmark_assets/stdlib/artifacts/modules/16_Event.mv").to_vec()
         ),
         (
-            "Block",
-            include_bytes!("../tests/benchmark_assets/target/modules/21_Block.mv").to_vec(),
+            "DiemConfig",
+            include_bytes!("../tests/benchmark_assets/stdlib/artifacts/modules/17_DiemConfig.mv").to_vec()
+        ),
+        (
+            "RegisteredCurrencies",
+            include_bytes!("../tests/benchmark_assets/stdlib/artifacts/modules/18_RegisteredCurrencies.mv").to_vec()
+        ),
+        (
+            "NativeCurrencies",
+            include_bytes!("../tests/benchmark_assets/stdlib/artifacts/modules/19_NativeCurrencies.mv").to_vec()
+        ),
+        (
+            "U256",
+            include_bytes!("../tests/benchmark_assets/stdlib/artifacts/modules/1_U256.mv").to_vec()
+        ),
+        (
+            "Diem",
+            include_bytes!("../tests/benchmark_assets/stdlib/artifacts/modules/20_Diem.mv").to_vec()
+        ),
+        (
+            "PONT",
+            include_bytes!("../tests/benchmark_assets/stdlib/artifacts/modules/21_PONT.mv").to_vec()
+        ),
+        (
+            "DualAttestation",
+            include_bytes!("../tests/benchmark_assets/stdlib/artifacts/modules/22_DualAttestation.mv").to_vec()
+        ),
+        (
+            "DesignatedDealer",
+            include_bytes!("../tests/benchmark_assets/stdlib/artifacts/modules/23_DesignatedDealer.mv").to_vec()
+        ),
+        (
+            "AccountFreezing",
+            include_bytes!("../tests/benchmark_assets/stdlib/artifacts/modules/24_AccountFreezing.mv").to_vec()
+        ),
+        (
+            "DiemAccount",
+            include_bytes!("../tests/benchmark_assets/stdlib/artifacts/modules/25_DiemAccount.mv").to_vec()
+        ),
+        (
+            "Hash",
+            include_bytes!("../tests/benchmark_assets/stdlib/artifacts/modules/26_Hash.mv").to_vec()
+        ),
+        (
+            "Authenticator",
+            include_bytes!("../tests/benchmark_assets/stdlib/artifacts/modules/27_Authenticator.mv").to_vec()
+        ),
+        (
+            "SharedEd25519PublicKey",
+            include_bytes!("../tests/benchmark_assets/stdlib/artifacts/modules/28_SharedEd25519PublicKey.mv").to_vec()
+        ),
+        (
+            "RecoveryAddress",
+            include_bytes!("../tests/benchmark_assets/stdlib/artifacts/modules/29_RecoveryAddress.mv").to_vec()
+        ),
+        (
+            "Errors",
+            include_bytes!("../tests/benchmark_assets/stdlib/artifacts/modules/2_Errors.mv").to_vec()
+        ),
+        (
+            "AccountAdministrationScripts",
+            include_bytes!("../tests/benchmark_assets/stdlib/artifacts/modules/30_AccountAdministrationScripts.mv").to_vec()
+        ),
+        (
+            "AccountCreationScripts",
+            include_bytes!("../tests/benchmark_assets/stdlib/artifacts/modules/31_AccountCreationScripts.mv").to_vec()
+        ),
+        (
+            "ChainId",
+            include_bytes!("../tests/benchmark_assets/stdlib/artifacts/modules/32_ChainId.mv").to_vec()
+        ),
+        (
+            "DiemBlock",
+            include_bytes!("../tests/benchmark_assets/stdlib/artifacts/modules/33_DiemBlock.mv").to_vec()
+        ),
+        (
+            "DiemConsensusConfig",
+            include_bytes!("../tests/benchmark_assets/stdlib/artifacts/modules/34_DiemConsensusConfig.mv").to_vec()
+        ),
+        (
+            "DiemSystem",
+            include_bytes!("../tests/benchmark_assets/stdlib/artifacts/modules/35_DiemSystem.mv").to_vec()
+        ),
+        (
+            "DiemTransactionPublishingOption",
+            include_bytes!("../tests/benchmark_assets/stdlib/artifacts/modules/36_DiemTransactionPublishingOption.mv").to_vec()
+        ),
+        (
+            "DiemVMConfig",
+            include_bytes!("../tests/benchmark_assets/stdlib/artifacts/modules/37_DiemVMConfig.mv").to_vec()
+        ),
+        (
+            "DiemVersion",
+            include_bytes!("../tests/benchmark_assets/stdlib/artifacts/modules/38_DiemVersion.mv").to_vec()
+        ),
+        (
+            "TransactionFee",
+            include_bytes!("../tests/benchmark_assets/stdlib/artifacts/modules/39_TransactionFee.mv").to_vec()
+        ),
+        (
+            "CoreAddresses",
+            include_bytes!("../tests/benchmark_assets/stdlib/artifacts/modules/3_CoreAddresses.mv").to_vec()
+        ),
+        (
+            "Genesis",
+            include_bytes!("../tests/benchmark_assets/stdlib/artifacts/modules/40_Genesis.mv").to_vec()
+        ),
+        (
+            "PaymentScripts",
+            include_bytes!("../tests/benchmark_assets/stdlib/artifacts/modules/41_PaymentScripts.mv").to_vec()
+        ),
+        (
+            "SystemAdministrationScripts",
+            include_bytes!("../tests/benchmark_assets/stdlib/artifacts/modules/42_SystemAdministrationScripts.mv").to_vec()
+        ),
+        (
+            "TreasuryComplianceScripts",
+            include_bytes!("../tests/benchmark_assets/stdlib/artifacts/modules/43_TreasuryComplianceScripts.mv").to_vec()
+        ),
+        (
+            "ValidatorAdministrationScripts",
+            include_bytes!("../tests/benchmark_assets/stdlib/artifacts/modules/44_ValidatorAdministrationScripts.mv").to_vec()
+        ),
+        (
+            "DiemTimestamp",
+            include_bytes!("../tests/benchmark_assets/stdlib/artifacts/modules/4_DiemTimestamp.mv").to_vec()
+        ),
+        (
+            "SlidingNonce",
+            include_bytes!("../tests/benchmark_assets/stdlib/artifacts/modules/5_SlidingNonce.mv").to_vec()
+        ),
+        (
+            "Signature",
+            include_bytes!("../tests/benchmark_assets/stdlib/artifacts/modules/6_Signature.mv").to_vec()
+        ),
+        (
+            "Vector",
+            include_bytes!("../tests/benchmark_assets/stdlib/artifacts/modules/7_Vector.mv").to_vec()
+        ),
+        (
+            "Roles",
+            include_bytes!("../tests/benchmark_assets/stdlib/artifacts/modules/8_Roles.mv").to_vec()
+        ),
+        (
+            "ValidatorOperatorConfig",
+            include_bytes!("../tests/benchmark_assets/stdlib/artifacts/modules/9_ValidatorOperatorConfig.mv").to_vec()
         ),
     ]
 }

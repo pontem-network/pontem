@@ -1,6 +1,6 @@
 use sp_std::prelude::*;
 use frame_system as system;
-use codec::{Encode, Decode, Error};
+use parity_scale_codec::{Encode, Decode, Error};
 use move_core_types::account_address::AccountAddress;
 
 pub trait AccountIdAsBytes<AccountId, T: Sized> {

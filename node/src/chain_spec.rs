@@ -7,13 +7,17 @@ use sp_runtime::{
     Perbill,
 };
 use mv_node_runtime::{
-    GenesisConfig, SudoConfig, SystemConfig, BalancesConfig, WASM_BINARY, AccountId, Signature,
-    ParachainStakingConfig, ParachainInfoConfig, VestingConfig, PONT, DECIMALS, InflationInfo,
-    Range, Balance, AuthorFilterConfig, AuthorMappingConfig,
+    GenesisConfig, SudoConfig, SystemConfig, BalancesConfig, WASM_BINARY, ParachainInfoConfig,
+    VestingConfig, MvmConfig, ParachainStakingConfig, InflationInfo, Range, AuthorFilterConfig, AuthorMappingConfig,
+    primitives::{AccountId, Signature, Balance},
+    constants::currency::{PONT, DECIMALS},
 };
 use serde::{Serialize, Deserialize};
 use serde_json::json;
+use std::include_bytes;
+
 use nimbus_primitives::NimbusId;
+use crate::vm_config::build as build_vm_config;
 
 /// Address format for Pontem.
 /// 42 is a placeholder for any Substrate-based chain.
@@ -180,6 +184,8 @@ fn testnet_genesis(
     endowed_accounts: Vec<AccountId>,
     id: ParaId,
 ) -> GenesisConfig {
+    let vm_config = build_vm_config();
+
     GenesisConfig {
         system: SystemConfig {
             // Add Wasm runtime to storage.
@@ -218,6 +224,13 @@ fn testnet_genesis(
                 .cloned()
                 .map(|(account_id, author_id, _)| (author_id, account_id))
                 .collect(),
+        },
+        mvm: MvmConfig {
+            stdlib: include_bytes!("../move/stdlib/artifacts/bundles/move-stdlib.pac").to_vec(),
+            init_module: vm_config.0.clone(),
+            init_func: vm_config.1.clone(),
+            init_args: vm_config.2.clone(),
+            ..Default::default()
         },
         vesting: VestingConfig {
             // Move 10 PONT under vesting for each account since block 100 and till block 1000.

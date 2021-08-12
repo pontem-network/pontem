@@ -4,7 +4,10 @@ use cumulus_client_service::{
     StartFullNodeParams,
 };
 use cumulus_primitives_core::ParaId;
-use mv_node_runtime::{AccountId, Balance, Index, RuntimeApi};
+use mv_node_runtime::{
+    primitives::{Index, Balance, AccountId},
+    RuntimeApi,
+};
 use sc_executor::native_executor_instance;
 pub use sc_executor::NativeExecutor;
 use sc_service::{Configuration, PartialComponents, Role, TFullBackend, TFullClient, TaskManager};
