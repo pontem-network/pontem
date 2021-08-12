@@ -120,7 +120,7 @@ Metadata for Polkadot JS:
 
 ```json
 {
-  "Balance": "u128",
+  "Balance": "u64",
   "RoundIndex": "u32",
   "AuthorId": "[u8;32]",
   "RegistrationInfo": {
