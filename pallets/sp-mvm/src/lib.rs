@@ -361,7 +361,7 @@ pub mod pallet {
             };
 
             let ctx = {
-                let height = frame_system::Module::<T>::block_number()
+                let height = frame_system::Pallet::<T>::block_number()
                     .try_into()
                     .map_err(|_| Error::<T>::NumConversionError)?
                     as u64;
@@ -370,7 +370,7 @@ pub mod pallet {
                 // And stdlib initializing during genesis.
                 let time = match height {
                     0 => 0,
-                    _ => <timestamp::Module<T> as UnixTime>::now().as_millis() as u64,
+                    _ => <timestamp::Pallet<T> as UnixTime>::now().as_millis() as u64,
                 };
 
                 ExecutionContext::new(time, height)

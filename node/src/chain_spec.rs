@@ -1,17 +1,23 @@
-use sp_core::{Pair, Public, sr25519};
+use cumulus_primitives_core::ParaId;
+use sc_service::ChainType;
+use sp_core::{sr25519, Pair, Public};
+use sc_chain_spec::{ChainSpecExtension, ChainSpecGroup};
+use sp_runtime::{
+    traits::{IdentifyAccount, Verify},
+    Perbill,
+};
 use mv_node_runtime::{
-    AuraConfig, BalancesConfig, GenesisConfig, GrandpaConfig, SudoConfig, SystemConfig,
-    VestingConfig, WASM_BINARY, MvmConfig,
-    primitives::{AccountId, Signature},
+    GenesisConfig, SudoConfig, SystemConfig, BalancesConfig, WASM_BINARY, ParachainInfoConfig,
+    VestingConfig, MvmConfig, ParachainStakingConfig, InflationInfo, Range, AuthorFilterConfig,
+    AuthorMappingConfig,
+    primitives::{AccountId, Signature, Balance},
     constants::currency::{PONT, DECIMALS},
 };
-use sp_consensus_aura::sr25519::AuthorityId as AuraId;
-use sp_finality_grandpa::AuthorityId as GrandpaId;
-use sp_runtime::traits::{Verify, IdentifyAccount};
-use sc_service::ChainType;
+use serde::{Serialize, Deserialize};
 use serde_json::json;
 use std::include_bytes;
 
+use nimbus_primitives::NimbusId;
 use crate::vm_config::build as build_vm_config;
 
 /// Address format for Pontem.
@@ -19,11 +25,25 @@ use crate::vm_config::build as build_vm_config;
 /// See https://github.com/paritytech/substrate/blob/master/ss58-registry.json
 const SS58_FORMAT: u8 = 42;
 
-// The URL for the telemetry server.
-// const STAGING_TELEMETRY_URL: &str = "wss://telemetry.polkadot.io/submit/";
-
 /// Specialized `ChainSpec`. This is a specialization of the general Substrate ChainSpec type.
-pub type ChainSpec = sc_service::GenericChainSpec<GenesisConfig>;
+pub type ChainSpec = sc_service::GenericChainSpec<GenesisConfig, Extensions>;
+
+/// The extensions for the [`ChainSpec`].
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, ChainSpecGroup, ChainSpecExtension)]
+#[serde(deny_unknown_fields)]
+pub struct Extensions {
+    /// The relay chain of the Parachain.
+    pub relay_chain: String,
+    /// The id of the Parachain.
+    pub para_id: u32,
+}
+
+impl Extensions {
+    /// Try to get the extension from the given `ChainSpec`.
+    pub fn try_get(chain_spec: &dyn sc_service::ChainSpec) -> Option<&Self> {
+        sc_chain_spec::get_extension(chain_spec.extensions())
+    }
+}
 
 /// Generate a crypto pair from seed.
 pub fn get_from_seed<TPublic: Public>(seed: &str) -> <TPublic::Pair as Pair>::Public {
@@ -42,11 +62,6 @@ where
     AccountPublic::from(get_from_seed::<TPublic>(seed)).into_account()
 }
 
-/// Generate an Aura authority key.
-pub fn authority_keys_from_seed(s: &str) -> (AuraId, GrandpaId) {
-    (get_from_seed::<AuraId>(s), get_from_seed::<GrandpaId>(s))
-}
-
 fn properties() -> Option<sc_chain_spec::Properties> {
     json!({
         "ss58Format": SS58_FORMAT,
@@ -57,7 +72,7 @@ fn properties() -> Option<sc_chain_spec::Properties> {
     .cloned()
 }
 
-pub fn development_config() -> Result<ChainSpec, String> {
+pub fn development_config(id: ParaId) -> Result<ChainSpec, String> {
     let wasm_binary = WASM_BINARY.ok_or_else(|| "Development wasm not available".to_string())?;
 
     Ok(ChainSpec::from_genesis(
@@ -65,14 +80,20 @@ pub fn development_config() -> Result<ChainSpec, String> {
         "Development",
         // ID
         "dev",
-        ChainType::Development,
+        ChainType::Local,
         move || {
             testnet_genesis(
                 wasm_binary,
-                // Initial PoA authorities
-                vec![authority_keys_from_seed("Alice")],
                 // Sudo account
                 get_account_id_from_seed::<sr25519::Public>("Alice"),
+                // Candidates
+                vec![(
+                    get_account_id_from_seed::<sr25519::Public>("Alice"),
+                    get_from_seed::<NimbusId>("Alice"),
+                    10_000 * PONT,
+                )],
+                // Nominators
+                vec![],
                 // Pre-funded accounts
                 vec![
                     get_account_id_from_seed::<sr25519::Public>("Alice"),
@@ -80,7 +101,7 @@ pub fn development_config() -> Result<ChainSpec, String> {
                     get_account_id_from_seed::<sr25519::Public>("Alice//stash"),
                     get_account_id_from_seed::<sr25519::Public>("Bob//stash"),
                 ],
-                true,
+                id,
             )
         },
         // Bootnodes
@@ -92,11 +113,14 @@ pub fn development_config() -> Result<ChainSpec, String> {
         // Properties
         properties(),
         // Extensions
-        None,
+        Extensions {
+            relay_chain: "rococo-local".into(),
+            para_id: id.into(),
+        },
     ))
 }
 
-pub fn local_testnet_config() -> Result<ChainSpec, String> {
+pub fn local_testnet_config(id: ParaId) -> Result<ChainSpec, String> {
     let wasm_binary = WASM_BINARY.ok_or_else(|| "Development wasm not available".to_string())?;
 
     Ok(ChainSpec::from_genesis(
@@ -108,13 +132,16 @@ pub fn local_testnet_config() -> Result<ChainSpec, String> {
         move || {
             testnet_genesis(
                 wasm_binary,
-                // Initial PoA authorities
-                vec![
-                    authority_keys_from_seed("Alice"),
-                    authority_keys_from_seed("Bob"),
-                ],
                 // Sudo account
                 get_account_id_from_seed::<sr25519::Public>("Alice"),
+                // Candidates
+                vec![(
+                    get_account_id_from_seed::<sr25519::Public>("Alice"),
+                    get_from_seed::<NimbusId>("Alice"),
+                    10_000 * PONT,
+                )],
+                // Nominators
+                vec![],
                 // Pre-funded accounts
                 vec![
                     get_account_id_from_seed::<sr25519::Public>("Alice"),
@@ -130,7 +157,7 @@ pub fn local_testnet_config() -> Result<ChainSpec, String> {
                     get_account_id_from_seed::<sr25519::Public>("Eve//stash"),
                     get_account_id_from_seed::<sr25519::Public>("Ferdie//stash"),
                 ],
-                true,
+                id,
             )
         },
         // Bootnodes
@@ -142,61 +169,101 @@ pub fn local_testnet_config() -> Result<ChainSpec, String> {
         // Properties
         properties(),
         // Extensions
-        None,
+        Extensions {
+            relay_chain: "rococo-local".into(),
+            para_id: id.into(),
+        },
     ))
 }
 
 /// Configure initial storage state for FRAME modules.
 fn testnet_genesis(
     wasm_binary: &[u8],
-    initial_authorities: Vec<(AuraId, GrandpaId)>,
     root_key: AccountId,
+    candidates: Vec<(AccountId, NimbusId, Balance)>,
+    nominations: Vec<(AccountId, AccountId, Balance)>,
     endowed_accounts: Vec<AccountId>,
-    _enable_println: bool,
+    id: ParaId,
 ) -> GenesisConfig {
     let vm_config = build_vm_config();
 
     GenesisConfig {
-        frame_system: Some(SystemConfig {
+        system: SystemConfig {
             // Add Wasm runtime to storage.
             code: wasm_binary.to_vec(),
             changes_trie_config: Default::default(),
-        }),
-        pallet_balances: Some(BalancesConfig {
-            // Configure endowed accounts with initial balance of 1000 PONT coins.
+        },
+        balances: BalancesConfig {
+            // Configure endowed accounts with initial balance of 1000 PONT.
             balances: endowed_accounts
                 .iter()
                 .cloned()
-                .map(|k| (k, 1000 * PONT))
+                .map(|k| (k, 100_000 * PONT))
                 .collect(),
-        }),
-        pallet_aura: Some(AuraConfig {
-            authorities: initial_authorities.iter().map(|x| (x.0.clone())).collect(),
-        }),
-        pallet_grandpa: Some(GrandpaConfig {
-            authorities: initial_authorities
-                .iter()
-                .map(|x| (x.1.clone(), 1))
-                .collect(),
-        }),
-        pallet_sudo: Some(SudoConfig {
+        },
+        parachain_system: Default::default(),
+        parachain_info: ParachainInfoConfig { parachain_id: id },
+        sudo: SudoConfig {
             // Assign network admin rights.
             key: root_key,
-        }),
-        sp_mvm: Some(MvmConfig {
+        },
+        parachain_staking: ParachainStakingConfig {
+            candidates: candidates
+                .iter()
+                .cloned()
+                .map(|(account, _, bond)| (account, bond))
+                .collect(),
+            nominations,
+            inflation_config: pontem_inflation_config(),
+        },
+        author_filter: AuthorFilterConfig {
+            eligible_ratio: sp_runtime::Percent::from_percent(50),
+        },
+        author_mapping: AuthorMappingConfig {
+            mappings: candidates
+                .iter()
+                .cloned()
+                .map(|(account_id, author_id, _)| (author_id, account_id))
+                .collect(),
+        },
+        mvm: MvmConfig {
             stdlib: include_bytes!("../move/stdlib/artifacts/bundles/move-stdlib.pac").to_vec(),
             init_module: vm_config.0.clone(),
             init_func: vm_config.1.clone(),
             init_args: vm_config.2.clone(),
             ..Default::default()
-        }),
-        pallet_vesting: Some(VestingConfig {
+        },
+        vesting: VestingConfig {
             // Move 10 PONT under vesting for each account since block 100 and till block 1000.
             vesting: endowed_accounts
                 .iter()
                 .cloned()
-                .map(|k| (k, 100, 1000, 990 * PONT))
+                .map(|k| (k, 100, 1000, 90_000 * PONT)) // K - address, 100 - when vesting starts, 1000 - how much blocks for vesting, 10 * PONT - free balance.
                 .collect(),
-        }),
+        },
+    }
+}
+
+// Pontem inflation.
+pub fn pontem_inflation_config() -> InflationInfo<Balance> {
+    // Let's say we have 100M PONT coins.
+    InflationInfo {
+        // How much staked PONTs we expect.
+        expect: Range {
+            min: 10_000_000 * PONT, // We expect to have staked at least 10M PONT coins.
+            ideal: 25_000_000 * PONT, // We expect to have staked ideal 25M PONT coins.
+            max: 50_000_000 * PONT, // We expect to have staked maximum 50M PONT coins.
+        },
+        annual: Range {
+            min: Perbill::from_percent(10), // We expect minimum inflation is 10%.
+            ideal: Perbill::from_percent(15), // We expect ideal inflation is 15%.
+            max: Perbill::from_percent(20), // We expect max inflation is 20%.
+        },
+        // 8766 rounds (hours) in a year
+        round: Range {
+            min: Perbill::from_parts(Perbill::from_percent(10).deconstruct() / 8766),
+            ideal: Perbill::from_parts(Perbill::from_percent(15).deconstruct() / 8766),
+            max: Perbill::from_parts(Perbill::from_percent(20).deconstruct() / 8766),
+        },
     }
 }
