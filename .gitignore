@@ -18,5 +18,7 @@
 
 artifacts/
 /node/move/stdlib/
+/pallets/sp-mvm/tests/assets/stdlib/
+/pallets/sp-mvm/tests/benchmark_assets/stdlib/
 
 .direnv
