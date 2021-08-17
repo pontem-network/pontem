@@ -12,7 +12,7 @@ Read [official documentation](https://docs.pontem.network/02.-getting-started/lo
 
 ## Local Relaychain & Parachain Launch
 
-Current version built with Nimbus consensus and Parachain Staking implementation. 
+Current version built with Nimbus consensus and Parachain Staking implementation.
 Requires relay chain to work correctly.
 
 ### Using polka-launch
@@ -32,7 +32,7 @@ make build
 Create keystore path for Pontem:
 
 ```sh
-mkdir ~/.pontem/keystore-1 # Base path
+mkdir -p ~/.pontem/keystore-1 # Base path
 ```
 
 Add Nimbus key:
@@ -61,7 +61,7 @@ Build Polkadot:
 
 ```sh
 git clone https://github.com/paritytech/polkadot.git
-cd polkadot 
+cd polkadot
 git checkout v0.9.8
 cargo build --release
 ```
@@ -72,7 +72,7 @@ Launch Polkadot Relay Chain:
 ./target/release/polkadot build-spec --chain rococo-local --disable-default-bootnode --raw > rococo-local-cfde.json
 ./target/release/polkadot --chain rococo-local-cfde.json --alice --tmp
 ./target/release/polkadot --chain rococo-local-cfde.json --bob --tmp --port 30334 # In a separate terminal
-``` 
+```
 
 Build Pontem:
 
@@ -84,7 +84,7 @@ make build
 Create keystore path for Pontem:
 
 ```sh
-mkdir ~/.pontem/keystore-1 # Base path
+mkdir -p ~/.pontem/keystore-1 # Base path
 ```
 
 Add Nimbus key:
@@ -219,7 +219,7 @@ cat 9946.log | grep 40335 # Something like: /ip4/127.0.0.1/tcp/40335/p2p/12D3Koo
     --ws-port 9947 \
     --bootnodes <bootnode> \
     -- --execution wasm --chain ../polkadot/rococo-local-cfde.json --port 40336
-``` 
+```
 
 Good documentation also can be found in [Moonriver/Moonbeam Docs](https://docs.moonbeam.network/staking/stake/).
 
