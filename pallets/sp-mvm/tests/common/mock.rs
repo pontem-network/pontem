@@ -24,6 +24,14 @@ type Block = frame_system::mocking::MockBlock<Test>;
 /// Initial balance for all existent test accounts
 pub const INITIAL_BALANCE: <Test as balances::Config>::Balance = 42000;
 
+/// Balance of an account.
+pub type Balance = u64;
+
+// Unit = the base number of indivisible units for balances
+pub const UNIT: Balance = 1_000_000_000_000;
+pub const MILLIUNIT: Balance = 1_000_000_000;
+pub const MICROUNIT: Balance = 1_000_000;
+
 // Configure a mock runtime to test the pallet.
 frame_support::construct_runtime!(
     pub enum Test where
@@ -31,12 +39,12 @@ frame_support::construct_runtime!(
         NodeBlock = Block,
         UncheckedExtrinsic = UncheckedExtrinsic,
     {
-        System: frame_system::{Module, Call, Config, Storage, Event<T>},
-        Timestamp: timestamp::{Module, Call, Storage, Inherent},
-        Balances: balances::{Module, Call, Storage, Config<T>, Event<T>},
-        Mvm: sp_mvm::{Module, Call, Config<T>, Storage, Event<T>},
-        Multisig: pallet_multisig::{Module, Call, Origin<T>, Storage, Event<T>},
-        // Sudo: pallet_sudo::{Module, Call, Config<T>, Storage, Event<T>},
+        System: frame_system::{Pallet, Call, Config, Storage, Event<T>},
+        Timestamp: timestamp::{Pallet, Call, Storage, Inherent},
+        Balances: balances::{Pallet, Call, Storage, Config<T>, Event<T>},
+        Mvm: sp_mvm::{Pallet, Call, Config<T>, Storage, Event<T>},
+        Multisig: pallet_multisig::{Pallet, Call, Origin<T>, Storage, Event<T>},
+        // Sudo: pallet_sudo::{Pallet, Call, Config<T>, Storage, Event<T>},
     }
 );
 
@@ -69,6 +77,7 @@ impl system::Config for Test {
     type OnKilledAccount = ();
     type SystemWeightInfo = ();
     type SS58Prefix = SS58Prefix;
+    type OnSetCode = ();
 }
 
 // --- gas --- //
@@ -112,19 +121,25 @@ impl timestamp::Config for Test {
 
 parameter_types! {
     pub const ExistentialDeposit: u64 = 1;
+    pub const TransferFee: u64 = 1 * MILLIUNIT;
+    pub const CreationFee: u64 = 1 * MILLIUNIT;
+    pub const TransactionByteFee: u64 = 1 * MILLIUNIT;
     pub const MaxLocks: u32 = 50;
+    pub const MaxReserves: u32 = 50;
 }
 
 impl balances::Config for Test {
     type MaxLocks = MaxLocks;
     /// The type for recording an account's balance.
-    type Balance = u64;
+    type Balance = Balance;
     /// The ubiquitous event type.
     type Event = Event;
     type DustRemoval = ();
     type ExistentialDeposit = ExistentialDeposit;
     type AccountStore = Sys;
     type WeightInfo = balances::weights::SubstrateWeight<Self>;
+    type MaxReserves = MaxReserves;
+    type ReserveIdentifier = [u8; 8];
 }
 
 // ----------------- //
@@ -152,8 +167,8 @@ impl pallet_multisig::Config for Test {
     type WeightInfo = ();
 }
 
-pub type Sys = system::Module<Test>;
-pub type Time = timestamp::Module<Test>;
+pub type Sys = system::Pallet<Test>;
+pub type Time = timestamp::Pallet<Test>;
 pub type MoveEvent = sp_mvm::Event<Test>;
 
 /// Build genesis storage according to the mock runtime.
@@ -162,7 +177,7 @@ pub fn new_test_ext() -> sp_io::TestExternalities {
         .build_storage::<Test>()
         .expect("Frame system builds valid default genesis config");
     /*
-    let negative = <balances::Module<T> as Currency<T::AccountId>>::withdraw(
+    let negative = <balances::Pallet<T> as Currency<T::AccountId>>::withdraw(
         &address,
         amount.try_into().ok().unwrap(),
         WithdrawReasons::RESERVE,

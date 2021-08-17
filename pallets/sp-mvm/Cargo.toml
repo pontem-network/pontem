@@ -57,18 +57,20 @@ default-features = false
 serde = { version = "1.0", optional = true }
 once_cell = { default-features = false, version = "1.5.2" }
 # substrate:
-frame-support = { default-features = false, version = "3.0.0" }
-frame-system = { default-features = false, version = "3.0.0" }
-frame-benchmarking = { default-features = false, optional = true, version = '3.1.0' }
+frame-support = { default-features = false, git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.8' }
+frame-system = { default-features = false, git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.8' }
+frame-benchmarking = { default-features = false, optional = true, git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.8' }
+sp-std = { default-features = false, git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.8' }
+sp-core = { default-features = false, git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.8' }
+timestamp = { default-features = false, package = "pallet-timestamp", git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.8' }
+balances = { default-features = false, package = "pallet-balances", git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.8' }
+# pallet-multisig = { default-features = false, git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.8' }
 pallet-multisig = { default-features = false, path = '../multisig' }
-sp-std = { default-features = false, version = "3.0.0" }
-sp-core = { default-features = false, version = "3.0.0" }
-timestamp = { default-features = false, version = "3.0.0", package = "pallet-timestamp" }
-balances = { default-features = false, version = "3.0.0", package = "pallet-balances" }
 # logging, `sp_runtime::print`:
-sp-runtime = { default-features = false, version = "3.0.0" }
+sp-runtime = { default-features = false, git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.8' }
+
+sp-io = { default-features = false, git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.8' }
 getrandom = { version = "0.2.3", optional = true }
-sp-io = { default-features = false, version = "3.0.0" }
 
 # serde is for lcs/bcs only
 # used for benchmarking (runtime, std, no-std)
@@ -128,8 +130,6 @@ runtime-benchmarks = [
     "frame-support/runtime-benchmarks",
     "frame-system/runtime-benchmarks",
     "sp-runtime/runtime-benchmarks",
-    # "frame-system-benchmarking",
-
     "timestamp/runtime-benchmarks",
     "balances/runtime-benchmarks",
 

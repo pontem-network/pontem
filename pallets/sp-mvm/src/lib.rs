@@ -64,6 +64,9 @@ pub mod pallet {
     use move_core_types::account_address::AccountAddress;
     use move_core_types::language_storage::CORE_CODE_ADDRESS;
 
+    type AccountIdOf<T> = <T as frame_system::Config>::AccountId;
+    type BlockNumberOf<T> = <T as frame_system::Config>::BlockNumber;
+
     /// Configure the pallet by specifying the parameters and types on which it depends.
     #[pallet::config]
     pub trait Config:
@@ -96,7 +99,8 @@ pub mod pallet {
     // Pallets use events to inform users when important changes are made.
     // https://substrate.dev/docs/en/knowledgebase/runtime/events
     #[pallet::event]
-    #[pallet::metadata(T::AccountId = "AccountId")]
+    // #[pallet::metadata(T::Balance = "u64")]
+    // #[pallet::metadata(T::AccountId = "AccountId")]
     #[pallet::generate_deposit(pub fn deposit_event)]
     pub enum Event<T: Config> {
         /// Event provided by Move VM
@@ -109,7 +113,8 @@ pub mod pallet {
 
         /// Event about successful move-module publishing
         /// [account]
-        ModulePublished(T::AccountId),
+        // ModulePublished(T::AccountId),
+        ModulePublished(AccountIdOf<T>),
 
         /// Event about successful move-module publishing
         /// [account]
@@ -323,7 +328,7 @@ pub mod pallet {
 
         // TODO: support for multiplay signers.
         pub fn raw_execute_script(
-            signers: &[T::AccountId],
+            signers: &[AccountIdOf<T>],
             tx_bc: Vec<u8>,
             gas_limit: u64,
             dry_run: bool,
@@ -332,7 +337,7 @@ pub mod pallet {
             <T as timestamp::Config>::Moment: UniqueSaturatedInto<u64>,
             // T::BlockNumber: BaseArithmetic,
             // T::BlockNumber: UniqueSaturatedInto<u64>,
-            T::BlockNumber: TryInto<u64>,
+            BlockNumberOf<T>: TryInto<u64>,
         {
             // TODO: some minimum gas for processing transaction from bytes?
             let transaction = Transaction::try_from(&tx_bc[..])
@@ -368,7 +373,7 @@ pub mod pallet {
             };
 
             let ctx = {
-                let height = frame_system::Module::<T>::block_number()
+                let height = frame_system::Pallet::<T>::block_number()
                     .try_into()
                     .map_err(|_| Error::<T>::NumConversionError)?
                     as u64;
@@ -377,7 +382,7 @@ pub mod pallet {
                 // And stdlib initializing during genesis.
                 let time = match height {
                     0 => 0,
-                    _ => <timestamp::Module<T> as UnixTime>::now().as_millis() as u64,
+                    _ => <timestamp::Pallet<T> as UnixTime>::now().as_millis() as u64,
                 };
 
                 ExecutionContext::new(time, height)
@@ -390,7 +395,7 @@ pub mod pallet {
         }
 
         pub fn raw_publish_module(
-            account: &T::AccountId,
+            account: &AccountIdOf<T>,
             module_bc: Vec<u8>,
             gas_limit: u64,
             dry_run: bool,
