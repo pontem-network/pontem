@@ -1,5 +1,3 @@
-#![cfg_attr(not(feature = "std"), no_std)]
-
 use sp_runtime::{generic, MultiSignature};
 use sp_runtime::traits::{Verify, IdentifyAccount};
 
