@@ -83,7 +83,7 @@ where
             address,
             ticker
         );
-        address_to_account::<T::AccountId>(&address)
+        address_to_account::<T::AccountId>(address)
             .map_err(|_| error!("Can't convert address from Move to Substrate."))
             .and_then(|address| {
                 <balances::Pallet<T> as Currency<T::AccountId>>::free_balance(&address)
@@ -106,7 +106,7 @@ where
         }
 
         trace!("withdraw resource {} requested, amount: {}", ticker, amount);
-        let imbalance = address_to_account::<T::AccountId>(&address)
+        let imbalance = address_to_account::<T::AccountId>(address)
             .map_err(|_err| error!("Can't convert address from Move to Substrate."))
             .and_then(|address| {
                 amount
@@ -137,7 +137,7 @@ where
         }
 
         trace!("deposit resource {} requested, amount: {}", ticker, amount);
-        let imbalance = address_to_account::<T::AccountId>(&address)
+        let imbalance = address_to_account::<T::AccountId>(address)
             .map_err(|_| error!("Can't convert address from Move to Substrate."))
             .and_then(|address| {
                 amount
