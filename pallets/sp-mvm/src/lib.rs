@@ -120,17 +120,23 @@ pub mod pallet {
     // These functions materialize as "extrinsics", which are often compared to transactions.
     // Dispatchable functions must be annotated with a weight and must return a DispatchResult.
     #[pallet::call]
-    impl<T: Config> Pallet<T> {
+    impl<T: Config> Pallet<T>
+    where
+        OriginFor<T>: Into<Result<pallet_multisig::Origin<T>, OriginFor<T>>>,
+    {
         #[pallet::weight(T::GasWeightMapping::gas_to_weight(*gas_limit))]
         pub fn execute(
             origin: OriginFor<T>,
             tx_bc: Vec<u8>,
             gas_limit: u64,
         ) -> DispatchResultWithPostInfo {
-            let who = ensure_signed(origin)?;
-            debug!("executing `execute` with signed {:?}", who);
+            let origin: Result<pallet_multisig::Origin<T>, OriginFor<T>> = origin.into();
+            let signers = match origin {
+                Ok(multisig) => multisig.signers().to_vec(),
+                Err(origin) => vec![ensure_signed(origin)?],
+            };
 
-            let vm_result = Self::raw_execute_script(&who, tx_bc, gas_limit, false)?;
+            let vm_result = Self::raw_execute_script(&signers, tx_bc, gas_limit, false)?;
 
             // produce result with spended gas:
             let result = result::from_vm_result::<T>(vm_result)?;
@@ -317,7 +323,7 @@ pub mod pallet {
 
         // TODO: support for multiplay signers.
         pub fn raw_execute_script(
-            account: &T::AccountId,
+            signers: &[T::AccountId],
             tx_bc: Vec<u8>,
             gas_limit: u64,
             dry_run: bool,
@@ -337,15 +343,10 @@ pub mod pallet {
 
             let tx = {
                 let signers = if transaction.signers_count() == 0 {
-                    Vec::with_capacity(0)
+                    &[]
                 } else {
-                    debug!("executing `execute` with signed {:?}", account);
-                    let sender = addr::account_to_bytes(account);
-                    debug!("converted sender: {:?}", sender);
-
-                    vec![AccountAddress::new(sender)]
+                    signers
                 };
-
                 if transaction.signers_count() as usize != signers.len() {
                     error!(
                         "Transaction signers num isn't eq signers: {} != {}",
@@ -354,6 +355,12 @@ pub mod pallet {
                     );
                     return Err(Error::<T>::TransactionSignersNumError.into());
                 }
+
+                let signers = signers
+                    .iter()
+                    .map(addr::account_to_bytes)
+                    .map(AccountAddress::new)
+                    .collect();
 
                 transaction
                     .into_script(signers)

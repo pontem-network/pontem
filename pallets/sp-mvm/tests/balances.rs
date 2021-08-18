@@ -78,7 +78,7 @@ fn execute_get_balance() {
 fn execute_transfer() {
     new_test_ext().execute_with(|| {
         let bob = origin_ps_acc();
-        let alice_account = alice_acc();
+        let alice_account = alice_public_key();
 
         let bob_init_balance = balances::Pallet::<Test>::free_balance(&bob);
         eprintln!("Bob balance: {}", bob_init_balance);

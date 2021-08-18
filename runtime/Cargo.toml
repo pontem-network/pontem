@@ -34,7 +34,6 @@ pallet-balances = { default-features = false, git = 'http://github.com/paritytec
 pallet-randomness-collective-flip = { default-features = false, git = 'http://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.8' }
 pallet-sudo = { default-features = false, git = 'http://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.8' }
 pallet-timestamp = { default-features = false, git = 'http://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.8' }
-pallet-multisig = { default-features = false, git = 'http://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.8' }
 pallet-transaction-payment = { default-features = false, git = 'http://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.8' }
 pallet-transaction-payment-rpc-runtime-api = { default-features = false, git = 'http://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.8' }
 pallet-vesting = { default-features = false, git = 'http://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.8' }
@@ -72,6 +71,7 @@ pallet-author-inherent = { default-features = false, git = 'https://github.com/p
 
 # local dependencies
 sp-mvm = { path = '../pallets/sp-mvm', default-features = false }
+pallet-multisig = { default-features = false, path = '../pallets/multisig' }
 sp-mvm-rpc-runtime = { path = '../pallets/sp-mvm/rpc/runtime', default-features = false }
 parachain-staking = { path = '../pallets/parachain-staking', default-features = false }
 pallet-author-mapping = { path = "../pallets/author-mapping", default-features = false }

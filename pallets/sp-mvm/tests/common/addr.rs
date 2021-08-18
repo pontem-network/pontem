@@ -16,6 +16,14 @@ pub fn origin_ps_acc() -> Public {
     pk
 }
 
+pub fn bob_public_key() -> Public {
+    Public::from_ss58check(BOB_SS58).unwrap()
+}
+
+pub fn alice_public_key() -> Public {
+    Public::from_ss58check(ALICE_SS58).unwrap()
+}
+
 /// Returns `AccountAddress` for Bob
 pub fn origin_move_addr() -> AccountAddress {
     let pk = origin_ps_acc();
@@ -25,13 +33,8 @@ pub fn origin_move_addr() -> AccountAddress {
     AccountAddress::new(arr)
 }
 
-pub fn alice_acc() -> Public {
-    let pk = Public::from_ss58check(ALICE_SS58).unwrap();
-    pk
-}
-
 pub fn alice_move_addr() -> AccountAddress {
-    let pk = alice_acc();
+    let pk = alice_public_key();
     let vec = pk.encode();
     let mut arr = [0; AccountAddress::LENGTH];
     arr.copy_from_slice(&vec);

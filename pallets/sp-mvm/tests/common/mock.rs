@@ -15,7 +15,7 @@ use sp_runtime::{testing::Header};
 
 use super::addr::origin_ps_acc;
 use super::addr::root_ps_acc;
-use super::addr::alice_acc;
+use super::addr::alice_public_key;
 use super::vm_config::build as build_vm_config;
 
 type UncheckedExtrinsic = frame_system::mocking::MockUncheckedExtrinsic<Test>;
@@ -42,8 +42,8 @@ frame_support::construct_runtime!(
         System: frame_system::{Pallet, Call, Config, Storage, Event<T>},
         Timestamp: timestamp::{Pallet, Call, Storage, Inherent},
         Balances: balances::{Pallet, Call, Storage, Config<T>, Event<T>},
-        Mvm: sp_mvm::{Pallet, Call, Storage, Event<T>},
-        Multisig: pallet_multisig::{Pallet, Call, Storage, Event<T>},
+        Mvm: sp_mvm::{Pallet, Call, Config<T>, Storage, Event<T>},
+        Multisig: pallet_multisig::{Pallet, Call, Origin<T>, Storage, Event<T>},
         // Sudo: pallet_sudo::{Module, Call, Config<T>, Storage, Event<T>},
     }
 );
@@ -159,6 +159,7 @@ parameter_types! {
 impl pallet_multisig::Config for Test {
     type Event = Event;
     type Call = Call;
+    type MyOrigin = Origin;
     type Currency = Balances;
     type DepositBase = DepositBase;
     type DepositFactor = DepositFactor;
@@ -189,7 +190,7 @@ pub fn new_test_ext() -> sp_io::TestExternalities {
         balances: vec![
             (root_ps_acc(), INITIAL_BALANCE),
             (origin_ps_acc(), INITIAL_BALANCE),
-            (alice_acc(), INITIAL_BALANCE),
+            (alice_public_key(), INITIAL_BALANCE),
         ],
         // balances: Vec::<(
         //     <Test as system::Config>::AccountId,
