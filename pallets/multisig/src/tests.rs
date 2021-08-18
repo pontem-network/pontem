@@ -38,9 +38,9 @@ frame_support::construct_runtime!(
         NodeBlock = Block,
         UncheckedExtrinsic = UncheckedExtrinsic,
     {
-        System: frame_system::{Module, Call, Config, Storage, Event<T>},
-        Balances: pallet_balances::{Module, Call, Storage, Config<T>, Event<T>},
-        Multisig: pallet_multisig::{Module, Call, Origin<T>, Storage, Event<T>},
+        System: frame_system::{Pallet, Call, Config, Storage, Event<T>},
+        Balances: pallet_balances::{Pallet, Call, Storage, Config<T>, Event<T>},
+        Multisig: pallet_multisig::{Pallet, Call, Origin<T>, Storage, Event<T>},
     }
 );
 
@@ -72,11 +72,14 @@ impl frame_system::Config for Test {
     type OnKilledAccount = ();
     type SystemWeightInfo = ();
     type SS58Prefix = ();
+    type OnSetCode = ();
 }
 parameter_types! {
     pub const ExistentialDeposit: u64 = 1;
 }
 impl pallet_balances::Config for Test {
+    type MaxReserves = ();
+    type ReserveIdentifier = [u8; 4];
     type MaxLocks = ();
     type Balance = u64;
     type Event = Event;
