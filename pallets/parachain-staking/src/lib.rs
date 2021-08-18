@@ -74,7 +74,9 @@ pub mod pallet {
         traits::{AtLeast32BitUnsigned, Saturating, Zero},
         Perbill, Percent, RuntimeDebug,
     };
-    use sp_std::{cmp::Ordering, collections::btree_map::BTreeMap, prelude::*};
+    use sp_std::{cmp::Ordering, prelude::*};
+    #[cfg(feature = "std")]
+    use sp_std::collections::btree_map::BTreeMap;
 
     /// Pallet for parachain staking
     #[pallet::pallet]
