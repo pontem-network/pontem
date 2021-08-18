@@ -133,7 +133,7 @@ pub fn new_test_ext() -> sp_io::TestExternalities {
 }
 
 fn last_event() -> Event {
-    system::Module::<Test>::events()
+    system::Pallet::<Test>::events()
         .pop()
         .map(|e| e.event)
         .expect("Event expected")
