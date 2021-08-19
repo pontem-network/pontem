@@ -10,7 +10,7 @@ check:
 	cargo check --all
 	cargo check --all --tests
 	make check-no-std
-	make check-benchmarks
+	#make check-benchmarks
 
 .PHONY: check-benchmarks
 check-benchmarks:
