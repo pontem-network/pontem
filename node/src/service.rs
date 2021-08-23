@@ -4,7 +4,7 @@ use cumulus_client_service::{
     StartFullNodeParams,
 };
 use cumulus_primitives_core::ParaId;
-use mv_node_runtime::{
+use pontem_runtime::{
     primitives::{Index, Balance, AccountId},
     RuntimeApi,
 };
@@ -30,8 +30,8 @@ type Hash = sp_core::H256;
 // Native executor instance.
 native_executor_instance!(
     pub ParachainRuntimeExecutor,
-    mv_node_runtime::api::dispatch,
-    mv_node_runtime::native_version,
+    pontem_runtime::api::dispatch,
+    pontem_runtime::native_version,
     frame_benchmarking::benchmarking::HostFunctions,
 );
 

@@ -28,7 +28,7 @@ use sc_cli::{
 use sc_service::{
     config::{PrometheusConfig, BasePath},
 };
-use mv_node_runtime::{RuntimeApi, Block};
+use pontem_runtime::{RuntimeApi, Block};
 use cumulus_client_service::genesis::generate_genesis_block;
 use sp_core::hexdisplay::HexDisplay;
 use polkadot_parachain::primitives::AccountIdConversion;
@@ -80,7 +80,7 @@ impl SubstrateCli for Cli {
     }
 
     fn native_runtime_version(_: &Box<dyn ChainSpec>) -> &'static RuntimeVersion {
-        &mv_node_runtime::VERSION
+        &pontem_runtime::VERSION
     }
 }
 
