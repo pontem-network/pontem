@@ -35,7 +35,7 @@
 	},
 	"parachains": [
 		{
-			"bin": "./target/release/mv-node",
+			"bin": "./target/release/pontem",
 			"id": "2000",
 			"nodes": [
 				{

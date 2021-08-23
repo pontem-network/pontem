@@ -3,7 +3,7 @@ name = "sp-mvm"
 authors = ["Pontem Network Team <https://pontem.network>"]
 description = "FRAME pallet adding Move-lang support."
 edition = "2018"
-repository = "https://github.com/pontem-network/sp-move"
+repository = "https://github.com/pontem-network/pontem"
 version = "0.3.2"
 
 [package.metadata.docs.rs]

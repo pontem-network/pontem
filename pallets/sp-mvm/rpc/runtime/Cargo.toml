@@ -3,7 +3,7 @@ name = "sp-mvm-rpc-runtime"
 authors = [ "Pontem Network Team <https://pontem.network>" ]
 description = "Runtime RPC for Move pallet."
 edition = "2018"
-repository = "https://github.com/pontem-network/sp-move"
+repository = "https://github.com/pontem-network/pontem"
 version = "0.2.2"
 
 [package.metadata.docs.rs]

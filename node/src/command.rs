@@ -28,7 +28,7 @@ use sc_cli::{
 use sc_service::{
     config::{PrometheusConfig, BasePath},
 };
-use mv_node_runtime::{RuntimeApi, Block};
+use pontem_runtime::{RuntimeApi, Block};
 use cumulus_client_service::genesis::generate_genesis_block;
 use sp_core::hexdisplay::HexDisplay;
 use polkadot_parachain::primitives::AccountIdConversion;
@@ -80,7 +80,7 @@ impl SubstrateCli for Cli {
     }
 
     fn native_runtime_version(_: &Box<dyn ChainSpec>) -> &'static RuntimeVersion {
-        &mv_node_runtime::VERSION
+        &pontem_runtime::VERSION
     }
 }
 
@@ -97,7 +97,7 @@ impl SubstrateCli for RelayChainCli {
         "Parachain Collator\n\nThe command-line arguments provided first will be \
 		passed to the parachain node, while the arguments provided after -- will be passed \
 		to the relaychain node.\n\n\
-		mv-node [parachain-args] -- [relaychain-args]"
+		pontem [parachain-args] -- [relaychain-args]"
             .into()
     }
 

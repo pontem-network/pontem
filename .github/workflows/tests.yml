@@ -172,7 +172,7 @@ jobs:
         uses: actions/upload-artifact@v2.2.3
         with:
           name: node-${{ matrix.os }}-debug
-          path: target/debug/mv-node
-          # path: target/**/mv-node
+          path: target/debug/pontem
+          # path: target/**/pontem
           if-no-files-found: warn
           retention-days: 2

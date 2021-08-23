@@ -2,4 +2,4 @@
 include:
   - project: 'DevOps/gitlab-templates'
     ref: master
-    file: '/include/pontem/sp-move.yml'
+    file: '/include/pontem/pontem.yml'

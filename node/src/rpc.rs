@@ -7,7 +7,7 @@
 
 use std::sync::Arc;
 
-use mv_node_runtime::{
+use pontem_runtime::{
     primitives::{AccountId, Balance, Index},
 };
 use sp_api::ProvideRuntimeApi;
