@@ -39,11 +39,11 @@ Add Nimbus key:
 
 ```sh
 # Use "//Alice" for URI.
-./target/release/mv-node key insert --keystore-path ~/.pontem/keystore-1 --key-type nmbs
+./target/release/pontem key insert --keystore-path ~/.pontem/keystore-1 --key-type nmbs
 ```
 
 ```sh
-# run mv-node
+# run pontem-node
 polkadot-launch ./launch-config.json
 ```
 
@@ -91,15 +91,15 @@ Add Nimbus key:
 
 ```sh
 # Use "//Alice" for URI.
-./target/release/mv-node key insert --keystore-path ~/.pontem/keystore-1 --key-type nmbs
+./target/release/pontem key insert --keystore-path ~/.pontem/keystore-1 --key-type nmbs
 ```
 
 Launch parachain node as collator:
 
 ```sh
-./target/release/mv-node export-genesis-state --parachain-id 2000 > genesis-state
-./target/release/mv-node export-genesis-wasm > genesis-wasm
-./target/release/mv-node --collator --tmp --keystore-path ~/.pontem/keystore-1 --parachain-id 2000 --port 40335 --ws-port 9946 -- --execution wasm --chain ../polkadot/rococo-local-cfde.json --port 30335
+./target/release/pontem export-genesis-state --parachain-id 2000 > genesis-state
+./target/release/pontem export-genesis-wasm > genesis-wasm
+./target/release/pontem --collator --tmp --keystore-path ~/.pontem/keystore-1 --parachain-id 2000 --port 40335 --ws-port 9946 -- --execution wasm --chain ../polkadot/rococo-local-cfde.json --port 30335
 ```
 
 Register the parachain:
@@ -112,7 +112,7 @@ Register the parachain:
 6. Upload `gensis-wasm` to `validationCode` field.
 7. Change `parachain` field to `Yes`.
 8. Send transaction.
-9. Restart `mv-node`.
+9. Restart `pontem`-node.
 
 ## Metadata
 
@@ -146,14 +146,14 @@ Add new Nimbus key:
 
 ```sh
 # Use "//Bob" for URI.
-./target/release/mv-node key insert --keystore-path ~/.pontem/keystore-2 --key-type nmbs
+./target/release/pontem key insert --keystore-path ~/.pontem/keystore-2 --key-type nmbs
 ```
 
 Get your public key:
 
 ```sh
 # Use "//Bob" for dev purposes URI.
-./target/release/mv-node key inspect
+./target/release/pontem key inspect
 ```
 
 You will see something like:
@@ -192,7 +192,7 @@ Now time to launch your node.
 **If you used polkadot-launch to launch everything:**
 
 ```sh
-/target/release/mv-node --collator \
+/target/release/pontem --collator \
      --tmp \
     --keystore-path ~/.pontem/keystore-2  \
     --parachain-id 2000 \
@@ -211,7 +211,7 @@ cat 9946.log | grep 40335 # Something like: /ip4/127.0.0.1/tcp/40335/p2p/12D3Koo
 **If you used manual method:**
 
 ```sh
-/target/release/mv-node --collator \
+/target/release/pontem --collator \
     --tmp \
     --keystore-path ~/.pontem/keystore-2  \
     --parachain-id 2000 \

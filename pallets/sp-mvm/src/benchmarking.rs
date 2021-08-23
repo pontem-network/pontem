@@ -3,7 +3,7 @@
 
 // How to use:
 // 1. Build node with feature `runtime-benchmarks`
-// 2. Run `./target/release/mv-node benchmark --dev -lsp_mvm=trace --pallet=sp_mvm --execution=wasm --wasm-execution=compiled --extrinsic='*' --steps=20 --repeat=10 --output=./target/sp-bench/`
+// 2. Run `./target/release/pontem benchmark --dev -lsp_mvm=trace --pallet=sp_mvm --execution=wasm --wasm-execution=compiled --extrinsic='*' --steps=20 --repeat=10 --output=./target/sp-bench/`
 
 use frame_benchmarking::{benchmarks, impl_benchmark_test_suite, whitelisted_caller};
 use frame_system::RawOrigin;

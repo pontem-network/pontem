@@ -5,12 +5,13 @@ description = 'A fresh FRAME-based Substrate node, ready for hacking.'
 edition = '2018'
 homepage = 'https://substrate.dev'
 license = 'Unlicense'
-name = 'mv-node'
-repository = 'https://github.com/substrate-developer-hub/substrate-mv-node/'
+name = 'pontem-node'
+repository = 'https://github.com/pontem-network/pontem/'
 version = '3.0.0'
 
 [[bin]]
-name = 'mv-node'
+name = 'pontem'
+path = 'src/main.rs'
 
 [package.metadata.docs.rs]
 targets = ['x86_64-unknown-linux-gnu']
@@ -84,7 +85,7 @@ polkadot-service = { git = 'http://github.com/paritytech/polkadot.git', branch =
 polkadot-parachain = { git = 'http://github.com/paritytech/polkadot.git', branch = 'release-v0.9.8' }
 
 # Local dependencies
-mv-node-runtime = { path = '../runtime' }
+pontem-runtime = { path = '../runtime' }
 sp-mvm-rpc = { path = '../pallets/sp-mvm/rpc' }
 sp-mvm-rpc-runtime = { path = '../pallets/sp-mvm/rpc/runtime' }
 
@@ -92,7 +93,7 @@ sp-mvm-rpc-runtime = { path = '../pallets/sp-mvm/rpc/runtime' }
 # Options are found here: https://github.com/paritytech/polkadot/blob/master/cli/Cargo.toml#L64-L71
 #
 # Alternatively to setting here, you can use cargo CLI at build time:
-# https://doc.rust-lang.org/cargo/reference/features.html#command-line-feature-options  
+# https://doc.rust-lang.org/cargo/reference/features.html#command-line-feature-options
 #
 # ** Don't enable relay chains you don't need, as this is a **very** heavy build for no reason**
 # More info: https://github.com/paritytech/polkadot/pull/3189
@@ -107,4 +108,4 @@ features = [ "move_stdlib" ]
 
 [features]
 default = []
-runtime-benchmarks = ['mv-node-runtime/runtime-benchmarks', 'polkadot-service/runtime-benchmarks']
+runtime-benchmarks = ['pontem-runtime/runtime-benchmarks', 'polkadot-service/runtime-benchmarks']

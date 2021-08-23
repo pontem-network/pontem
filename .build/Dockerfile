@@ -31,14 +31,14 @@ RUN --mount=type=cache,target=/usr/local/cargo/registry \
 	make init
 
 COPY ./ ./
-RUN cargo clean -p mv-node
+RUN cargo clean -p pontem-node
 RUN --mount=type=cache,target=/usr/local/cargo/registry \
 	--mount=type=cache,target=/usr/local/cargo/git \
 	--mount=type=cache,target=/opt/build/target \
 	rustup target add wasm32-unknown-unknown && \
 	make test && make build && \
 	mkdir -p release && \
-	cp target/release/mv-node release/
+	cp target/release/pontem release/
 
 FROM ubuntu:20.04
 WORKDIR /opt/sp-move

@@ -17,5 +17,5 @@ services:
       # - type: bind
       #   source: ./.local
       #   target: /root/.local
-    command: bash -c "rustup target add wasm32-unknown-unknown && WASM_BUILD_TOOLCHAIN=`cat rust-toolchain` cargo build --bin=mv-node && ./target/debug/mv-node --dev --ws-external"
+    command: bash -c "rustup target add wasm32-unknown-unknown && WASM_BUILD_TOOLCHAIN=`cat rust-toolchain` cargo build --bin=pontem && ./target/debug/pontem --dev --ws-external"
 

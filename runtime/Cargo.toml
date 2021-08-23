@@ -3,8 +3,8 @@ authors = ['Substrate DevHub <https://github.com/substrate-developer-hub>']
 edition = '2018'
 homepage = 'https://substrate.dev'
 license = 'Unlicense'
-name = 'mv-node-runtime'
-repository = 'https://github.com/substrate-developer-hub/substrate-mv-node/'
+name = 'pontem-runtime'
+repository = 'https://github.com/pontem-network/pontem/'
 version = '3.0.0'
 
 [package.metadata.docs.rs]
