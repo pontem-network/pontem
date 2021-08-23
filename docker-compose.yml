@@ -1,19 +1,19 @@
 version: "3.2"
 
 services:
-  sp-move:
-    container_name: sp-move
+  pontem:
+    container_name: pontem
     build:
       context: .
       dockerfile: .build/dev.Dockerfile
-    working_dir: /opt/sp-move
+    working_dir: /opt/pontem
     ports:
       - "9944:9944"
     environment:
-      - CARGO_HOME=/opt/sp-move/.cargo
+      - CARGO_HOME=/opt/pontem/.cargo
       - RUST_BACKTRACE=full
     volumes:
-      - .:/opt/sp-move
+      - .:/opt/pontem
       # - type: bind
       #   source: ./.local
       #   target: /root/.local

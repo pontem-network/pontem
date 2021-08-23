@@ -25,7 +25,7 @@ To use different localion you can modify `./launch-config.json`.
 Build Pontem:
 
 ```sh
-cd sp-move
+cd pontem
 make build
 ```
 
@@ -77,7 +77,7 @@ Launch Polkadot Relay Chain:
 Build Pontem:
 
 ```sh
-cd sp-move
+cd pontem
 make build
 ```
 
