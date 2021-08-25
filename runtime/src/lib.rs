@@ -6,7 +6,6 @@
 #[cfg(feature = "std")]
 include!(concat!(env!("OUT_DIR"), "/wasm_binary.rs"));
 
-use frame_system::{EnsureNever, EnsureRoot};
 use sp_std::prelude::*;
 use sp_core::OpaqueMetadata;
 use sp_runtime::{
@@ -43,8 +42,8 @@ pub use pallet_balances::Call as BalancesCall;
 pub use sp_runtime::{Permill, Percent, Perbill, MultiAddress};
 pub use pallet_vesting::Call as VestingCall;
 
-pub use sp_runtime::{Permill, Perbill, ModuleId};
 pub use frame_support::{
+    PalletId,
     construct_runtime, parameter_types, StorageValue, match_type,
     traits::{KeyOwnerProofSystem, Randomness, All, IsInVec},
     weights::{
@@ -55,7 +54,7 @@ pub use frame_support::{
     },
 };
 use frame_system::{
-    EnsureRoot,
+    EnsureRoot, EnsureNever,
     limits::{BlockLength, BlockWeights},
 };
 
@@ -253,7 +252,7 @@ impl pallet_democracy::Config for Runtime {
 parameter_types! {
     pub const SpendPeriod: BlockNumber = 20;
     pub const BountyUpdatePeriod: BlockNumber = 20;
-    pub const TreasuryModuleId: ModuleId = ModuleId(*b"py/trsry");
+    pub const TreasuryPalletId: PalletId = PalletId(*b"py/trsry");
     pub const ProposalBond: Permill = Permill::from_percent(5);
     pub const ProposalBondMinimum: Balance = 1;
     pub const Burn: Permill = Permill::from_percent(50);
@@ -265,7 +264,8 @@ impl pallet_treasury::Config for Runtime {
     type Currency = pallet_balances::Pallet<Self>;
     type ApproveOrigin = EnsureRoot<AccountId>;
     type RejectOrigin = EnsureRoot<AccountId>;
-    type ModuleId = TreasuryModuleId;
+    type PalletId = TreasuryPalletId;
+    type MaxApprovals = MaxApprovals;
     type Event = Event;
     type OnSlash = ();
     type ProposalBond = ProposalBond;
@@ -278,7 +278,7 @@ impl pallet_treasury::Config for Runtime {
 }
 
 parameter_types! {
-    pub MaximumSchedulerWeight: Weight = Perbill::from_percent(80) * BlockWeights::get().max_block;
+    pub MaximumSchedulerWeight: Weight = Perbill::from_percent(80) * RuntimeBlockWeights::get().max_block;
 }
 impl pallet_scheduler::Config for Runtime {
     type Event = Event;
@@ -697,9 +697,9 @@ construct_runtime!(
 
         MultiSig: pallet_multisig::{Pallet, Call, Origin<T>, Storage, Event<T>},
 
-        Scheduler: pallet_scheduler::{Module, Call, Storage, Config, Event<T>},
-        Treasury: pallet_treasury::{Module, Call, Storage, Config, Event<T>},
-        Democracy: pallet_democracy::{Module, Call, Storage, Config, Event<T>},
+        Scheduler: pallet_scheduler::{Pallet, Call, Storage, Config, Event<T>},
+        Treasury: pallet_treasury::{Pallet, Call, Storage, Config, Event<T>},
+        Democracy: pallet_democracy::{Pallet, Call, Storage, Config<T>, Event<T>},
 
     }
 );
