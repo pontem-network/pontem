@@ -8,7 +8,7 @@ fn main() {
 
     fetch(FetchConfig {
         git_repo: "https://github.com/pontem-network/move-stdlib.git",
-        rev: Some("7f200e70d2fc98863ecc8e004e9ee2255e97bf5a"),
+        rev: Some("e0fa415da72b5b27f651f82a8b8a3619c5a674aa"),
         path_to_clone: "./move/stdlib",
         build_with_dove: true,
     })
