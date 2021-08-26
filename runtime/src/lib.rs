@@ -43,18 +43,18 @@ pub use sp_runtime::{Permill, Percent, Perbill, MultiAddress};
 pub use pallet_vesting::Call as VestingCall;
 
 pub use frame_support::{
-    PalletId,
-    construct_runtime, parameter_types, StorageValue, match_type,
-    traits::{KeyOwnerProofSystem, Randomness, All, IsInVec},
+    PalletId, construct_runtime, parameter_types, StorageValue, match_type,
+    traits::{KeyOwnerProofSystem, Randomness, All, IsInVec, EnsureOrigin},
     weights::{
         Weight, IdentityFee, DispatchClass,
         constants::{
             BlockExecutionWeight, ExtrinsicBaseWeight, RocksDbWeight, WEIGHT_PER_SECOND,
         },
     },
+    error::{BadOrigin},
 };
 use frame_system::{
-    EnsureRoot, EnsureNever,
+    EnsureRoot, RawOrigin,
     limits::{BlockLength, BlockWeights},
 };
 
@@ -214,6 +214,22 @@ parameter_types! {
     pub const MaxProposals: u32 = 100;
     pub const InstantAllowed: bool = false;
 }
+pub struct AssumeRootIsSudo();
+impl EnsureOrigin<Origin> for AssumeRootIsSudo {
+    type Success = AccountId;
+    fn try_origin(o: Origin) -> Result<Self::Success, Origin> {
+        let f: Result<_, _> = o.into();
+        f.and_then(|t| match t {
+            RawOrigin::Root => Ok(Sudo::key()),
+            r => Err(Origin::from(r)),
+        })
+    }
+
+    #[cfg(feature = "runtime-benchmarks")]
+    fn successful_origin() -> O {
+        Origin::from(RawOrigin::Root)
+    }
+}
 
 impl pallet_democracy::Config for Runtime {
     type Proposal = Call;
@@ -225,8 +241,6 @@ impl pallet_democracy::Config for Runtime {
     type FastTrackVotingPeriod = FastTrackVotingPeriod;
     type MinimumDeposit = MinimumDeposit;
 
-    // STOPSHIP: needs to be reconfigured!
-
     type ExternalOrigin = EnsureRoot<AccountId>;
     type ExternalMajorityOrigin = EnsureRoot<AccountId>;
     type ExternalDefaultOrigin = EnsureRoot<AccountId>;
@@ -234,8 +248,8 @@ impl pallet_democracy::Config for Runtime {
     type CancellationOrigin = EnsureRoot<AccountId>;
     type BlacklistOrigin = EnsureRoot<AccountId>;
     type CancelProposalOrigin = EnsureRoot<AccountId>;
-    type VetoOrigin = EnsureNever<AccountId>;
-    type OperationalPreimageOrigin = EnsureNever<AccountId>;
+    type VetoOrigin = AssumeRootIsSudo;
+    type OperationalPreimageOrigin = AssumeRootIsSudo;
 
     type CooloffPeriod = CooloffPeriod;
     type PreimageByteDeposit = PreimageByteDeposit;
