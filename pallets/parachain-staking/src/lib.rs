@@ -74,7 +74,9 @@ pub mod pallet {
         traits::{AtLeast32BitUnsigned, Saturating, Zero},
         Perbill, Percent, RuntimeDebug,
     };
-    use sp_std::{cmp::Ordering, collections::btree_map::BTreeMap, prelude::*};
+    use sp_std::{cmp::Ordering, prelude::*};
+    #[cfg(feature = "std")]
+    use sp_std::collections::btree_map::BTreeMap;
 
     /// Pallet for parachain staking
     #[pallet::pallet]
@@ -1114,12 +1116,12 @@ pub mod pallet {
                     T::Currency::free_balance(&nominator) >= balance,
                     "Account does not have enough balance to place nomination."
                 );
-                let cn_count = if let Some(x) = col_nominator_count.get(&target) {
+                let cn_count = if let Some(x) = col_nominator_count.get(target) {
                     *x
                 } else {
                     0u32
                 };
-                let nn_count = if let Some(x) = nom_nominator_count.get(&nominator) {
+                let nn_count = if let Some(x) = nom_nominator_count.get(nominator) {
                     *x
                 } else {
                     0u32
@@ -1133,12 +1135,12 @@ pub mod pallet {
                 ) {
                     log::warn!("Join nominators failed in genesis with error {:?}", error);
                 } else {
-                    if let Some(x) = col_nominator_count.get_mut(&target) {
+                    if let Some(x) = col_nominator_count.get_mut(target) {
                         *x += 1u32;
                     } else {
                         col_nominator_count.insert(target.clone(), 1u32);
                     };
-                    if let Some(x) = nom_nominator_count.get_mut(&nominator) {
+                    if let Some(x) = nom_nominator_count.get_mut(nominator) {
                         *x += 1u32;
                     } else {
                         nom_nominator_count.insert(nominator.clone(), 1u32);

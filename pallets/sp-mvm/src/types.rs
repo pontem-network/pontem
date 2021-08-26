@@ -19,7 +19,7 @@ impl<AccountId: DecodeT> TryFrom<InternalModuleId> for MoveModuleId<AccountId> {
 
     fn try_from(id: InternalModuleId) -> Result<Self, Self::Error> {
         Ok(Self {
-            owner: address_to_account::<AccountId>(&id.address())?,
+            owner: address_to_account::<AccountId>(id.address())?,
             module: id.name().as_bytes().to_vec(),
         })
     }
