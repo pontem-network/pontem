@@ -2,7 +2,7 @@
 rm -rf ./stdlib
 git clone https://github.com/pontem-network/move-stdlib.git ./stdlib
 pushd ./stdlib
-git checkout d4e9989243d152325ce13c859ea5a978a2f01d72
+git checkout 34cedad7436f7dad6c9a521f3f6199324737d69f
 dove build --package
 popd
 
