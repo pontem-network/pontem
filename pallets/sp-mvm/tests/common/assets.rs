@@ -15,7 +15,7 @@ const USR_PACKAGES_MODULES: &[&[&str]] = &[&["Store", "EventProxy"]];
 const USER_MODULES: &[&str] = &["Store", "EventProxy"];
 const USER_BYTECODE: &[&[u8]] = &[
     include_bytes!("../assets/user/artifacts/modules/2_Store.mv"),
-    include_bytes!("../assets/user/artifacts/modules/46_EventProxy.mv"),
+    include_bytes!("../assets/user/artifacts/modules/47_EventProxy.mv"),
 ];
 
 const ROOT_MODULES: &[&str] = &["Store", "EventProxy"];
