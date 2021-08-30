@@ -29,18 +29,13 @@ package = "parity-scale-codec-derive"
 [dependencies.move-vm]
 package = "mvm"
 git = "https://github.com/pontem-network/sp-move-vm.git"
-branch = "update_1.3"
+rev = "7fc50f5aa43962e47584bbe714232fea476639cb"
 default-features = false
 features = [ "move_stdlib" ]
 
-# [dependencies.vm]
-## git = "https://github.com/pontem-network/sp-move-vm.git"
-## branch = "update_1.3"
-# default-features = false
-
 [dependencies.move-core-types]
 git = "https://github.com/pontem-network/sp-move-vm.git"
-branch = "update_1.3"
+rev = "7fc50f5aa43962e47584bbe714232fea476639cb"
 default-features = false
 
 
@@ -69,7 +64,7 @@ serde-alt = { version = "1", default-features = false, package = "alt_serde", fe
 package = "bcs"
 default-features = false
 git = "https://github.com/pontem-network/sp-move-vm.git"
-branch = "update_1.3"
+rev = "7fc50f5aa43962e47584bbe714232fea476639cb"
 optional = true
 
 
@@ -83,7 +78,7 @@ test-env-log = "*"
 
 [dev-dependencies.move-vm-runtime]
 git = "https://github.com/pontem-network/sp-move-vm.git"
-branch = "update_1.3"
+rev = "7fc50f5aa43962e47584bbe714232fea476639cb"
 default-features = false
 
 
@@ -96,7 +91,6 @@ std = [
     "serde",
     "log/std",
     "once_cell/std",
-    # "vm/std",
     "move-vm/std",
     "move-vm-runtime/std",
     "move-core-types/std",
@@ -109,7 +103,6 @@ std = [
     "frame-support/std",
     "frame-system/std",
     "frame-benchmarking/std",
-    # "move-vm-types/std",
     "timestamp/std",
     "getrandom/js",
     "balances/std",
