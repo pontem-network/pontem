@@ -470,7 +470,7 @@ checksum = "904dfeac50f3cdaba28fc6f57fdcddb75f49ed61346676a78c4ffe55877802fd"
 [[package]]
 name = "bcs"
 version = "0.1.1"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?branch=upd-sp-io#4f2b1a1b1154b8b08ff784e8415f48e88299de7d"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?branch=update_1.3#da7c34ad3250797b501749b26ae6f544c557653b"
 dependencies = [
  "alt_serde",
 ]
@@ -723,7 +723,7 @@ dependencies = [
 [[package]]
 name = "borrow-graph"
 version = "0.0.1"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?branch=upd-sp-io#4f2b1a1b1154b8b08ff784e8415f48e88299de7d"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?branch=update_1.3#da7c34ad3250797b501749b26ae6f544c557653b"
 dependencies = [
  "mirai-annotations",
 ]
@@ -886,7 +886,7 @@ checksum = "e3b5ca7a04898ad4bcd41c90c5285445ff5b791899bb1b0abdd2a2aa791211d7"
 [[package]]
 name = "bytecode-verifier"
 version = "0.1.0"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?branch=upd-sp-io#4f2b1a1b1154b8b08ff784e8415f48e88299de7d"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?branch=update_1.3#da7c34ad3250797b501749b26ae6f544c557653b"
 dependencies = [
  "anyhow",
  "borrow-graph",
@@ -989,7 +989,7 @@ dependencies = [
 [[package]]
 name = "cell"
 version = "0.1.0"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?branch=upd-sp-io#4f2b1a1b1154b8b08ff784e8415f48e88299de7d"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?branch=update_1.3#da7c34ad3250797b501749b26ae6f544c557653b"
 dependencies = [
  "once_cell",
 ]
@@ -1871,7 +1871,7 @@ dependencies = [
 [[package]]
 name = "diem-crypto"
 version = "0.0.1"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?branch=upd-sp-io#4f2b1a1b1154b8b08ff784e8415f48e88299de7d"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?branch=update_1.3#da7c34ad3250797b501749b26ae6f544c557653b"
 dependencies = [
  "alt_serde",
  "anyhow",
@@ -1893,7 +1893,7 @@ dependencies = [
 [[package]]
 name = "diem-crypto-derive"
 version = "0.0.1"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?branch=upd-sp-io#4f2b1a1b1154b8b08ff784e8415f48e88299de7d"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?branch=update_1.3#da7c34ad3250797b501749b26ae6f544c557653b"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -1903,7 +1903,7 @@ dependencies = [
 [[package]]
 name = "diem-nibble"
 version = "0.1.0"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?branch=upd-sp-io#4f2b1a1b1154b8b08ff784e8415f48e88299de7d"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?branch=update_1.3#da7c34ad3250797b501749b26ae6f544c557653b"
 dependencies = [
  "alt_serde",
 ]
@@ -1911,7 +1911,7 @@ dependencies = [
 [[package]]
 name = "diem-types"
 version = "0.0.1"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?branch=upd-sp-io#4f2b1a1b1154b8b08ff784e8415f48e88299de7d"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?branch=update_1.3#da7c34ad3250797b501749b26ae6f544c557653b"
 dependencies = [
  "alt_serde",
  "anyhow",
@@ -4712,7 +4712,7 @@ dependencies = [
 [[package]]
 name = "mirai-annotations"
 version = "0.1.0"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?branch=upd-sp-io#4f2b1a1b1154b8b08ff784e8415f48e88299de7d"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?branch=update_1.3#da7c34ad3250797b501749b26ae6f544c557653b"
 
 [[package]]
 name = "more-asserts"
@@ -4723,7 +4723,7 @@ checksum = "0debeb9fcf88823ea64d64e4a815ab1643f33127d995978e099942ce38f25238"
 [[package]]
 name = "move-binary-format"
 version = "0.1.0"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?branch=upd-sp-io#4f2b1a1b1154b8b08ff784e8415f48e88299de7d"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?branch=update_1.3#da7c34ad3250797b501749b26ae6f544c557653b"
 dependencies = [
  "anyhow",
  "cell",
@@ -4737,7 +4737,7 @@ dependencies = [
 [[package]]
 name = "move-core-types"
 version = "0.1.0"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?branch=upd-sp-io#4f2b1a1b1154b8b08ff784e8415f48e88299de7d"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?branch=update_1.3#da7c34ad3250797b501749b26ae6f544c557653b"
 dependencies = [
  "alt_serde",
  "anyhow",
@@ -4755,7 +4755,7 @@ dependencies = [
 [[package]]
 name = "move-vm-natives"
 version = "0.1.0"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?branch=upd-sp-io#4f2b1a1b1154b8b08ff784e8415f48e88299de7d"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?branch=update_1.3#da7c34ad3250797b501749b26ae6f544c557653b"
 dependencies = [
  "byteorder",
  "cell",
@@ -4772,7 +4772,7 @@ dependencies = [
 [[package]]
 name = "move-vm-runtime"
 version = "0.1.0"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?branch=upd-sp-io#4f2b1a1b1154b8b08ff784e8415f48e88299de7d"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?branch=update_1.3#da7c34ad3250797b501749b26ae6f544c557653b"
 dependencies = [
  "anyhow",
  "bytecode-verifier",
@@ -4791,7 +4791,7 @@ dependencies = [
 [[package]]
 name = "move-vm-types"
 version = "0.1.0"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?branch=upd-sp-io#4f2b1a1b1154b8b08ff784e8415f48e88299de7d"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?branch=update_1.3#da7c34ad3250797b501749b26ae6f544c557653b"
 dependencies = [
  "alt_serde",
  "bcs 0.1.1",
@@ -4869,7 +4869,7 @@ dependencies = [
 [[package]]
 name = "mvm"
 version = "0.1.3"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?branch=upd-sp-io#4f2b1a1b1154b8b08ff784e8415f48e88299de7d"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?branch=update_1.3#da7c34ad3250797b501749b26ae6f544c557653b"
 dependencies = [
  "alt_serde",
  "anyhow",
@@ -5072,7 +5072,7 @@ dependencies = [
 [[package]]
 name = "num-variants"
 version = "0.1.0"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?branch=upd-sp-io#4f2b1a1b1154b8b08ff784e8415f48e88299de7d"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?branch=update_1.3#da7c34ad3250797b501749b26ae6f544c557653b"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -10478,7 +10478,7 @@ dependencies = [
 [[package]]
 name = "stdlib"
 version = "0.1.0"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?branch=upd-sp-io#4f2b1a1b1154b8b08ff784e8415f48e88299de7d"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?branch=update_1.3#da7c34ad3250797b501749b26ae6f544c557653b"
 
 [[package]]
 name = "stdlib-fetch"
