@@ -868,6 +868,10 @@ pub mod pallet {
         UnknownAbility,
         // Documentation_missing
         InvalidFlagBits,
+        // Wrong secondary keys addresses count
+        SecondaryKeysAddressesCountMismatch,
+        // List of signers contain duplicates
+        SignersContainDuplicates,
     }
 }
 
