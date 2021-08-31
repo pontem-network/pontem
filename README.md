@@ -116,48 +116,7 @@ Register the parachain:
 
 ## Metadata
 
-Metadata for Polkadot JS:
-
-```json
-{
-   "Balance":"u64",
-   "RoundIndex":"u32",
-   "AuthorId":"[u8;32]",
-   "RegistrationInfo":{
-      "account":"AccountId",
-      "deposit":"Balance"
-   },
-   "MoveModuleId":{
-      "address":"AccountId",
-      "name":"Text"
-   },
-   "MoveTypeTag":{
-      "_enum":[
-         "Bool",
-         "U8",
-         "U64",
-         "U128",
-         "Address",
-         "Signer",
-         "Vector",
-         "Struct"
-      ],
-      "Bool":"",
-      "U8":"",
-      "U64":"",
-      "U128":"",
-      "Address":"",
-      "Signer":"",
-      "Vector":"MoveTypeTag",
-      "Struct":"MoveStructTag"
-   },
-   "MoveStructTag":{
-      "address":"AccountId",
-      "module":"Text",
-      "name":"Text"
-   }
-}
-```
+Metadata for Polkadot JS can be found in [repository contains types](https://github.com/pontem-network/pontem-types/blob/main/src/index.ts).
 
 * Current amount of top collator is 8.
 * Block time is 12 seconds.
