@@ -1,0 +1,18 @@
+# Ignore git
+.git
+.gitignore
+
+# Igmore docker files
+.build
+.dockerignore
+
+# Ignore env files
+.env
+.env.example
+
+# Other
+README.md
+node_modules
+.gitlab-ci.yml
+docker-compose.yml
+.build/*Dockerfile
