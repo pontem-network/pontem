@@ -1,4 +1,4 @@
-address 5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty {
+address {{sender}} {
 module Store {
     struct U64 has key { val: u64 }
 

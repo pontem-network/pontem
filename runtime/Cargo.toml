@@ -13,6 +13,7 @@ targets = ['x86_64-unknown-linux-gnu']
 [build-dependencies]
 substrate-wasm-builder = '4.0.0'
 
+# TODO: update parity-scale-codec to 2.2.0
 [dependencies.codec]
 default-features = false
 features = [ 'derive' ]

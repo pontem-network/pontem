@@ -470,15 +470,7 @@ checksum = "904dfeac50f3cdaba28fc6f57fdcddb75f49ed61346676a78c4ffe55877802fd"
 [[package]]
 name = "bcs"
 version = "0.1.1"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b#231b333e6830a50cadbf6b338ca4a7f33216522b"
-dependencies = [
- "alt_serde",
-]
-
-[[package]]
-name = "bcs"
-version = "0.1.1"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe#e84b6eab01fb6e2520d86ba6a5fe9466404b12fe"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=7fc50f5aa43962e47584bbe714232fea476639cb#7fc50f5aa43962e47584bbe714232fea476639cb"
 dependencies = [
  "alt_serde",
 ]
@@ -731,23 +723,15 @@ dependencies = [
 [[package]]
 name = "borrow-graph"
 version = "0.0.1"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b#231b333e6830a50cadbf6b338ca4a7f33216522b"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=7fc50f5aa43962e47584bbe714232fea476639cb#7fc50f5aa43962e47584bbe714232fea476639cb"
 dependencies = [
- "mirai-annotations 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
-]
-
-[[package]]
-name = "borrow-graph"
-version = "0.0.1"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe#e84b6eab01fb6e2520d86ba6a5fe9466404b12fe"
-dependencies = [
- "mirai-annotations 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe)",
+ "mirai-annotations",
 ]
 
 [[package]]
 name = "bp-header-chain"
 version = "0.1.0"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
  "finality-grandpa",
  "frame-support",
@@ -762,7 +746,7 @@ dependencies = [
 [[package]]
 name = "bp-messages"
 version = "0.1.0"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
  "bitvec",
  "bp-runtime",
@@ -777,7 +761,7 @@ dependencies = [
 [[package]]
 name = "bp-polkadot-core"
 version = "0.1.0"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
  "bp-messages",
  "bp-runtime",
@@ -794,7 +778,7 @@ dependencies = [
 [[package]]
 name = "bp-rococo"
 version = "0.1.0"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
  "bp-messages",
  "bp-polkadot-core",
@@ -811,7 +795,7 @@ dependencies = [
 [[package]]
 name = "bp-runtime"
 version = "0.1.0"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
  "frame-support",
  "hash-db",
@@ -828,7 +812,7 @@ dependencies = [
 [[package]]
 name = "bp-test-utils"
 version = "0.1.0"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
  "bp-header-chain",
  "ed25519-dalek",
@@ -843,7 +827,7 @@ dependencies = [
 [[package]]
 name = "bp-wococo"
 version = "0.1.0"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
  "bp-messages",
  "bp-polkadot-core",
@@ -902,29 +886,15 @@ checksum = "e3b5ca7a04898ad4bcd41c90c5285445ff5b791899bb1b0abdd2a2aa791211d7"
 [[package]]
 name = "bytecode-verifier"
 version = "0.1.0"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b#231b333e6830a50cadbf6b338ca4a7f33216522b"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=7fc50f5aa43962e47584bbe714232fea476639cb#7fc50f5aa43962e47584bbe714232fea476639cb"
 dependencies = [
  "anyhow",
- "borrow-graph 0.0.1 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
+ "borrow-graph",
  "hashbrown 0.9.1",
- "mirai-annotations 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
- "move-core-types 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
+ "mirai-annotations",
+ "move-binary-format",
+ "move-core-types",
  "petgraph 0.5.1 (git+https://github.com/pontem-network/petgraph.git)",
- "vm 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
-]
-
-[[package]]
-name = "bytecode-verifier"
-version = "0.1.0"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe#e84b6eab01fb6e2520d86ba6a5fe9466404b12fe"
-dependencies = [
- "anyhow",
- "borrow-graph 0.0.1 (git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe)",
- "hashbrown 0.9.1",
- "mirai-annotations 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe)",
- "move-core-types 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe)",
- "petgraph 0.5.1 (git+https://github.com/pontem-network/petgraph.git)",
- "vm 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe)",
 ]
 
 [[package]]
@@ -1019,15 +989,7 @@ dependencies = [
 [[package]]
 name = "cell"
 version = "0.1.0"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b#231b333e6830a50cadbf6b338ca4a7f33216522b"
-dependencies = [
- "once_cell",
-]
-
-[[package]]
-name = "cell"
-version = "0.1.0"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe#e84b6eab01fb6e2520d86ba6a5fe9466404b12fe"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=7fc50f5aa43962e47584bbe714232fea476639cb#7fc50f5aa43962e47584bbe714232fea476639cb"
 dependencies = [
  "once_cell",
 ]
@@ -1909,18 +1871,18 @@ dependencies = [
 [[package]]
 name = "diem-crypto"
 version = "0.0.1"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b#231b333e6830a50cadbf6b338ca4a7f33216522b"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=7fc50f5aa43962e47584bbe714232fea476639cb#7fc50f5aa43962e47584bbe714232fea476639cb"
 dependencies = [
  "alt_serde",
  "anyhow",
- "bcs 0.1.1 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
+ "bcs 0.1.1",
  "bytes 1.0.1",
- "cell 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
- "diem-crypto-derive 0.0.1 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
- "diem-nibble 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
+ "cell",
+ "diem-crypto-derive",
+ "diem-nibble",
  "ed25519-dalek",
  "hex",
- "mirai-annotations 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
+ "mirai-annotations",
  "rand 0.7.3",
  "rand_core 0.5.1",
  "serde_bytes",
@@ -1929,37 +1891,9 @@ dependencies = [
 ]
 
 [[package]]
-name = "diem-crypto"
-version = "0.0.1"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe#e84b6eab01fb6e2520d86ba6a5fe9466404b12fe"
-dependencies = [
- "alt_serde",
- "anyhow",
- "bcs 0.1.1 (git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe)",
- "bytes 1.0.1",
- "cell 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe)",
- "diem-nibble 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe)",
- "ed25519-dalek",
- "hex",
- "mirai-annotations 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe)",
- "static_assertions",
- "tiny-keccak",
-]
-
-[[package]]
 name = "diem-crypto-derive"
 version = "0.0.1"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b#231b333e6830a50cadbf6b338ca4a7f33216522b"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn",
-]
-
-[[package]]
-name = "diem-crypto-derive"
-version = "0.0.1"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe#e84b6eab01fb6e2520d86ba6a5fe9466404b12fe"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=7fc50f5aa43962e47584bbe714232fea476639cb#7fc50f5aa43962e47584bbe714232fea476639cb"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -1969,15 +1903,7 @@ dependencies = [
 [[package]]
 name = "diem-nibble"
 version = "0.1.0"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b#231b333e6830a50cadbf6b338ca4a7f33216522b"
-dependencies = [
- "alt_serde",
-]
-
-[[package]]
-name = "diem-nibble"
-version = "0.1.0"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe#e84b6eab01fb6e2520d86ba6a5fe9466404b12fe"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=7fc50f5aa43962e47584bbe714232fea476639cb#7fc50f5aa43962e47584bbe714232fea476639cb"
 dependencies = [
  "alt_serde",
 ]
@@ -1985,33 +1911,17 @@ dependencies = [
 [[package]]
 name = "diem-types"
 version = "0.0.1"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b#231b333e6830a50cadbf6b338ca4a7f33216522b"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=7fc50f5aa43962e47584bbe714232fea476639cb#7fc50f5aa43962e47584bbe714232fea476639cb"
 dependencies = [
  "alt_serde",
  "anyhow",
- "bcs 0.1.1 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
- "cell 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
- "diem-crypto 0.0.1 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
- "diem-crypto-derive 0.0.1 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
+ "bcs 0.1.1",
+ "cell",
+ "diem-crypto",
+ "diem-crypto-derive",
  "hashbrown 0.9.1",
  "hex",
- "move-core-types 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
-]
-
-[[package]]
-name = "diem-types"
-version = "0.0.1"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe#e84b6eab01fb6e2520d86ba6a5fe9466404b12fe"
-dependencies = [
- "alt_serde",
- "anyhow",
- "bcs 0.1.1 (git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe)",
- "cell 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe)",
- "diem-crypto 0.0.1 (git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe)",
- "diem-crypto-derive 0.0.1 (git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe)",
- "hashbrown 0.9.1",
- "hex",
- "move-core-types 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe)",
+ "move-core-types",
 ]
 
 [[package]]
@@ -2345,16 +2255,6 @@ name = "fake-simd"
 version = "0.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e88a8acf291dafb59c2d96e8f59828f3838bb1a70398823ade51a84de6a6deed"
-
-[[package]]
-name = "fallible"
-version = "0.1.0"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b#231b333e6830a50cadbf6b338ca4a7f33216522b"
-
-[[package]]
-name = "fallible"
-version = "0.1.0"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe#e84b6eab01fb6e2520d86ba6a5fe9466404b12fe"
 
 [[package]]
 name = "fallible-iterator"
@@ -3815,7 +3715,7 @@ dependencies = [
 [[package]]
 name = "kusama-runtime"
 version = "0.9.8"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
  "beefy-primitives",
  "bitvec",
@@ -4686,7 +4586,7 @@ dependencies = [
 [[package]]
 name = "metered-channel"
 version = "0.1.0"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
  "derive_more",
  "futures 0.3.15",
@@ -4812,12 +4712,7 @@ dependencies = [
 [[package]]
 name = "mirai-annotations"
 version = "0.1.0"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b#231b333e6830a50cadbf6b338ca4a7f33216522b"
-
-[[package]]
-name = "mirai-annotations"
-version = "0.1.0"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe#e84b6eab01fb6e2520d86ba6a5fe9466404b12fe"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=7fc50f5aa43962e47584bbe714232fea476639cb#7fc50f5aa43962e47584bbe714232fea476639cb"
 
 [[package]]
 name = "more-asserts"
@@ -4826,173 +4721,87 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0debeb9fcf88823ea64d64e4a815ab1643f33127d995978e099942ce38f25238"
 
 [[package]]
+name = "move-binary-format"
+version = "0.1.0"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=7fc50f5aa43962e47584bbe714232fea476639cb#7fc50f5aa43962e47584bbe714232fea476639cb"
+dependencies = [
+ "anyhow",
+ "cell",
+ "hashbrown 0.9.1",
+ "mirai-annotations",
+ "move-core-types",
+ "num-variants",
+ "ref-cast",
+]
+
+[[package]]
 name = "move-core-types"
 version = "0.1.0"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b#231b333e6830a50cadbf6b338ca4a7f33216522b"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=7fc50f5aa43962e47584bbe714232fea476639cb#7fc50f5aa43962e47584bbe714232fea476639cb"
 dependencies = [
  "alt_serde",
  "anyhow",
- "bcs 0.1.1 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
- "cell 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
- "diem-crypto 0.0.1 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
- "diem-crypto-derive 0.0.1 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
+ "bcs 0.1.1",
+ "cell",
  "enum-iterator",
  "hex",
- "mirai-annotations 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
+ "mirai-annotations",
  "parity-scale-codec",
  "parity-scale-codec-derive",
  "rand 0.7.3",
- "rand_core 0.5.1",
  "ref-cast",
- "short-hex-str 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
- "static_assertions",
-]
-
-[[package]]
-name = "move-core-types"
-version = "0.1.0"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe#e84b6eab01fb6e2520d86ba6a5fe9466404b12fe"
-dependencies = [
- "alt_serde",
- "anyhow",
- "bcs 0.1.1 (git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe)",
- "cell 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe)",
- "diem-crypto 0.0.1 (git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe)",
- "diem-crypto-derive 0.0.1 (git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe)",
- "enum-iterator",
- "hex",
- "mirai-annotations 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe)",
- "parity-scale-codec",
- "parity-scale-codec-derive",
- "ref-cast",
- "short-hex-str 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe)",
- "static_assertions",
-]
-
-[[package]]
-name = "move-lang"
-version = "0.0.1"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b#231b333e6830a50cadbf6b338ca4a7f33216522b"
-dependencies = [
- "alt_serde",
- "fallible 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
- "hashbrown 0.9.1",
- "hex",
- "petgraph 0.5.1 (git+https://github.com/pontem-network/petgraph.git)",
-]
-
-[[package]]
-name = "move-lang"
-version = "0.0.1"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe#e84b6eab01fb6e2520d86ba6a5fe9466404b12fe"
-dependencies = [
- "alt_serde",
- "fallible 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe)",
- "hashbrown 0.9.1",
- "hex",
- "petgraph 0.5.1 (git+https://github.com/pontem-network/petgraph.git)",
 ]
 
 [[package]]
 name = "move-vm-natives"
 version = "0.1.0"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b#231b333e6830a50cadbf6b338ca4a7f33216522b"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=7fc50f5aa43962e47584bbe714232fea476639cb#7fc50f5aa43962e47584bbe714232fea476639cb"
 dependencies = [
- "cell 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
- "diem-crypto 0.0.1 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
- "mirai-annotations 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
- "move-core-types 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
- "move-vm-types 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
+ "byteorder",
+ "cell",
+ "diem-crypto",
+ "mirai-annotations",
+ "move-binary-format",
+ "move-core-types",
+ "move-vm-types",
  "sha2 0.9.5",
  "smallvec 1.6.1",
  "uint 0.8.5",
- "vm 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
-]
-
-[[package]]
-name = "move-vm-natives"
-version = "0.1.0"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe#e84b6eab01fb6e2520d86ba6a5fe9466404b12fe"
-dependencies = [
- "cell 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe)",
- "diem-crypto 0.0.1 (git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe)",
- "mirai-annotations 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe)",
- "move-core-types 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe)",
- "move-vm-types 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe)",
- "sha2 0.9.5",
- "smallvec 1.6.1",
- "uint 0.8.5",
- "vm 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe)",
 ]
 
 [[package]]
 name = "move-vm-runtime"
 version = "0.1.0"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b#231b333e6830a50cadbf6b338ca4a7f33216522b"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=7fc50f5aa43962e47584bbe714232fea476639cb#7fc50f5aa43962e47584bbe714232fea476639cb"
 dependencies = [
  "anyhow",
- "bytecode-verifier 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
- "cell 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
- "diem-crypto 0.0.1 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
+ "bytecode-verifier",
+ "cell",
+ "diem-crypto",
  "hashbrown 0.9.1",
  "hex",
  "log",
- "mirai-annotations 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
- "move-core-types 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
- "move-vm-natives 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
- "move-vm-types 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
- "vm 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
-]
-
-[[package]]
-name = "move-vm-runtime"
-version = "0.1.0"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe#e84b6eab01fb6e2520d86ba6a5fe9466404b12fe"
-dependencies = [
- "anyhow",
- "bytecode-verifier 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe)",
- "cell 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe)",
- "diem-crypto 0.0.1 (git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe)",
- "hashbrown 0.9.1",
- "hex",
- "log",
- "mirai-annotations 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe)",
- "move-core-types 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe)",
- "move-vm-natives 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe)",
- "move-vm-types 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe)",
- "vm 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe)",
+ "mirai-annotations",
+ "move-binary-format",
+ "move-core-types",
+ "move-vm-natives",
+ "move-vm-types",
 ]
 
 [[package]]
 name = "move-vm-types"
 version = "0.1.0"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b#231b333e6830a50cadbf6b338ca4a7f33216522b"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=7fc50f5aa43962e47584bbe714232fea476639cb#7fc50f5aa43962e47584bbe714232fea476639cb"
 dependencies = [
  "alt_serde",
- "bcs 0.1.1 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
- "diem-crypto 0.0.1 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
+ "bcs 0.1.1",
+ "cell",
  "hashbrown 0.9.1",
- "mirai-annotations 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
- "move-core-types 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
+ "mirai-annotations",
+ "move-binary-format",
+ "move-core-types",
  "sha2 0.9.5",
  "smallvec 1.6.1",
- "vm 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
-]
-
-[[package]]
-name = "move-vm-types"
-version = "0.1.0"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe#e84b6eab01fb6e2520d86ba6a5fe9466404b12fe"
-dependencies = [
- "alt_serde",
- "bcs 0.1.1 (git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe)",
- "diem-crypto 0.0.1 (git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe)",
- "hashbrown 0.9.1",
- "mirai-annotations 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe)",
- "move-core-types 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe)",
- "sha2 0.9.5",
- "smallvec 1.6.1",
- "vm 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe)",
 ]
 
 [[package]]
@@ -5059,50 +4868,26 @@ dependencies = [
 
 [[package]]
 name = "mvm"
-version = "0.1.0"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b#231b333e6830a50cadbf6b338ca4a7f33216522b"
+version = "0.1.3"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=7fc50f5aa43962e47584bbe714232fea476639cb#7fc50f5aa43962e47584bbe714232fea476639cb"
 dependencies = [
  "alt_serde",
  "anyhow",
- "bcs 0.1.1 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
- "cell 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
- "diem-crypto 0.0.1 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
- "diem-types 0.0.1 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
+ "bcs 0.1.1",
+ "cell",
+ "diem-crypto",
+ "diem-types",
  "hashbrown 0.9.1",
  "hex",
  "log",
- "move-core-types 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
- "move-lang 0.0.1 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
- "move-vm-runtime 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
- "move-vm-types 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
+ "move-binary-format",
+ "move-core-types",
+ "move-vm-runtime",
+ "move-vm-types",
  "parity-scale-codec",
  "parity-scale-codec-derive",
- "stdlib 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
- "vm 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
-]
-
-[[package]]
-name = "mvm"
-version = "0.1.0"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe#e84b6eab01fb6e2520d86ba6a5fe9466404b12fe"
-dependencies = [
- "alt_serde",
- "anyhow",
- "bcs 0.1.1 (git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe)",
- "cell 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe)",
- "diem-crypto 0.0.1 (git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe)",
- "diem-types 0.0.1 (git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe)",
- "hashbrown 0.9.1",
- "hex",
- "log",
- "move-core-types 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe)",
- "move-lang 0.0.1 (git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe)",
- "move-vm-runtime 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe)",
- "move-vm-types 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe)",
- "parity-scale-codec",
- "parity-scale-codec-derive",
- "stdlib 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe)",
- "vm 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe)",
+ "sp-io",
+ "stdlib",
 ]
 
 [[package]]
@@ -5287,17 +5072,7 @@ dependencies = [
 [[package]]
 name = "num-variants"
 version = "0.1.0"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b#231b333e6830a50cadbf6b338ca4a7f33216522b"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn",
-]
-
-[[package]]
-name = "num-variants"
-version = "0.1.0"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe#e84b6eab01fb6e2520d86ba6a5fe9466404b12fe"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=7fc50f5aa43962e47584bbe714232fea476639cb#7fc50f5aa43962e47584bbe714232fea476639cb"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -5531,7 +5306,7 @@ dependencies = [
 [[package]]
 name = "pallet-bridge-grandpa"
 version = "0.1.0"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
  "bp-header-chain",
  "bp-runtime",
@@ -5773,12 +5548,13 @@ dependencies = [
 [[package]]
 name = "pallet-multisig"
 version = "3.0.0"
-source = "git+http://github.com/paritytech/substrate.git?branch=polkadot-v0.9.8#1b758b2a8d151d97d2242260c465b6df9cb8a7a4"
 dependencies = [
  "frame-benchmarking",
  "frame-support",
  "frame-system",
+ "pallet-balances",
  "parity-scale-codec",
+ "serde",
  "sp-core",
  "sp-io",
  "sp-runtime",
@@ -5788,13 +5564,12 @@ dependencies = [
 [[package]]
 name = "pallet-multisig"
 version = "3.0.0"
+source = "git+http://github.com/paritytech/substrate.git?branch=polkadot-v0.9.8#1b758b2a8d151d97d2242260c465b6df9cb8a7a4"
 dependencies = [
  "frame-benchmarking",
  "frame-support",
  "frame-system",
- "pallet-balances",
  "parity-scale-codec",
- "serde",
  "sp-core",
  "sp-io",
  "sp-runtime",
@@ -6141,7 +5916,7 @@ dependencies = [
 [[package]]
 name = "pallet-xcm"
 version = "0.1.0"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
  "frame-support",
  "frame-system",
@@ -6599,7 +6374,7 @@ checksum = "989d43012e2ca1c4a02507c67282691a0a3207f9dc67cec596b43fe925b3d325"
 [[package]]
 name = "polkadot-approval-distribution"
 version = "0.1.0"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
  "futures 0.3.15",
  "polkadot-node-network-protocol",
@@ -6613,7 +6388,7 @@ dependencies = [
 [[package]]
 name = "polkadot-availability-bitfield-distribution"
 version = "0.1.0"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
  "futures 0.3.15",
  "polkadot-node-network-protocol",
@@ -6626,7 +6401,7 @@ dependencies = [
 [[package]]
 name = "polkadot-availability-distribution"
 version = "0.1.0"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
  "futures 0.3.15",
  "lru",
@@ -6649,7 +6424,7 @@ dependencies = [
 [[package]]
 name = "polkadot-availability-recovery"
 version = "0.1.0"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
  "futures 0.3.15",
  "lru",
@@ -6668,7 +6443,7 @@ dependencies = [
 [[package]]
 name = "polkadot-cli"
 version = "0.9.8"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
  "frame-benchmarking-cli",
  "futures 0.3.15",
@@ -6688,7 +6463,7 @@ dependencies = [
 [[package]]
 name = "polkadot-client"
 version = "0.9.8"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
  "beefy-primitives",
  "frame-benchmarking",
@@ -6718,7 +6493,7 @@ dependencies = [
 [[package]]
 name = "polkadot-collator-protocol"
 version = "0.1.0"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
  "always-assert",
  "futures 0.3.15",
@@ -6738,7 +6513,7 @@ dependencies = [
 [[package]]
 name = "polkadot-core-primitives"
 version = "0.9.8"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
  "parity-scale-codec",
  "parity-util-mem",
@@ -6750,7 +6525,7 @@ dependencies = [
 [[package]]
 name = "polkadot-erasure-coding"
 version = "0.9.8"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
  "parity-scale-codec",
  "polkadot-node-primitives",
@@ -6764,7 +6539,7 @@ dependencies = [
 [[package]]
 name = "polkadot-gossip-support"
 version = "0.1.0"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
  "futures 0.3.15",
  "polkadot-node-network-protocol",
@@ -6782,7 +6557,7 @@ dependencies = [
 [[package]]
 name = "polkadot-network-bridge"
 version = "0.1.0"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
  "async-trait",
  "futures 0.3.15",
@@ -6802,7 +6577,7 @@ dependencies = [
 [[package]]
 name = "polkadot-node-collation-generation"
 version = "0.1.0"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
  "futures 0.3.15",
  "parity-scale-codec",
@@ -6820,7 +6595,7 @@ dependencies = [
 [[package]]
 name = "polkadot-node-core-approval-voting"
 version = "0.1.0"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
  "bitvec",
  "derive_more",
@@ -6850,7 +6625,7 @@ dependencies = [
 [[package]]
 name = "polkadot-node-core-av-store"
 version = "0.1.0"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
  "bitvec",
  "futures 0.3.15",
@@ -6870,7 +6645,7 @@ dependencies = [
 [[package]]
 name = "polkadot-node-core-backing"
 version = "0.1.0"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
  "bitvec",
  "futures 0.3.15",
@@ -6888,7 +6663,7 @@ dependencies = [
 [[package]]
 name = "polkadot-node-core-bitfield-signing"
 version = "0.1.0"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
  "futures 0.3.15",
  "polkadot-node-subsystem",
@@ -6903,7 +6678,7 @@ dependencies = [
 [[package]]
 name = "polkadot-node-core-candidate-validation"
 version = "0.1.0"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
  "async-trait",
  "futures 0.3.15",
@@ -6921,7 +6696,7 @@ dependencies = [
 [[package]]
 name = "polkadot-node-core-chain-api"
 version = "0.1.0"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
  "futures 0.3.15",
  "polkadot-node-subsystem",
@@ -6936,7 +6711,7 @@ dependencies = [
 [[package]]
 name = "polkadot-node-core-parachains-inherent"
 version = "0.1.0"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
  "async-trait",
  "futures 0.3.15",
@@ -6954,7 +6729,7 @@ dependencies = [
 [[package]]
 name = "polkadot-node-core-provisioner"
 version = "0.1.0"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
  "bitvec",
  "futures 0.3.15",
@@ -6969,7 +6744,7 @@ dependencies = [
 [[package]]
 name = "polkadot-node-core-pvf"
 version = "0.1.0"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
  "always-assert",
  "assert_matches",
@@ -6998,7 +6773,7 @@ dependencies = [
 [[package]]
 name = "polkadot-node-core-runtime-api"
 version = "0.1.0"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
  "futures 0.3.15",
  "memory-lru",
@@ -7016,7 +6791,7 @@ dependencies = [
 [[package]]
 name = "polkadot-node-jaeger"
 version = "0.1.0"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
  "async-std",
  "lazy_static",
@@ -7034,7 +6809,7 @@ dependencies = [
 [[package]]
 name = "polkadot-node-network-protocol"
 version = "0.1.0"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
  "futures 0.3.15",
  "parity-scale-codec",
@@ -7049,7 +6824,7 @@ dependencies = [
 [[package]]
 name = "polkadot-node-primitives"
 version = "0.1.0"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
  "futures 0.3.15",
  "parity-scale-codec",
@@ -7072,7 +6847,7 @@ dependencies = [
 [[package]]
 name = "polkadot-node-subsystem"
 version = "0.1.0"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
  "async-std",
  "async-trait",
@@ -7102,7 +6877,7 @@ dependencies = [
 [[package]]
 name = "polkadot-node-subsystem-util"
 version = "0.1.0"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
  "async-trait",
  "futures 0.3.15",
@@ -7130,7 +6905,7 @@ dependencies = [
 [[package]]
 name = "polkadot-overseer"
 version = "0.1.0"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
  "async-trait",
  "futures 0.3.15",
@@ -7149,7 +6924,7 @@ dependencies = [
 [[package]]
 name = "polkadot-parachain"
 version = "0.9.8"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
  "derive_more",
  "parity-scale-codec",
@@ -7164,7 +6939,7 @@ dependencies = [
 [[package]]
 name = "polkadot-primitives"
 version = "0.9.8"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
  "bitvec",
  "frame-system",
@@ -7194,7 +6969,7 @@ dependencies = [
 [[package]]
 name = "polkadot-procmacro-overseer-subsystems-gen"
 version = "0.1.0"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
  "assert_matches",
  "proc-macro2",
@@ -7205,7 +6980,7 @@ dependencies = [
 [[package]]
 name = "polkadot-procmacro-subsystem-dispatch-gen"
 version = "0.1.0"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
  "assert_matches",
  "proc-macro2",
@@ -7216,7 +6991,7 @@ dependencies = [
 [[package]]
 name = "polkadot-rpc"
 version = "0.9.8"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
  "beefy-gadget",
  "beefy-gadget-rpc",
@@ -7249,7 +7024,7 @@ dependencies = [
 [[package]]
 name = "polkadot-runtime"
 version = "0.9.8"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
  "beefy-primitives",
  "bitvec",
@@ -7325,7 +7100,7 @@ dependencies = [
 [[package]]
 name = "polkadot-runtime-common"
 version = "0.9.8"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
  "beefy-primitives",
  "bitvec",
@@ -7370,7 +7145,7 @@ dependencies = [
 [[package]]
 name = "polkadot-runtime-parachains"
 version = "0.9.8"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
  "bitvec",
  "derive_more",
@@ -7409,7 +7184,7 @@ dependencies = [
 [[package]]
 name = "polkadot-service"
 version = "0.9.8"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
  "async-trait",
  "beefy-gadget",
@@ -7501,7 +7276,7 @@ dependencies = [
 [[package]]
 name = "polkadot-statement-distribution"
 version = "0.1.0"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
  "arrayvec 0.5.2",
  "futures 0.3.15",
@@ -7522,7 +7297,7 @@ dependencies = [
 [[package]]
 name = "polkadot-statement-table"
 version = "0.9.8"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
  "parity-scale-codec",
  "polkadot-primitives",
@@ -7578,7 +7353,7 @@ dependencies = [
  "frame-benchmarking-cli",
  "jsonrpc-core 15.1.0",
  "log",
- "mvm 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe)",
+ "mvm",
  "nimbus-consensus",
  "nimbus-primitives",
  "pallet-transaction-payment-rpc",
@@ -8255,7 +8030,7 @@ dependencies = [
 [[package]]
 name = "rococo-runtime"
 version = "0.9.8"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
  "beefy-primitives",
  "bp-rococo",
@@ -9740,24 +9515,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7fdf1b9db47230893d76faad238fd6097fd6d6a9245cd7a4d90dbd639536bbd2"
 
 [[package]]
-name = "short-hex-str"
-version = "0.1.0"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b#231b333e6830a50cadbf6b338ca4a7f33216522b"
-dependencies = [
- "alt_serde",
- "mirai-annotations 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
-]
-
-[[package]]
-name = "short-hex-str"
-version = "0.1.0"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe#e84b6eab01fb6e2520d86ba6a5fe9466404b12fe"
-dependencies = [
- "alt_serde",
- "mirai-annotations 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe)",
-]
-
-[[package]]
 name = "signal-hook"
 version = "0.3.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -9832,7 +9589,7 @@ dependencies = [
 [[package]]
 name = "slot-range-helper"
 version = "0.9.8"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
  "enumn",
  "parity-scale-codec",
@@ -10289,19 +10046,17 @@ name = "sp-mvm"
 version = "0.3.2"
 dependencies = [
  "alt_serde",
- "bcs 0.1.1 (git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe)",
+ "bcs 0.1.1",
  "bcs 0.1.3",
- "diem-types 0.0.1 (git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe)",
  "env_logger 0.8.4",
  "frame-benchmarking",
  "frame-support",
  "frame-system",
  "getrandom 0.2.3",
  "log",
- "move-core-types 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
- "move-vm-runtime 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
- "move-vm-types 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
- "mvm 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
+ "move-core-types",
+ "move-vm-runtime",
+ "mvm",
  "once_cell",
  "pallet-balances",
  "pallet-multisig 3.0.0",
@@ -10314,7 +10069,6 @@ dependencies = [
  "sp-runtime",
  "sp-std",
  "test-env-log",
- "vm 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
 ]
 
 [[package]]
@@ -10724,12 +10478,7 @@ dependencies = [
 [[package]]
 name = "stdlib"
 version = "0.1.0"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b#231b333e6830a50cadbf6b338ca4a7f33216522b"
-
-[[package]]
-name = "stdlib"
-version = "0.1.0"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe#e84b6eab01fb6e2520d86ba6a5fe9466404b12fe"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=7fc50f5aa43962e47584bbe714232fea476639cb#7fc50f5aa43962e47584bbe714232fea476639cb"
 
 [[package]]
 name = "stdlib-fetch"
@@ -11791,38 +11540,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "5fecdca9a5291cc2b8dcf7dc02453fee791a280f3743cb0905f8822ae463b3fe"
 
 [[package]]
-name = "vm"
-version = "0.1.0"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b#231b333e6830a50cadbf6b338ca4a7f33216522b"
-dependencies = [
- "alt_serde",
- "anyhow",
- "cell 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
- "diem-crypto 0.0.1 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
- "hashbrown 0.9.1",
- "mirai-annotations 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
- "move-core-types 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
- "num-variants 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=231b333e6830a50cadbf6b338ca4a7f33216522b)",
- "ref-cast",
-]
-
-[[package]]
-name = "vm"
-version = "0.1.0"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe#e84b6eab01fb6e2520d86ba6a5fe9466404b12fe"
-dependencies = [
- "alt_serde",
- "anyhow",
- "cell 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe)",
- "diem-crypto 0.0.1 (git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe)",
- "hashbrown 0.9.1",
- "mirai-annotations 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe)",
- "move-core-types 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe)",
- "num-variants 0.1.0 (git+https://github.com/pontem-network/sp-move-vm.git?rev=e84b6eab01fb6e2520d86ba6a5fe9466404b12fe)",
- "ref-cast",
-]
-
-[[package]]
 name = "void"
 version = "1.0.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -12265,7 +11982,7 @@ dependencies = [
 [[package]]
 name = "westend-runtime"
 version = "0.9.8"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
  "beefy-primitives",
  "bitvec",
@@ -12443,7 +12160,7 @@ dependencies = [
 [[package]]
 name = "xcm"
 version = "0.9.8"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
  "derivative",
  "impl-trait-for-tuples",
@@ -12453,7 +12170,7 @@ dependencies = [
 [[package]]
 name = "xcm-builder"
 version = "0.9.8"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
  "frame-support",
  "frame-system",
@@ -12472,7 +12189,7 @@ dependencies = [
 [[package]]
 name = "xcm-executor"
 version = "0.9.8"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
  "frame-support",
  "impl-trait-for-tuples",

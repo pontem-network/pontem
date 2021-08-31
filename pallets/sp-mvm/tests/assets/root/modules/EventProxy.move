@@ -1,3 +1,4 @@
+address {{sender}} {
 module EventProxy {
     use 0x01::Event;
 
@@ -11,4 +12,5 @@ module EventProxy {
         );
         Event::destroy_handle(event_handle);
     }
+}
 }

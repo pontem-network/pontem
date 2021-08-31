@@ -15,6 +15,7 @@ sp-api = { default-features = false, version = '3.0.0', git = 'https://github.co
 frame-support = { default-features = false, version = "3.0.0", git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.8' }
 sp-mvm = { default-features = false, path = "../../" }
 sp-runtime = { default-features = false, version = "3.0.0", git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.8' }
+# TODO: update parity-scale-codec to 2.2.0
 codec = { package = "parity-scale-codec", version = "2.0.0", default-features = false }
 
 [features]

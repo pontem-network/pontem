@@ -330,6 +330,10 @@ impl<T: Config> From<StatusCode> for Error<T> {
             StatusCode::CYCLIC_MODULE_FRIENDSHIP => Self::CyclicModuleFriendship,
             StatusCode::UNKNOWN_ABILITY => Self::UnknownAbility,
             StatusCode::INVALID_FLAG_BITS => Self::InvalidFlagBits,
+            StatusCode::SECONDARY_KEYS_ADDRESSES_COUNT_MISMATCH => {
+                Self::SecondaryKeysAddressesCountMismatch
+            }
+            StatusCode::SIGNERS_CONTAIN_DUPLICATES => Self::SignersContainDuplicates,
         }
     }
 }

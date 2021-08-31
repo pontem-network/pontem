@@ -8,7 +8,7 @@ use move_core_types::language_storage::ModuleId;
 use move_core_types::language_storage::StructTag;
 use move_core_types::language_storage::TypeTag;
 use move_vm::io::state::State;
-use move_vm_runtime::data_cache::RemoteCache;
+use move_vm_runtime::data_cache::MoveStorage;
 use move_vm::types::ModulePackage;
 
 use sp_mvm::storage::MoveVmStorage;
