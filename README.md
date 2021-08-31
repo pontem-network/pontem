@@ -120,7 +120,6 @@ Metadata for Polkadot JS:
 
 ```json
 {
-   "AccountInfo":"AccountInfoWithDualRefCount",
    "Balance":"u64",
    "RoundIndex":"u32",
    "AuthorId":"[u8;32]",
