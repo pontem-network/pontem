@@ -103,7 +103,7 @@ polkadot-cli = { git = 'http://github.com/paritytech/polkadot.git', branch = 're
 [dependencies.move-vm]
 package = "mvm"
 git = "https://github.com/pontem-network/sp-move-vm.git"
-rev = "a6585179256bcb44c5e1db34201c3a5b6c8e3693"
+rev = "82ac9c2481726d205d3ac07e7d339e10d57412c5"
 default-features = false
 features = [ "move_stdlib" ]
 
