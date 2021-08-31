@@ -3,7 +3,6 @@
 .gitignore
 
 # Igmore docker files
-.build
 .dockerignore
 
 # Ignore env files
