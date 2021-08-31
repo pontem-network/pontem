@@ -1,8 +1,8 @@
 # Substrate Move VM
 
-Substrate node template with Move VM pallet on board.
+Substrate node template with [Move VM pallet](/pallets/sp-mvm/) on board.
 
-**It's alpha version. Work in progress, so use it at your own risk.**
+**Work in progress, so use it at your own risk.**
 
 * [Documentation](https://docs.pontem.network).
 
@@ -120,13 +120,43 @@ Metadata for Polkadot JS:
 
 ```json
 {
-  "Balance": "u64",
-  "RoundIndex": "u32",
-  "AuthorId": "[u8;32]",
-  "RegistrationInfo": {
-    "account": "AccountId",
-    "deposit": "Balance"
-  }
+   "AccountInfo":"AccountInfoWithDualRefCount",
+   "Balance":"u64",
+   "RoundIndex":"u32",
+   "AuthorId":"[u8;32]",
+   "RegistrationInfo":{
+      "account":"AccountId",
+      "deposit":"Balance"
+   },
+   "MoveModuleId":{
+      "address":"AccountId",
+      "name":"Text"
+   },
+   "MoveTypeTag":{
+      "_enum":[
+         "Bool",
+         "U8",
+         "U64",
+         "U128",
+         "Address",
+         "Signer",
+         "Vector",
+         "Struct"
+      ],
+      "Bool":"",
+      "U8":"",
+      "U64":"",
+      "U128":"",
+      "Address":"",
+      "Signer":"",
+      "Vector":"MoveTypeTag",
+      "Struct":"MoveStructTag"
+   },
+   "MoveStructTag":{
+      "address":"AccountId",
+      "module":"Text",
+      "name":"Text"
+   }
 }
 ```
 
