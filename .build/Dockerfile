@@ -25,17 +25,11 @@ RUN curl -sL --fail -o "/usr/local/bin/dove" "https://github.com/pontem-network/
     dove -V
 COPY ./scripts/ ./scripts/
 COPY ./Makefile ./
-RUN --mount=type=cache,target=/usr/local/cargo/registry \
-	--mount=type=cache,target=/usr/local/cargo/git \
-	--mount=type=cache,target=/opt/build/target \
-	make init
+RUN make init
 
 COPY ./ ./
 RUN cargo clean -p pontem-node
-RUN --mount=type=cache,target=/usr/local/cargo/registry \
-	--mount=type=cache,target=/usr/local/cargo/git \
-	--mount=type=cache,target=/opt/build/target \
-	rustup target add wasm32-unknown-unknown && \
+RUN rustup target add wasm32-unknown-unknown && \
 	make test && make build && \
 	mkdir -p release && \
 	cp target/release/pontem release/
