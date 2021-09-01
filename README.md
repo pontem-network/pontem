@@ -116,7 +116,7 @@ Register the parachain:
 
 ## Metadata
 
-Metadata for Polkadot JS can be found in [repository contains types](https://github.com/pontem-network/pontem-types/blob/main/src/index.ts).
+Metadata for Polkadot JS can be found in [repository containing types](https://github.com/pontem-network/pontem-types/blob/main/src/index.ts).
 
 * Current amount of top collator is 8.
 * Block time is 12 seconds.
