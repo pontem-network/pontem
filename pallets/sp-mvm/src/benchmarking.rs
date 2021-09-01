@@ -20,7 +20,7 @@ use super::*;
 use super::Pallet as Mvm;
 
 benchmarks! {
-    
+
     // Needs to be fixed in multisig. Not yet sure how, needs more deconstruction.
     where_clause { where Result<pallet_multisig::Origin<T>, <T as frame_system::Config>::Origin>: From<<T as frame_system::Config>::Origin> }
 
