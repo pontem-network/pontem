@@ -1,8 +1,8 @@
 # Substrate Move VM
 
-Substrate node template with Move VM pallet on board.
+Substrate node template with [Move VM pallet](/pallets/sp-mvm/) on board.
 
-**It's alpha version. Work in progress, so use it at your own risk.**
+**Work in progress, so use it at your own risk.**
 
 * [Documentation](https://docs.pontem.network).
 
@@ -116,19 +116,7 @@ Register the parachain:
 
 ## Metadata
 
-Metadata for Polkadot JS:
-
-```json
-{
-  "Balance": "u64",
-  "RoundIndex": "u32",
-  "AuthorId": "[u8;32]",
-  "RegistrationInfo": {
-    "account": "AccountId",
-    "deposit": "Balance"
-  }
-}
-```
+Metadata for Polkadot JS can be found in [repository containing types](https://github.com/pontem-network/pontem-types/blob/main/src/index.ts).
 
 * Current amount of top collator is 8.
 * Block time is 12 seconds.
