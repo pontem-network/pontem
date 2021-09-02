@@ -1,13 +1,13 @@
 [package]
-authors = ['Substrate DevHub <https://github.com/substrate-developer-hub>']
-build = 'build.rs'
-description = 'A fresh FRAME-based Substrate node, ready for hacking.'
-edition = '2018'
-homepage = 'https://substrate.dev'
-license = 'Unlicense'
-name = 'pontem-node'
+authors = ['Pontem Network Team <https://github.com/orgs/pontem-network/people>']
+description = '🚀 Pontem Node with Move VM onboard'
 repository = 'https://github.com/pontem-network/pontem/'
-version = '3.0.0'
+homepage = 'https://pontem.network'
+license = 'Apache-2.0'
+name = 'pontem-node'
+edition = '2018'
+build = 'build.rs'
+version = '0.4.1'
 
 [[bin]]
 name = 'pontem'
