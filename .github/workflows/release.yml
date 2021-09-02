@@ -37,13 +37,13 @@ jobs:
           echo "
           ## TODO: EDIT ME BEFORE PUBLISH
 
-          [link-tools]: ${{ github.event.repository.html_url }}/actions?query=workflow%3A%22Build+Release+Tools%22
-          [link-ext]: ${{ github.event.repository.html_url }}/actions?query=workflow%3A%22Build+Release+Ext%22
-          [badge-tools]: ${{ github.event.repository.html_url }}/workflows/Build%20Release%20Tools/badge.svg?event=workflow_run (tools workflow)
-          [badge-ext]: ${{ github.event.repository.html_url }}/workflows/Build%20Release%20Ext/badge.svg?event=workflow_run (ext workflow)
+          [link-main]: ${{ github.event.repository.html_url }}/actions?query=workflow%3A%22Release%22
+          [link-ext]: ${{ github.event.repository.html_url }}/actions?query=workflow%3A%22Release+Ext%22
+          [badge-main]: ${{ github.event.repository.html_url }}/workflows/Release/badge.svg?event=workflow_run (main workflow)
+          [badge-ext]: ${{ github.event.repository.html_url }}/workflows/Release%20Ext/badge.svg?event=workflow_run (ext workflow)
 
           __Please wait build completions for:__
-          - [![Build Release Tools][badge-tools]][link-tools]
+          - [![Build Release Tools][badge-main]][link-main]
           - [![Build Release Ext][badge-ext]][link-ext]
 
           - - -
@@ -52,7 +52,7 @@ jobs:
 
           $RESULT_LOG_ACT
 
-          __Changelog ${TAG_SECOND}__…${TAG_FIRST}
+          __${TAG_SECOND}__…${TAG_FIRST}
 
           $RESULT_LOG_POST
 
@@ -68,7 +68,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           draft: true
-          prerelease: true
+          prerelease: false
           tag_name: ${{ github.ref }}
           release_name: ${{ github.ref }}
           body_path: ${{ steps.changelog.outputs.file }}
@@ -91,13 +91,15 @@ jobs:
   build:
     needs: release
     name: Build
-    runs-on: ${{ matrix.os }}
+    runs-on: ${{ matrix.os.value }}
     strategy:
       fail-fast: false
       matrix:
         os:
-          - macos-latest
-          - ubuntu-latest
+          - name: macos
+            value: macos-latest
+          - name: ubuntu
+            value: ubuntu-latest
         dove:
           - 1.3.2
     defaults:
@@ -136,6 +138,9 @@ jobs:
           target: wasm32-unknown-unknown
           override: false
 
+      - name: Restore Rust cache
+        uses: Swatinem/rust-cache@v1
+
       - name: Get Dove
         uses: pontem-network/get-dove@main
         with:
@@ -146,12 +151,43 @@ jobs:
       - name: Build
         run: cargo +${{ steps.rust.outputs.version }} build --release
 
-      - name: Upload
+      - name: Upload Node
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ needs.release.outputs.upload_url }}
           asset_path: target/release/pontem
-          asset_name: pontem-${{ matrix.os }}-${{ steps.build-info.outputs.arch }}
+          asset_name: pontem-${{ matrix.os.name }}-${{ steps.build-info.outputs.arch }}
           asset_content_type: application/octet-stream
+
+      - name: Upload Runtime
+        if: matrix.os.name == 'ubuntu'
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.release.outputs.upload_url }}
+          asset_path: target/release/wbuild/pontem-runtime/target/wasm32-unknown-unknown/release/pontem_runtime.wasm
+          asset_name: pontem_runtime.wasm
+          asset_content_type: application/wasm
+
+      - name: Upload Runtime Compact
+        if: matrix.os.name == 'ubuntu'
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.release.outputs.upload_url }}
+          asset_path: target/release/wbuild/pontem-runtime/pontem_runtime.compact.wasm
+          asset_name: pontem_runtime.compact.wasm
+          asset_content_type: application/wasm
+      # also
+      # wbuild/polkadot-runtime
+      #   - polkadot_runtime.compact.compressed.wasm
+      #   - polkadot_runtime.compact.wasm
+      #   - polkadot_runtime.wasm
+      # wbuild/rococo-runtime
+      #   - rococo_runtime.compact.compressed.wasm
+      #   - rococo_runtime.compact.wasm
+      #   - rococo_runtime.wasm
