@@ -5,17 +5,17 @@ services:
     container_name: pontem
     build:
       context: .build
-      dockerfile: dev.Dockerfile
-    working_dir: /opt/pontem
+      dockerfile: launch.Dockerfile
+      args:
+        PONTEM_VERSION: v0.4.1
+        POLKADOT_VERSION: v0.9.8
+        NODE_VERSION: 16
     ports:
-      - "9944:9944"
-    environment:
-      - CARGO_HOME=/opt/pontem/.cargo
-      - RUST_BACKTRACE=full
+      - "9944:9944" # Alice relaychain
+      - "9946:9946" # Alice parachain
     volumes:
-      - .:/opt/pontem
-      # - type: bind
-      #   source: ./.local
-      #   target: /root/.local
-    command: bash -c "set -x && time rustup target add wasm32-unknown-unknown && time cargo clean -p pontem-node && time WASM_BUILD_TOOLCHAIN=`cat rust-toolchain` cargo build --bin=pontem && ./target/debug/pontem --dev --ws-external"
-
+      - ./launch-config.json:/opt/pontem/launch-config.json
+      - ./docker-launch:/opt/app
+      # Uncomment if you are using the application from the source code
+      # - ./target/release/pontem:/opt/pontem/target/release/pontem
+      # - ./target/debug/pontem:/opt/pontem/target/release/pontem
