@@ -26,9 +26,12 @@ jobs:
         run: |
           echo ::set-output name=tag::$(cat release-upload.url | cut -d \  -f 1)
           echo ::set-output name=upload_url::$(cat release-upload.url | cut -d \  -f 2)
+          echo ::set-output name=release_url::$(cat release-page.url)
     outputs:
       tag: ${{ steps.release.outputs.tag }}
       upload_url: ${{ steps.release.outputs.upload_url }}
+      release_url: ${{ steps.release.outputs.release_url }}
+
   # some-job:
   #   name: Some Job
   #   needs: release
