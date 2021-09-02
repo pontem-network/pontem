@@ -68,15 +68,17 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           draft: true
-          prerelease: false
+          prerelease: true
           tag_name: ${{ github.ref }}
           release_name: ${{ github.ref }}
           body_path: ${{ steps.changelog.outputs.file }}
 
-      - name: Save release assets url for other workflows
-        run: echo "${{ steps.version.outputs.value }} ${{ steps.release.outputs.upload_url }}" > release-upload.url
+      - name: Save urls for other workflows
+        run: |
+          echo "${{ steps.version.outputs.value }} ${{ steps.release.outputs.upload_url }}" > release-upload.url
+          echo "${{ steps.release.outputs.html_url }}" > release-page.url
 
-      - name: Set release assets url as artifact
+      - name: Save assets url as artifact
         uses: actions/upload-artifact@v2
         with:
           name: release assets url
@@ -84,9 +86,18 @@ jobs:
           if-no-files-found: error
           retention-days: 1
 
+      - name: Save page url as artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: release page url
+          path: release-page.url
+          if-no-files-found: error
+          retention-days: 1
+
     outputs:
       tag: ${{ steps.version.outputs.value }}
       upload_url: ${{ steps.release.outputs.upload_url }}
+      html_url: ${{ steps.release.outputs.html_url }}
 
   build:
     needs: release
