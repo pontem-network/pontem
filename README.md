@@ -15,7 +15,7 @@ Read [official documentation](https://docs.pontem.network/02.-getting-started/lo
 Current version built with Nimbus consensus and Parachain Staking implementation.
 Requires relay chain to work correctly.
 
-### Using polka-launch
+### Using polkadot-launch
 
 Install [polkadot-launch](https://github.com/paritytech/polkadot-launch).
 
