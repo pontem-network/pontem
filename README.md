@@ -15,7 +15,7 @@ Read [official documentation](https://docs.pontem.network/02.-getting-started/lo
 Current version built with Nimbus consensus and Parachain Staking implementation.
 Requires relay chain to work correctly.
 
-### Using polka-launch
+### Using polkadot-launch
 
 Install [polkadot-launch](https://github.com/paritytech/polkadot-launch).
 
@@ -147,7 +147,7 @@ Get your public key:
 You will see something like:
 
 ```sh
-Secret Key URI `//Bib` is account:
+Secret Key URI `//Bob` is account:
 Secret seed:       0x02ca07977bdc4c93b5e00fcbb991b4e8ae20d05444153fd968e04bed6b4946e7
 Public key (hex):  0xb832ced5ca2de9fe76ef101d8ab1b8dd778e1ab5a809d019c57b78e45ecbaa56
 Public key (SS58): 5GEDm6TY5apP4bhwuTtTzA7z9vHbCL1V2D5nE8sPga6WKhNH
