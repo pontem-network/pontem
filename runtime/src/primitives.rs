@@ -18,6 +18,9 @@ pub type AccountIndex = u32;
 /// Balance of an account.
 pub type Balance = u64;
 
+// Signed version of `Balance` for xtokens.
+pub type Amount = i64;
+
 /// Index of a transaction in the chain.
 pub type Index = u32;
 

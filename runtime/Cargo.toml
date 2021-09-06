@@ -70,12 +70,24 @@ nimbus-primitives = { default-features = false, git = "https://github.com/purest
 pallet-author-slot-filter =  { default-features = false, git = "https://github.com/purestake/cumulus", branch = 'joshy-np098' }
 pallet-author-inherent = { default-features = false, git = 'https://github.com/purestake/cumulus', branch = 'joshy-np098' }
 
+# xtokens
+orml-xtokens = { default-features = false, git = 'https://github.com/open-web3-stack/open-runtime-module-library', rev = '650ef607d' }
+orml-tokens = { default-features = false, git = 'https://github.com/open-web3-stack/open-runtime-module-library', rev = '650ef607d' }
+orml-xcm = { default-features = false, git = 'https://github.com/open-web3-stack/open-runtime-module-library', rev = '650ef607d' }
+orml-traits = { default-features = false, git = 'https://github.com/open-web3-stack/open-runtime-module-library', rev = '650ef607d' }
+orml-xcm-support = { default-features = false, git = 'https://github.com/open-web3-stack/open-runtime-module-library', rev = '650ef607d' }
+
 # local dependencies
 sp-mvm = { path = '../pallets/sp-mvm', default-features = false }
 pallet-multisig = { default-features = false, path = '../pallets/multisig' }
 sp-mvm-rpc-runtime = { path = '../pallets/sp-mvm/rpc/runtime', default-features = false }
 parachain-staking = { path = '../pallets/parachain-staking', default-features = false }
 pallet-author-mapping = { path = "../pallets/author-mapping", default-features = false }
+
+[dev-dependencies]
+# TODO: use paritytech/polkadot repo with 0.9.9 branch
+xcm-simulator = { git = 'https://github.com/vitvakatu/xcm-simulator', branch = 'polkadot-v0.9.8-nimbus' }
+polkadot-runtime-parachains = { default-features = false, git = 'https://github.com/paritytech/polkadot.git', branch = 'release-v0.9.8' }
 
 [features]
 default = ['std']
@@ -133,4 +145,9 @@ std = [
     'pallet-author-slot-filter/std',
     'pallet-author-inherent/std',
     'parachain-staking/std',
+    'orml-xtokens/std',
+    'orml-tokens/std',
+    'orml-xcm/std',
+    'orml-traits/std',
+    'orml-xcm-support/std',
 ]

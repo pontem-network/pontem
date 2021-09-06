@@ -9,7 +9,7 @@ use sp_runtime::{
 use pontem_runtime::{
     GenesisConfig, SudoConfig, SystemConfig, BalancesConfig, WASM_BINARY, ParachainInfoConfig,
     VestingConfig, MvmConfig, ParachainStakingConfig, InflationInfo, Range, AuthorFilterConfig,
-    AuthorMappingConfig,
+    AuthorMappingConfig, TokensConfig, CurrencyId,
     primitives::{AccountId, Signature, Balance},
     constants::currency::{PONT, DECIMALS},
 };
@@ -188,6 +188,13 @@ fn testnet_genesis(
     let vm_config = build_vm_config();
 
     GenesisConfig {
+        tokens: TokensConfig {
+            balances: endowed_accounts
+                .iter()
+                .cloned()
+                .map(|k| (k, CurrencyId::Pont, 100_000 * PONT))
+                .collect(),
+        },
         system: SystemConfig {
             // Add Wasm runtime to storage.
             code: wasm_binary.to_vec(),
