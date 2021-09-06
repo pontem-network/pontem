@@ -226,7 +226,7 @@ impl EnsureOrigin<Origin> for AssumeRootIsSudo {
     }
 
     #[cfg(feature = "runtime-benchmarks")]
-    fn successful_origin() -> O {
+    fn successful_origin() -> Origin {
         Origin::from(RawOrigin::Root)
     }
 }
