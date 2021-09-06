@@ -10,7 +10,6 @@ check:
 	cargo check --all
 	cargo check --all --tests
 	make check-no-std
-	#make check-benchmarks
 
 .PHONY: check-benchmarks
 check-benchmarks:
@@ -85,12 +84,3 @@ coverage:
 		-o ./target/debug/coverage/
 	# to produce html report add:
 	# -t html
-
-# .PHONY: coverage2
-# coverage2:
-# 	export SKIP_WASM_BUILD=1
-# 	export CARGO_INCREMENTAL=0
-# 	export RUSTFLAGS="-Zinstrument-coverage"
-# 	pushd pallets/sp-mvm && cargo build
-# 	export LLVM_PROFILE_FILE="your_name-%p-%m.profraw"
-# 	pushd pallets/sp-mvm && cargo test

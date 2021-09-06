@@ -1,8 +1,8 @@
 # Substrate Move VM
 
-Substrate node template with Move VM pallet on board.
+Substrate node template with [Move VM pallet](/pallets/sp-mvm/) on board.
 
-**It's alpha version. Work in progress, so use it at your own risk.**
+**Work in progress, so use it at your own risk.**
 
 * [Documentation](https://docs.pontem.network).
 
@@ -15,7 +15,7 @@ Read [official documentation](https://docs.pontem.network/02.-getting-started/lo
 Current version built with Nimbus consensus and Parachain Staking implementation.
 Requires relay chain to work correctly.
 
-### Using polka-launch
+### Using polkadot-launch
 
 Install [polkadot-launch](https://github.com/paritytech/polkadot-launch).
 
@@ -142,19 +142,7 @@ Register the parachain:
 
 ## Metadata
 
-Metadata for Polkadot JS:
-
-```json
-{
-  "Balance": "u64",
-  "RoundIndex": "u32",
-  "AuthorId": "[u8;32]",
-  "RegistrationInfo": {
-    "account": "AccountId",
-    "deposit": "Balance"
-  }
-}
-```
+Metadata for Polkadot JS can be found in [repository containing types](https://github.com/pontem-network/pontem-types/blob/main/src/index.ts).
 
 * Current amount of top collator is 8.
 * Block time is 12 seconds.
@@ -185,7 +173,7 @@ Get your public key:
 You will see something like:
 
 ```sh
-Secret Key URI `//Bib` is account:
+Secret Key URI `//Bob` is account:
 Secret seed:       0x02ca07977bdc4c93b5e00fcbb991b4e8ae20d05444153fd968e04bed6b4946e7
 Public key (hex):  0xb832ced5ca2de9fe76ef101d8ab1b8dd778e1ab5a809d019c57b78e45ecbaa56
 Public key (SS58): 5GEDm6TY5apP4bhwuTtTzA7z9vHbCL1V2D5nE8sPga6WKhNH

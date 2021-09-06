@@ -47,11 +47,11 @@ address 0x1 {
         }
 
         public fun exisit(): bool {
-            exists<Container>(0x1)
+            exists<Container>(@0x1)
         }
 
         public fun borrow() acquires Container {
-            let _c = borrow_global_mut<Container>(0x1);
+            let _c = borrow_global_mut<Container>(@0x1);
         }
 
     }

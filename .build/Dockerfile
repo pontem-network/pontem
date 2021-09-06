@@ -13,7 +13,7 @@ RUN rustup update nightly && \
 	rustup update stable
 
 # add dove
-ARG DOVE_VERSION=1.2.8
+ARG DOVE_VERSION=1.3.2
 RUN curl -sL --fail -o "/usr/local/bin/dove" "https://github.com/pontem-network/move-tools/releases/download/${DOVE_VERSION}/dove-${DOVE_VERSION}-linux-x86_64" && \
 	chmod +x /usr/local/bin/dove && \
     dove -V
