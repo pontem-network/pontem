@@ -55,6 +55,32 @@ Observe `9946.log` to verify that the node was launched successfully and is prod
 tail -f ./9946.log
 ```
 
+### Using polka-launch via docker-compose
+
+Build container:
+
+```sh
+cd pontem
+docker-compose build
+```
+
+Launching services:
+
+```sh
+docker-compose up -d
+```
+
+Log files are in folder `docker-launch`.
+
+In the `docker-compose.yml` file, you can set the required versions of polkadot and pontem by specifying them in `POLKADOT_VERSION` and `PONTEM_VERSION`, respectively. (note: if you change versions in docker-compose.yaml or change the `.build/launch.Dockerfile`, you need to rerun the `docker-compose build` command).
+
+You can connect using the following ports:
+
+```sh
+127.0.0.1:9944 # Alice relaychain
+127.0.0.1:9946 # Alice parachain
+```
+
 ### Manually
 
 Build Polkadot:
