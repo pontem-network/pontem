@@ -1,4 +1,4 @@
-SHELL := bash
+SHELL := /usr/bin/env bash
 
 .PHONY: init
 init:
@@ -26,12 +26,14 @@ clippy:
 	pushd pallets/sp-mvm && cargo clippy -p=sp-mvm --target=wasm32-unknown-unknown --no-default-features
 
 .PHONY: bench
-bench:
-	make assets
+bench: assets
 	# This is just an example about how to run benchmarks for the pallet
 	mkdir -p ./target/sp-bench
-	pushd node && \
-	cargo run --release --features=runtime-benchmarks -- \
+	# pushd node && \
+	cargo run \
+		--release \
+		--bin pontem \
+		--features=runtime-benchmarks -- \
 		benchmark \
 		--dev \
 		-lsp_mvm=trace \
@@ -40,7 +42,7 @@ bench:
 		--execution=wasm \
 		--wasm-execution=compiled \
 		--steps=20 --repeat=10 \
-		--output=../target/sp-bench
+		--output=target/sp-bench
 
 .PHONY: test
 test:
@@ -59,8 +61,12 @@ build:
 	cargo build --release
 
 .PHONY: assets
-assets:
+assets: pallets/sp-mvm/tests/assets/stdlib pallets/sp-mvm/tests/benchmark_assets/stdlib
+
+pallets/sp-mvm/tests/assets/stdlib:
 	pushd pallets/sp-mvm/tests/assets && ./build_assets.sh
+
+pallets/sp-mvm/tests/benchmark_assets/stdlib:
 	pushd pallets/sp-mvm/tests/benchmark_assets && ./build_assets.sh
 
 .PHONY: coverage
