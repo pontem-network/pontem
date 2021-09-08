@@ -22,6 +22,10 @@ check-benchmarks: assets
 check-no-std: assets
 	cargo check -p=sp-mvm --target=wasm32-unknown-unknown --no-default-features
 
+.PHONY: bench-rename-modules
+bench-rename-modules: assets
+	scripts/rename_modules.sh
+
 .PHONY: clippy
 clippy:
 	cargo clippy -p=sp-mvm -p=sp-mvm-rpc -p=sp-mvm-rpc-runtime
