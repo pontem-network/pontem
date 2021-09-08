@@ -1,37 +1,44 @@
-SHELL := bash
+SHELL := /usr/bin/env bash
 
 .PHONY: init
 init:
 	./scripts/init.sh
 
 .PHONY: check
-check:
+check: check-all check-no-std check-benchmarks
+
+.PHONY: check-all
+check-all: assets
 	export SKIP_WASM_BUILD=1
 	cargo check --all
 	cargo check --all --tests
-	make check-no-std
 
 .PHONY: check-benchmarks
-check-benchmarks:
+check-benchmarks: assets
 	export SKIP_WASM_BUILD=1
-	pushd node && cargo check --features=runtime-benchmarks; popd
+	cargo check --features=runtime-benchmarks
 
 .PHONY: check-no-std
-check-no-std:
-	pushd pallets/sp-mvm && cargo check -p=sp-mvm --target=wasm32-unknown-unknown --no-default-features; popd
+check-no-std: assets
+	cargo check -p=sp-mvm --target=wasm32-unknown-unknown --no-default-features
+
+.PHONY: bench-rename-modules
+bench-rename-modules: assets
+	scripts/rename_modules.sh
 
 .PHONY: clippy
 clippy:
 	cargo clippy -p=sp-mvm -p=sp-mvm-rpc -p=sp-mvm-rpc-runtime
-	pushd pallets/sp-mvm && cargo clippy -p=sp-mvm --target=wasm32-unknown-unknown --no-default-features
+	cargo clippy -p=sp-mvm --target=wasm32-unknown-unknown --no-default-features
 
 .PHONY: bench
-bench:
-	make assets
+bench: assets
 	# This is just an example about how to run benchmarks for the pallet
 	mkdir -p ./target/sp-bench
-	pushd node && \
-	cargo run --release --features=runtime-benchmarks -- \
+	cargo run \
+		--release \
+		--bin pontem \
+		--features=runtime-benchmarks -- \
 		benchmark \
 		--dev \
 		-lsp_mvm=trace \
@@ -40,17 +47,16 @@ bench:
 		--execution=wasm \
 		--wasm-execution=compiled \
 		--steps=20 --repeat=10 \
-		--output=../target/sp-bench
+		--output=target/sp-bench
 
 .PHONY: test
-test:
-	make assets
+test: assets
 	export SKIP_WASM_BUILD=1
 	cargo test --all --no-fail-fast -- --nocapture --test-threads=1
 
 .PHONY: run
 run:
-	export WASM_BUILD_TOOLCHAIN=`cat rust-toolchain`
+	export WASM_BUILD_TOOLCHAIN=$(cat rust-toolchain)
 	cargo run --release -- --dev --tmp -lsp_mvm=trace
 
 .PHONY: build
@@ -59,13 +65,25 @@ build:
 	cargo build --release
 
 .PHONY: assets
-assets:
-	pushd pallets/sp-mvm/tests/assets && ./build_assets.sh
-	pushd pallets/sp-mvm/tests/benchmark_assets && ./build_assets.sh
+assets: pallets/sp-mvm/tests/assets/stdlib pallets/sp-mvm/tests/benchmark_assets/stdlib
+
+.PHONY: clean-assets
+clean-assets:
+	rm -rf \
+		pallets/sp-mvm/tests/assets/stdlib \
+		pallets/sp-mvm/tests/benchmark_assets/stdlib
+
+	git clean -dfX -- \
+		pallets/sp-mvm/tests
+
+pallets/sp-mvm/tests/assets/stdlib:
+	cd pallets/sp-mvm/tests/assets; ./build_assets.sh
+
+pallets/sp-mvm/tests/benchmark_assets/stdlib:
+	cd pallets/sp-mvm/tests/benchmark_assets; ./build_assets.sh
 
 .PHONY: coverage
-coverage:
-	make assets
+coverage: assets
 	export SKIP_WASM_BUILD=1
 	export CARGO_INCREMENTAL=0
 	export RUSTFLAGS="-Zprofile -Ccodegen-units=1 -Cinline-threshold=0 -Clink-dead-code -Coverflow-checks=off -Zno-landing-pads"
