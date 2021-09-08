@@ -25,7 +25,7 @@ for F in $(cat ${bench} | grep -Po '(?<=/)\d+_(.+).mv' | sort -u); do
     pat=$(find_new $F)
     [ $pat ] && {
         echo for $F replacing \'$pat\'
-        sed -i "$pat" $bench
+        sed -i ".bak" "$pat" $bench
     }
 done
 
