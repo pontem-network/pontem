@@ -1,8 +1,17 @@
+#/usr/bin/env bash
+# Renames move modules in $bench, by finding modules with the same name in stdlib but with different priority.
+# Usually works
+# Invoke from repo root
+
+# Path to benchmarking.rs
 bench=pallets/sp-mvm/src/benchmarking.rs
+
+# Path to new stdlib
 basedir=$(dirname ${bench})/../tests/benchmark_assets/stdlib/artifacts/modules
+
 find_new() {
     modname=$(echo $1 | grep -Po "(?<=_)(.*)(?=\.)")
-    found=$(ls ${basedir}/*_$modname.mv)
+    found=$(echo ${basedir}/*_$modname.mv)
     # echo "found $found for $1"
     newname=$(basename $found)
     # echo $modname '|' $1 '->' $newname
