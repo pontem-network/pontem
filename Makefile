@@ -15,7 +15,7 @@ check:
 .PHONY: check-benchmarks
 check-benchmarks:
 	export SKIP_WASM_BUILD=1
-	pushd node && cargo check --features=runtime-benchmarks; popd
+	cargo check --features=runtime-benchmarks; popd
 
 .PHONY: check-no-std
 check-no-std:
@@ -30,7 +30,6 @@ clippy:
 bench: assets
 	# This is just an example about how to run benchmarks for the pallet
 	mkdir -p ./target/sp-bench
-	# pushd node && \
 	cargo run \
 		--release \
 		--bin pontem \
