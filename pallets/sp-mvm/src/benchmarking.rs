@@ -24,18 +24,6 @@ benchmarks! {
     // Needs to be fixed in multisig. Not yet sure how, needs more deconstruction.
     where_clause { where Result<pallet_multisig::Origin<T>, <T as frame_system::Config>::Origin>: From<<T as frame_system::Config>::Origin> }
 
-    publish_std {
-        let s in 0 .. 100;
-        let stdlib_modules = stdlib()
-        .into_iter()
-        .map(|(_, m)|m)
-        .collect::<Vec<_>>();
-    }: _(RawOrigin::Root, stdlib_modules, 100_000_000)
-    verify {
-        for (name, _) in stdlib() {
-            assert!(VMStorage::<T>::contains_key(module_access_core(name)));
-        }
-    }
     publish_empty_module {
         let s in 0 .. 100;
         let caller: T::AccountId = whitelisted_caller();
