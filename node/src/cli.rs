@@ -1,6 +1,30 @@
 use structopt::StructOpt;
 use std::path::PathBuf;
 
+#[derive(Debug)]
+pub enum Sealing {
+    /// Blocks are produced for each incoming transaction.
+    Instant,
+    /// Blocks are produced once per N milliseconds
+    Interval(u64),
+}
+
+impl std::str::FromStr for Sealing {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "instant" => Ok(Self::Instant),
+            number => {
+                let millis = number
+                    .parse()
+                    .map_err(|_| "unable to decode sealing param")?;
+                Ok(Self::Interval(millis))
+            }
+        }
+    }
+}
+
 #[derive(Debug, StructOpt)]
 pub struct Cli {
     #[structopt(subcommand)]
@@ -8,6 +32,14 @@ pub struct Cli {
 
     #[structopt(flatten)]
     pub run: cumulus_client_cli::RunCmd,
+
+    /// Sealing mode for --dev-service
+    #[structopt(long, default_value = "instant")]
+    pub sealing: Sealing,
+
+    /// Whether to run node in development node (single node, no consensus)
+    #[structopt(long)]
+    pub dev_service: bool,
 
     /// Relaychain arguments
     #[structopt(raw = true)]
