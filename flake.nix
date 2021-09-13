@@ -1,10 +1,7 @@
 {
   inputs = {
     fenix.url = github:nix-community/fenix;
-    naersk = {
-      url = github:nmattia/naersk;
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    naersk.url = github:nmattia/naersk;
     nixpkgs.url = github:NixOS/nixpkgs/nixpkgs-unstable;
     utils.url = github:numtide/flake-utils;
     move-tools.url = github:pontem-network/move-tools;
@@ -20,8 +17,14 @@
 
         dove = move-tools.defaultPackage."${system}";
 
-        rustToolchain = fenixArch.stable;
-        rustToolchainWasm = rustTargets.wasm32-unknown-unknown.latest;
+        toolchain = {
+          channel = "nightly";
+          date = "2021-04-24";
+          sha256 = "sha256:0hsp3d521ri9h6xc2vjlqdiqkkzv95844wp2vv3a5hwcp157sykh";
+        };
+
+        rustToolchain = fenixArch.toolchainOf toolchain;
+        rustToolchainWasm = rustTargets.wasm32-unknown-unknown.toolchainOf toolchain;
 
         naersk-lib = naersk.lib.${system}.override {
           cargo = rustToolchain.toolchain;
@@ -38,8 +41,8 @@
             dove
 
             (fenixArch.combine [
-              (fenixArch.latest.withComponents [ "cargo" "clippy-preview" "llvm-tools-preview" "rust-std" "rustc" "rustc-dev" "rustfmt-preview" ])
-              rustTargets.wasm32-unknown-unknown.latest.toolchain
+              (rustToolchain.withComponents [ "cargo" "clippy-preview" "llvm-tools-preview" "rust-std" "rustc" "rustc-dev" "rustfmt-preview" ])
+              rustToolchainWasm.toolchain
             ])
 
           ];
