@@ -451,7 +451,37 @@ pub type Barrier = (
 );
 
 const PONT_PER_WEIGHT: u128 = 1_000_000;
-const DOT_PER_WEIGHT: u128 = 1_000_000;
+
+/// Code copied from Kusama runtime. We're not using it as a dependency because of weird linkage
+/// errors
+mod kusama {
+    pub type KusamaBalance = polkadot_primitives::v0::Balance;
+    pub const UNITS: KusamaBalance = 1_000_000_000_000;
+    pub const CENTS: KusamaBalance = UNITS / 30_000;
+    use frame_support::weights::{
+        WeightToFeeCoefficient, WeightToFeeCoefficients, WeightToFeePolynomial,
+        constants::ExtrinsicBaseWeight,
+    };
+    use sp_runtime::Perbill;
+    use smallvec::smallvec;
+
+    pub struct KusamaWeightToFee;
+    impl WeightToFeePolynomial for KusamaWeightToFee {
+        type Balance = KusamaBalance;
+        fn polynomial() -> WeightToFeeCoefficients<Self::Balance> {
+            // in Kusama, extrinsic base weight (smallest non-zero weight) is mapped to 1/10 CENT:
+            let p = CENTS;
+            let q = 10 * KusamaBalance::from(ExtrinsicBaseWeight::get());
+            smallvec![WeightToFeeCoefficient {
+                degree: 1,
+                negative: false,
+                coeff_frac: Perbill::from_rational(p % q, q),
+                coeff_integer: p / q,
+            }]
+        }
+    }
+}
+
 pub struct SimpleWeightTrader(MultiLocation);
 impl WeightTrader for SimpleWeightTrader {
     fn new() -> Self {
@@ -473,16 +503,17 @@ impl WeightTrader for SimpleWeightTrader {
             Some(CurrencyId::Pont) => asset_id
                 .clone()
                 .into_fungible_multiasset(weight as u128 / PONT_PER_WEIGHT),
-            Some(CurrencyId::Dot) => asset_id
-                .clone()
-                .into_fungible_multiasset(weight as u128 / DOT_PER_WEIGHT),
+            Some(CurrencyId::Ksm) => {
+                use frame_support::weights::WeightToFeePolynomial;
+                let fee = kusama::KusamaWeightToFee::calc(&weight);
+                asset_id.clone().into_fungible_multiasset(fee as u128)
+            }
             None => asset_id.clone().into_fungible_multiasset(weight as u128),
         };
 
         if let MultiAsset::ConcreteFungible { ref id, amount: _ } = required {
             self.0 = id.clone();
         }
-
         let (unused, _) = payment.less(required).map_err(|_| XcmError::TooExpensive)?;
         Ok(unused)
     }
@@ -490,7 +521,11 @@ impl WeightTrader for SimpleWeightTrader {
     fn refund_weight(&mut self, weight: Weight) -> MultiAsset {
         let amount = match CurrencyIdConvert::convert(self.0.clone()) {
             Some(CurrencyId::Pont) => weight as u128 / PONT_PER_WEIGHT,
-            Some(CurrencyId::Dot) => weight as u128 / DOT_PER_WEIGHT,
+            Some(CurrencyId::Ksm) => {
+                use frame_support::weights::WeightToFeePolynomial;
+                let fee = kusama::KusamaWeightToFee::calc(&weight);
+                fee as u128
+            }
             None => weight as u128,
         };
         MultiAsset::ConcreteFungible {
@@ -521,16 +556,12 @@ pub type LocalOriginToLocation = SignedToAccountId32<Origin, AccountId, RelayNet
 
 /// The means for routing XCM messages which are not for local execution into the right message
 /// queues.
-#[cfg(not(test))]
 pub type XcmRouter = (
     // Two routers - use UMP to communicate with the relay chain:
     cumulus_primitives_utility::ParentAsUmp<ParachainSystem>,
     // ..and XCMP to communicate with the sibling chains.
     XcmpQueue,
 );
-
-#[cfg(test)]
-pub type XcmRouter = mock::ParachainXcmRouter<ParachainInfo>;
 
 impl pallet_xcm::Config for Runtime {
     type Event = Event;
@@ -552,10 +583,7 @@ impl cumulus_pallet_xcm::Config for Runtime {
 impl cumulus_pallet_xcmp_queue::Config for Runtime {
     type Event = Event;
     type XcmExecutor = XcmExecutor<XcmConfig>;
-    #[cfg(not(test))]
     type ChannelInfo = ParachainSystem;
-    #[cfg(test)]
-    type ChannelInfo = mock::ChannelInfo;
 }
 
 impl cumulus_pallet_dmp_queue::Config for Runtime {
@@ -642,16 +670,28 @@ impl cumulus_pallet_parachain_system::CheckInherents<Block> for CheckInherents {
 #[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
 pub enum CurrencyId {
     // Relaychain's currency.
-    Dot,
+    Ksm,
     // Our internal currency.
     Pont,
+}
+impl CurrencyId {
+    fn decimals(&self) -> Option<u8> {
+        match self {
+            Self::Ksm => Some(12),
+            Self::Pont => Some(10),
+        }
+    }
+}
+
+pub fn dollar(currency_id: CurrencyId) -> u128 {
+    10u128.pow(currency_id.decimals().expect("Unknown decimals").into())
 }
 
 pub struct CurrencyIdConvert;
 impl Convert<CurrencyId, Option<MultiLocation>> for CurrencyIdConvert {
     fn convert(id: CurrencyId) -> Option<MultiLocation> {
         match id {
-            CurrencyId::Dot => Some(Junction::Parent.into()),
+            CurrencyId::Ksm => Some(Junction::Parent.into()),
             CurrencyId::Pont => Some(
                 (
                     Junction::Parent,
@@ -668,7 +708,7 @@ impl Convert<MultiLocation, Option<CurrencyId>> for CurrencyIdConvert {
     fn convert(location: MultiLocation) -> Option<CurrencyId> {
         const PONT_KEY: &[u8] = b"PONT";
         match location {
-            X1(Parent) => Some(CurrencyId::Dot),
+            X1(Parent) => Some(CurrencyId::Ksm),
             X3(Junction::Parent, Junction::Parachain(_id), Junction::GeneralKey(key))
                 if key == PONT_KEY =>
             {

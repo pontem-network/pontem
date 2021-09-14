@@ -23,6 +23,7 @@ version = '2.0.0'
 [dependencies]
 hex-literal = { optional = true, version = '0.3.1' }
 serde = { version = "1.0.119", optional = true, features = [ "derive" ] } # / 1.0.101
+smallvec = "1.6"
 
 # Substrate dependencies
 frame-benchmarking = { default-features = false, optional = true, git = 'http://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.8' }
@@ -56,6 +57,7 @@ xcm = { default-features = false, git = 'https://github.com/paritytech/polkadot.
 xcm-builder = { default-features = false, git = 'https://github.com/paritytech/polkadot.git', branch = 'release-v0.9.8' }
 xcm-executor = { default-features = false, git = 'https://github.com/paritytech/polkadot.git', branch = 'release-v0.9.8' }
 polkadot-parachain = { default-features = false, git = 'https://github.com/paritytech/polkadot.git', branch = 'release-v0.9.8' }
+polkadot-primitives = { default-features = false, git = 'https://github.com/paritytech/polkadot.git', branch = 'release-v0.9.8' }
 
 # Cumulus Dependencies
 parachain-info = { default-features = false, git = 'https://github.com/purestake/cumulus', branch = 'joshy-np098' }
@@ -86,8 +88,9 @@ pallet-author-mapping = { path = "../pallets/author-mapping", default-features =
 
 [dev-dependencies]
 # TODO: use paritytech/polkadot repo with 0.9.9 branch
-xcm-simulator = { git = 'https://github.com/vitvakatu/xcm-simulator', branch = 'polkadot-v0.9.8-nimbus' }
+xcm-emulator = { git = 'https://github.com/vitvakatu/xcm-simulator', branch = 'polkadot-v0.9.8-nimbus' }
 polkadot-runtime-parachains = { default-features = false, git = 'https://github.com/paritytech/polkadot.git', branch = 'release-v0.9.8' }
+kusama-runtime = { git = 'https://github.com/paritytech/polkadot.git', branch = 'release-v0.9.8' }
 
 [features]
 default = ['std']
@@ -150,4 +153,5 @@ std = [
     'orml-xcm/std',
     'orml-traits/std',
     'orml-xcm-support/std',
+    'polkadot-primitives/std',
 ]

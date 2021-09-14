@@ -1,7 +1,7 @@
 use crate::mock::*;
 use crate::*;
 use orml_xtokens::Error;
-use xcm_simulator::TestExt;
+use xcm_emulator::TestExt;
 use frame_support::traits::Currency;
 use cumulus_primitives_core::ParaId;
 use polkadot_parachain::primitives::{Sibling, AccountIdConversion};
@@ -14,10 +14,6 @@ fn para_a_account() -> AccountId32 {
     ParaId::from(1).into_account()
 }
 
-fn para_b_account() -> AccountId32 {
-    ParaId::from(2).into_account()
-}
-
 fn sibling_b_account() -> AccountId32 {
     use sp_runtime::traits::AccountIdConversion;
     Sibling::from(2).into_account()
@@ -28,36 +24,39 @@ fn send_relay_chain_asset_to_relay_chain() {
     TestNet::reset();
 
     Relay::execute_with(|| {
-        let _ = RelayBalances::deposit_creating(&para_a_account(), 100 * 1000_000);
+        let _ = RelayBalances::deposit_creating(&para_a_account(), 2 * dollar(CurrencyId::Ksm));
     });
 
     ParaA::execute_with(|| {
         assert_ok!(ParaXTokens::transfer(
             Some(ALICE).into(),
-            CurrencyId::Dot,
-            50 * 1000_000,
+            CurrencyId::Ksm,
+            dollar(CurrencyId::Ksm) as _,
             (
                 Parent,
                 Junction::AccountId32 {
-                    network: NetworkId::Polkadot,
+                    network: NetworkId::Any,
                     id: BOB.into(),
                 },
             )
                 .into(),
-            3000_000,
+            3_000_000_000,
         ));
         assert_eq!(
-            ParaTokens::free_balance(CurrencyId::Dot, &ALICE),
-            50 * 1000_000
+            ParaTokens::free_balance(CurrencyId::Ksm, &ALICE),
+            1999 * dollar(CurrencyId::Ksm) as u64
         );
     });
 
     Relay::execute_with(|| {
         assert_eq!(
             RelayBalances::free_balance(&para_a_account()),
-            50 * 1000_000
+            dollar(CurrencyId::Ksm)
         );
-        assert_eq!(RelayBalances::free_balance(&BOB), 47 * 1000_000);
+        assert_eq!(
+            RelayBalances::free_balance(&BOB),
+            dollar(CurrencyId::Ksm) - 79999995
+        );
     });
 }
 
@@ -98,14 +97,14 @@ fn send_relay_chain_asset_to_sibling() {
     TestNet::reset();
 
     Relay::execute_with(|| {
-        let _ = RelayBalances::deposit_creating(&para_a_account(), 100 * 1000_000);
+        let _ = RelayBalances::deposit_creating(&para_a_account(), 3 * dollar(CurrencyId::Ksm));
     });
 
     ParaA::execute_with(|| {
         assert_ok!(ParaXTokens::transfer(
             Some(ALICE).into(),
-            CurrencyId::Dot,
-            50 * 1000_000,
+            CurrencyId::Ksm,
+            3 * dollar(CurrencyId::Ksm) as u64,
             (
                 Parent,
                 Parachain(2),
@@ -118,24 +117,16 @@ fn send_relay_chain_asset_to_sibling() {
             3_000_000,
         ));
         assert_eq!(
-            ParaTokens::free_balance(CurrencyId::Dot, &ALICE),
-            50 * 1000_000
-        );
-    });
-
-    Relay::execute_with(|| {
-        assert_eq!(
-            RelayBalances::free_balance(&para_a_account()),
-            50 * 1000_000
-        );
-        assert_eq!(
-            RelayBalances::free_balance(&para_b_account()),
-            47 * 1000_000
+            ParaTokens::free_balance(CurrencyId::Ksm, &ALICE),
+            1997 * dollar(CurrencyId::Ksm) as u64
         );
     });
 
     ParaB::execute_with(|| {
-        assert_eq!(ParaTokens::free_balance(CurrencyId::Dot, &BOB), 46999997);
+        assert_eq!(
+            ParaTokens::free_balance(CurrencyId::Ksm, &BOB),
+            3 * dollar(CurrencyId::Ksm) as u64 - 160000
+        );
     });
 }
 
