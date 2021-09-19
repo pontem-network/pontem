@@ -22,7 +22,7 @@ use cumulus_pallet_parachain_system::RelaychainBlockNumberProvider;
 use nimbus_primitives::NimbusId;
 
 // Polkadot & XCM imports
-#[cfg(feature = "xcm")]
+#[cfg(feature = "enable-xcm")]
 use {
     polkadot_parachain::primitives::Sibling,
     xcm::v0::{MultiAsset, MultiLocation, MultiLocation::*, Junction::*, BodyId, NetworkId, Xcm},
@@ -267,7 +267,7 @@ parameter_types! {
     pub const ReservedDmpWeight: Weight = MAXIMUM_BLOCK_WEIGHT / 4;
 }
 
-#[cfg(feature = "xcm")]
+#[cfg(feature = "enable-xcm")]
 impl cumulus_pallet_parachain_system::Config for Runtime {
     type Event = Event;
     type OnValidationData = ();
@@ -279,7 +279,7 @@ impl cumulus_pallet_parachain_system::Config for Runtime {
     type ReservedDmpWeight = ReservedDmpWeight;
 }
 
-#[cfg(not(feature = "xcm"))]
+#[cfg(not(feature = "enable-xcm"))]
 impl cumulus_pallet_parachain_system::Config for Runtime {
     type Event = Event;
     type OnValidationData = ();
@@ -377,7 +377,7 @@ impl pallet_author_slot_filter::Config for Runtime {
 
 impl pallet_randomness_collective_flip::Config for Runtime {}
 
-#[cfg(feature = "xcm")]
+#[cfg(feature = "enable-xcm")]
 parameter_types! {
     pub const RelayLocation: MultiLocation = X1(Parent);
     pub const RelayNetwork: NetworkId = NetworkId::Polkadot;
@@ -388,7 +388,7 @@ parameter_types! {
 /// Type for specifying how a `MultiLocation` can be converted into an `AccountId`. This is used
 /// when determining ownership of accounts for asset transacting and when attempting to use XCM
 /// `Transact` in order to determine the dispatch Origin.
-#[cfg(feature = "xcm")]
+#[cfg(feature = "enable-xcm")]
 pub type LocationToAccountId = (
     // The parent (Relay-chain) origin converts to the default `AccountId`.
     ParentIsDefault<AccountId>,
@@ -399,7 +399,7 @@ pub type LocationToAccountId = (
 );
 
 /// Means for transacting assets on this chain.
-#[cfg(feature = "xcm")]
+#[cfg(feature = "enable-xcm")]
 pub type LocalAssetTransactor = CurrencyAdapter<
     // Use this currency:
     Balances,
@@ -416,7 +416,7 @@ pub type LocalAssetTransactor = CurrencyAdapter<
 /// This is the type we use to convert an (incoming) XCM origin into a local `Origin` instance,
 /// ready for dispatching a transaction with Xcm's `Transact`. There is an `OriginKind` which can
 /// biases the kind of local `Origin` it will become.
-#[cfg(feature = "xcm")]
+#[cfg(feature = "enable-xcm")]
 pub type XcmOriginToTransactDispatchOrigin = (
     // Sovereign account converter; this attempts to derive an `AccountId` from the origin location
     // using `LocationToAccountId` and then turn that into the usual `Signed` origin. Useful for
@@ -438,7 +438,7 @@ pub type XcmOriginToTransactDispatchOrigin = (
     XcmPassthrough<Origin>,
 );
 
-#[cfg(feature = "xcm")]
+#[cfg(feature = "enable-xcm")]
 parameter_types! {
      // One XCM operation is 1_000_000 weight - almost certainly a conservative estimate.
      pub UnitWeightCost: Weight = 1_000_000;
@@ -446,14 +446,14 @@ parameter_types! {
      pub const WeightPrice: (MultiLocation, u128) = (X1(Parent), UNIT as u128);
 }
 
-#[cfg(feature = "xcm")]
+#[cfg(feature = "enable-xcm")]
 match_type! {
      pub type ParentOrParentsUnitPlurality: impl Contains<MultiLocation> = {
          X1(Parent) | X2(Parent, Plurality { id: BodyId::Unit, .. })
      };
 }
 
-#[cfg(feature = "xcm")]
+#[cfg(feature = "enable-xcm")]
 pub type Barrier = (
     TakeWeightCredit,
     AllowTopLevelPaidExecutionFrom<All<MultiLocation>>,
@@ -461,10 +461,10 @@ pub type Barrier = (
     // ^^^ Parent & its unit plurality gets free execution
 );
 
-#[cfg(feature = "xcm")]
+#[cfg(feature = "enable-xcm")]
 pub struct XcmConfig;
 
-#[cfg(feature = "xcm")]
+#[cfg(feature = "enable-xcm")]
 impl Config for XcmConfig {
     type Call = Call;
     type XcmSender = XcmRouter;
@@ -481,12 +481,12 @@ impl Config for XcmConfig {
 }
 
 /// No local origins on this chain are allowed to dispatch XCM sends/executions.
-#[cfg(feature = "xcm")]
+#[cfg(feature = "enable-xcm")]
 pub type LocalOriginToLocation = SignedToAccountId32<Origin, AccountId, RelayNetwork>;
 
 /// The means for routing XCM messages which are not for local execution into the right message
 /// queues.
-#[cfg(feature = "xcm")]
+#[cfg(feature = "enable-xcm")]
 pub type XcmRouter = (
     // Two routers - use UMP to communicate with the relay chain:
     cumulus_primitives_utility::ParentAsUmp<ParachainSystem>,
@@ -494,7 +494,7 @@ pub type XcmRouter = (
     XcmpQueue,
 );
 
-#[cfg(feature = "xcm")]
+#[cfg(feature = "enable-xcm")]
 impl pallet_xcm::Config for Runtime {
     type Event = Event;
     type SendXcmOrigin = EnsureXcmOrigin<Origin, LocalOriginToLocation>;
@@ -507,20 +507,20 @@ impl pallet_xcm::Config for Runtime {
     type Weigher = FixedWeightBounds<UnitWeightCost, Call>;
 }
 
-#[cfg(feature = "xcm")]
+#[cfg(feature = "enable-xcm")]
 impl cumulus_pallet_xcm::Config for Runtime {
     type Event = Event;
     type XcmExecutor = XcmExecutor<XcmConfig>;
 }
 
-#[cfg(feature = "xcm")]
+#[cfg(feature = "enable-xcm")]
 impl cumulus_pallet_xcmp_queue::Config for Runtime {
     type Event = Event;
     type XcmExecutor = XcmExecutor<XcmConfig>;
     type ChannelInfo = ParachainSystem;
 }
 
-#[cfg(feature = "xcm")]
+#[cfg(feature = "enable-xcm")]
 impl cumulus_pallet_dmp_queue::Config for Runtime {
     type Event = Event;
     type XcmExecutor = XcmExecutor<XcmConfig>;
@@ -634,7 +634,7 @@ construct_runtime!(
 
 // XCM runtime version.
 // Create the runtime by composing the FRAME pallets that were previously configured.
-#[cfg(feature = "xcm")]
+#[cfg(feature = "enable-xcm")]
 construct_runtime!(
     pub enum Runtime where
         Block = Block,

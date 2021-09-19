@@ -79,6 +79,7 @@ pallet-author-mapping = { path = "../pallets/author-mapping", default-features =
 
 [features]
 default = ['std']
+enable-xcm = ['default']
 runtime-benchmarks = [
     'hex-literal',
     'frame-benchmarking',
