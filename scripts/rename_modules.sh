@@ -11,15 +11,22 @@ basedir=$(dirname ${bench})/../tests/benchmark_assets/stdlib/artifacts/modules
 
 find_new() {
     modname=$(echo $1 | grep -Po "(?<=_)(.*)(?=\.)")
-    found=$(echo ${basedir}/*_$modname.mv)
-    # echo "found $found for $1"
+    found=$(ls ${basedir}/*_$modname.mv 2>/dev/null)
+    [ "$found" ] || {
+        echo "No replacement found for $1" >&2
+        return
+    }
     newname=$(basename $found)
     # echo $modname '|' $1 '->' $newname
-    [ $newname != $1 ] && echo "s|modules/$1|modules/${newname}|g"
+    [ "$newname" != "$1" ] && echo "s|modules/$1|modules/${newname}|g"
 }
 
-for F in $(cat ${bench} | grep -Po '(?<=/)\d+_(.+).mv'); do
+for F in $(cat ${bench} | grep -Po '(?<=/)\d+_(.+).mv' | sort -u); do
     pat=$(find_new $F)
-    echo for $F replacing $pat
-    sed -i "$pat" $bench
+    [ $pat ] && {
+        echo for $F replacing \'$pat\'
+        sed -i ".bak" "$pat" $bench
+    }
 done
+
+exit 0

@@ -5764,13 +5764,12 @@ dependencies = [
 [[package]]
 name = "pallet-multisig"
 version = "3.0.0"
+source = "git+http://github.com/paritytech/substrate.git?branch=polkadot-v0.9.8#1b758b2a8d151d97d2242260c465b6df9cb8a7a4"
 dependencies = [
  "frame-benchmarking",
  "frame-support",
  "frame-system",
- "pallet-balances",
  "parity-scale-codec",
- "serde",
  "sp-core",
  "sp-io",
  "sp-runtime",
@@ -5785,7 +5784,9 @@ dependencies = [
  "frame-benchmarking",
  "frame-support",
  "frame-system",
+ "pallet-balances",
  "parity-scale-codec",
+ "serde",
  "sp-core",
  "sp-io",
  "sp-runtime",
@@ -6481,21 +6482,21 @@ dependencies = [
 [[package]]
 name = "petgraph"
 version = "0.5.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "467d164a6de56270bd7c4d070df81d07beace25012d5103ced4e9ff08d6afdb7"
-dependencies = [
- "fixedbitset 0.2.0",
- "indexmap 1.7.0",
-]
-
-[[package]]
-name = "petgraph"
-version = "0.5.1"
 source = "git+https://github.com/pontem-network/petgraph.git#17ae1eae1ee0a580e4f34ccefaf4d611d03eadcb"
 dependencies = [
  "fixedbitset 0.3.2",
  "hashbrown 0.9.1",
  "indexmap 1.6.0",
+]
+
+[[package]]
+name = "petgraph"
+version = "0.5.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "467d164a6de56270bd7c4d070df81d07beace25012d5103ced4e9ff08d6afdb7"
+dependencies = [
+ "fixedbitset 0.2.0",
+ "indexmap 1.7.0",
 ]
 
 [[package]]
@@ -11011,13 +11012,13 @@ dependencies = [
 [[package]]
 name = "substrate-wasm-builder"
 version = "4.0.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "93a3d51ad6abbc408b03ea962062bfcc959b438a318d7d4bedd181e1effd0610"
+source = "git+http://github.com/paritytech/substrate.git?branch=polkadot-v0.9.8#1b758b2a8d151d97d2242260c465b6df9cb8a7a4"
 dependencies = [
  "ansi_term 0.12.1",
  "atty",
  "build-helper",
- "cargo_metadata 0.12.3",
+ "cargo_metadata 0.13.1",
+ "sp-maybe-compressed-blob",
  "tempfile",
  "toml",
  "walkdir",
@@ -11032,8 +11033,7 @@ dependencies = [
  "ansi_term 0.12.1",
  "atty",
  "build-helper",
- "cargo_metadata 0.13.1",
- "sp-maybe-compressed-blob",
+ "cargo_metadata 0.12.3",
  "tempfile",
  "toml",
  "walkdir",
