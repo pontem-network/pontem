@@ -14,7 +14,7 @@ use sp_api::ProvideRuntimeApi;
 use sp_blockchain::HeaderBackend;
 use sp_block_builder::BlockBuilder;
 pub use sc_rpc_api::DenyUnsafe;
-use sp_transaction_pool::TransactionPool;
+use sc_transaction_pool_api::TransactionPool;
 use sp_mvm_rpc_runtime::MVMApiRuntime;
 use sp_mvm_rpc::{MVMApiRpc, MVMApi};
 

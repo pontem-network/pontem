@@ -21,6 +21,8 @@ use sc_network::NetworkService;
 use cumulus_client_consensus_common::ParachainConsensus;
 use nimbus_primitives::NimbusId;
 use nimbus_consensus::{build_nimbus_consensus, BuildNimbusConsensusParams};
+use sc_consensus::import_queue::DefaultImportQueue;
+
 // Runtime type overrides
 type BlockNumber = u32;
 type Header = sp_runtime::generic::Header<BlockNumber, sp_runtime::traits::BlakeTwo256>;
@@ -47,7 +49,7 @@ pub fn new_partial<RuntimeApi, Executor, BIQ>(
         TFullClient<Block, RuntimeApi, Executor>,
         TFullBackend<Block>,
         (),
-        sp_consensus::DefaultImportQueue<Block, TFullClient<Block, RuntimeApi, Executor>>,
+        DefaultImportQueue<Block, TFullClient<Block, RuntimeApi, Executor>>,
         sc_transaction_pool::FullPool<Block, TFullClient<Block, RuntimeApi, Executor>>,
         (Option<Telemetry>, Option<TelemetryWorkerHandle>),
     >,
@@ -78,7 +80,7 @@ where
         Option<TelemetryHandle>,
         &TaskManager,
     ) -> Result<
-        sp_consensus::DefaultImportQueue<Block, TFullClient<Block, RuntimeApi, Executor>>,
+        DefaultImportQueue<Block, TFullClient<Block, RuntimeApi, Executor>>,
         sc_service::Error,
     >,
 {
@@ -173,7 +175,7 @@ where
         Option<TelemetryHandle>,
         &TaskManager,
     ) -> Result<
-        sp_consensus::DefaultImportQueue<Block, TFullClient<Block, RuntimeApi, Executor>>,
+        DefaultImportQueue<Block, TFullClient<Block, RuntimeApi, Executor>>,
         sc_service::Error,
     >,
     BIC: FnOnce(
@@ -229,6 +231,7 @@ where
             spawn_handle: task_manager.spawn_handle(),
             import_queue: import_queue.clone(),
             on_demand: None,
+            warp_sync: None,
             block_announce_validator_builder: Some(Box::new(|_| block_announce_validator)),
         })?;
 
@@ -243,7 +246,8 @@ where
                 deny_unsafe,
             };
 
-            crate::rpc::create_full(deps)
+            let io = crate::rpc::create_full(deps);
+            Ok(io)
         })
     };
 
@@ -317,10 +321,7 @@ pub fn parachain_build_import_queue(
     _: Option<TelemetryHandle>,
     task_manager: &TaskManager,
 ) -> Result<
-    sp_consensus::DefaultImportQueue<
-        Block,
-        TFullClient<Block, RuntimeApi, ParachainRuntimeExecutor>,
-    >,
+    DefaultImportQueue<Block, TFullClient<Block, RuntimeApi, ParachainRuntimeExecutor>>,
     sc_service::Error,
 > {
     nimbus_consensus::import_queue(
@@ -346,6 +347,8 @@ pub async fn start_node(
     TaskManager,
     Arc<TFullClient<Block, RuntimeApi, ParachainRuntimeExecutor>>,
 )> {
+    let force_authoring = parachain_config.force_authoring;
+
     start_node_impl::<RuntimeApi, ParachainRuntimeExecutor, _, _>(
         parachain_config,
         polkadot_config,
@@ -379,6 +382,7 @@ pub async fn start_node(
                 relay_chain_backend: relay_chain_node.backend.clone(),
                 parachain_client: client.clone(),
                 keystore,
+                skip_prediction: force_authoring,
                 create_inherent_data_providers: move |_,
                                                       (
                     relay_parent,
@@ -421,10 +425,7 @@ pub fn nimbus_build_import_queue(
     _: Option<TelemetryHandle>,
     task_manager: &TaskManager,
 ) -> Result<
-    sp_consensus::DefaultImportQueue<
-        Block,
-        TFullClient<Block, RuntimeApi, ParachainRuntimeExecutor>,
-    >,
+    DefaultImportQueue<Block, TFullClient<Block, RuntimeApi, ParachainRuntimeExecutor>>,
     sc_service::Error,
 > {
     nimbus_consensus::import_queue(
