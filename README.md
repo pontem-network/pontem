@@ -15,7 +15,7 @@ Read [official documentation](https://docs.pontem.network/02.-getting-started/lo
 Current version built with Nimbus consensus and Parachain Staking implementation.
 Requires relay chain to work correctly.
 
-### Using polka-launch
+### Using polkadot-launch
 
 Install [polkadot-launch](https://github.com/paritytech/polkadot-launch).
 
@@ -53,6 +53,32 @@ Observe `9946.log` to verify that the node was launched successfully and is prod
 
 ```sh
 tail -f ./9946.log
+```
+
+### Using polka-launch via docker-compose
+
+Build container:
+
+```sh
+cd pontem
+docker-compose build
+```
+
+Launching services:
+
+```sh
+docker-compose up -d
+```
+
+Log files are in folder `docker-launch`.
+
+In the `docker-compose.yml` file, you can set the required versions of polkadot and pontem by specifying them in `POLKADOT_VERSION` and `PONTEM_VERSION`, respectively. (note: if you change versions in docker-compose.yaml or change the `.build/launch.Dockerfile`, you need to rerun the `docker-compose build` command).
+
+You can connect using the following ports:
+
+```sh
+127.0.0.1:9944 # Alice relaychain
+127.0.0.1:9946 # Alice parachain
 ```
 
 ### Manually
@@ -148,7 +174,7 @@ Get your public key:
 You will see something like:
 
 ```sh
-Secret Key URI `//Bib` is account:
+Secret Key URI `//Bob` is account:
 Secret seed:       0x02ca07977bdc4c93b5e00fcbb991b4e8ae20d05444153fd968e04bed6b4946e7
 Public key (hex):  0xb832ced5ca2de9fe76ef101d8ab1b8dd778e1ab5a809d019c57b78e45ecbaa56
 Public key (SS58): 5GEDm6TY5apP4bhwuTtTzA7z9vHbCL1V2D5nE8sPga6WKhNH

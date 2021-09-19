@@ -1,0 +1,21 @@
+version: "3.2"
+
+services:
+  pontem:
+    container_name: pontem
+    build:
+      context: .build
+      dockerfile: dev.Dockerfile
+    working_dir: /opt/pontem
+    ports:
+      - "9944:9944"
+    environment:
+      - CARGO_HOME=/opt/pontem/.cargo
+      - RUST_BACKTRACE=full
+    volumes:
+      - .:/opt/pontem
+      # - type: bind
+      #   source: ./.local
+      #   target: /root/.local
+    command: bash -c "set -x && time rustup target add wasm32-unknown-unknown && time cargo clean -p pontem-node && time WASM_BUILD_TOOLCHAIN=`cat rust-toolchain` cargo build --bin=pontem && ./target/debug/pontem --dev --ws-external"
+
