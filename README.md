@@ -62,7 +62,8 @@ Build Polkadot:
 ```sh
 git clone https://github.com/paritytech/polkadot.git
 cd polkadot
-git checkout v0.9.8
+git fetch origin
+git checkout release-v0.9.10
 cargo build --release
 ```
 
