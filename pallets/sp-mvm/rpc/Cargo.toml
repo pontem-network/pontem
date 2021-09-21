@@ -19,7 +19,10 @@ sp-api = { version = "3.0.0", git = 'https://github.com/paritytech/substrate.git
 frame-support = { version = "3.0.0", git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.8' }
 sp-blockchain = { version = "3.0.0", git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.8' }
 sp-mvm-rpc-runtime = { version = "0.2.2", path = "./runtime" }
-# TODO: update parity-scale-codec to 2.2.0
-codec = { package = "parity-scale-codec", version = "2.0.0" }
+codec = { package = "parity-scale-codec", version = "2.3.0" }
 serde = { version = "1.0.119", features = [ "derive" ] } # / 1.0.101
 fc-rpc-core = { version = "1.0.0" }
+
+[dependencies.move-core-types]
+git = "https://github.com/pontem-network/sp-move-vm.git"
+rev = "022c99a878a58b9c928f5996fc03a9e583681797"

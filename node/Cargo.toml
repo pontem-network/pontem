@@ -25,9 +25,9 @@ jsonrpc-core = '15.1.0'
 serde_json = '1.0'
 structopt = '0.3.8'
 # TODO: update parity-scale-codec to 2.2.0
-codec = { package = 'parity-scale-codec', version = '2.0.0' }
+codec = { package = 'parity-scale-codec', version = '2.3.0' }
 log = "0.4"
-serde = { version = "1.0", features = ["derive"]}
+serde = { version = "1.0.119", features = ["derive"] }
 
 # Substrate dependencies
 frame-benchmarking = { git = 'http://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.8' }
@@ -103,7 +103,7 @@ polkadot-cli = { git = 'http://github.com/paritytech/polkadot.git', branch = 're
 [dependencies.move-vm]
 package = "mvm"
 git = "https://github.com/pontem-network/sp-move-vm.git"
-rev = "6e647802f72a778617a1a4c87269d5f21dbfe0a7"
+rev = "022c99a878a58b9c928f5996fc03a9e583681797"
 default-features = false
 features = [ "move_stdlib" ]
 

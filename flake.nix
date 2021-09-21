@@ -19,8 +19,12 @@
 
         toolchain = {
           channel = "nightly";
-          date = "2021-04-24";
-          sha256 = "sha256:0hsp3d521ri9h6xc2vjlqdiqkkzv95844wp2vv3a5hwcp157sykh";
+          # date = "2021-09-13";
+          # sha256 = "sha256:1f7anbyrcv4w44k2rb6939bvsq1k82bks5q1mm5fzx92k8m9518c";
+          date = "2021-08-13";
+          sha256 = "sha256:0g1j230zp38jdnkvw3a4q10cjf57avwpnixi6a477d1df0pxbl5n";
+          # date = "2021-04-24";
+          # sha256 = "sha256:0hsp3d521ri9h6xc2vjlqdiqkkzv95844wp2vv3a5hwcp157sykh";
         };
 
         rustToolchain = fenixArch.toolchainOf toolchain;
@@ -47,14 +51,29 @@
 
           ];
 
-#          SKIP_WASM_BUILD = 1;
           PROTOC = "${protobuf}/bin/protoc";
-          # PROTOC_INCLUDE="${protobuf}/include";
           LLVM_CONFIG_PATH="${llvmPackagesR.llvm}/bin/llvm-config";
           LIBCLANG_PATH="${llvmPackagesR.libclang.lib}/lib";
           RUST_SRC_PATH = "${rustToolchain.rust-src}/lib/rustlib/src/rust/library/";
           ROCKSDB_LIB_DIR = "${rocksdb}/lib";
         };
+
+        defaultPackage = naersk-lib.buildPackage (with pkgs; {
+          name = "pontem-node";
+          src = ./.;
+          targets = [ "pontem-node" ];
+          buildInputs = [
+            protobuf openssl pre-commit pkgconfig
+            llvmPackagesR.clang
+            dove
+
+          ];
+          PROTOC = "${protobuf}/bin/protoc";
+          LLVM_CONFIG_PATH="${llvmPackagesR.llvm}/bin/llvm-config";
+          LIBCLANG_PATH="${llvmPackagesR.libclang.lib}/lib";
+          RUST_SRC_PATH = "${rustToolchain.rust-src}/lib/rustlib/src/rust/library/";
+          ROCKSDB_LIB_DIR = "${rocksdb}/lib";
+        });
 
       });
 
