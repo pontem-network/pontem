@@ -754,6 +754,25 @@ impl_runtime_apis! {
                 status_code: vm_result.status_code as u64,
             })
         }
+
+        // Get module binary by it's address
+        fn get_module(module_id: Vec<u8>) -> Result<Option<Vec<u8>>, sp_runtime::DispatchError> {
+            Mvm::get_module(&module_id.as_slice()).map_err(|_| sp_runtime::DispatchError::Other("error during VM execution"))
+        }
+
+        // Get module ABI by it's address
+        fn get_module_abi(module_id: Vec<u8>) -> Result<Option<Vec<u8>>, sp_runtime::DispatchError> {
+            Mvm::get_module_abi(&module_id.as_slice()).map_err(|_| sp_runtime::DispatchError::Other("error during VM execution"))
+        }
+
+        // Get resource
+        fn get_resource(
+            account_id: AccountId,
+            tag: Vec<u8>,
+        ) -> Result<Option<Vec<u8>>, sp_runtime::DispatchError> {
+            Mvm::get_resource(&account_id, &tag.as_slice()).map_err(|_| sp_runtime::DispatchError::Other("error during VM execution"))
+        }
+
     }
 
     impl sp_session::SessionKeys<Block> for Runtime {

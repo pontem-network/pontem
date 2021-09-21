@@ -52,7 +52,7 @@ pub mod pallet {
     use sp_runtime::traits::UniqueSaturatedInto;
     use parity_scale_codec::{FullCodec, FullEncode};
 
-    use move_vm::Vm;
+    use move_vm::{Vm, StateAccess};
     use move_vm::mvm::Mvm;
     use move_vm::io::context::ExecutionContext;
     use move_vm::types::Gas;
@@ -408,6 +408,29 @@ pub mod pallet {
             debug!("publication result: {:?}", res);
 
             Ok(res)
+        }
+
+        pub fn get_module_abi(
+            module_id: &[u8],
+        ) -> Result<Option<Vec<u8>>, Error<T>> {
+            let vm = Self::get_vm()?;
+            vm.get_module_abi(module_id).map_err(|_| Error::LookupFailed)
+        }
+
+        pub fn get_module(
+            module_id: &[u8],
+        ) -> Result<Option<Vec<u8>>, Error<T>> {
+            let vm = Self::get_vm()?;
+            vm.get_module(module_id).map_err(|_| Error::LookupFailed)
+        }
+
+        pub fn get_resource(
+            account: &T::AccountId,
+            tag: &[u8],
+        ) -> Result<Option<Vec<u8>>, Error<T>> {
+            let vm = Self::get_vm()?;
+            vm.get_resource(&AccountAddress::new(addr::account_to_bytes(account)), tag)
+                .map_err(|_| Error::LookupFailed)
         }
     }
 
