@@ -1,0 +1,20 @@
+name: Push Tag
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  push-tag:
+    name: check version update and create tag
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - id: new_tag
+        uses: ./.github/actions/tag-crate-version
+        with:
+          crate: pontem-node
+          version-to-tag: "v$1"
+          token: ${{ secrets.GITHUB_TOKEN }}
