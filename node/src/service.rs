@@ -374,7 +374,6 @@ pub async fn start_node(
             Ok(build_nimbus_consensus(BuildNimbusConsensusParams {
                 para_id: id,
                 proposer_factory,
-                skip_prediction,
                 block_import: client.clone(),
                 relay_chain_client: relay_chain_node.client.clone(),
                 relay_chain_backend: relay_chain_node.backend.clone(),

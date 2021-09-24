@@ -7428,7 +7428,6 @@ dependencies = [
  "frame-system-benchmarking",
  "frame-system-rpc-runtime-api",
  "hex-literal",
- "move-core-types",
  "nimbus-primitives",
  "pallet-author-inherent",
  "pallet-author-mapping",
@@ -10092,7 +10091,6 @@ dependencies = [
  "jsonrpc-derive 15.1.0",
  "move-core-types",
  "parity-scale-codec",
- "parity-scale-codec-derive",
  "serde",
  "sp-api",
  "sp-blockchain",
@@ -10106,7 +10104,6 @@ name = "sp-mvm-rpc-runtime"
 version = "0.2.2"
 dependencies = [
  "frame-support",
- "move-core-types",
  "parity-scale-codec",
  "sp-api",
  "sp-mvm",

@@ -2,7 +2,7 @@
   inputs = {
     fenix.url = github:nix-community/fenix;
     naersk.url = github:nmattia/naersk;
-    nixpkgs.url = github:NixOS/nixpkgs/nixpkgs-unstable;
+    nixpkgs.url = github:NixOS/nixpkgs/staging-next;
     utils.url = github:numtide/flake-utils;
     move-tools.url = github:pontem-network/move-tools;
   };
@@ -68,6 +68,7 @@
             dove
 
           ];
+          SKIP_WASM_BUILD = "1";
           PROTOC = "${protobuf}/bin/protoc";
           LLVM_CONFIG_PATH="${llvmPackagesR.llvm}/bin/llvm-config";
           LIBCLANG_PATH="${llvmPackagesR.libclang.lib}/lib";
