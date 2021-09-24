@@ -757,12 +757,12 @@ impl_runtime_apis! {
 
         // Get module binary by it's address
         fn get_module(module_id: Vec<u8>) -> Result<Option<Vec<u8>>, sp_runtime::DispatchError> {
-            Mvm::get_module(&module_id.as_slice()).map_err(|_| sp_runtime::DispatchError::Other("error during VM execution"))
+            Mvm::get_module(&module_id.as_slice()).map_err(|_| sp_runtime::DispatchError::Other("get_module error"))
         }
 
         // Get module ABI by it's address
         fn get_module_abi(module_id: Vec<u8>) -> Result<Option<Vec<u8>>, sp_runtime::DispatchError> {
-            Mvm::get_module_abi(&module_id.as_slice()).map_err(|_| sp_runtime::DispatchError::Other("error during VM execution"))
+            Mvm::get_module_abi(&module_id.as_slice()).map_err(|_| sp_runtime::DispatchError::Other("get_module_abi error"))
         }
 
         // Get resource
@@ -770,7 +770,7 @@ impl_runtime_apis! {
             account_id: AccountId,
             tag: Vec<u8>,
         ) -> Result<Option<Vec<u8>>, sp_runtime::DispatchError> {
-            Mvm::get_resource(&account_id, &tag.as_slice()).map_err(|_| sp_runtime::DispatchError::Other("error during VM execution"))
+            Mvm::get_resource(&account_id, &tag.as_slice()).map_err(|_| sp_runtime::DispatchError::Other("get_resource error"))
         }
 
     }

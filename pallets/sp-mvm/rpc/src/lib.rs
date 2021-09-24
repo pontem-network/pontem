@@ -61,23 +61,23 @@ pub trait MVMApiRpc<BlockHash, AccountId> {
     fn get_resource(
         &self,
         account_id: AccountId,
-        tag: Vec<u8>,
+        tag: Bytes,
         at: Option<BlockHash>,
-    ) -> Result<Option<Vec<u8>>>;
+    ) -> Result<Option<Bytes>>;
 
     #[rpc(name = "mvm_getModuleABI")]
     fn get_module_abi(
         &self,
-        module_id: Vec<u8>,
+        module_id: Bytes,
         at: Option<BlockHash>,
-    ) -> Result<Option<Vec<u8>>>;
+    ) -> Result<Option<Bytes>>;
 
     #[rpc(name = "mvm_getModule")]
     fn get_module(
         &self,
-        module_id: Vec<u8>,
+        module_id: Bytes,
         at: Option<BlockHash>,
-    ) -> Result<Option<Vec<u8>>>;
+    ) -> Result<Option<Bytes>>;
 }
 
 pub struct MVMApi<C, P> {
@@ -192,16 +192,16 @@ where
     fn get_resource(
         &self,
         account_id: AccountId,
-        tag: Vec<u8>,
+        tag: Bytes,
         at: Option<<Block as BlockT>::Hash>,
-    ) -> Result<Option<Vec<u8>>> {
+    ) -> Result<Option<Bytes>> {
         let api = self.client.runtime_api();
         let at = BlockId::hash(at.unwrap_or_else(||
 			// If the block hash is not supplied assume the best block.
 			self.client.info().best_hash));
 
         let f: Option<Vec<u8>> = api
-            .get_resource(&at, account_id, tag)
+            .get_resource(&at, account_id, tag.into_vec())
             .map_err(|e| RpcError {
                 code: ErrorCode::ServerError(500),
                 message: "Nope, error.".into(),
@@ -212,21 +212,21 @@ where
                 message: "Nope, error.".into(),
                 data: Some(format!("{:?}", e).into()),
             })?;
-        Ok(f)
+        Ok(f.map(Into::into))
     }
 
     fn get_module_abi(
         &self,
-        module_id: Vec<u8>,
+        module_id: Bytes,
         at: Option<<Block as BlockT>::Hash>,
-    ) -> Result<Option<Vec<u8>>> {
+    ) -> Result<Option<Bytes>> {
         let api = self.client.runtime_api();
         let at = BlockId::hash(at.unwrap_or_else(||
 			// If the block hash is not supplied assume the best block.
 			self.client.info().best_hash));
 
         let f: Option<Vec<u8>> = api
-            .get_module_abi(&at, module_id)
+            .get_module_abi(&at, module_id.into_vec())
             .map_err(|e| RpcError {
                 code: ErrorCode::ServerError(500),
                 message: "Nope, error.".into(),
@@ -237,21 +237,21 @@ where
                 message: "Nope, error.".into(),
                 data: Some(format!("{:?}", e).into()),
             })?;
-        Ok(f)
+        Ok(f.map(Into::into))
     }
 
     fn get_module(
         &self,
-        module_id: Vec<u8>,
+        module_id: Bytes,
         at: Option<<Block as BlockT>::Hash>,
-    ) -> Result<Option<Vec<u8>>> {
+    ) -> Result<Option<Bytes>> {
         let api = self.client.runtime_api();
         let at = BlockId::hash(at.unwrap_or_else(||
 			// If the block hash is not supplied assume the best block.
 			self.client.info().best_hash));
 
         let f: Option<Vec<u8>> = api
-            .get_module(&at, module_id)
+            .get_module(&at, module_id.into_vec())
             .map_err(|e| RpcError {
                 code: ErrorCode::ServerError(500),
                 message: "Nope, error.".into(),
@@ -262,7 +262,7 @@ where
                 message: "Nope, error.".into(),
                 data: Some(format!("{:?}", e).into()),
             })?;
-        Ok(f)
+        Ok(f.map(Into::into))
     }
 
 
