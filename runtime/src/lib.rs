@@ -25,7 +25,7 @@ use nimbus_primitives::NimbusId;
 #[cfg(feature = "enable-xcm")]
 use {
     polkadot_parachain::primitives::Sibling,
-    xcm::v0::{MultiAsset, MultiLocation, MultiLocation::*, Junction::*, BodyId, NetworkId, Xcm},
+    xcm::latest::prelude::*,
     xcm_builder::{
         AccountId32Aliases, CurrencyAdapter, LocationInverter, ParentIsDefault,
         RelayChainAsNative, SiblingParachainAsNative, SiblingParachainConvertsVia,
@@ -47,7 +47,7 @@ pub use sp_runtime::{Permill, Percent, Perbill, MultiAddress};
 pub use pallet_vesting::Call as VestingCall;
 pub use frame_support::{
     construct_runtime, parameter_types, StorageValue, match_type,
-    traits::{KeyOwnerProofSystem, Randomness, IsInVec},
+    traits::{KeyOwnerProofSystem, Randomness, IsInVec, Everything},
     weights::{
         Weight, IdentityFee, DispatchClass,
         constants::{
@@ -68,7 +68,7 @@ pub use parachain_staking::{InflationInfo, Range};
 pub mod constants;
 use constants::{currency::*, time::*};
 pub mod primitives;
-use primitives::*;
+use primitives::{*, Index};
 
 /// We allow for 0.5 seconds of compute with a 6 second average block time.
 const MAXIMUM_BLOCK_WEIGHT: Weight = WEIGHT_PER_SECOND / 2;
@@ -379,10 +379,10 @@ impl pallet_randomness_collective_flip::Config for Runtime {}
 
 #[cfg(feature = "enable-xcm")]
 parameter_types! {
-    pub const RelayLocation: MultiLocation = X1(Parent);
+    pub const RelayLocation: MultiLocation = MultiLocation::parent();
     pub const RelayNetwork: NetworkId = NetworkId::Polkadot;
     pub RelayOrigin: Origin = cumulus_pallet_xcm::Origin::Relay.into();
-    pub Ancestry: MultiLocation = X1(Parachain(ParachainInfo::parachain_id().into()));
+    pub Ancestry: MultiLocation = Parachain(ParachainInfo::parachain_id().into()).into();
 }
 
 /// Type for specifying how a `MultiLocation` can be converted into an `AccountId`. This is used
@@ -443,20 +443,21 @@ parameter_types! {
      // One XCM operation is 1_000_000 weight - almost certainly a conservative estimate.
      pub UnitWeightCost: Weight = 1_000_000;
      // One UNIT buys 1 second of weight.
-     pub const WeightPrice: (MultiLocation, u128) = (X1(Parent), UNIT as u128);
+     pub const WeightPrice: (MultiLocation, u128) = (MultiLocation::parent(), UNIT as u128);
 }
 
 #[cfg(feature = "enable-xcm")]
 match_type! {
      pub type ParentOrParentsUnitPlurality: impl Contains<MultiLocation> = {
-         X1(Parent) | X2(Parent, Plurality { id: BodyId::Unit, .. })
+         MultiLocation { parents: 1, interior: Here } |
+         MultiLocation { parents: 1, interior: X1(Plurality { id: BodyId::Unit, .. }) }
      };
 }
 
 #[cfg(feature = "enable-xcm")]
 pub type Barrier = (
     TakeWeightCredit,
-    AllowTopLevelPaidExecutionFrom<All<MultiLocation>>,
+    AllowTopLevelPaidExecutionFrom<Everything>,
     AllowUnpaidExecutionFrom<ParentOrParentsUnitPlurality>,
     // ^^^ Parent & its unit plurality gets free execution
 );
@@ -478,6 +479,7 @@ impl Config for XcmConfig {
     type Weigher = FixedWeightBounds<UnitWeightCost, Call>;
     type Trader = UsingComponents<IdentityFee<Balance>, RelayLocation, AccountId, Balances, ()>;
     type ResponseHandler = (); // Don't handle responses for now.
+    type SubscriptionService = PolkadotXcm;
 }
 
 /// No local origins on this chain are allowed to dispatch XCM sends/executions.
@@ -489,7 +491,7 @@ pub type LocalOriginToLocation = SignedToAccountId32<Origin, AccountId, RelayNet
 #[cfg(feature = "enable-xcm")]
 pub type XcmRouter = (
     // Two routers - use UMP to communicate with the relay chain:
-    cumulus_primitives_utility::ParentAsUmp<ParachainSystem>,
+    cumulus_primitives_utility::ParentAsUmp<ParachainSystem, ()>,
     // ..and XCMP to communicate with the sibling chains.
     XcmpQueue,
 );
@@ -501,10 +503,11 @@ impl pallet_xcm::Config for Runtime {
     type XcmRouter = XcmRouter;
     type ExecuteXcmOrigin = EnsureXcmOrigin<Origin, LocalOriginToLocation>;
     type XcmExecutor = XcmExecutor<XcmConfig>;
-    type XcmExecuteFilter = All<(MultiLocation, Xcm<Call>)>;
-    type XcmTeleportFilter = All<(MultiLocation, Vec<MultiAsset>)>;
+    type XcmExecuteFilter = Everything;
+    type XcmTeleportFilter = Everything;
     type XcmReserveTransferFilter = ();
     type Weigher = FixedWeightBounds<UnitWeightCost, Call>;
+    type LocationInverter = LocationInverter<Ancestry>;
 }
 
 #[cfg(feature = "enable-xcm")]
@@ -518,6 +521,7 @@ impl cumulus_pallet_xcmp_queue::Config for Runtime {
     type Event = Event;
     type XcmExecutor = XcmExecutor<XcmConfig>;
     type ChannelInfo = ParachainSystem;
+    type VersionWrapper = ();
 }
 
 #[cfg(feature = "enable-xcm")]
@@ -602,6 +606,7 @@ impl cumulus_pallet_parachain_system::CheckInherents<Block> for CheckInherents {
 }
 
 // Create the runtime by composing the FRAME pallets that were previously configured.
+#[cfg(not(feature = "enable-xcm"))]
 construct_runtime!(
     pub enum Runtime where
         Block = Block,
