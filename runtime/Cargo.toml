@@ -78,8 +78,7 @@ parachain-staking = { path = '../pallets/parachain-staking', default-features = 
 pallet-author-mapping = { path = "../pallets/author-mapping", default-features = false }
 
 [features]
-default = ['std', 'enable-xcm']
-enable-xcm = []
+default = ['std']
 runtime-benchmarks = [
     'hex-literal',
     'frame-benchmarking',
