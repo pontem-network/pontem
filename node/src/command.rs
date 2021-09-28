@@ -17,18 +17,16 @@
 
 use crate::{
     chain_spec,
-    service::{self, new_partial, ParachainRuntimeExecutor},
+    service::{self, new_partial},
 };
 use crate::cli::{Cli, Subcommand, RelayChainCli};
 use cumulus_primitives_core::ParaId;
 use sc_cli::{
-    ChainSpec, DefaultConfigurationValues, ImportParams, KeystoreParams,
-    NetworkParams, Result, RuntimeVersion, SharedParams, SubstrateCli,
+    ChainSpec, DefaultConfigurationValues, ImportParams, KeystoreParams, NetworkParams, Result,
+    RuntimeVersion, SharedParams, SubstrateCli,
 };
-use sc_service::{
-    config::{PrometheusConfig, BasePath},
-};
-use pontem_runtime::{RuntimeApi, Block};
+use sc_service::config::{PrometheusConfig, BasePath};
+use pontem_runtime::Block;
 use cumulus_client_service::genesis::generate_genesis_block;
 use sp_core::hexdisplay::HexDisplay;
 use polkadot_parachain::primitives::AccountIdConversion;
@@ -127,10 +125,7 @@ macro_rules! construct_async_run {
 	(|$components:ident, $cli:ident, $cmd:ident, $config:ident| $( $code:tt )* ) => {{
 		let runner = $cli.create_runner($cmd)?;
 		runner.async_run(|$config| {
-			let $components = new_partial::<
-				RuntimeApi,
-				ParachainRuntimeExecutor
-			>(
+			let $components = new_partial(
 				&$config,
 				false,
 			)?;
@@ -174,16 +169,12 @@ pub fn run() -> sc_cli::Result<()> {
             let runner = cli.create_runner(cmd)?;
 
             runner.sync_run(|config| {
-                let polkadot_cli = RelayChainCli::new(
-                    &config,
-                    cli.relaychain_args.iter().cloned(),
-                );
+                let polkadot_cli =
+                    RelayChainCli::new(&config, cli.relaychain_args.iter().cloned());
 
-                let polkadot_config = polkadot_cli.create_configuration(
-                    &polkadot_cli,
-                    config.task_executor.clone(),
-                )
-                .map_err(|err| format!("Relay chain argument error: {}", err))?;
+                let polkadot_config = polkadot_cli
+                    .create_configuration(&polkadot_cli, config.task_executor.clone())
+                    .map_err(|err| format!("Relay chain argument error: {}", err))?;
 
                 cmd.run(config, polkadot_config)
             })
@@ -256,21 +247,13 @@ pub fn run() -> sc_cli::Result<()> {
                 if cli.dev_service {
                     let author_id =
                         chain_spec::get_from_seed::<nimbus_primitives::NimbusId>("Alice");
-                    return service::new_dev::<RuntimeApi, ParachainRuntimeExecutor>(
-                        config,
-                        author_id,
-                        cli.sealing,
-                    )
-                    .map_err(Into::into);
+                    return service::new_dev(config, author_id, cli.sealing).map_err(Into::into);
                 }
 
                 let para_id =
                     chain_spec::Extensions::try_get(&*config.chain_spec).map(|e| e.para_id);
 
-                let polkadot_cli = RelayChainCli::new(
-                    &config,
-                    cli.relaychain_args.into_iter(),
-                );
+                let polkadot_cli = RelayChainCli::new(&config, cli.relaychain_args.into_iter());
 
                 let id = ParaId::from(cli.run.parachain_id.or(para_id).unwrap_or(200));
 
@@ -282,11 +265,9 @@ pub fn run() -> sc_cli::Result<()> {
                 let genesis_state = format!("0x{:?}", HexDisplay::from(&block.header().encode()));
 
                 let task_executor = config.task_executor.clone();
-                let polkadot_config = polkadot_cli.create_configuration(
-                    &polkadot_cli,
-                    task_executor,
-                )
-                .map_err(|err| format!("Relay chain argument error: {}", err))?;
+                let polkadot_config = polkadot_cli
+                    .create_configuration(&polkadot_cli, task_executor)
+                    .map_err(|err| format!("Relay chain argument error: {}", err))?;
 
                 info!("Parachain id: {:?}", id);
                 info!("Parachain Account: {}", parachain_account);
