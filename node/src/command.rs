@@ -22,7 +22,7 @@ use crate::{
 use crate::cli::{Cli, Subcommand, RelayChainCli};
 use cumulus_primitives_core::ParaId;
 use sc_cli::{
-    ChainSpec, CliConfiguration, DefaultConfigurationValues, ImportParams, KeystoreParams,
+    ChainSpec, DefaultConfigurationValues, ImportParams, KeystoreParams,
     NetworkParams, Result, RuntimeVersion, SharedParams, SubstrateCli,
 };
 use sc_service::{
@@ -176,13 +176,10 @@ pub fn run() -> sc_cli::Result<()> {
             runner.sync_run(|config| {
                 let polkadot_cli = RelayChainCli::new(
                     &config,
-                    [RelayChainCli::executable_name().to_string()]
-                        .iter()
-                        .chain(cli.relaychain_args.iter()),
+                    cli.relaychain_args.iter().cloned(),
                 );
 
-                let polkadot_config = SubstrateCli::create_configuration(
-                    &polkadot_cli,
+                let polkadot_config = polkadot_cli.create_configuration(
                     &polkadot_cli,
                     config.task_executor.clone(),
                 )
@@ -220,7 +217,7 @@ pub fn run() -> sc_cli::Result<()> {
             let output_buf = if params.raw {
                 raw_header
             } else {
-                format!("0x{:?}", HexDisplay::from(&block.header().encode())).into_bytes()
+                format!("0x{:?}", HexDisplay::from(&raw_header)).into_bytes()
             };
 
             if let Some(output) = &params.output {
@@ -272,9 +269,7 @@ pub fn run() -> sc_cli::Result<()> {
 
                 let polkadot_cli = RelayChainCli::new(
                     &config,
-                    [RelayChainCli::executable_name().to_string()]
-                        .iter()
-                        .chain(cli.relaychain_args.iter()),
+                    cli.relaychain_args.into_iter(),
                 );
 
                 let id = ParaId::from(cli.run.parachain_id.or(para_id).unwrap_or(200));
@@ -287,8 +282,7 @@ pub fn run() -> sc_cli::Result<()> {
                 let genesis_state = format!("0x{:?}", HexDisplay::from(&block.header().encode()));
 
                 let task_executor = config.task_executor.clone();
-                let polkadot_config = SubstrateCli::create_configuration(
-                    &polkadot_cli,
+                let polkadot_config = polkadot_cli.create_configuration(
                     &polkadot_cli,
                     task_executor,
                 )
@@ -333,7 +327,7 @@ impl DefaultConfigurationValues for RelayChainCli {
     }
 }
 
-impl CliConfiguration<Self> for RelayChainCli {
+impl sc_cli::CliConfiguration<Self> for RelayChainCli {
     fn shared_params(&self) -> &SharedParams {
         self.base.base.shared_params()
     }
