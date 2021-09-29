@@ -5,7 +5,7 @@ use move_core_types::language_storage::TypeTag;
 use sp_mvm::Event;
 
 mod common;
-use common::assets::*;
+use common::assets::{modules, transactions, ROOT_PACKAGE, USER_PACKAGE};
 use common::mock::*;
 use common::addr::*;
 use common::utils;
@@ -15,7 +15,7 @@ use common::utils;
 fn publish_module() {
     new_test_ext().execute_with(|| {
         let root = root_ps_acc();
-        utils::publish_module(root, RootMod::EventProxy, None).unwrap();
+        utils::publish_module(root, &modules::root::EVENT_PROXY, None).unwrap();
     });
 }
 
@@ -24,19 +24,19 @@ fn execute_script() {
     new_test_ext().execute_with(|| {
         let origin = origin_ps_acc();
 
-        utils::publish_module(origin, UserMod::EventProxy, None).unwrap();
+        utils::publish_module(origin, &modules::user::EVENT_PROXY, None).unwrap();
 
         // we need next block because events are not populated on genesis:
         roll_next_block();
 
         assert!(Sys::events().is_empty());
 
-        utils::execute_tx(origin, UserTx::EmitEvent, None).unwrap();
+        utils::execute_tx(origin, &transactions::EMIT_EVENT, None).unwrap();
 
         // construct event: that should be emitted in the method call directly above
         let tt = TypeTag::Struct(StructTag {
             address: to_move_addr(origin),
-            module: Identifier::new("EventProxy").unwrap(),
+            module: Identifier::new(modules::user::EVENT_PROXY.name()).unwrap(),
             name: Identifier::new("U64").unwrap(),
             type_params: Vec::with_capacity(0),
         })
@@ -58,7 +58,7 @@ fn execute_script() {
 /// publish package as root
 fn publish_package_as_root() {
     new_test_ext().execute_with(|| {
-        let package = RootPackages::Assets;
+        let package = &ROOT_PACKAGE;
         let root = root_ps_acc();
 
         utils::publish_package(root, package, None).unwrap();
@@ -69,7 +69,7 @@ fn publish_package_as_root() {
 /// publish package as origin
 fn publish_package_as_origin() {
     new_test_ext().execute_with(|| {
-        let package = UsrPackages::Assets;
+        let package = &USER_PACKAGE;
         let origin = origin_ps_acc();
 
         utils::publish_package(origin, package, None).unwrap();
