@@ -10,9 +10,6 @@ extern crate bcs_alt as bcs;
 #[cfg(feature = "runtime-benchmarks")]
 mod benchmarking;
 
-/// Edit this file to define custom logic or remove it if it is not needed.
-/// Learn more about FRAME and the core library of Substrate FRAME pallets:
-/// <https://substrate.dev/docs/en/knowledgebase/runtime/frame>
 pub use pallet::*;
 pub mod addr;
 pub mod balance;
