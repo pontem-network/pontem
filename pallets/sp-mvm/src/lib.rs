@@ -13,6 +13,7 @@ mod benchmarking;
 /// Edit this file to define custom logic or remove it if it is not needed.
 /// Learn more about FRAME and the core library of Substrate FRAME pallets:
 /// <https://substrate.dev/docs/en/knowledgebase/runtime/frame>
+/// SBP MA: cleanup?
 pub use pallet::*;
 pub mod addr;
 pub mod balance;
@@ -90,6 +91,7 @@ pub mod pallet {
     /// - Value: `WriteSet` as bytes
     // TODO: Experimentally try hasher [Identity][frame_support::Identity]
     //                           because key are already encoded - hashes.
+    /// SBP M1 What would you expect from this change?
     #[pallet::storage]
     pub type VMStorage<T> = StorageMap<_, Blake2_128Concat, Vec<u8>, Vec<u8>>;
 
@@ -143,7 +145,9 @@ pub mod pallet {
             Ok(result)
         }
 
+        /// SBP M1 Missing comments
         #[pallet::weight(T::GasWeightMapping::gas_to_weight(*gas_limit))]
+        /// SBP M1 How is weight calculation working? Multiple extrinsics with same weight?
         pub fn publish_module(
             origin: OriginFor<T>,
             module_bc: Vec<u8>,
@@ -375,6 +379,7 @@ pub mod pallet {
 
                 // Because if we call now().as_millis() during genesis it returns error.
                 // And stdlib initializing during genesis.
+                /// SBP Has this been discussed with parity core devs? Is it expected?
                 let time = match height {
                     0 => 0,
                     _ => <timestamp::Pallet<T> as UnixTime>::now().as_millis() as u64,

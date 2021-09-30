@@ -1,3 +1,16 @@
+# SBP M1 review
+
+## Comments
+
+Code comments are light, could help also to have some extra README per pallet
+
+## Pallets
+
+Some external pallets are copied verbatim, w/o changes. This is to anticipate future custom changes.
+Figure out ways to reuse those pallets and compose them? Might require PR to those pallets.
+Copying increase security risks and require team to periodically check/merge changes.
+Some pallets have slight changes, hard to track. Improve documentation there.
+
 # Substrate Move VM
 
 Substrate node template with [Move VM pallet](/pallets/sp-mvm/) on board.
