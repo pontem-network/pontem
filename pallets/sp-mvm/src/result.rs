@@ -1,3 +1,12 @@
+// Copyright 2020-2021 Pontem Foundation LTD.
+// This file is part of Pontem Network.
+// Apache 2.0 
+
+//! Converts Move VM execution results (Status, Gas Limit, Errors) to Substrate compatible results (Dispatch Results). 
+//! 
+//! So in a nutshell, after getting the execution result from Move VM we should convert it to a format compatible with Substrate (usually it's DispatchResultWithPostInfo).
+//! At the same time we convert status codes to Substrate errors if there is error.
+//! Also, gas would be converted to weight and back here.
 use super::{Config, Error};
 use crate::gas::GasWeightMapping;
 use frame_support::dispatch::DispatchErrorWithPostInfo;
@@ -8,10 +17,12 @@ use frame_support::weights::Pays;
 use move_vm::types::VmResult;
 use move_core_types::vm_status::StatusCode;
 
+/// Check if the VM result contains successful execution code.
 pub fn is_ok(vm_result: &VmResult) -> bool {
     matches!(vm_result.status_code, StatusCode::EXECUTED)
 }
 
+/// Convert Move status code to Result.
 pub fn from_status_code<T: Config>(code: StatusCode) -> Result<(), Error<T>> {
     match code {
         StatusCode::EXECUTED => Ok(()),
@@ -19,6 +30,7 @@ pub fn from_status_code<T: Config>(code: StatusCode) -> Result<(), Error<T>> {
     }
 }
 
+/// Converts status code and weight to dispatch result.
 pub fn from_status_code_with_gas<T: Config>(
     code: StatusCode,
     gas: Weight,
@@ -39,6 +51,9 @@ pub fn from_status_code_with_gas<T: Config>(
     }
 }
 
+/// Converts VM result to dispatch result.
+/// 
+/// VM returns the VM result, so we use the current function to convert it to DispatchResultWithPostInfo.
 pub fn from_vm_result<T: Config>(vm_result: VmResult) -> DispatchResultWithPostInfo {
     let gas = PostDispatchInfo {
         actual_weight: Some(T::GasWeightMapping::gas_to_weight(vm_result.gas_used)),
@@ -56,6 +71,7 @@ pub fn from_vm_result<T: Config>(vm_result: VmResult) -> DispatchResultWithPostI
     }
 }
 
+/// Converts multiple VM results to one dispatch result.
 pub fn from_vm_results<T: Config>(vm_results: &[VmResult]) -> DispatchResultWithPostInfo {
     let mut gas_total = 0;
     for vm_result in vm_results {
@@ -86,6 +102,9 @@ pub fn from_vm_results<T: Config>(vm_results: &[VmResult]) -> DispatchResultWith
     Ok(gas)
 }
 
+/// Implement From trait for Status Code. 
+/// 
+/// Converts StatusCode to Error.
 impl<T: Config> From<StatusCode> for Error<T> {
     fn from(sp: StatusCode) -> Self {
         match sp {
