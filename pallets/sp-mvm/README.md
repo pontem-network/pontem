@@ -10,7 +10,7 @@ Substrate chain.
  - `execute(tx_bc: Vec<u8>, gas_limit: u64)` - execute transaction with bytecode `tx_bc`.
  - `publish_module(module_bc: Vec<u8>, gas_limit: u64)` - publish Move module with bytecode `module_bc`.
  - `publish_package(package: Vec<u8>, gas_limit: u64)` - publish package (a set of modules) from binary `package`.
- - `publish_std(modules: Vec<Vec<u8>>, gas_limit: u64)` - publish a list of std modules (only callable by root). Would be possible to execute it only by gov only in the future. 
+ - `publish_std(modules: Vec<Vec<u8>>, gas_limit: u64)` - publish a list of std modules (only callable by root). Would be possible to execute it only by gov in the future. 
 
  ## LICENSE
 
