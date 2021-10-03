@@ -1,3 +1,9 @@
+// Copyright 2020-2021 Pontem Foundation LTD.
+// This file is part of Pontem Network.
+// Apache 2.0
+
+//! The current file implements Move VM types and is used mostly as helpers to work with Move VM.
+
 use core::convert::{TryInto, TryFrom};
 use move_core_types::identifier::Identifier;
 use sp_std::prelude::*;
@@ -9,14 +15,18 @@ use move_core_types::language_storage::StructTag as InternalStructTag;
 use move_core_types::language_storage::TypeTag as InternalTypeTag;
 
 #[derive(Clone, PartialEq, Encode, Decode, Debug)]
+/// Move VM module id.
 pub struct MoveModuleId<AccountId> {
+    /// Address of module publisher.
     pub owner: AccountId,
+    /// Module bytecode.
     pub module: Vec<u8>,
 }
 
 impl<AccountId: DecodeT> TryFrom<InternalModuleId> for MoveModuleId<AccountId> {
     type Error = parity_scale_codec::Error;
 
+    /// Convert InternalModuleId (that's used by Move VM internally) to MoveModuleId that can be used outside.
     fn try_from(id: InternalModuleId) -> Result<Self, Self::Error> {
         Ok(Self {
             owner: address_to_account::<AccountId>(id.address())?,
@@ -26,6 +36,7 @@ impl<AccountId: DecodeT> TryFrom<InternalModuleId> for MoveModuleId<AccountId> {
 }
 
 #[derive(Clone, PartialEq, Encode, Decode, Debug)]
+/// The enum that descibes data types in Move language.
 pub enum MoveTypeTag<AccountId: DecodeT> {
     Bool,
     U8,
@@ -40,6 +51,7 @@ pub enum MoveTypeTag<AccountId: DecodeT> {
 impl<AccountId: DecodeT> TryFrom<InternalTypeTag> for MoveTypeTag<AccountId> {
     type Error = parity_scale_codec::Error;
 
+    /// Convert InternalTypeTag (that's used by Move VM internally) to MoveTypeTag that can be used outside.
     fn try_from(tt: InternalTypeTag) -> Result<Self, Self::Error> {
         Ok(match tt {
             InternalTypeTag::Bool => MoveTypeTag::Bool,
@@ -56,6 +68,7 @@ impl<AccountId: DecodeT> TryFrom<InternalTypeTag> for MoveTypeTag<AccountId> {
 impl<AccountId: DecodeT> TryFrom<Box<InternalTypeTag>> for MoveTypeTag<AccountId> {
     type Error = parity_scale_codec::Error;
 
+    /// Convert InternalTypeTag (that's used by Move VM internally) to MoveTypeTag that can be used outside.
     fn try_from(tt: Box<InternalTypeTag>) -> Result<Self, Self::Error> {
         Ok(match *tt {
             InternalTypeTag::Bool => MoveTypeTag::Bool,
@@ -71,16 +84,22 @@ impl<AccountId: DecodeT> TryFrom<Box<InternalTypeTag>> for MoveTypeTag<AccountId
 }
 
 #[derive(Clone, PartialEq, Encode, Decode, Debug)]
+/// Describes Move VM struct data type.
 pub struct MoveStructTag<AccountId: DecodeT /* TryFrom<AccountAddress> */> {
+    /// Module deployer address.
     pub owner: AccountId,
+    /// Module name.
     pub module: Vec<u8>, /* from Identifier, use Text in web-UI */
-    pub name: Vec<u8>,   /* from Identifier, use Text in web-UI */
+    /// Name of struct.
+    pub name: Vec<u8>, /* from Identifier, use Text in web-UI */
 
-    // TODO: fix recursion on types (MoveTypeTag in MoveTypeTag)
+    /// Parameters.
+    /// TODO: fix recursion on types (MoveTypeTag in MoveTypeTag)
     pub ty_params: Vec<()>,
 }
 
 impl<AccountId: DecodeT> MoveStructTag<AccountId> {
+    /// Creates new instance.
     pub fn new(
         owner: AccountId,
         module: Identifier,
@@ -99,6 +118,7 @@ impl<AccountId: DecodeT> MoveStructTag<AccountId> {
 impl<AccountId: DecodeT> TryFrom<InternalStructTag> for MoveStructTag<AccountId> {
     type Error = parity_scale_codec::Error;
 
+    /// Converts InternalStructTag (that's used by Move VM internally) to MoveStructTag that can be used outside.
     fn try_from(st: InternalStructTag) -> Result<Self, Self::Error> {
         let mut type_params = Vec::new();
         for tp in st.type_params.into_iter() {

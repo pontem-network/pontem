@@ -2,6 +2,14 @@
 // This file is part of Pontem Network.
 // Apache 2.0
 
+//! The current file takes care of the connection of native coins inside Move VM.
+//!
+//! There is native chain coin called PONT, we need to have a coin inside the Move VM and allows developers to get access to PONT balances: transfer it, get balance etc.
+//! PONT is similar to ETH in the case of EVM.
+//! To see how to transfer PONT coin using Move VM modules/scripts, read tutorial - https://docs.pontem.network/02.-getting-started/first_transaction#transfer-coins-via-script
+//! In the current file we implement a Balance Adapter that catches PONT balances changes, and freeze balance or add balance to account in case Move VM access PONT balance resource.
+//! We are utilizing a balance pallet here.
+
 use core::convert::TryFrom;
 use core::convert::TryInto;
 use move_vm::io::traits::{Balance as VmBalance, BalanceAccess};
@@ -13,18 +21,24 @@ use frame_support::traits::WithdrawReasons;
 use frame_support::traits::ExistenceRequirement;
 use move_vm::io::balance::CurrencyInfo;
 
+/// Balance type.
 type BalanceOf<T> = <T as balances::Config>::Balance;
 
+/// PONT ticker.
 pub const PONT: Ticker = Ticker::new("PONT");
-/// Suppoted tickers.
+
+/// Supported tickers.
 pub static TICKERS: &[Ticker] = &[PONT];
 
+/// Check if ticker supports as native balance.
 pub fn is_ticker_supported(ticker: Ticker) -> bool {
     TICKERS.contains(&ticker)
 }
 
+/// Balance Adapter struct.
 pub struct BalancesAdapter<T>(core::marker::PhantomData<T>);
 
+/// Default Balance Adapter.
 impl<T: balances::Config> Default for BalancesAdapter<T> {
     fn default() -> Self {
         Self(core::marker::PhantomData)
@@ -32,14 +46,17 @@ impl<T: balances::Config> Default for BalancesAdapter<T> {
 }
 
 impl<T: balances::Config> BalancesAdapter<T> {
+    /// Create new instance of Balance Adapter.
     pub fn new() -> Self {
         Self(core::marker::PhantomData)
     }
 }
 
 #[derive(PartialEq, Eq, Clone, Copy)]
+/// Ticker struct.
 pub struct Ticker<'a>(&'a [u8]);
 
+/// Display trait impl for ticker struct.
 impl<'a> core::fmt::Display for Ticker<'a> {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         f.write_str(core::str::from_utf8(self.0).expect("Could not read as utf-8"))
@@ -49,27 +66,36 @@ impl<'a> core::fmt::Display for Ticker<'a> {
 }
 
 impl<'a> From<&'a [u8]> for Ticker<'a> {
+    /// Convert ticker from bytes slice.
     fn from(f: &[u8]) -> Ticker<'_> {
         Ticker(f)
     }
 }
 
 impl<'a> From<&'a str> for Ticker<'a> {
+    /// Convert ticker from &str.
     fn from(f: &str) -> Ticker<'_> {
         Ticker(f.as_bytes())
     }
 }
 
 impl Ticker<'_> {
+    /// New ticker from &str representation.
     pub const fn new(ticker: &str) -> Ticker {
         Ticker(ticker.as_bytes())
     }
 }
 
+/// Implement balance BalanceAccess trait for Balances Adapter.
+///
+/// It's a trait required to Move VM and allows for poxy balances between Substrate and VM.
 impl<T: balances::Config> BalanceAccess for BalancesAdapter<T>
 where
     <T as balances::Config>::Balance: TryFrom<VmBalance>,
 {
+    /// Query native coin balance.
+    ///
+    /// We check if ticker supported, and if yes return account balance to Move VM.
     fn get_balance(
         &self,
         address: &move_core_types::account_address::AccountAddress,
@@ -97,6 +123,9 @@ where
             .ok()
     }
 
+    /// Add native coins to account.
+    ///
+    /// We increase native coin balance of the account if transfer of balance happens inside the VM.
     fn add(
         &self,
         address: &move_core_types::account_address::AccountAddress,
@@ -128,6 +157,9 @@ where
         trace!("native balance deposit imbalance: {:?}", imbalance);
     }
 
+    /// Reduce native coin balance of account.
+    ///
+    /// We reduce native coin balance if transfer of balance happens inside a VM.
     fn sub(
         &self,
         address: &move_core_types::account_address::AccountAddress,

@@ -68,13 +68,13 @@ pub fn account_to_account_address<AccountId: Encode>(acc: &AccountId) -> Account
     AccountAddress::new(account_to_bytes(acc))
 }
 
-/// Implementation of AccountIdAsBytes for AccountId and address as slice.
 impl<T> AccountIdAsBytes<T::AccountId, [u8; AccountAddress::LENGTH]> for T
 where
     T: system::Config,
     T::AccountId: Encode,
 {
     #[inline]
+    /// Implementation of AccountIdAsBytes for AccountId and address as slice.
     fn account_to_bytes(acc: &T::AccountId) -> [u8; AccountAddress::LENGTH] {
         account_to_bytes(acc)
     }
