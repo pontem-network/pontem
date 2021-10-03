@@ -1,3 +1,8 @@
+// Copyright 2020-2021 Pontem Foundation LTD.
+// This file is part of Pontem Network.
+// Apache 2.0 
+
+//! Implement Move VM kind of events and adopt it for Substrate based events.
 use core::convert::TryInto;
 use move_vm::io::traits::EventHandler;
 use sp_std::prelude::*;
@@ -10,7 +15,7 @@ extern crate alloc;
 use alloc::format;
 
 pub trait DepositMoveEvent {
-    /// Emit a Move event with content of passed `MoveEventArguments`
+    /// Emit a Move event with content of passed `MoveEventArguments'.
     fn deposit_move_event(e: MoveEventArguments);
 }
 
@@ -48,10 +53,10 @@ impl<F> EventWriter<F> {
     }
 }
 
-/// Default EventWriter
+/// Default EventWriter.
 pub type DefaultEventHandler = EventWriter<Box<dyn Fn(MoveEventArguments)>>;
 
-/// Boxed fn ptr to something looks like `DepositMoveEvent::deposit_move_event`
+/// Boxed fn ptr to something looks like `DepositMoveEvent::deposit_move_event`.
 pub type DepositMoveEventFnPtr = Box<dyn Fn(MoveEventArguments)>;
 
 pub trait GetDepositMoveEventFn<T: DepositMoveEvent + 'static> {
