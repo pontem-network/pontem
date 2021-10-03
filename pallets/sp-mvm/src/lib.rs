@@ -362,8 +362,8 @@ pub mod pallet {
     const GAS_UNIT_PRICE: u64 = 1;
 
     impl<T: Config> Pallet<T> {
-        /// Returns gas limit object requires for execute/publish functions.
         #![allow(clippy::useless_conversion)]
+        /// Returns gas limit object requires for execute/publish functions.
         fn get_move_gas_limit(gas_limit: u64) -> Result<Gas, Error<T>> {
             Gas::new(gas_limit, GAS_UNIT_PRICE).map_err(|_| Error::InvalidGasAmountMaxValue)
         }
