@@ -1,3 +1,7 @@
+// Copyright 2020-2021 Pontem Foundation LTD.
+// This file is part of Pontem Network.
+// Apache 2.0
+
 use core::convert::TryFrom;
 use core::convert::TryInto;
 use move_vm::io::traits::{Balance as VmBalance, BalanceAccess};
@@ -239,6 +243,7 @@ pub mod boxed {
     }
 }
 
+/// Tests.
 #[cfg(test)]
 mod tests {
     use super::PONT;

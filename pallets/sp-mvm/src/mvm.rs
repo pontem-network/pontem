@@ -1,15 +1,19 @@
+// Copyright 2020-2021 Pontem Foundation LTD.
+// This file is part of Pontem Network.
+// Apache 2.0
+
 use move_vm::mvm::Mvm;
 
 use crate::balance::BalancesAdapter;
 use crate::storage::*;
 
-/// Default type of Move VM implementation
+/// Default type of Move VM implementation.
 pub type DefaultVm<S, E, R> = Mvm<StorageAdapter<S>, E, BalancesAdapter<R>>;
 
 pub trait CreateMoveVm<T> {
     type Vm: move_vm::Vm;
 
-    /// Create VM instance
+    /// Create VM instance.
     fn create_move_vm() -> Self::Vm;
 }
 

@@ -1,9 +1,9 @@
 // Copyright 2020-2021 Pontem Foundation LTD.
 // This file is part of Pontem Network.
-// Apache 2.0 
+// Apache 2.0
 
 //! Basic weight <-> gas trait implementation for Move VM.
-//! 
+//!
 //! Move VM uses a similar gas model to EVM.
 //! As we are using Substrate we should allow us to convert gas to weight, and weight to gas.
 use frame_support::weights::Weight;

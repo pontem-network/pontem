@@ -1,9 +1,9 @@
 // Copyright 2020-2021 Pontem Foundation LTD.
 // This file is part of Pontem Network.
-// Apache 2.0 
+// Apache 2.0
 
-//! Converts Move VM execution results (Status, Gas Limit, Errors) to Substrate compatible results (Dispatch Results). 
-//! 
+//! Converts Move VM execution results (Status, Gas Limit, Errors) to Substrate compatible results (Dispatch Results).
+//!
 //! So in a nutshell, after getting the execution result from Move VM we should convert it to a format compatible with Substrate (usually it's DispatchResultWithPostInfo).
 //! At the same time we convert status codes to Substrate errors if there is error.
 //! Also, gas would be converted to weight and back here.
@@ -52,7 +52,7 @@ pub fn from_status_code_with_gas<T: Config>(
 }
 
 /// Converts VM result to dispatch result.
-/// 
+///
 /// VM returns the VM result, so we use the current function to convert it to DispatchResultWithPostInfo.
 pub fn from_vm_result<T: Config>(vm_result: VmResult) -> DispatchResultWithPostInfo {
     let gas = PostDispatchInfo {
@@ -102,8 +102,8 @@ pub fn from_vm_results<T: Config>(vm_results: &[VmResult]) -> DispatchResultWith
     Ok(gas)
 }
 
-/// Implement From trait for Status Code. 
-/// 
+/// Implement From trait for Status Code.
+///
 /// Converts StatusCode to Error.
 impl<T: Config> From<StatusCode> for Error<T> {
     fn from(sp: StatusCode) -> Self {

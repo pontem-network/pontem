@@ -1,6 +1,6 @@
 // Copyright 2020-2021 Pontem Foundation LTD.
 // This file is part of Pontem Network.
-// Apache 2.0 
+// Apache 2.0
 
 //! Implement Move VM kind of events and adopt it for Substrate based events.
 use core::convert::TryInto;

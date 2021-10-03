@@ -1,7 +1,7 @@
 #![cfg(feature = "runtime-benchmarks")]
 // Copyright 2020-2021 Pontem Foundation LTD.
 // This file is part of Pontem Network.
-// Apache 2.0 
+// Apache 2.0
 
 //! Benchmarking setup for Move VM pallet.
 

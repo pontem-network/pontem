@@ -1,6 +1,6 @@
 // Copyright 2020-2021 Pontem Foundation LTD.
 // This file is part of Pontem Network.
-// Apache 2.0 
+// Apache 2.0
 
 //! This pallet enables Move Virtual Machine developed by Facebook's Diem team in your Substrate based chain.
 //! The pallet allows to execute Move Smart contracts, utilizing Move VM adopted for WASM Runtime.
@@ -18,7 +18,7 @@
 //! execute(tx_bc: Vec<u8>, gas_limit: u64) - execute Move script with bytecode `tx_bc`.
 //! publish_module(module_bc: Vec<u8>, gas_limit: u64) - publish Move module with bytecode `module_bc`.
 //! publish_package(package: Vec<u8>, gas_limit: u64) - publish package (a set of Move modules) from binary `package`.
-//! publish_std(modules: Vec<Vec<u8>>, gas_limit: u64) - publish a list of Standard Library modules (only callable by root). Would be possible to execute it only by gov in the future. 
+//! publish_std(modules: Vec<Vec<u8>>, gas_limit: u64) - publish a list of Standard Library modules (only callable by root). Would be possible to execute it only by gov in the future.
 
 #![cfg_attr(not(feature = "std"), no_std)]
 
@@ -144,7 +144,7 @@ pub mod pallet {
         OriginFor<T>: Into<Result<pallet_multisig::Origin<T>, OriginFor<T>>>,
     {
         /// Execute Move script.
-        /// 
+        ///
         /// User can send his Move script (compiled using 'dove tx' command) for execution by Move VM.
         /// The gas limit should be provided.
         #[pallet::weight(T::GasWeightMapping::gas_to_weight(*gas_limit))]
@@ -167,7 +167,7 @@ pub mod pallet {
         }
 
         /// Publish Move module.
-        /// 
+        ///
         /// User can publish his Move module under his address.
         /// The gas limit should be provided.
         #[pallet::weight(T::GasWeightMapping::gas_to_weight(*gas_limit))]
@@ -192,7 +192,7 @@ pub mod pallet {
         }
 
         /// Publish module package (could be generated using 'dove build --package'), e.g.: several modules in one transaction.
-        /// 
+        ///
         /// Deploy several modules in one transaction. Could be called by root in case needs to update Standard Library.
         /// Read more about Standard Library - https://docs.pontem.network/03.-move-vm/stdlib
         /// The gas limit should be provided.
@@ -233,9 +233,9 @@ pub mod pallet {
         }
 
         /// Batch publish Standard Library modules by root account only.
-        /// 
+        ///
         /// Not recommended to use, would be deprecated.
-        /// TODO??? (same for other methods): #[pallet::weight(T::GasWeightMapping::gas_to_weight(*gas_limit) * modules.len().into())] 
+        /// TODO??? (same for other methods): #[pallet::weight(T::GasWeightMapping::gas_to_weight(*gas_limit) * modules.len().into())]
         #[pallet::weight(T::GasWeightMapping::gas_to_weight(*gas_limit))]
         pub fn publish_std(
             origin: OriginFor<T>,
@@ -277,8 +277,8 @@ pub mod pallet {
     }
 
     /// Genesis configuration.
-    /// 
-    /// Allows to configure Move VM in the genesis block. 
+    ///
+    /// Allows to configure Move VM in the genesis block.
     /// Accepts Standard Library modules list and initialize state by calling initialize function with arguments.
     #[pallet::genesis_config]
     pub struct GenesisConfig<T: Config> {
@@ -289,7 +289,7 @@ pub mod pallet {
         pub init_module: Vec<u8>,
         // Init function name.
         pub init_func: Vec<u8>,
-        // Init function arguments. 
+        // Init function arguments.
         pub init_args: Vec<Vec<u8>>,
     }
 
@@ -307,7 +307,7 @@ pub mod pallet {
         }
     }
 
-    /// Initialize Move VM during genesis block. 
+    /// Initialize Move VM during genesis block.
     #[pallet::genesis_build]
     impl<T: Config> GenesisBuild<T> for GenesisConfig<T> {
         fn build(&self) {
@@ -328,7 +328,7 @@ pub mod pallet {
         }
     }
 
-    /// Clearing Move VM cache once block processed. 
+    /// Clearing Move VM cache once block processed.
     #[pallet::hooks]
     impl<T: Config> Hooks<BlockNumberFor<T>> for Pallet<T> {
         #[cfg(not(feature = "no-vm-static"))]
@@ -481,9 +481,9 @@ pub mod pallet {
         }
     }
 
-    /// Implement traits allows to create Move VM. 
-    /// 
-    /// Supports both static (created at launch of chain), and dynamic one (usually we use regulated one);. 
+    /// Implement traits allows to create Move VM.
+    ///
+    /// Supports both static (created at launch of chain), and dynamic one (usually we use regulated one);.
     impl<T: Config> mvm::TryCreateMoveVm<T> for Pallet<T> {
         #[cfg(not(feature = "no-vm-static"))]
         type Vm = Mvm<boxed::StorageAdapter, event::DefaultEventHandler, boxed::BalancesAdapter>;
@@ -495,8 +495,8 @@ pub mod pallet {
         >;
         type Error = Error<T>;
 
-        /// Try to create Move VM instance. 
-        /// 
+        /// Try to create Move VM instance.
+        ///
         /// If successful it returns a VM instance, otherwise error.
         fn try_create_move_vm() -> Result<Self::Vm, Self::Error> {
             trace!("MoveVM created");
@@ -536,7 +536,7 @@ pub mod pallet {
         }
     }
 
-    /// Errors that occur during Move VM execution. 
+    /// Errors that occur during Move VM execution.
     /// Based on initial Move VM errors, but adopted for Substrate.
     #[pallet::error]
     pub enum Error<T> {
