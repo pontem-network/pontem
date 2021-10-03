@@ -1,12 +1,22 @@
+// Copyright 2020-2021 Pontem Foundation LTD.
+// This file is part of Pontem Network.
+// Apache 2.0 
+
+//! By default Move VM supports only 0x{hex} address format, which has 32 bytes length.
+//! To be in compatibility with Substrate SS58 addresses we implemented traits and functions that allow us to convert SS58 addresses to 0x{hex} format.
+//! Current file contains traits and functions which allows us to convert SS58 addresses to 0x{hex} format.
+
 use sp_std::prelude::*;
 use frame_system as system;
 use parity_scale_codec::{Encode, Decode, Error};
 use move_core_types::account_address::AccountAddress;
 
+/// Trait that allows to represent AccountId as bytes.
 pub trait AccountIdAsBytes<AccountId, T: Sized> {
     fn account_to_bytes(acc: &AccountId) -> T;
 }
 
+/// Implementation of AccountIdAsBytes for AccountId and address as vector.
 impl<T> AccountIdAsBytes<T::AccountId, Vec<u8>> for T
 where
     T: system::Config,
@@ -17,6 +27,11 @@ where
     }
 }
 
+/// Convert AccountId to Move VM address format.
+/// 
+/// Returns a slice that could be represented as a Move VM address.
+/// If provided AccountId length is less than expected address length, fills address with zeros.
+/// Otherwise just copy bytes we need.
 pub fn account_to_bytes<AccountId: Encode>(acc: &AccountId) -> [u8; AccountAddress::LENGTH] {
     const LENGTH: usize = AccountAddress::LENGTH;
     let mut result = [0; LENGTH];
@@ -40,6 +55,7 @@ pub fn account_to_bytes<AccountId: Encode>(acc: &AccountId) -> [u8; AccountAddre
     result
 }
 
+/// Convert Move VM address back to AccountId.
 pub fn address_to_account<AccountId>(address: &AccountAddress) -> Result<AccountId, Error>
 where
     AccountId: Decode + Sized,
@@ -47,10 +63,12 @@ where
     AccountId::decode(&mut address.as_ref())
 }
 
+// Create Move VM address instance (AccountAddress) from an AccountId.
 pub fn account_to_account_address<AccountId: Encode>(acc: &AccountId) -> AccountAddress {
     AccountAddress::new(account_to_bytes(acc))
 }
 
+/// Implementation of AccountIdAsBytes for AccountId and address as slice.
 impl<T> AccountIdAsBytes<T::AccountId, [u8; AccountAddress::LENGTH]> for T
 where
     T: system::Config,
@@ -62,6 +80,7 @@ where
     }
 }
 
+/// Tests.
 #[cfg(test)]
 mod tests {
     use super::address_to_account;
