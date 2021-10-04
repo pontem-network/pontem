@@ -14,7 +14,8 @@ for now it is one-way.
 
 ## Modifications
 
-TODO
+No modifications were made at the moment. 
+Used commit [`ac7b649e2fcab`](https://github.com/PureStake/moonbeam/tree/ac7b649e2fcabde78d86db0a37445c2838d6ea85).
 
 ## License
 
