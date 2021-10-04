@@ -3,7 +3,7 @@
 ## Overview
 
 This pallet provides [Move virtual machine](https://github.com/pontem-network/sp-move-mv) to execute Move smart-contracts on
-Substrate chain.
+Substrate-based chain.
 
 ## API
 
@@ -16,6 +16,12 @@ All provided extrinsics functions require to configure a gas limit, similar to E
 
 Read more about the Move VM pallet in the [Pontem Documentation](https://docs.pontem.network/03.-move-vm/move_vm).
 
- ## LICENSE
+### Note
 
- Licensed under the Apache License, Version 2.0
+There's optional feature `no-vm-static` that disables VM static initialization,
+so VM will init for each block when it used if this feature is enabled.
+Otherwise when the feature is disabled VM initialization happens only once, but only cache cleaning for each block.
+
+## LICENSE
+
+Licensed under the Apache License, Version 2.0
