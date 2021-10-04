@@ -2,6 +2,7 @@
 // This file is part of Pontem Network.
 // Apache 2.0
 
+//! The current file contains code to create Move VM instance.
 use move_vm::mvm::Mvm;
 
 use crate::balance::BalancesAdapter;
@@ -10,6 +11,7 @@ use crate::storage::*;
 /// Default type of Move VM implementation.
 pub type DefaultVm<S, E, R> = Mvm<StorageAdapter<S>, E, BalancesAdapter<R>>;
 
+// The trait to create Move VM (without possible errors).
 pub trait CreateMoveVm<T> {
     type Vm: move_vm::Vm;
 
@@ -17,6 +19,7 @@ pub trait CreateMoveVm<T> {
     fn create_move_vm() -> Self::Vm;
 }
 
+// The trait to create Move VM (returns Result, possible with errors).
 pub trait TryCreateMoveVm<T> {
     type Vm: move_vm::Vm;
     type Error;
