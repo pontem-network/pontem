@@ -275,7 +275,6 @@ pub mod boxed {
     }
 }
 
-/// Tests.
 #[cfg(test)]
 mod tests {
     use super::PONT;

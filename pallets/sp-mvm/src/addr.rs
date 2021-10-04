@@ -80,7 +80,6 @@ where
     }
 }
 
-/// Tests.
 #[cfg(test)]
 mod tests {
     use super::address_to_account;
