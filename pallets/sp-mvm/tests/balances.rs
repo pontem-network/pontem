@@ -5,7 +5,7 @@ use move_core_types::language_storage::StructTag;
 use move_core_types::account_address::AccountAddress;
 
 mod common;
-use common::assets::*;
+use common::assets::{modules, transactions};
 use common::mock::*;
 use common::addr::*;
 use common::utils::*;
@@ -31,7 +31,7 @@ where
     };
     let tag = StructTag {
         address,
-        module: Identifier::new(UserMod::Store.name()).unwrap(),
+        module: Identifier::new(modules::user::STORE.name()).unwrap(),
         name: Identifier::new("U128").unwrap(),
         type_params: vec![],
     };
@@ -47,7 +47,7 @@ where
     };
     let tag = StructTag {
         address,
-        module: Identifier::new(UserMod::Store.name()).unwrap(),
+        module: Identifier::new(modules::user::STORE.name()).unwrap(),
         name: Identifier::new("U64").unwrap(),
         type_params: vec![],
     };
@@ -60,10 +60,10 @@ fn execute_get_balance() {
         let account = origin_ps_acc();
 
         // publish user module:
-        publish_module(account, UserMod::Store, None).unwrap();
+        publish_module(account, &modules::user::STORE, None).unwrap();
 
         // execute tx:
-        let result = execute_tx(account, UserTx::StoreGetBalance, None);
+        let result = execute_tx(account, &transactions::STORE_NATIVE_BALANCE, None);
         assert_ok!(result);
 
         // check storage:
@@ -84,10 +84,10 @@ fn execute_transfer() {
         eprintln!("Bob balance: {}", bob_init_balance);
 
         // publish user module
-        publish_module(bob, UserMod::Store, None).unwrap();
+        publish_module(bob, &modules::user::STORE, None).unwrap();
 
         // execute tx:
-        let result = execute_tx(bob, UserTx::Transfer, None);
+        let result = execute_tx(bob, &transactions::TRANSFER, None);
         assert_ok!(result);
 
         // check storage balance:
