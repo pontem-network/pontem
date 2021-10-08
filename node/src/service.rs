@@ -11,7 +11,7 @@ use sc_consensus_manual_seal::{run_manual_seal, EngineCommand, ManualSealParams}
 use cumulus_primitives_core::ParaId;
 use pontem_runtime::RuntimeApi;
 use sp_blockchain::HeaderBackend;
-use sc_executor::{NativeExecutionDispatch, native_executor_instance};
+use sc_executor::{native_executor_instance};
 pub use sc_executor::NativeExecutor;
 use sc_service::{Configuration, PartialComponents, Role, TFullBackend, TFullClient, TaskManager};
 use sc_telemetry::{Telemetry, TelemetryHandle, TelemetryWorker, TelemetryWorkerHandle};
