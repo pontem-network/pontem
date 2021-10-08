@@ -1,5 +1,30 @@
 use structopt::StructOpt;
 use std::path::PathBuf;
+use sc_cli::SubstrateCli;
+
+#[derive(Debug)]
+pub enum Sealing {
+    /// Blocks are produced for each incoming transaction.
+    Instant,
+    /// Blocks are produced once per N milliseconds
+    Interval(u64),
+}
+
+impl std::str::FromStr for Sealing {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "instant" => Ok(Self::Instant),
+            number => {
+                let millis = number
+                    .parse()
+                    .map_err(|_| "unable to decode sealing param")?;
+                Ok(Self::Interval(millis))
+            }
+        }
+    }
+}
 
 #[derive(Debug, StructOpt)]
 pub struct Cli {
@@ -8,6 +33,14 @@ pub struct Cli {
 
     #[structopt(flatten)]
     pub run: cumulus_client_cli::RunCmd,
+
+    /// Sealing mode for --dev-service
+    #[structopt(long, default_value = "instant")]
+    pub sealing: Sealing,
+
+    /// Whether to run node in development node (single node, no consensus)
+    #[structopt(long)]
+    pub dev_service: bool,
 
     /// Relaychain arguments
     #[structopt(raw = true)]
@@ -106,7 +139,7 @@ impl RelayChainCli {
     /// Parse the relay chain CLI parameters using the para chain `Configuration`.
     pub fn new<'a>(
         para_config: &sc_service::Configuration,
-        relay_chain_args: impl Iterator<Item = &'a String>,
+        relay_chain_args: impl Iterator<Item = String>,
     ) -> Self {
         let extension = crate::chain_spec::Extensions::try_get(&*para_config.chain_spec);
         let chain_id = extension.map(|e| e.relay_chain.clone());
@@ -114,10 +147,11 @@ impl RelayChainCli {
             .base_path
             .as_ref()
             .map(|x| x.path().join("polkadot"));
+        let args = std::iter::once(Self::executable_name().to_string()).chain(relay_chain_args);
         Self {
             base_path,
             chain_id,
-            base: polkadot_cli::RunCmd::from_iter(relay_chain_args),
+            base: polkadot_cli::RunCmd::from_iter(args),
         }
     }
 }

@@ -15,6 +15,23 @@ Read [official documentation](https://docs.pontem.network/02.-getting-started/lo
 Current version built with Nimbus consensus and Parachain Staking implementation.
 Requires relay chain to work correctly.
 
+### Running in dev-mode
+
+There is a possibility to run a single node in development mode, without any consensus involved.
+
+Add `--dev-service` flag to `cargo run` command to run a single node with disabled consensus:
+
+**IMPORTANT NOTE:** the node with enabled `--dev-service` flag generating blocks when needed (e.g. when a new transaction appears).
+
+```sh
+cargo run --release -- --dev --dev-service --tmp
+```
+
+Use `--sealing` argument to select sealing mode:
+
+1. `instant` (default). Blocks a produced automatically for each transaction
+2. `<number>`. Blocks are produced once per `number` milliseconds
+
 ### Using polkadot-launch
 
 Install [polkadot-launch](https://github.com/paritytech/polkadot-launch).
@@ -55,7 +72,7 @@ Observe `9946.log` to verify that the node was launched successfully and is prod
 tail -f ./9946.log
 ```
 
-### Using polka-launch via docker-compose
+### Using polkadot-launch via docker-compose
 
 Build container:
 
