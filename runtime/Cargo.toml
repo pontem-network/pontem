@@ -58,17 +58,17 @@ xcm-executor = { default-features = false, git = 'https://github.com/paritytech/
 polkadot-parachain = { default-features = false, git = 'https://github.com/paritytech/polkadot.git', branch = 'release-v0.9.8' }
 
 # Cumulus Dependencies
-parachain-info = { default-features = false, git = 'https://github.com/purestake/cumulus', branch = 'joshy-np098' }
-cumulus-pallet-parachain-system = { default-features = false, git = 'https://github.com/purestake/cumulus', branch = 'joshy-np098' }
-cumulus-pallet-xcm = { default-features = false, git = 'https://github.com/purestake/cumulus', branch = 'joshy-np098' }
-cumulus-pallet-xcmp-queue = { default-features = false, git = 'https://github.com/purestake/cumulus', branch = 'joshy-np098' }
-cumulus-pallet-dmp-queue = { default-features = false, git = 'https://github.com/purestake/cumulus', branch = 'joshy-np098' }
-cumulus-primitives-utility = { default-features = false, git = 'https://github.com/purestake/cumulus', branch = 'joshy-np098' }
-cumulus-primitives-core = { default-features = false, git = 'https://github.com/purestake/cumulus', branch = 'joshy-np098' }
-cumulus-primitives-timestamp = { default-features = false, git = 'https://github.com/purestake/cumulus', branch = 'joshy-np098' }
-nimbus-primitives = { default-features = false, git = "https://github.com/purestake/cumulus", branch = "joshy-np098" }
-pallet-author-slot-filter =  { default-features = false, git = "https://github.com/purestake/cumulus", branch = 'joshy-np098' }
-pallet-author-inherent = { default-features = false, git = 'https://github.com/purestake/cumulus', branch = 'joshy-np098' }
+parachain-info = { default-features = false, git = 'https://github.com/purestake/cumulus', rev = "07944252c6a9cf0a2cd5f7d61f04cad1dd3926ef" }
+cumulus-pallet-parachain-system = { default-features = false, git = 'https://github.com/purestake/cumulus', rev = "07944252c6a9cf0a2cd5f7d61f04cad1dd3926ef" }
+cumulus-pallet-xcm = { default-features = false, git = 'https://github.com/purestake/cumulus', rev = "07944252c6a9cf0a2cd5f7d61f04cad1dd3926ef" }
+cumulus-pallet-xcmp-queue = { default-features = false, git = 'https://github.com/purestake/cumulus', rev = "07944252c6a9cf0a2cd5f7d61f04cad1dd3926ef" }
+cumulus-pallet-dmp-queue = { default-features = false, git = 'https://github.com/purestake/cumulus', rev = "07944252c6a9cf0a2cd5f7d61f04cad1dd3926ef" }
+cumulus-primitives-utility = { default-features = false, git = 'https://github.com/purestake/cumulus', rev = "07944252c6a9cf0a2cd5f7d61f04cad1dd3926ef" }
+cumulus-primitives-core = { default-features = false, git = 'https://github.com/purestake/cumulus', rev = "07944252c6a9cf0a2cd5f7d61f04cad1dd3926ef" }
+cumulus-primitives-timestamp = { default-features = false, git = 'https://github.com/purestake/cumulus', rev = "07944252c6a9cf0a2cd5f7d61f04cad1dd3926ef" }
+nimbus-primitives = { default-features = false, git = "https://github.com/purestake/cumulus", rev = "07944252c6a9cf0a2cd5f7d61f04cad1dd3926ef" }
+pallet-author-slot-filter =  { default-features = false, git = "https://github.com/purestake/cumulus", rev = "07944252c6a9cf0a2cd5f7d61f04cad1dd3926ef" }
+pallet-author-inherent = { default-features = false, git = 'https://github.com/purestake/cumulus', rev = "07944252c6a9cf0a2cd5f7d61f04cad1dd3926ef" }
 
 # local dependencies
 sp-mvm = { path = '../pallets/sp-mvm', default-features = false }

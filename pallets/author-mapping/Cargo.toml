@@ -7,7 +7,7 @@ description = "Maps AuthorIds to AccountIds Useful for associating consensus aut
 
 [dependencies]
 log = { version="0.4", default-features=false }
-nimbus-primitives = { git="https://github.com/purestake/cumulus", branch="joshy-np098", default-features=false }
+nimbus-primitives = { git="https://github.com/purestake/cumulus", rev = "07944252c6a9cf0a2cd5f7d61f04cad1dd3926ef", default-features=false }
 frame-support = { git="https://github.com/paritytech/substrate", branch="polkadot-v0.9.8", default-features=false }
 frame-system = { git="https://github.com/paritytech/substrate", branch="polkadot-v0.9.8", default-features=false }
 # TODO: update parity-scale-codec to 2.2.0

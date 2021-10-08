@@ -67,17 +67,17 @@ sp-timestamp = { git = 'http://github.com/paritytech/substrate.git', branch = 'p
 sp-session = { git = 'http://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.8' }
 sp-offchain = { git = 'http://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.8' }
 sp-keystore = { git = 'http://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.8' }
-nimbus-primitives = { git = "https://github.com/purestake/cumulus", branch = "joshy-np098" }
 
 # Cumulus dependencies
-cumulus-client-consensus-relay-chain = { git = "https://github.com/purestake/cumulus", branch = "joshy-np098" }
-cumulus-client-consensus-common = { git = "https://github.com/purestake/cumulus", branch = 'joshy-np098' }
-cumulus-client-network = { git = 'https://github.com/purestake/cumulus', branch = 'joshy-np098' }
-cumulus-client-service = { git = 'https://github.com/purestake/cumulus', branch = 'joshy-np098' }
-cumulus-client-cli = { git = 'https://github.com/purestake/cumulus', branch = 'joshy-np098' }
-cumulus-primitives-core = { git = 'https://github.com/purestake/cumulus', branch = 'joshy-np098' }
-cumulus-primitives-parachain-inherent = { git = 'https://github.com/purestake/cumulus', branch = 'joshy-np098' }
-nimbus-consensus = { git = "https://github.com/purestake/cumulus", branch = "joshy-np098" }
+nimbus-primitives = { git = "https://github.com/purestake/cumulus", rev = "07944252c6a9cf0a2cd5f7d61f04cad1dd3926ef" }
+cumulus-client-consensus-relay-chain = { git = "https://github.com/purestake/cumulus", rev = "07944252c6a9cf0a2cd5f7d61f04cad1dd3926ef" }
+cumulus-client-consensus-common = { git = "https://github.com/purestake/cumulus", rev = '07944252c6a9cf0a2cd5f7d61f04cad1dd3926ef' }
+cumulus-client-network = { git = 'https://github.com/purestake/cumulus', rev = '07944252c6a9cf0a2cd5f7d61f04cad1dd3926ef' }
+cumulus-client-service = { git = 'https://github.com/purestake/cumulus', rev = '07944252c6a9cf0a2cd5f7d61f04cad1dd3926ef' }
+cumulus-client-cli = { git = 'https://github.com/purestake/cumulus', rev = '07944252c6a9cf0a2cd5f7d61f04cad1dd3926ef' }
+cumulus-primitives-core = { git = 'https://github.com/purestake/cumulus', rev = '07944252c6a9cf0a2cd5f7d61f04cad1dd3926ef' }
+cumulus-primitives-parachain-inherent = { git = 'https://github.com/purestake/cumulus', rev = '07944252c6a9cf0a2cd5f7d61f04cad1dd3926ef' }
+nimbus-consensus = { git = "https://github.com/purestake/cumulus", rev = "07944252c6a9cf0a2cd5f7d61f04cad1dd3926ef" }
 
 
 # Polkadot dependencies
