@@ -21,6 +21,8 @@ There is a possibility to run a single node in development mode, without any con
 
 Add `--dev-service` flag to `cargo run` command to run a single node with disabled consensus:
 
+**IMPORTANT NOTE:** the node with enabled `--dev-service` flag generating blocks when needed (e.g. when a new transaction appears).
+
 ```sh
 cargo run --release -- --dev --dev-service --tmp
 ```
