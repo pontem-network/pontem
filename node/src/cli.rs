@@ -1,5 +1,6 @@
 use structopt::StructOpt;
 use std::path::PathBuf;
+use sc_cli::SubstrateCli;
 
 #[derive(Debug)]
 pub enum Sealing {
@@ -138,7 +139,7 @@ impl RelayChainCli {
     /// Parse the relay chain CLI parameters using the para chain `Configuration`.
     pub fn new<'a>(
         para_config: &sc_service::Configuration,
-        relay_chain_args: impl Iterator<Item = &'a String>,
+        relay_chain_args: impl Iterator<Item = String>,
     ) -> Self {
         let extension = crate::chain_spec::Extensions::try_get(&*para_config.chain_spec);
         let chain_id = extension.map(|e| e.relay_chain.clone());
@@ -146,10 +147,11 @@ impl RelayChainCli {
             .base_path
             .as_ref()
             .map(|x| x.path().join("polkadot"));
+        let args = std::iter::once(Self::executable_name().to_string()).chain(relay_chain_args);
         Self {
             base_path,
             chain_id,
-            base: polkadot_cli::RunCmd::from_iter(relay_chain_args),
+            base: polkadot_cli::RunCmd::from_iter(args),
         }
     }
 }
