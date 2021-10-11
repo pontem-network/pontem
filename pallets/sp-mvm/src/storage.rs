@@ -1,3 +1,7 @@
+// Copyright 2020-2021 Pontem Foundation LTD.
+// This file is part of Pontem Network.
+// Apache 2.0
+
 use core::marker::PhantomData;
 use sp_std::prelude::*;
 use parity_scale_codec::FullCodec;
@@ -16,7 +20,7 @@ pub trait MoveVmStorage<T, K: FullEncode, V: FullCodec> {
     }
 }
 
-/// Vm storage adapter for native storage
+/// Vm storage adapter for native storage.
 pub struct StorageAdapter<T, K = Vec<u8>, V = Vec<u8>>(PhantomData<(T, K, V)>);
 
 impl<T, K, V> Default for StorageAdapter<T, K, V> {

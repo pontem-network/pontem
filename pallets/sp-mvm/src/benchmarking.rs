@@ -1,5 +1,9 @@
 #![cfg(feature = "runtime-benchmarks")]
-//! Benchmarking setup for pallet-template
+// Copyright 2020-2021 Pontem Foundation LTD.
+// This file is part of Pontem Network.
+// Apache 2.0
+
+//! Benchmarking setup for Move VM pallet.
 
 // How to use:
 // 1. Build node with feature `runtime-benchmarks`
@@ -19,6 +23,8 @@ use super::*;
 #[allow(unused)]
 use super::Pallet as Mvm;
 
+// Pontem benchmarks.
+// Deploying standard library modules, just modules, runs scripts with different arguments.
 benchmarks! {
 
     // Needs to be fixed in multisig. Not yet sure how, needs more deconstruction.
