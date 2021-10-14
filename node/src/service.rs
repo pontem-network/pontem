@@ -419,7 +419,7 @@ pub fn new_dev(
                 block_import: client.clone(),
                 env,
                 client: client.clone(),
-                pool: transaction_pool.pool().clone(),
+                pool: transaction_pool.clone(),
                 commands_stream,
                 select_chain,
                 consensus_data_provider: None,
