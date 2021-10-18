@@ -62,10 +62,13 @@ jobs:
       - name: Build test resources
         run: arch --x86_64 make assets
 
-      - name: Tests
-        # run: arch --x86_64 cargo +${{ steps.rust.outputs.version }} test --all --no-fail-fast -- --nocapture --test-threads=1
-        run: cargo +${{ steps.rust.outputs.version }} test --all --no-fail-fast --target=aarch64-apple-darwin -- --nocapture --test-threads=1
-        env: { SKIP_WASM_BUILD: 1 }
+      # - name: Tests
+      #   # run: arch --x86_64 cargo +${{ steps.rust.outputs.version }} test --all --no-fail-fast -- --nocapture --test-threads=1
+      #   run: cargo +${{ steps.rust.outputs.version }} test --all --no-fail-fast --target=aarch64-apple-darwin -- --nocapture --test-threads=1
+      #   env: { SKIP_WASM_BUILD: 1 }
+      - name: Build
+        run: cargo build --target=aarch64-apple-darwin
+
 
   test:
     name: Tests
