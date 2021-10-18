@@ -12,6 +12,61 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
+  test-ext:
+    name: Tests
+    runs-on: ${{ matrix.cfg.os }}
+    if: "!contains(github.event.head_commit.message, 'ci skip') && !contains(github.event.head_commit.message, 'skip ci')"
+
+    defaults:
+      run:
+        shell: bash
+
+    strategy:
+      fail-fast: false
+      matrix:
+        cfg:
+          - os: macOS-11
+            dove: 1.3.2
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      # - id: rust # MSRV
+      #   name: use required Rust version
+      #   run: |
+      #     echo "WASM_BUILD_TOOLCHAIN=$(cat rust-toolchain)" >> $GITHUB_ENV
+      #     echo ::set-output name=version::$(cat rust-toolchain)
+
+      # - name: Install Rust toolchain
+      #   uses: actions-rs/toolchain@v1
+      #   with:
+      #     toolchain: ${{ steps.rust.outputs.version }}
+      #     profile: minimal
+      #     components: rustfmt
+      #     override: false
+
+      - name: Install Rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly
+          profile: minimal
+          override: true
+          target: aarch64-apple-darwin
+
+      - name: Cache
+        uses: actions/cache@v2
+        with:
+          path: ~/.dove
+          key: macos-latest-dove-${{ matrix.cfg.dove }}
+
+      - name: Build test resources
+        run: arch --x86_64 make assets
+
+      - name: Tests
+        # run: arch --x86_64 cargo +${{ steps.rust.outputs.version }} test --all --no-fail-fast -- --nocapture --test-threads=1
+        run: cargo +${{ steps.rust.outputs.version }} test --all --no-fail-fast --target=aarch64-apple-darwin -- --nocapture --test-threads=1
+        env: { SKIP_WASM_BUILD: 1 }
+
   test:
     name: Tests
     runs-on: ${{ matrix.cfg.os }}
