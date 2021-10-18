@@ -66,6 +66,8 @@ use constants::{currency::*, time::*};
 pub mod primitives;
 use primitives::*;
 
+extern crate alloc;
+
 /// We allow for 0.5 seconds of compute with a 6 second average block time.
 const MAXIMUM_BLOCK_WEIGHT: Weight = WEIGHT_PER_SECOND / 2;
 
@@ -756,21 +758,21 @@ impl_runtime_apis! {
         }
 
         // Get module binary by it's address
-        fn get_module(module_id: Vec<u8>) -> Result<Option<Vec<u8>>, sp_runtime::DispatchError> {
-            Mvm::get_module(&module_id.as_slice()).map_err(|_| sp_runtime::DispatchError::Other("get_module error"))
+        fn get_module(module_id: Vec<u8>) -> Result<Option<Vec<u8>>, Vec<u8>> {
+            Mvm::get_module(&module_id.as_slice())
         }
 
         // Get module ABI by it's address
-        fn get_module_abi(module_id: Vec<u8>) -> Result<Option<Vec<u8>>, sp_runtime::DispatchError> {
-            Mvm::get_module_abi(&module_id.as_slice()).map_err(|_| sp_runtime::DispatchError::Other("get_module_abi error"))
+        fn get_module_abi(module_id: Vec<u8>) -> Result<Option<Vec<u8>>, Vec<u8>> {
+            Mvm::get_module_abi(&module_id.as_slice())
         }
 
         // Get resource
         fn get_resource(
             account_id: AccountId,
             tag: Vec<u8>,
-        ) -> Result<Option<Vec<u8>>, sp_runtime::DispatchError> {
-            Mvm::get_resource(&account_id, &tag.as_slice()).map_err(|_| sp_runtime::DispatchError::Other("get_resource error"))
+        ) -> Result<Option<Vec<u8>>, Vec<u8>> {
+            Mvm::get_resource(&account_id, &tag.as_slice())
         }
 
     }

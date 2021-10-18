@@ -64,6 +64,9 @@ pub mod pallet {
     use move_core_types::account_address::AccountAddress;
     use move_core_types::language_storage::CORE_CODE_ADDRESS;
 
+    extern crate alloc;
+    use alloc::format;
+
     /// Configure the pallet by specifying the parameters and types on which it depends.
     #[pallet::config]
     pub trait Config:
@@ -410,27 +413,29 @@ pub mod pallet {
             Ok(res)
         }
 
-        pub fn get_module_abi(
-            module_id: &[u8],
-        ) -> Result<Option<Vec<u8>>, Error<T>> {
-            let vm = Self::get_vm()?;
-            vm.get_module_abi(module_id).map_err(|_| Error::LookupFailed)
+        pub fn get_module_abi(module_id: &[u8]) -> Result<Option<Vec<u8>>, Vec<u8>> {
+            let vm = Self::get_vm()
+                .map_err::<Vec<u8>, _>(|e| format!("error while getting vm {:?}", e).into())?;
+            vm.get_module_abi(module_id)
+                .map_err(|e| format!("error in get_module_abi: {:?}", e).into())
         }
 
-        pub fn get_module(
-            module_id: &[u8],
-        ) -> Result<Option<Vec<u8>>, Error<T>> {
-            let vm = Self::get_vm()?;
-            vm.get_module(module_id).map_err(|_| Error::LookupFailed)
+        pub fn get_module(module_id: &[u8]) -> Result<Option<Vec<u8>>, Vec<u8>> {
+            let vm = Self::get_vm()
+                .map_err::<Vec<u8>, _>(|e| format!("error while getting vm {:?}", e).into())?;
+            vm.get_module(module_id)
+                .map_err(|e| format!("error in get_module: {:?}", e).into())
         }
 
         pub fn get_resource(
             account: &T::AccountId,
             tag: &[u8],
-        ) -> Result<Option<Vec<u8>>, Error<T>> {
-            let vm = Self::get_vm()?;
+        ) -> Result<Option<Vec<u8>>, Vec<u8>> {
+            let vm = Self::get_vm()
+                .map_err::<Vec<u8>, _>(|e| format!("error while getting vm {:?}", e).into())?;
+            // alloc::fmt::format(format_args!("hello!"));
             vm.get_resource(&AccountAddress::new(addr::account_to_bytes(account)), tag)
-                .map_err(|_| Error::LookupFailed)
+                .map_err(|e| format!("error in get_resource: {:?}", e).into())
         }
     }
 

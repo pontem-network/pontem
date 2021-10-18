@@ -204,13 +204,13 @@ where
             .get_resource(&at, account_id, tag.into_vec())
             .map_err(|e| RpcError {
                 code: ErrorCode::ServerError(500),
-                message: "Nope, error.".into(),
-                data: Some(format!("{:?}", e).into()),
+                message: "ABI error".into(),
+                data: Some(e.to_string().into()),
             })?
             .map_err(|e| RpcError {
                 code: ErrorCode::ServerError(500),
-                message: "Nope, error.".into(),
-                data: Some(format!("{:?}", e).into()),
+                message: "Error from method".into(),
+                data: Some(std::str::from_utf8(e.as_slice()).unwrap_or("can't decode error").into()),
             })?;
         Ok(f.map(Into::into))
     }
@@ -229,13 +229,13 @@ where
             .get_module_abi(&at, module_id.into_vec())
             .map_err(|e| RpcError {
                 code: ErrorCode::ServerError(500),
-                message: "Nope, error.".into(),
-                data: Some(format!("{:?}", e).into()),
+                message: "API error".into(),
+                data: Some(e.to_string().into()),
             })?
             .map_err(|e| RpcError {
                 code: ErrorCode::ServerError(500),
-                message: "Nope, error.".into(),
-                data: Some(format!("{:?}", e).into()),
+                message: "Error from method".into(),
+                data: Some(std::str::from_utf8(e.as_slice()).unwrap_or("can't decode error").into()),
             })?;
         Ok(f.map(Into::into))
     }
@@ -254,13 +254,13 @@ where
             .get_module(&at, module_id.into_vec())
             .map_err(|e| RpcError {
                 code: ErrorCode::ServerError(500),
-                message: "Nope, error.".into(),
-                data: Some(format!("{:?}", e).into()),
+                message: "API error.".into(),
+                data: Some(e.to_string().into()),
             })?
             .map_err(|e| RpcError {
                 code: ErrorCode::ServerError(500),
                 message: "Nope, error.".into(),
-                data: Some(format!("{:?}", e).into()),
+                data: Some(std::str::from_utf8(e.as_slice()).unwrap_or("can't decode error").into()),
             })?;
         Ok(f.map(Into::into))
     }

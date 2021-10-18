@@ -26,13 +26,13 @@ sp_api::decl_runtime_apis! {
         fn estimate_gas_execute(account: AccountId, tx_bc: Vec<u8>, gas_limit: u64) -> Result<types::MVMApiEstimation, sp_runtime::DispatchError>;
 
         // Get module binary by it's address
-        fn get_module(module_id: Vec<u8>) -> Result<Option<Vec<u8>>, sp_runtime::DispatchError>;
+        fn get_module(module_id: Vec<u8>) -> Result<Option<Vec<u8>>, Vec<u8>>;
 
         // Get module ABI by it's address
-        fn get_module_abi(module_id: Vec<u8>) -> Result<Option<Vec<u8>>, sp_runtime::DispatchError>;
+        fn get_module_abi(module_id: Vec<u8>) -> Result<Option<Vec<u8>>, Vec<u8>>;
 
         // Get resource
-        fn get_resource(account: AccountId, tag: Vec<u8>) -> Result<Option<Vec<u8>>, sp_runtime::DispatchError>;
+        fn get_resource(account: AccountId, tag: Vec<u8>) -> Result<Option<Vec<u8>>, Vec<u8>>;
 
     }
 }
