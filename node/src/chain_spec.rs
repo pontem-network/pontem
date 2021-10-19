@@ -185,7 +185,7 @@ fn testnet_genesis(
     endowed_accounts: Vec<AccountId>,
     id: ParaId,
 ) -> GenesisConfig {
-    let vm_config = build_vm_config();
+    let (init_module, init_func, init_args) = build_vm_config();
 
     GenesisConfig {
         tokens: TokensConfig {
@@ -235,9 +235,9 @@ fn testnet_genesis(
         },
         mvm: MvmConfig {
             stdlib: include_bytes!("../move/stdlib/artifacts/bundles/move-stdlib.pac").to_vec(),
-            init_module: vm_config.0.clone(),
-            init_func: vm_config.1.clone(),
-            init_args: vm_config.2.clone(),
+            init_module,
+            init_func,
+            init_args,
             ..Default::default()
         },
         vesting: VestingConfig {

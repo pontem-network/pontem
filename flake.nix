@@ -1,21 +1,13 @@
 {
   inputs = {
-    fenix.url = "github:nix-community/fenix";
+    fenix.url = github:nix-community/fenix;
     naersk = {
-      url = "github:nmattia/naersk";
+      url = github:nmattia/naersk;
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
-    utils.url = "github:numtide/flake-utils";
-
-    move-tools = {
-      url = "github:pontem-network/move-tools"; 
-      # Nested flake locks are not working correctly for the time being 
-      # (Nix PR fixing this is here: https://github.com/NixOS/nix/pull/4641)
-      # Thus we rely on flake-compat. 
-      flake = false;
-    };
-
+    nixpkgs.url = github:NixOS/nixpkgs/nixpkgs-unstable;
+    utils.url = github:numtide/flake-utils;
+    move-tools.url = github:pontem-network/move-tools;
   };
 
   outputs = flake-args@{ self, nixpkgs, utils, naersk, fenix, move-tools, ... }:
@@ -26,7 +18,7 @@
         rustTargets = fenixArch.targets;
         llvmPackagesR = pkgs.llvmPackages_12;
 
-        dove = (import move-tools).defaultPackage."${system}";
+        dove = move-tools.defaultPackage."${system}";
 
         rustToolchain = fenixArch.stable;
         rustToolchainWasm = rustTargets.wasm32-unknown-unknown.latest;
@@ -43,7 +35,7 @@
           buildInputs = [
             protobuf openssl pre-commit pkgconfig
             llvmPackagesR.clang
-            move-tools.defaultPackage."${system}"
+            dove
 
             (fenixArch.combine [
               (fenixArch.latest.withComponents [ "cargo" "clippy-preview" "llvm-tools-preview" "rust-std" "rustc" "rustc-dev" "rustfmt-preview" ])

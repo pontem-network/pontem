@@ -23,20 +23,15 @@ use nimbus_primitives::NimbusId;
 
 // Polkadot & XCM imports
 use polkadot_parachain::primitives::Sibling;
-use xcm::v0::{
-    Error as XcmError, BodyId, MultiAsset,
-    Junction::{self, *},
-    MultiLocation,
-    MultiLocation::*,
-    NetworkId, Xcm,
-};
+use xcm::latest::prelude::*;
 use xcm_builder::{
     AccountId32Aliases, LocationInverter, ParentIsDefault, RelayChainAsNative,
     SiblingParachainAsNative, SiblingParachainConvertsVia, SignedAccountId32AsNative,
     SovereignSignedViaLocation, EnsureXcmOrigin, AllowUnpaidExecutionFrom, ParentAsSuperuser,
     AllowTopLevelPaidExecutionFrom, TakeWeightCredit, FixedWeightBounds, SignedToAccountId32,
 };
-use xcm_executor::{AssetId, Config, XcmExecutor, traits::WeightTrader, Assets};
+use xcm::latest::AssetId;
+use xcm_executor::{Config, XcmExecutor, traits::WeightTrader, Assets};
 use pallet_xcm::XcmPassthrough;
 use orml_traits::parameter_type_with_key;
 use orml_xcm_support::{IsNativeConcrete, MultiCurrencyAdapter, MultiNativeAsset};
@@ -52,7 +47,7 @@ pub use pallet_vesting::Call as VestingCall;
 pub use frame_support::{
     pallet_prelude::RuntimeDebug,
     construct_runtime, parameter_types, StorageValue, match_type,
-    traits::{KeyOwnerProofSystem, Randomness, All, IsInVec, Get},
+    traits::{KeyOwnerProofSystem, Randomness, IsInVec, Everything, Get},
     weights::{
         Weight, IdentityFee, DispatchClass,
         constants::{
@@ -73,7 +68,7 @@ pub use parachain_staking::{InflationInfo, Range};
 pub mod constants;
 use constants::{currency::*, time::*};
 pub mod primitives;
-use primitives::*;
+use primitives::{*, Index};
 
 #[cfg(test)]
 mod mock;
@@ -165,7 +160,7 @@ parameter_types! {
 
 impl frame_system::Config for Runtime {
     /// The basic call filter to use in dispatchable.
-    type BaseCallFilter = ();
+    type BaseCallFilter = frame_support::traits::Everything;
     /// Block & extrinsics weights: base values and limits.
     type BlockWeights = RuntimeBlockWeights;
     /// The maximum length of a block (in bytes).
@@ -378,7 +373,7 @@ impl pallet_author_slot_filter::Config for Runtime {
 impl pallet_randomness_collective_flip::Config for Runtime {}
 
 parameter_types! {
-    pub const RelayLocation: MultiLocation = X1(Parent);
+    pub const RelayLocation: MultiLocation = MultiLocation::parent();
     pub const RelayNetwork: NetworkId = NetworkId::Polkadot;
     pub RelayOrigin: Origin = cumulus_pallet_xcm::Origin::Relay.into();
     pub Ancestry: MultiLocation = Parachain(ParachainInfo::parachain_id().into()).into();
@@ -431,21 +426,22 @@ pub type XcmOriginToTransactDispatchOrigin = (
 );
 
 parameter_types! {
-    // One XCM operation is 1_000_000 weight - almost certainly a conservative estimate.
-    pub UnitWeightCost: Weight = 1_000_000;
-    // One UNIT buys 1 second of weight.
-    pub const WeightPrice: (MultiLocation, u128) = (X1(Junction::Parent), UNIT as u128);
+     // One XCM operation is 1_000_000 weight - almost certainly a conservative estimate.
+     pub UnitWeightCost: Weight = 1_000_000;
+     // One UNIT buys 1 second of weight.
+     pub const WeightPrice: (MultiLocation, u128) = (MultiLocation::parent(), UNIT as u128);
 }
 
 match_type! {
-    pub type ParentOrParentsUnitPlurality: impl Contains<MultiLocation> = {
-        X1(Parent) | X2(Parent, Plurality { id: BodyId::Unit, .. })
-    };
+     pub type ParentOrParentsUnitPlurality: impl Contains<MultiLocation> = {
+         MultiLocation { parents: 1, interior: Here } |
+         MultiLocation { parents: 1, interior: X1(Plurality { id: BodyId::Unit, .. }) }
+     };
 }
 
 pub type Barrier = (
     TakeWeightCredit,
-    AllowTopLevelPaidExecutionFrom<All<MultiLocation>>,
+    AllowTopLevelPaidExecutionFrom<Everything>,
     AllowUnpaidExecutionFrom<ParentOrParentsUnitPlurality>,
     // ^^^ Parent & its unit plurality gets free execution
 );
@@ -485,7 +481,7 @@ mod kusama {
 pub struct SimpleWeightTrader(MultiLocation);
 impl WeightTrader for SimpleWeightTrader {
     fn new() -> Self {
-        Self(MultiLocation::Null)
+        Self(MultiLocation::parent())
     }
 
     fn buy_weight(&mut self, weight: Weight, payment: Assets) -> Result<Assets, XcmError> {
@@ -502,23 +498,23 @@ impl WeightTrader for SimpleWeightTrader {
         let required = match currency_id {
             Some(CurrencyId::Pont) => asset_id
                 .clone()
-                .into_fungible_multiasset(weight as u128 / PONT_PER_WEIGHT),
+                .into_multiasset(Fungibility::Fungible(weight as u128 / PONT_PER_WEIGHT)),
             Some(CurrencyId::Ksm) => {
                 use frame_support::weights::WeightToFeePolynomial;
                 let fee = kusama::KusamaWeightToFee::calc(&weight);
-                asset_id.clone().into_fungible_multiasset(fee as u128)
+                asset_id.clone().into_multiasset(Fungibility::Fungible(fee as u128))
             }
-            None => asset_id.clone().into_fungible_multiasset(weight as u128),
+            None => asset_id.clone().into_multiasset(Fungibility::Fungible(weight as u128)),
         };
 
-        if let MultiAsset::ConcreteFungible { ref id, amount: _ } = required {
+        if let MultiAsset { id: Concrete(ref id), .. } = required {
             self.0 = id.clone();
         }
-        let (unused, _) = payment.less(required).map_err(|_| XcmError::TooExpensive)?;
+        let unused = payment.checked_sub(required).map_err(|_| XcmError::TooExpensive)?;
         Ok(unused)
     }
 
-    fn refund_weight(&mut self, weight: Weight) -> MultiAsset {
+    fn refund_weight(&mut self, weight: Weight) -> Option<MultiAsset> {
         let amount = match CurrencyIdConvert::convert(self.0.clone()) {
             Some(CurrencyId::Pont) => weight as u128 / PONT_PER_WEIGHT,
             Some(CurrencyId::Ksm) => {
@@ -528,14 +524,17 @@ impl WeightTrader for SimpleWeightTrader {
             }
             None => weight as u128,
         };
-        MultiAsset::ConcreteFungible {
-            id: self.0.clone(),
-            amount,
-        }
+        Some(
+            (
+                self.0.clone(),
+                amount,
+                ).into()
+        )
     }
 }
 
 pub struct XcmConfig;
+
 impl Config for XcmConfig {
     type Call = Call;
     type XcmSender = XcmRouter;
@@ -549,6 +548,7 @@ impl Config for XcmConfig {
     type Weigher = FixedWeightBounds<UnitWeightCost, Call>;
     type Trader = SimpleWeightTrader;
     type ResponseHandler = (); // Don't handle responses for now.
+    type SubscriptionService = PolkadotXcm;
 }
 
 /// No local origins on this chain are allowed to dispatch XCM sends/executions.
@@ -558,7 +558,7 @@ pub type LocalOriginToLocation = SignedToAccountId32<Origin, AccountId, RelayNet
 /// queues.
 pub type XcmRouter = (
     // Two routers - use UMP to communicate with the relay chain:
-    cumulus_primitives_utility::ParentAsUmp<ParachainSystem>,
+    cumulus_primitives_utility::ParentAsUmp<ParachainSystem, ()>,
     // ..and XCMP to communicate with the sibling chains.
     XcmpQueue,
 );
@@ -569,10 +569,11 @@ impl pallet_xcm::Config for Runtime {
     type XcmRouter = XcmRouter;
     type ExecuteXcmOrigin = EnsureXcmOrigin<Origin, LocalOriginToLocation>;
     type XcmExecutor = XcmExecutor<XcmConfig>;
-    type XcmExecuteFilter = All<(MultiLocation, Xcm<Call>)>;
-    type XcmTeleportFilter = All<(MultiLocation, Vec<MultiAsset>)>;
+    type XcmExecuteFilter = Everything;
+    type XcmTeleportFilter = Everything;
     type XcmReserveTransferFilter = ();
     type Weigher = FixedWeightBounds<UnitWeightCost, Call>;
+    type LocationInverter = LocationInverter<Ancestry>;
 }
 
 impl cumulus_pallet_xcm::Config for Runtime {
@@ -584,6 +585,7 @@ impl cumulus_pallet_xcmp_queue::Config for Runtime {
     type Event = Event;
     type XcmExecutor = XcmExecutor<XcmConfig>;
     type ChannelInfo = ParachainSystem;
+    type VersionWrapper = ();
 }
 
 impl cumulus_pallet_dmp_queue::Config for Runtime {
@@ -691,10 +693,10 @@ pub struct CurrencyIdConvert;
 impl Convert<CurrencyId, Option<MultiLocation>> for CurrencyIdConvert {
     fn convert(id: CurrencyId) -> Option<MultiLocation> {
         match id {
-            CurrencyId::Ksm => Some(Junction::Parent.into()),
+            CurrencyId::Ksm => Some(MultiLocation::parent()),
             CurrencyId::Pont => Some(
                 (
-                    Junction::Parent,
+                    Parent,
                     Junction::Parachain(ParachainInfo::get().into()),
                     Junction::GeneralKey("PONT".into()),
                 )
@@ -708,12 +710,8 @@ impl Convert<MultiLocation, Option<CurrencyId>> for CurrencyIdConvert {
     fn convert(location: MultiLocation) -> Option<CurrencyId> {
         const PONT_KEY: &[u8] = b"PONT";
         match location {
-            X1(Parent) => Some(CurrencyId::Ksm),
-            X3(Junction::Parent, Junction::Parachain(_id), Junction::GeneralKey(key))
-                if key == PONT_KEY =>
-            {
-                Some(CurrencyId::Pont)
-            }
+            MultiLocation { parents: 1, interior: Junctions::Here } => Some(CurrencyId::Ksm),
+            MultiLocation { parents: 1, interior: X2(Parachain(_id), GeneralKey(key)) } if key == PONT_KEY => Some(CurrencyId::Pont),
             _ => None,
         }
     }
@@ -721,7 +719,7 @@ impl Convert<MultiLocation, Option<CurrencyId>> for CurrencyIdConvert {
 
 impl Convert<MultiAsset, Option<CurrencyId>> for CurrencyIdConvert {
     fn convert(asset: MultiAsset) -> Option<CurrencyId> {
-        if let MultiAsset::ConcreteFungible { id, amount: _ } = asset {
+        if let MultiAsset { id: Concrete(id), fun: _ } = asset {
             Self::convert(id)
         } else {
             None
@@ -753,12 +751,12 @@ impl Convert<AccountId, MultiLocation> for AccountIdToMultiLocation {
         X1(Junction::AccountId32 {
             network: NetworkId::Any,
             id: account.into(),
-        })
+        }).into()
     }
 }
 
 parameter_types! {
-    pub SelfLocation: MultiLocation = X2(Junction::Parent, Junction::Parachain(ParachainInfo::get().into()));
+    pub SelfLocation: MultiLocation = MultiLocation::new(1, X1(Parachain(ParachainInfo::get().into())));
     pub const BaseXcmWeight: Weight = 100_000_000;
 }
 
@@ -772,6 +770,7 @@ impl orml_xtokens::Config for Runtime {
     type XcmExecutor = XcmExecutor<XcmConfig>;
     type Weigher = FixedWeightBounds<UnitWeightCost, Call>;
     type BaseXcmWeight = BaseXcmWeight;
+    type LocationInverter = LocationInverter<Ancestry>;
 }
 
 impl orml_xcm::Config for Runtime {
@@ -1011,6 +1010,27 @@ impl_runtime_apis! {
 
     #[cfg(feature = "runtime-benchmarks")]
     impl frame_benchmarking::Benchmark<Block> for Runtime {
+        fn benchmark_metadata(extra: bool) -> (
+            Vec<frame_benchmarking::BenchmarkList>,
+            Vec<frame_support::traits::StorageInfo>,
+        ) {
+            use frame_benchmarking::{list_benchmark, Benchmarking, BenchmarkList};
+            use frame_support::traits::StorageInfoTrait;
+            use frame_system_benchmarking::Pallet as SystemBench;
+
+            let mut list = Vec::<BenchmarkList>::new();
+
+            list_benchmark!(list, extra, frame_system, SystemBench::<Runtime>);
+            list_benchmark!(list, extra, pallet_balances, Balances);
+            list_benchmark!(list, extra, pallet_timestamp, Timestamp);
+            list_benchmark!(list, extra, pallet_vesting, Vesting);
+            list_benchmark!(list, extra, sp_mvm, Mvm);
+
+            let storage_info = AllPalletsWithSystem::storage_info();
+
+            return (list, storage_info)
+        }
+
         fn dispatch_benchmark(
             config: frame_benchmarking::BenchmarkConfig
         ) -> Result<Vec<frame_benchmarking::BenchmarkBatch>, sp_runtime::RuntimeString> {

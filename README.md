@@ -15,11 +15,28 @@ Read [official documentation](https://docs.pontem.network/02.-getting-started/lo
 Current version built with Nimbus consensus and Parachain Staking implementation.
 Requires relay chain to work correctly.
 
+### Running in dev-mode
+
+There is a possibility to run a single node in development mode, without any consensus involved.
+
+Add `--dev-service` flag to `cargo run` command to run a single node with disabled consensus:
+
+**IMPORTANT NOTE:** the node with enabled `--dev-service` flag generating blocks when needed (e.g. when a new transaction appears).
+
+```sh
+cargo run --release -- --dev --dev-service --tmp
+```
+
+Use `--sealing` argument to select sealing mode:
+
+1. `instant` (default). Blocks a produced automatically for each transaction
+2. `<number>`. Blocks are produced once per `number` milliseconds
+
 ### Using polkadot-launch
 
 Install [polkadot-launch](https://github.com/paritytech/polkadot-launch).
 
-**Note:** you must have polkadot node `v0.9.8` compiled and built placed in `../polkadot/target/release/`.
+**Note:** you must have polkadot node `v0.9.10` compiled and built placed in `../polkadot/target/release/`.
 To use different localion you can modify `./launch-config.json`.
 
 Build Pontem:
@@ -55,6 +72,32 @@ Observe `9946.log` to verify that the node was launched successfully and is prod
 tail -f ./9946.log
 ```
 
+### Using polkadot-launch via docker-compose
+
+Build container:
+
+```sh
+cd pontem
+docker-compose build
+```
+
+Launching services:
+
+```sh
+docker-compose up -d
+```
+
+Log files are in folder `docker-launch`.
+
+In the `docker-compose.yml` file, you can set the required versions of polkadot and pontem by specifying them in `POLKADOT_VERSION` and `PONTEM_VERSION`, respectively. (note: if you change versions in docker-compose.yaml or change the `.build/launch.Dockerfile`, you need to rerun the `docker-compose build` command).
+
+You can connect using the following ports:
+
+```sh
+127.0.0.1:9944 # Alice relaychain
+127.0.0.1:9946 # Alice parachain
+```
+
 ### Manually
 
 Build Polkadot:
@@ -62,7 +105,8 @@ Build Polkadot:
 ```sh
 git clone https://github.com/paritytech/polkadot.git
 cd polkadot
-git checkout v0.9.8
+git fetch origin
+git checkout release-v0.9.10
 cargo build --release
 ```
 

@@ -1,0 +1,20 @@
+# Ignore git
+.git
+.gitignore
+
+# Igmore docker files
+.dockerignore
+
+# Ignore env files
+.env
+.env.example
+
+# Other
+README.md
+node_modules
+.gitlab-ci.yml
+docker-compose*
+.build/*Dockerfile
+.cargo
+target
+docker-launch
