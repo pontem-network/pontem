@@ -202,7 +202,7 @@ pub mod pallet {
             package: Vec<u8>,
             gas_limit: u64,
         ) -> DispatchResultWithPostInfo {
-            /// Allows to update Standard Library if root.
+            // Allows to update Standard Library if root.
             let sender = match ensure_root(origin.clone()) {
                 Ok(_) => {
                     debug!("executing `publish package` with root");
