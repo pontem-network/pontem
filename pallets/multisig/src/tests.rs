@@ -21,7 +21,7 @@
 
 use super::*;
 
-use frame_support::{assert_ok, assert_noop, parameter_types, traits::Filter};
+use frame_support::{assert_ok, assert_noop, parameter_types, traits::Contains};
 use sp_core::H256;
 use sp_runtime::{
     traits::{BlakeTwo256, IdentityLookup},
@@ -94,8 +94,8 @@ parameter_types! {
     pub const MaxSignatories: u16 = 3;
 }
 pub struct TestBaseCallFilter;
-impl Filter<Call> for TestBaseCallFilter {
-    fn filter(c: &Call) -> bool {
+impl Contains<Call> for TestBaseCallFilter {
+    fn contains(c: &Call) -> bool {
         match *c {
             Call::Balances(_) => true,
             // Needed for benchmarking

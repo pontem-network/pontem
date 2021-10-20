@@ -21,11 +21,8 @@ use sp_keystore::SyncCryptoStorePtr;
 use cumulus_client_consensus_common::ParachainConsensus;
 use nimbus_primitives::NimbusId;
 use nimbus_consensus::{build_nimbus_consensus, BuildNimbusConsensusParams};
+use pontem_runtime::primitives::Block;
 
-// Runtime type overrides
-type BlockNumber = u32;
-type Header = sp_runtime::generic::Header<BlockNumber, sp_runtime::traits::BlakeTwo256>;
-pub type Block = sp_runtime::generic::Block<Header, sp_runtime::OpaqueExtrinsic>;
 type FullBackend = TFullBackend<Block>;
 type FullClient = TFullClient<Block, RuntimeApi, ParachainRuntimeExecutor>;
 type MaybeSelectChain = Option<sc_consensus::LongestChain<FullBackend, Block>>;
@@ -50,7 +47,7 @@ pub fn new_partial(
         FullClient,
         TFullBackend<Block>,
         MaybeSelectChain,
-        sp_consensus::DefaultImportQueue<Block, FullClient>,
+        sc_consensus::DefaultImportQueue<Block, FullClient>,
         sc_transaction_pool::FullPool<Block, FullClient>,
         (Option<Telemetry>, Option<TelemetryWorkerHandle>),
     >,
@@ -168,6 +165,7 @@ async fn start_node_impl(
     );
 
     let is_validator = parachain_config.role.is_authority();
+    let force_authoring = parachain_config.force_authoring;
     let prometheus_registry = parachain_config.prometheus_registry().cloned();
     let transaction_pool = params.transaction_pool.clone();
     let mut task_manager = params.task_manager;
@@ -180,6 +178,7 @@ async fn start_node_impl(
             spawn_handle: task_manager.spawn_handle(),
             import_queue: import_queue.clone(),
             on_demand: None,
+            warp_sync: None,
             block_announce_validator_builder: Some(Box::new(|_| block_announce_validator)),
         })?;
 
@@ -194,7 +193,8 @@ async fn start_node_impl(
                 deny_unsafe,
             };
 
-            crate::rpc::create_full(deps)
+            let io = crate::rpc::create_full(deps);
+            Ok(io)
         })
     };
 
@@ -228,6 +228,7 @@ async fn start_node_impl(
             &relay_chain_full_node,
             transaction_pool,
             params.keystore_container.sync_keystore(),
+            force_authoring,
         )?;
         let spawner = task_manager.spawn_handle();
         let params = StartCollatorParams {
@@ -269,6 +270,7 @@ fn build_consensus(
     relay_chain_node: &polkadot_service::NewFull<polkadot_service::Client>,
     transaction_pool: Arc<sc_transaction_pool::FullPool<Block, FullClient>>,
     keystore: SyncCryptoStorePtr,
+    force_authoring: bool,
 ) -> Result<Box<dyn ParachainConsensus<Block>>, sc_service::Error> {
     let proposer_factory = sc_basic_authorship::ProposerFactory::with_proof_recording(
         task_manager.spawn_handle(),
@@ -313,6 +315,7 @@ fn build_consensus(
         relay_chain_backend: relay_chain_node.backend.clone(),
         parachain_client: client.clone(),
         keystore,
+        skip_prediction: force_authoring,
         create_inherent_data_providers,
     }))
 }
@@ -352,6 +355,7 @@ pub fn new_dev(
             spawn_handle: task_manager.spawn_handle(),
             import_queue,
             on_demand: None,
+            warp_sync: None,
             block_announce_validator_builder: None,
         })?;
 
@@ -415,7 +419,7 @@ pub fn new_dev(
                 block_import: client.clone(),
                 env,
                 client: client.clone(),
-                pool: transaction_pool.pool().clone(),
+                pool: transaction_pool.clone(),
                 commands_stream,
                 select_chain,
                 consensus_data_provider: None,
@@ -456,7 +460,8 @@ pub fn new_dev(
                 deny_unsafe,
             };
 
-            crate::rpc::create_full(deps)
+            let io = crate::rpc::create_full(deps);
+            Ok(io)
         })
     };
 

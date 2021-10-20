@@ -36,7 +36,7 @@ Use `--sealing` argument to select sealing mode:
 
 Install [polkadot-launch](https://github.com/paritytech/polkadot-launch).
 
-**Note:** you must have polkadot node `v0.9.8` compiled and built placed in `../polkadot/target/release/`.
+**Note:** you must have polkadot node `v0.9.10` compiled and built placed in `../polkadot/target/release/`.
 To use different localion you can modify `./launch-config.json`.
 
 Build Pontem:
@@ -105,7 +105,8 @@ Build Polkadot:
 ```sh
 git clone https://github.com/paritytech/polkadot.git
 cd polkadot
-git checkout v0.9.8
+git fetch origin
+git checkout release-v0.9.10
 cargo build --release
 ```
 
