@@ -71,18 +71,17 @@ sp-timestamp = { git = 'http://github.com/paritytech/substrate.git', branch = 'p
 sp-session = { git = 'http://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.10' }
 sp-offchain = { git = 'http://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.10' }
 sp-keystore = { git = 'http://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.10' }
-nimbus-primitives = { git = "https://github.com/purestake/cumulus", rev = "5053470650f19ab4f30e37b4a4f3cf292a8e8fe9" }
+nimbus-primitives = { git = "https://github.com/purestake/cumulus", rev = "398546f4ec698c0305e66952a7537f814ab34d2b" }
 
 # Cumulus dependencies
-cumulus-client-consensus-relay-chain = { git = "https://github.com/purestake/cumulus", rev = "5053470650f19ab4f30e37b4a4f3cf292a8e8fe9" }
-cumulus-client-consensus-common = { git = "https://github.com/purestake/cumulus", rev = '5053470650f19ab4f30e37b4a4f3cf292a8e8fe9' }
-cumulus-client-network = { git = 'https://github.com/purestake/cumulus', rev = '5053470650f19ab4f30e37b4a4f3cf292a8e8fe9' }
-cumulus-client-service = { git = 'https://github.com/purestake/cumulus', rev = '5053470650f19ab4f30e37b4a4f3cf292a8e8fe9' }
-cumulus-client-cli = { git = 'https://github.com/purestake/cumulus', rev = '5053470650f19ab4f30e37b4a4f3cf292a8e8fe9' }
-cumulus-primitives-core = { git = 'https://github.com/purestake/cumulus', rev = '5053470650f19ab4f30e37b4a4f3cf292a8e8fe9' }
-cumulus-primitives-parachain-inherent = { git = 'https://github.com/purestake/cumulus', rev = '5053470650f19ab4f30e37b4a4f3cf292a8e8fe9' }
-nimbus-consensus = { git = "https://github.com/purestake/cumulus", rev = "5053470650f19ab4f30e37b4a4f3cf292a8e8fe9" }
-
+cumulus-client-consensus-relay-chain = { git = "https://github.com/purestake/cumulus", rev = "398546f4ec698c0305e66952a7537f814ab34d2b" }
+cumulus-client-consensus-common = { git = "https://github.com/purestake/cumulus", rev = '398546f4ec698c0305e66952a7537f814ab34d2b' }
+cumulus-client-network = { git = 'https://github.com/purestake/cumulus', rev = '398546f4ec698c0305e66952a7537f814ab34d2b' }
+cumulus-client-service = { git = 'https://github.com/purestake/cumulus', rev = '398546f4ec698c0305e66952a7537f814ab34d2b' }
+cumulus-client-cli = { git = 'https://github.com/purestake/cumulus', rev = '398546f4ec698c0305e66952a7537f814ab34d2b' }
+cumulus-primitives-core = { git = 'https://github.com/purestake/cumulus', rev = '398546f4ec698c0305e66952a7537f814ab34d2b' }
+cumulus-primitives-parachain-inherent = { git = 'https://github.com/purestake/cumulus', rev = '398546f4ec698c0305e66952a7537f814ab34d2b' }
+nimbus-consensus = { git = "https://github.com/purestake/cumulus", rev = "398546f4ec698c0305e66952a7537f814ab34d2b" }
 
 # Polkadot dependencies
 polkadot-primitives = { git = 'http://github.com/paritytech/polkadot.git', branch = 'release-v0.9.10' }
@@ -102,7 +101,7 @@ sp-mvm-rpc-runtime = { path = '../pallets/sp-mvm/rpc/runtime' }
 #
 # ** Don't enable relay chains you don't need, as this is a **very** heavy build for no reason**
 # More info: https://github.com/paritytech/polkadot/pull/3189
-polkadot-cli = { git = 'http://github.com/paritytech/polkadot.git', branch = 'release-v0.9.10', features = ["rococo-native"] }
+polkadot-cli = { git = 'http://github.com/paritytech/polkadot.git', branch = 'release-v0.9.10', features = ["westend-native"] }
 
 [dependencies.move-vm]
 package = "mvm"
