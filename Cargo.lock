@@ -79,9 +79,9 @@ checksum = "739f4a8db6605981345c5654f3a85b056ce52f37a39d34da03f25bf2151ea16e"
 
 [[package]]
 name = "ahash"
-version = "0.7.4"
+version = "0.7.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "43bb833f0bf979d8475d38fbf09ed3b8a55e1885fe93ad3f93239fc6a4f17b98"
+checksum = "fcb51a0695d8f838b1ee009b3fbf66bda078cd64590202a864a8f3e8c4315c47"
 dependencies = [
  "getrandom 0.2.3",
  "once_cell",
@@ -460,15 +460,7 @@ checksum = "904dfeac50f3cdaba28fc6f57fdcddb75f49ed61346676a78c4ffe55877802fd"
 [[package]]
 name = "bcs"
 version = "0.1.1"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=022c99a878a58b9c928f5996fc03a9e583681797#022c99a878a58b9c928f5996fc03a9e583681797"
-dependencies = [
- "alt_serde",
-]
-
-[[package]]
-name = "bcs"
-version = "0.1.1"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=7fc50f5aa43962e47584bbe714232fea476639cb#7fc50f5aa43962e47584bbe714232fea476639cb"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=06180ecc68bb34ae1a8a0bacfc94e2fd3fefe15c#06180ecc68bb34ae1a8a0bacfc94e2fd3fefe15c"
 dependencies = [
  "alt_serde",
 ]
@@ -724,7 +716,7 @@ dependencies = [
 [[package]]
 name = "borrow-graph"
 version = "0.0.1"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=022c99a878a58b9c928f5996fc03a9e583681797#022c99a878a58b9c928f5996fc03a9e583681797"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=06180ecc68bb34ae1a8a0bacfc94e2fd3fefe15c#06180ecc68bb34ae1a8a0bacfc94e2fd3fefe15c"
 dependencies = [
  "mirai-annotations",
 ]
@@ -732,7 +724,7 @@ dependencies = [
 [[package]]
 name = "bp-header-chain"
 version = "0.1.0"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
  "finality-grandpa",
  "frame-support",
@@ -747,7 +739,7 @@ dependencies = [
 [[package]]
 name = "bp-messages"
 version = "0.1.0"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
  "bitvec 0.20.4",
  "bp-runtime",
@@ -762,7 +754,7 @@ dependencies = [
 [[package]]
 name = "bp-polkadot-core"
 version = "0.1.0"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
  "bp-messages",
  "bp-runtime",
@@ -779,7 +771,7 @@ dependencies = [
 [[package]]
 name = "bp-rococo"
 version = "0.1.0"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
  "bp-messages",
  "bp-polkadot-core",
@@ -796,7 +788,7 @@ dependencies = [
 [[package]]
 name = "bp-runtime"
 version = "0.1.0"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
  "frame-support",
  "hash-db",
@@ -813,7 +805,7 @@ dependencies = [
 [[package]]
 name = "bp-test-utils"
 version = "0.1.0"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
  "bp-header-chain",
  "ed25519-dalek",
@@ -828,7 +820,7 @@ dependencies = [
 [[package]]
 name = "bp-wococo"
 version = "0.1.0"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
  "bp-messages",
  "bp-polkadot-core",
@@ -874,9 +866,9 @@ checksum = "d9df67f7bf9ef8498769f994239c45613ef0c5899415fb58e9add412d2c1a538"
 
 [[package]]
 name = "byte-slice-cast"
-version = "1.1.0"
+version = "1.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ca0796d76a983651b4a0ddda16203032759f2fd9103d9181f7c65c06ee8872e6"
+checksum = "1d30c751592b77c499e7bce34d99d67c2c11bdc0574e9a488ddade14150a4698"
 
 [[package]]
 name = "byte-tools"
@@ -887,7 +879,7 @@ checksum = "e3b5ca7a04898ad4bcd41c90c5285445ff5b791899bb1b0abdd2a2aa791211d7"
 [[package]]
 name = "bytecode-verifier"
 version = "0.1.0"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=022c99a878a58b9c928f5996fc03a9e583681797#022c99a878a58b9c928f5996fc03a9e583681797"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=06180ecc68bb34ae1a8a0bacfc94e2fd3fefe15c#06180ecc68bb34ae1a8a0bacfc94e2fd3fefe15c"
 dependencies = [
  "anyhow",
  "borrow-graph",
@@ -990,7 +982,7 @@ dependencies = [
 [[package]]
 name = "cell"
 version = "0.1.0"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=022c99a878a58b9c928f5996fc03a9e583681797#022c99a878a58b9c928f5996fc03a9e583681797"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=06180ecc68bb34ae1a8a0bacfc94e2fd3fefe15c#06180ecc68bb34ae1a8a0bacfc94e2fd3fefe15c"
 dependencies = [
  "once_cell",
 ]
@@ -1106,7 +1098,7 @@ checksum = "10612c0ec0e0a1ff0e97980647cb058a6e7aedb913d01d009c406b8b7d0b26ee"
 dependencies = [
  "glob",
  "libc",
- "libloading 0.7.0",
+ "libloading 0.7.1",
 ]
 
 [[package]]
@@ -1179,11 +1171,11 @@ dependencies = [
 
 [[package]]
 name = "core-foundation"
-version = "0.9.1"
+version = "0.9.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0a89e2ae426ea83155dccf10c0fa6b1463ef6d5fcb44cee0b224a408fa640a62"
+checksum = "6888e10551bb93e424d8df1d07f1a8b4fceb0001a3a4b048bfc47554946f47b3"
 dependencies = [
- "core-foundation-sys 0.8.2",
+ "core-foundation-sys 0.8.3",
  "libc",
 ]
 
@@ -1195,9 +1187,9 @@ checksum = "b3a71ab494c0b5b860bdc8407ae08978052417070c2ced38573a9157ad75b8ac"
 
 [[package]]
 name = "core-foundation-sys"
-version = "0.8.2"
+version = "0.8.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ea221b5284a47e40033bf9b66f35f984ec0ea2931eb03505246cd27a963f981b"
+checksum = "5827cebf4670468b8772dd191856768aedcb1b0278a04f989f7766351917b9dc"
 
 [[package]]
 name = "cpp_demangle"
@@ -1896,11 +1888,11 @@ dependencies = [
 [[package]]
 name = "diem-crypto"
 version = "0.0.1"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=022c99a878a58b9c928f5996fc03a9e583681797#022c99a878a58b9c928f5996fc03a9e583681797"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=06180ecc68bb34ae1a8a0bacfc94e2fd3fefe15c#06180ecc68bb34ae1a8a0bacfc94e2fd3fefe15c"
 dependencies = [
  "alt_serde",
  "anyhow",
- "bcs 0.1.1 (git+https://github.com/pontem-network/sp-move-vm.git?rev=022c99a878a58b9c928f5996fc03a9e583681797)",
+ "bcs 0.1.1",
  "bytes 1.1.0",
  "cell",
  "diem-crypto-derive",
@@ -1918,7 +1910,7 @@ dependencies = [
 [[package]]
 name = "diem-crypto-derive"
 version = "0.0.1"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=022c99a878a58b9c928f5996fc03a9e583681797#022c99a878a58b9c928f5996fc03a9e583681797"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=06180ecc68bb34ae1a8a0bacfc94e2fd3fefe15c#06180ecc68bb34ae1a8a0bacfc94e2fd3fefe15c"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -1928,7 +1920,7 @@ dependencies = [
 [[package]]
 name = "diem-nibble"
 version = "0.1.0"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=022c99a878a58b9c928f5996fc03a9e583681797#022c99a878a58b9c928f5996fc03a9e583681797"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=06180ecc68bb34ae1a8a0bacfc94e2fd3fefe15c#06180ecc68bb34ae1a8a0bacfc94e2fd3fefe15c"
 dependencies = [
  "alt_serde",
 ]
@@ -1936,11 +1928,11 @@ dependencies = [
 [[package]]
 name = "diem-types"
 version = "0.0.1"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=022c99a878a58b9c928f5996fc03a9e583681797#022c99a878a58b9c928f5996fc03a9e583681797"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=06180ecc68bb34ae1a8a0bacfc94e2fd3fefe15c#06180ecc68bb34ae1a8a0bacfc94e2fd3fefe15c"
 dependencies = [
  "alt_serde",
  "anyhow",
- "bcs 0.1.1 (git+https://github.com/pontem-network/sp-move-vm.git?rev=022c99a878a58b9c928f5996fc03a9e583681797)",
+ "bcs 0.1.1",
  "cell",
  "diem-crypto",
  "diem-crypto-derive",
@@ -3007,7 +2999,7 @@ version = "0.11.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ab5ef0d4909ef3724cc8cce6ccc8572c5c817592e9285f5464f8e86f8bd3726e"
 dependencies = [
- "ahash 0.7.4",
+ "ahash 0.7.6",
 ]
 
 [[package]]
@@ -3400,9 +3392,9 @@ dependencies = [
 
 [[package]]
 name = "instant"
-version = "0.1.11"
+version = "0.1.12"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "716d3d89f35ac6a34fd0eed635395f4c3b76fa889338a4632e5231a8684216bd"
+checksum = "7a5bbe824c507c5da5956355e86a746d82e0e1464f65d862cc5e71da70e94b2c"
 dependencies = [
  "cfg-if 1.0.0",
 ]
@@ -3766,7 +3758,7 @@ dependencies = [
 [[package]]
 name = "kusama-runtime"
 version = "0.9.8"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
  "beefy-primitives",
  "bitvec 0.20.4",
@@ -3916,9 +3908,9 @@ checksum = "884e2677b40cc8c339eaefcb701c32ef1fd2493d71118dc0ca4b6a736c93bd67"
 
 [[package]]
 name = "libc"
-version = "0.2.103"
+version = "0.2.104"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "dd8f7255a17a627354f321ef0055d63b898c6fb27eff628af4d1b66b7331edf6"
+checksum = "7b2f96d100e1cf1929e7719b7edb3b90ab5298072638fccd77be9ce942ecdfce"
 
 [[package]]
 name = "libloading"
@@ -3932,9 +3924,9 @@ dependencies = [
 
 [[package]]
 name = "libloading"
-version = "0.7.0"
+version = "0.7.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6f84d96438c15fcd6c3f244c8fce01d1e2b9c6b5623e9c711dc9286d8fc92d6a"
+checksum = "c0cf036d15402bea3c5d4de17b3fce76b3e4a56ebc1f577be0e7a72f7c607cf0"
 dependencies = [
  "cfg-if 1.0.0",
  "winapi 0.3.9",
@@ -4637,7 +4629,7 @@ dependencies = [
 [[package]]
 name = "metered-channel"
 version = "0.1.0"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
  "derive_more",
  "futures 0.3.17",
@@ -4763,7 +4755,7 @@ dependencies = [
 [[package]]
 name = "mirai-annotations"
 version = "0.1.0"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=022c99a878a58b9c928f5996fc03a9e583681797#022c99a878a58b9c928f5996fc03a9e583681797"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=06180ecc68bb34ae1a8a0bacfc94e2fd3fefe15c#06180ecc68bb34ae1a8a0bacfc94e2fd3fefe15c"
 
 [[package]]
 name = "more-asserts"
@@ -4774,7 +4766,7 @@ checksum = "0debeb9fcf88823ea64d64e4a815ab1643f33127d995978e099942ce38f25238"
 [[package]]
 name = "move-binary-format"
 version = "0.1.0"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=022c99a878a58b9c928f5996fc03a9e583681797#022c99a878a58b9c928f5996fc03a9e583681797"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=06180ecc68bb34ae1a8a0bacfc94e2fd3fefe15c#06180ecc68bb34ae1a8a0bacfc94e2fd3fefe15c"
 dependencies = [
  "anyhow",
  "cell",
@@ -4788,11 +4780,11 @@ dependencies = [
 [[package]]
 name = "move-core-types"
 version = "0.1.0"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=022c99a878a58b9c928f5996fc03a9e583681797#022c99a878a58b9c928f5996fc03a9e583681797"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=06180ecc68bb34ae1a8a0bacfc94e2fd3fefe15c#06180ecc68bb34ae1a8a0bacfc94e2fd3fefe15c"
 dependencies = [
  "alt_serde",
  "anyhow",
- "bcs 0.1.1 (git+https://github.com/pontem-network/sp-move-vm.git?rev=022c99a878a58b9c928f5996fc03a9e583681797)",
+ "bcs 0.1.1",
  "cell",
  "enum-iterator",
  "hex",
@@ -4806,7 +4798,7 @@ dependencies = [
 [[package]]
 name = "move-vm-natives"
 version = "0.1.0"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=022c99a878a58b9c928f5996fc03a9e583681797#022c99a878a58b9c928f5996fc03a9e583681797"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=06180ecc68bb34ae1a8a0bacfc94e2fd3fefe15c#06180ecc68bb34ae1a8a0bacfc94e2fd3fefe15c"
 dependencies = [
  "byteorder",
  "cell",
@@ -4823,7 +4815,7 @@ dependencies = [
 [[package]]
 name = "move-vm-runtime"
 version = "0.1.0"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=022c99a878a58b9c928f5996fc03a9e583681797#022c99a878a58b9c928f5996fc03a9e583681797"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=06180ecc68bb34ae1a8a0bacfc94e2fd3fefe15c#06180ecc68bb34ae1a8a0bacfc94e2fd3fefe15c"
 dependencies = [
  "anyhow",
  "bytecode-verifier",
@@ -4842,10 +4834,10 @@ dependencies = [
 [[package]]
 name = "move-vm-types"
 version = "0.1.0"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=022c99a878a58b9c928f5996fc03a9e583681797#022c99a878a58b9c928f5996fc03a9e583681797"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=06180ecc68bb34ae1a8a0bacfc94e2fd3fefe15c#06180ecc68bb34ae1a8a0bacfc94e2fd3fefe15c"
 dependencies = [
  "alt_serde",
- "bcs 0.1.1 (git+https://github.com/pontem-network/sp-move-vm.git?rev=022c99a878a58b9c928f5996fc03a9e583681797)",
+ "bcs 0.1.1",
  "cell",
  "hashbrown 0.9.1",
  "mirai-annotations",
@@ -4905,9 +4897,9 @@ checksum = "e5ce46fe64a9d73be07dcbe690a38ce1b293be448fd8ce1e6c1b8062c9f72c6a"
 
 [[package]]
 name = "multistream-select"
-version = "0.10.2"
+version = "0.10.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7d91ec0a2440aaff5f78ec35631a7027d50386c6163aa975f7caa0d5da4b6ff8"
+checksum = "56a336acba8bc87c8876f6425407dbbe6c417bf478b22015f8fb0994ef3bc0ab"
 dependencies = [
  "bytes 1.1.0",
  "futures 0.3.17",
@@ -4920,11 +4912,11 @@ dependencies = [
 [[package]]
 name = "mvm"
 version = "0.1.3"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=022c99a878a58b9c928f5996fc03a9e583681797#022c99a878a58b9c928f5996fc03a9e583681797"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=06180ecc68bb34ae1a8a0bacfc94e2fd3fefe15c#06180ecc68bb34ae1a8a0bacfc94e2fd3fefe15c"
 dependencies = [
  "alt_serde",
  "anyhow",
- "bcs 0.1.1 (git+https://github.com/pontem-network/sp-move-vm.git?rev=022c99a878a58b9c928f5996fc03a9e583681797)",
+ "bcs 0.1.1",
  "cell",
  "diem-crypto",
  "diem-types",
@@ -5125,7 +5117,7 @@ dependencies = [
 [[package]]
 name = "num-variants"
 version = "0.1.0"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=022c99a878a58b9c928f5996fc03a9e583681797#022c99a878a58b9c928f5996fc03a9e583681797"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=06180ecc68bb34ae1a8a0bacfc94e2fd3fefe15c#06180ecc68bb34ae1a8a0bacfc94e2fd3fefe15c"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -5356,7 +5348,7 @@ dependencies = [
 [[package]]
 name = "pallet-bridge-grandpa"
 version = "0.1.0"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
  "bp-header-chain",
  "bp-runtime",
@@ -5966,7 +5958,7 @@ dependencies = [
 [[package]]
 name = "pallet-xcm"
 version = "0.1.0"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
  "frame-support",
  "frame-system",
@@ -6423,7 +6415,7 @@ checksum = "989d43012e2ca1c4a02507c67282691a0a3207f9dc67cec596b43fe925b3d325"
 [[package]]
 name = "polkadot-approval-distribution"
 version = "0.1.0"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
  "futures 0.3.17",
  "polkadot-node-network-protocol",
@@ -6437,7 +6429,7 @@ dependencies = [
 [[package]]
 name = "polkadot-availability-bitfield-distribution"
 version = "0.1.0"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
  "futures 0.3.17",
  "polkadot-node-network-protocol",
@@ -6450,7 +6442,7 @@ dependencies = [
 [[package]]
 name = "polkadot-availability-distribution"
 version = "0.1.0"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
  "futures 0.3.17",
  "lru",
@@ -6473,7 +6465,7 @@ dependencies = [
 [[package]]
 name = "polkadot-availability-recovery"
 version = "0.1.0"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
  "futures 0.3.17",
  "lru",
@@ -6492,7 +6484,7 @@ dependencies = [
 [[package]]
 name = "polkadot-cli"
 version = "0.9.8"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
  "frame-benchmarking-cli",
  "futures 0.3.17",
@@ -6512,7 +6504,7 @@ dependencies = [
 [[package]]
 name = "polkadot-client"
 version = "0.9.8"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
  "beefy-primitives",
  "frame-benchmarking",
@@ -6542,7 +6534,7 @@ dependencies = [
 [[package]]
 name = "polkadot-collator-protocol"
 version = "0.1.0"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
  "always-assert",
  "futures 0.3.17",
@@ -6562,7 +6554,7 @@ dependencies = [
 [[package]]
 name = "polkadot-core-primitives"
 version = "0.9.8"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
  "parity-scale-codec",
  "parity-util-mem",
@@ -6574,7 +6566,7 @@ dependencies = [
 [[package]]
 name = "polkadot-erasure-coding"
 version = "0.9.8"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
  "parity-scale-codec",
  "polkadot-node-primitives",
@@ -6588,7 +6580,7 @@ dependencies = [
 [[package]]
 name = "polkadot-gossip-support"
 version = "0.1.0"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
  "futures 0.3.17",
  "polkadot-node-network-protocol",
@@ -6606,7 +6598,7 @@ dependencies = [
 [[package]]
 name = "polkadot-network-bridge"
 version = "0.1.0"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
  "async-trait",
  "futures 0.3.17",
@@ -6626,7 +6618,7 @@ dependencies = [
 [[package]]
 name = "polkadot-node-collation-generation"
 version = "0.1.0"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
  "futures 0.3.17",
  "parity-scale-codec",
@@ -6644,7 +6636,7 @@ dependencies = [
 [[package]]
 name = "polkadot-node-core-approval-voting"
 version = "0.1.0"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
  "bitvec 0.20.4",
  "derive_more",
@@ -6674,7 +6666,7 @@ dependencies = [
 [[package]]
 name = "polkadot-node-core-av-store"
 version = "0.1.0"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
  "bitvec 0.20.4",
  "futures 0.3.17",
@@ -6694,7 +6686,7 @@ dependencies = [
 [[package]]
 name = "polkadot-node-core-backing"
 version = "0.1.0"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
  "bitvec 0.20.4",
  "futures 0.3.17",
@@ -6712,7 +6704,7 @@ dependencies = [
 [[package]]
 name = "polkadot-node-core-bitfield-signing"
 version = "0.1.0"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
  "futures 0.3.17",
  "polkadot-node-subsystem",
@@ -6727,7 +6719,7 @@ dependencies = [
 [[package]]
 name = "polkadot-node-core-candidate-validation"
 version = "0.1.0"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
  "async-trait",
  "futures 0.3.17",
@@ -6745,7 +6737,7 @@ dependencies = [
 [[package]]
 name = "polkadot-node-core-chain-api"
 version = "0.1.0"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
  "futures 0.3.17",
  "polkadot-node-subsystem",
@@ -6760,7 +6752,7 @@ dependencies = [
 [[package]]
 name = "polkadot-node-core-parachains-inherent"
 version = "0.1.0"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
  "async-trait",
  "futures 0.3.17",
@@ -6778,7 +6770,7 @@ dependencies = [
 [[package]]
 name = "polkadot-node-core-provisioner"
 version = "0.1.0"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
  "bitvec 0.20.4",
  "futures 0.3.17",
@@ -6793,7 +6785,7 @@ dependencies = [
 [[package]]
 name = "polkadot-node-core-pvf"
 version = "0.1.0"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
  "always-assert",
  "assert_matches",
@@ -6822,7 +6814,7 @@ dependencies = [
 [[package]]
 name = "polkadot-node-core-runtime-api"
 version = "0.1.0"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
  "futures 0.3.17",
  "memory-lru",
@@ -6840,7 +6832,7 @@ dependencies = [
 [[package]]
 name = "polkadot-node-jaeger"
 version = "0.1.0"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
  "async-std",
  "lazy_static",
@@ -6858,7 +6850,7 @@ dependencies = [
 [[package]]
 name = "polkadot-node-network-protocol"
 version = "0.1.0"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
  "futures 0.3.17",
  "parity-scale-codec",
@@ -6873,7 +6865,7 @@ dependencies = [
 [[package]]
 name = "polkadot-node-primitives"
 version = "0.1.0"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
  "futures 0.3.17",
  "parity-scale-codec",
@@ -6896,7 +6888,7 @@ dependencies = [
 [[package]]
 name = "polkadot-node-subsystem"
 version = "0.1.0"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
  "async-std",
  "async-trait",
@@ -6926,7 +6918,7 @@ dependencies = [
 [[package]]
 name = "polkadot-node-subsystem-util"
 version = "0.1.0"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
  "async-trait",
  "futures 0.3.17",
@@ -6954,7 +6946,7 @@ dependencies = [
 [[package]]
 name = "polkadot-overseer"
 version = "0.1.0"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
  "async-trait",
  "futures 0.3.17",
@@ -6973,7 +6965,7 @@ dependencies = [
 [[package]]
 name = "polkadot-parachain"
 version = "0.9.8"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
  "derive_more",
  "parity-scale-codec",
@@ -6988,7 +6980,7 @@ dependencies = [
 [[package]]
 name = "polkadot-primitives"
 version = "0.9.8"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
  "bitvec 0.20.4",
  "frame-system",
@@ -7018,7 +7010,7 @@ dependencies = [
 [[package]]
 name = "polkadot-procmacro-overseer-subsystems-gen"
 version = "0.1.0"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
  "assert_matches",
  "proc-macro2",
@@ -7029,7 +7021,7 @@ dependencies = [
 [[package]]
 name = "polkadot-procmacro-subsystem-dispatch-gen"
 version = "0.1.0"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
  "assert_matches",
  "proc-macro2",
@@ -7040,7 +7032,7 @@ dependencies = [
 [[package]]
 name = "polkadot-rpc"
 version = "0.9.8"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
  "beefy-gadget",
  "beefy-gadget-rpc",
@@ -7073,7 +7065,7 @@ dependencies = [
 [[package]]
 name = "polkadot-runtime"
 version = "0.9.8"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
  "beefy-primitives",
  "bitvec 0.20.4",
@@ -7149,7 +7141,7 @@ dependencies = [
 [[package]]
 name = "polkadot-runtime-common"
 version = "0.9.8"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
  "beefy-primitives",
  "bitvec 0.20.4",
@@ -7194,7 +7186,7 @@ dependencies = [
 [[package]]
 name = "polkadot-runtime-parachains"
 version = "0.9.8"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
  "bitvec 0.20.4",
  "derive_more",
@@ -7233,7 +7225,7 @@ dependencies = [
 [[package]]
 name = "polkadot-service"
 version = "0.9.8"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
  "async-trait",
  "beefy-gadget",
@@ -7325,7 +7317,7 @@ dependencies = [
 [[package]]
 name = "polkadot-statement-distribution"
 version = "0.1.0"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
  "arrayvec 0.5.2",
  "futures 0.3.17",
@@ -7346,7 +7338,7 @@ dependencies = [
 [[package]]
 name = "polkadot-statement-table"
 version = "0.9.8"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
  "parity-scale-codec",
  "polkadot-primitives",
@@ -7509,9 +7501,9 @@ dependencies = [
 
 [[package]]
 name = "ppv-lite86"
-version = "0.2.10"
+version = "0.2.14"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ac74c624d6b2d21f425f752262f42188365d7b8ff1aff74c82e45136510a4857"
+checksum = "c3ca011bd0129ff4ae15cd04c4eef202cadf6c51c21e47aba319b4e0501db741"
 
 [[package]]
 name = "primitive-types"
@@ -7583,9 +7575,9 @@ checksum = "bc881b2c22681370c6a780e47af9840ef841837bc98118431d4e1868bd0c1086"
 
 [[package]]
 name = "proc-macro2"
-version = "1.0.29"
+version = "1.0.30"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b9f5105d4fdaab20335ca9565e106a5d9b82b6219b5ba735731124ac6711d23d"
+checksum = "edc3358ebc67bc8b7fa0c007f945b0b18226f78437d61bec735a9eb96b61ee70"
 dependencies = [
  "unicode-xid",
 ]
@@ -8087,7 +8079,7 @@ dependencies = [
 [[package]]
 name = "rococo-runtime"
 version = "0.9.8"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
  "beefy-primitives",
  "bp-rococo",
@@ -9410,8 +9402,8 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "525bc1abfda2e1998d152c45cf13e696f76d0a4972310b22fac1658b05df7c87"
 dependencies = [
  "bitflags",
- "core-foundation 0.9.1",
- "core-foundation-sys 0.8.2",
+ "core-foundation 0.9.2",
+ "core-foundation-sys 0.8.3",
  "libc",
  "security-framework-sys 2.4.2",
 ]
@@ -9432,7 +9424,7 @@ version = "2.4.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a9dd14d83160b528b7bfd66439110573efcfbe281b17fc2ca9f39f550d619c7e"
 dependencies = [
- "core-foundation-sys 0.8.2",
+ "core-foundation-sys 0.8.3",
  "libc",
 ]
 
@@ -9583,9 +9575,9 @@ dependencies = [
 
 [[package]]
 name = "sharded-slab"
-version = "0.1.3"
+version = "0.1.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "740223c51853f3145fe7c90360d2d4232f2b62e3449489c207eccde818979982"
+checksum = "900fba806f70c630b0a382d0d825e17a0f19fcd059a2ade1ff237bcddf446b31"
 dependencies = [
  "lazy_static",
 ]
@@ -9655,9 +9647,9 @@ dependencies = [
 
 [[package]]
 name = "slab"
-version = "0.4.4"
+version = "0.4.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c307a32c1c5c437f38c7fd45d753050587732ba8628319fbdf12a7e289ccc590"
+checksum = "9def91fd1e018fe007022791f865d0ccc9b3a0d5001e01aabb8b40e46000afb5"
 
 [[package]]
 name = "slog"
@@ -9671,7 +9663,7 @@ dependencies = [
 [[package]]
 name = "slot-range-helper"
 version = "0.9.8"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
  "enumn",
  "parity-scale-codec",
@@ -10129,7 +10121,7 @@ version = "0.3.2"
 dependencies = [
  "alt_serde",
  "anyhow",
- "bcs 0.1.1 (git+https://github.com/pontem-network/sp-move-vm.git?rev=7fc50f5aa43962e47584bbe714232fea476639cb)",
+ "bcs 0.1.1",
  "bcs 0.1.3",
  "env_logger 0.9.0",
  "frame-benchmarking",
@@ -10562,7 +10554,7 @@ dependencies = [
 [[package]]
 name = "stdlib"
 version = "0.1.0"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=022c99a878a58b9c928f5996fc03a9e583681797#022c99a878a58b9c928f5996fc03a9e583681797"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=06180ecc68bb34ae1a8a0bacfc94e2fd3fefe15c#06180ecc68bb34ae1a8a0bacfc94e2fd3fefe15c"
 
 [[package]]
 name = "stdlib-fetch"
@@ -10588,9 +10580,9 @@ checksum = "8ea5119cdb4c55b55d432abb513a0429384878c15dde60cc77b1c99de1a95a6a"
 
 [[package]]
 name = "structopt"
-version = "0.3.23"
+version = "0.3.25"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "bf9d950ef167e25e0bdb073cf1d68e9ad2795ac826f2f3f59647817cf23c0bfa"
+checksum = "40b9788f4202aa75c240ecc9c15c65185e6a39ccdeb0fd5d008b98825464c87c"
 dependencies = [
  "clap",
  "lazy_static",
@@ -10599,9 +10591,9 @@ dependencies = [
 
 [[package]]
 name = "structopt-derive"
-version = "0.4.16"
+version = "0.4.18"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "134d838a2c9943ac3125cf6df165eda53493451b719f3255b2a26b85f772d0ba"
+checksum = "dcb5ae327f9cc13b68763b5749770cb9e048a99bd9dfdfa58d0cf05d5f64afe0"
 dependencies = [
  "heck",
  "proc-macro-error",
@@ -10755,9 +10747,9 @@ dependencies = [
 
 [[package]]
 name = "synstructure"
-version = "0.12.5"
+version = "0.12.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "474aaa926faa1603c40b7885a9eaea29b444d1cb2850cb7c0e37bb1a4182f4fa"
+checksum = "f36bdaa60a83aca3921b5259d5400cbf5e90fc51931376a9bd4a0eb79aa7210f"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -10838,18 +10830,18 @@ dependencies = [
 
 [[package]]
 name = "thiserror"
-version = "1.0.29"
+version = "1.0.30"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "602eca064b2d83369e2b2f34b09c70b605402801927c65c11071ac911d299b88"
+checksum = "854babe52e4df1653706b98fcfc05843010039b406875930a70e4d9644e5c417"
 dependencies = [
  "thiserror-impl",
 ]
 
 [[package]]
 name = "thiserror-impl"
-version = "1.0.29"
+version = "1.0.30"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "bad553cc2c78e8de258400763a647e80e6d1b31ee237275d756f6836d204494c"
+checksum = "aa32fd3f627f367fe16f893e2597ae3c05020f8bba2666a4e6ea73d377e5714b"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -12054,7 +12046,7 @@ dependencies = [
 [[package]]
 name = "westend-runtime"
 version = "0.9.8"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
  "beefy-primitives",
  "bitvec 0.20.4",
@@ -12233,7 +12225,7 @@ dependencies = [
 [[package]]
 name = "xcm"
 version = "0.9.8"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
  "derivative",
  "impl-trait-for-tuples",
@@ -12243,7 +12235,7 @@ dependencies = [
 [[package]]
 name = "xcm-builder"
 version = "0.9.8"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
  "frame-support",
  "frame-system",
@@ -12262,7 +12254,7 @@ dependencies = [
 [[package]]
 name = "xcm-executor"
 version = "0.9.8"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.8#3a10ee63c0b5703a1c802db3438ab7e01344a8ce"
 dependencies = [
  "frame-support",
  "impl-trait-for-tuples",

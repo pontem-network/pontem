@@ -66,18 +66,10 @@ pub trait MVMApiRpc<BlockHash, AccountId> {
     ) -> Result<Option<Bytes>>;
 
     #[rpc(name = "mvm_getModuleABI")]
-    fn get_module_abi(
-        &self,
-        module_id: Bytes,
-        at: Option<BlockHash>,
-    ) -> Result<Option<Bytes>>;
+    fn get_module_abi(&self, module_id: Bytes, at: Option<BlockHash>) -> Result<Option<Bytes>>;
 
     #[rpc(name = "mvm_getModule")]
-    fn get_module(
-        &self,
-        module_id: Bytes,
-        at: Option<BlockHash>,
-    ) -> Result<Option<Bytes>>;
+    fn get_module(&self, module_id: Bytes, at: Option<BlockHash>) -> Result<Option<Bytes>>;
 }
 
 pub struct MVMApi<C, P> {
@@ -210,7 +202,11 @@ where
             .map_err(|e| RpcError {
                 code: ErrorCode::ServerError(500),
                 message: "Error from method".into(),
-                data: Some(std::str::from_utf8(e.as_slice()).unwrap_or("can't decode error").into()),
+                data: Some(
+                    std::str::from_utf8(e.as_slice())
+                        .unwrap_or("can't decode error")
+                        .into(),
+                ),
             })?;
         Ok(f.map(Into::into))
     }
@@ -235,7 +231,11 @@ where
             .map_err(|e| RpcError {
                 code: ErrorCode::ServerError(500),
                 message: "Error from method".into(),
-                data: Some(std::str::from_utf8(e.as_slice()).unwrap_or("can't decode error").into()),
+                data: Some(
+                    std::str::from_utf8(e.as_slice())
+                        .unwrap_or("can't decode error")
+                        .into(),
+                ),
             })?;
         Ok(f.map(Into::into))
     }
@@ -260,10 +260,12 @@ where
             .map_err(|e| RpcError {
                 code: ErrorCode::ServerError(500),
                 message: "Nope, error.".into(),
-                data: Some(std::str::from_utf8(e.as_slice()).unwrap_or("can't decode error").into()),
+                data: Some(
+                    std::str::from_utf8(e.as_slice())
+                        .unwrap_or("can't decode error")
+                        .into(),
+                ),
             })?;
         Ok(f.map(Into::into))
     }
-
-
 }

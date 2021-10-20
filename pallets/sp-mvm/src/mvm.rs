@@ -54,10 +54,7 @@ mod vm_static {
     unsafe impl<T: move_vm::Vm> Sync for VmWrapper<T> {}
 
     impl StateAccess for VmWrapperTy {
-        fn get_module(
-            &self,
-            module_id: &[u8],
-        ) -> Result<Option<sp_std::vec::Vec<u8>>, Error> {
+        fn get_module(&self, module_id: &[u8]) -> Result<Option<sp_std::vec::Vec<u8>>, Error> {
             self.0.get_module(module_id)
         }
 
