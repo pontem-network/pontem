@@ -70,7 +70,7 @@ pub mod pallet {
     use sp_runtime::traits::UniqueSaturatedInto;
     use parity_scale_codec::{FullCodec, FullEncode};
 
-    use move_vm::Vm;
+    use move_vm::{Vm, StateAccess};
     use move_vm::mvm::Mvm;
     use move_vm::io::context::ExecutionContext;
     use move_vm::types::Gas;
@@ -81,6 +81,11 @@ pub mod pallet {
 
     use move_core_types::account_address::AccountAddress;
     use move_core_types::language_storage::CORE_CODE_ADDRESS;
+
+    #[cfg(not(feature = "std"))]
+    extern crate alloc;
+    #[cfg(not(feature = "std"))]
+    use alloc::format;
 
     /// Configure the pallet by specifying the parameters and types on which it depends.
     #[pallet::config]
@@ -415,6 +420,30 @@ pub mod pallet {
             debug!("publication result: {:?}", res);
 
             Ok(res)
+        }
+
+        pub fn get_module_abi(module_id: &[u8]) -> Result<Option<Vec<u8>>, Vec<u8>> {
+            let vm = Self::get_vm()
+                .map_err::<Vec<u8>, _>(|e| format!("error while getting vm {:?}", e).into())?;
+            vm.get_module_abi(module_id)
+                .map_err(|e| format!("error in get_module_abi: {:?}", e).into())
+        }
+
+        pub fn get_module(module_id: &[u8]) -> Result<Option<Vec<u8>>, Vec<u8>> {
+            let vm = Self::get_vm()
+                .map_err::<Vec<u8>, _>(|e| format!("error while getting vm {:?}", e).into())?;
+            vm.get_module(module_id)
+                .map_err(|e| format!("error in get_module: {:?}", e).into())
+        }
+
+        pub fn get_resource(
+            account: &T::AccountId,
+            tag: &[u8],
+        ) -> Result<Option<Vec<u8>>, Vec<u8>> {
+            let vm = Self::get_vm()
+                .map_err::<Vec<u8>, _>(|e| format!("error while getting vm {:?}", e).into())?;
+            vm.get_resource(&AccountAddress::new(addr::account_to_bytes(account)), tag)
+                .map_err(|e| format!("error in get_resource: {:?}", e).into())
         }
     }
 

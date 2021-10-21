@@ -56,6 +56,20 @@ pub trait MVMApiRpc<BlockHash, AccountId> {
         gas_limit: u64,
         at: Option<BlockHash>,
     ) -> Result<Estimation>;
+
+    #[rpc(name = "mvm_getResource")]
+    fn get_resource(
+        &self,
+        account_id: AccountId,
+        tag: Bytes,
+        at: Option<BlockHash>,
+    ) -> Result<Option<Bytes>>;
+
+    #[rpc(name = "mvm_getModuleABI")]
+    fn get_module_abi(&self, module_id: Bytes, at: Option<BlockHash>) -> Result<Option<Bytes>>;
+
+    #[rpc(name = "mvm_getModule")]
+    fn get_module(&self, module_id: Bytes, at: Option<BlockHash>) -> Result<Option<Bytes>>;
 }
 
 pub struct MVMApi<C, P> {
@@ -165,5 +179,93 @@ where
         })?;
 
         Ok(Estimation::from(mvm_estimation))
+    }
+
+    fn get_resource(
+        &self,
+        account_id: AccountId,
+        tag: Bytes,
+        at: Option<<Block as BlockT>::Hash>,
+    ) -> Result<Option<Bytes>> {
+        let api = self.client.runtime_api();
+        let at = BlockId::hash(at.unwrap_or_else(||
+			// If the block hash is not supplied assume the best block.
+			self.client.info().best_hash));
+
+        let f: Option<Vec<u8>> = api
+            .get_resource(&at, account_id, tag.into_vec())
+            .map_err(|e| RpcError {
+                code: ErrorCode::ServerError(500),
+                message: "ABI error".into(),
+                data: Some(e.to_string().into()),
+            })?
+            .map_err(|e| RpcError {
+                code: ErrorCode::ServerError(500),
+                message: "Error from method".into(),
+                data: Some(
+                    std::str::from_utf8(e.as_slice())
+                        .unwrap_or("can't decode error")
+                        .into(),
+                ),
+            })?;
+        Ok(f.map(Into::into))
+    }
+
+    fn get_module_abi(
+        &self,
+        module_id: Bytes,
+        at: Option<<Block as BlockT>::Hash>,
+    ) -> Result<Option<Bytes>> {
+        let api = self.client.runtime_api();
+        let at = BlockId::hash(at.unwrap_or_else(||
+			// If the block hash is not supplied assume the best block.
+			self.client.info().best_hash));
+
+        let f: Option<Vec<u8>> = api
+            .get_module_abi(&at, module_id.into_vec())
+            .map_err(|e| RpcError {
+                code: ErrorCode::ServerError(500),
+                message: "API error".into(),
+                data: Some(e.to_string().into()),
+            })?
+            .map_err(|e| RpcError {
+                code: ErrorCode::ServerError(500),
+                message: "Error from method".into(),
+                data: Some(
+                    std::str::from_utf8(e.as_slice())
+                        .unwrap_or("can't decode error")
+                        .into(),
+                ),
+            })?;
+        Ok(f.map(Into::into))
+    }
+
+    fn get_module(
+        &self,
+        module_id: Bytes,
+        at: Option<<Block as BlockT>::Hash>,
+    ) -> Result<Option<Bytes>> {
+        let api = self.client.runtime_api();
+        let at = BlockId::hash(at.unwrap_or_else(||
+			// If the block hash is not supplied assume the best block.
+			self.client.info().best_hash));
+
+        let f: Option<Vec<u8>> = api
+            .get_module(&at, module_id.into_vec())
+            .map_err(|e| RpcError {
+                code: ErrorCode::ServerError(500),
+                message: "API error.".into(),
+                data: Some(e.to_string().into()),
+            })?
+            .map_err(|e| RpcError {
+                code: ErrorCode::ServerError(500),
+                message: "Nope, error.".into(),
+                data: Some(
+                    std::str::from_utf8(e.as_slice())
+                        .unwrap_or("can't decode error")
+                        .into(),
+                ),
+            })?;
+        Ok(f.map(Into::into))
     }
 }

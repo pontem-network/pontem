@@ -746,7 +746,7 @@ impl_runtime_apis! {
         // Estimate gas for publish module.
         fn estimate_gas_publish(account: AccountId, module_bc: Vec<u8>, gas_limit: u64) -> Result<MVMApiEstimation, sp_runtime::DispatchError> {
             // TODO: pass real error.
-            let vm_result = Mvm::raw_publish_module(&account, module_bc, gas_limit, true).map_err(|_| sp_runtime::DispatchError::Other("error during VM execution"))?;
+            let vm_result = Mvm::raw_publish_module(&account, module_bc, gas_limit, true)?;
 
             Ok(MVMApiEstimation {
                 gas_used: vm_result.gas_used,
@@ -756,13 +756,32 @@ impl_runtime_apis! {
 
         // Estimate gas for execute script.
         fn estimate_gas_execute(account: AccountId, tx_bc: Vec<u8>, gas_limit: u64) -> Result<MVMApiEstimation, sp_runtime::DispatchError> {
-            let vm_result = Mvm::raw_execute_script(&[account], tx_bc, gas_limit, true).map_err(|_| sp_runtime::DispatchError::Other("error during VM execution"))?;
+            let vm_result = Mvm::raw_execute_script(&[account], tx_bc, gas_limit, true)?;
 
             Ok(MVMApiEstimation {
                 gas_used: vm_result.gas_used,
                 status_code: vm_result.status_code as u64,
             })
         }
+
+        // Get module binary by it's address
+        fn get_module(module_id: Vec<u8>) -> Result<Option<Vec<u8>>, Vec<u8>> {
+            Mvm::get_module(&module_id.as_slice())
+        }
+
+        // Get module ABI by it's address
+        fn get_module_abi(module_id: Vec<u8>) -> Result<Option<Vec<u8>>, Vec<u8>> {
+            Mvm::get_module_abi(&module_id.as_slice())
+        }
+
+        // Get resource
+        fn get_resource(
+            account_id: AccountId,
+            tag: Vec<u8>,
+        ) -> Result<Option<Vec<u8>>, Vec<u8>> {
+            Mvm::get_resource(&account_id, &tag.as_slice())
+        }
+
     }
 
     impl sp_session::SessionKeys<Block> for Runtime {
