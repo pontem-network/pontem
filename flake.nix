@@ -5,6 +5,8 @@
     nixpkgs.url = github:NixOS/nixpkgs/staging-next;
     utils.url = github:numtide/flake-utils;
     move-tools.url = github:pontem-network/move-tools;
+#    naersk.inputs.nixpkgs.follows = "nixpkgs";
+#    fenix.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs = flake-args@{ self, nixpkgs, utils, naersk, fenix, move-tools, ... }:
@@ -17,23 +19,39 @@
 
         dove = move-tools.defaultPackage."${system}";
 
-        toolchain = {
+        devToolchainV = {
           channel = "nightly";
           # date = "2021-09-13";
           # sha256 = "sha256:1f7anbyrcv4w44k2rb6939bvsq1k82bks5q1mm5fzx92k8m9518c";
           date = "2021-08-13";
           sha256 = "sha256:0g1j230zp38jdnkvw3a4q10cjf57avwpnixi6a477d1df0pxbl5n";
-          # date = "2021-04-24";
-          # sha256 = "sha256:0hsp3d521ri9h6xc2vjlqdiqkkzv95844wp2vv3a5hwcp157sykh";
         };
 
-        rustToolchain = fenixArch.toolchainOf toolchain;
-        rustToolchainWasm = rustTargets.wasm32-unknown-unknown.toolchainOf toolchain;
-
-        naersk-lib = naersk.lib.${system}.override {
-          cargo = rustToolchain.toolchain;
-          rustc = rustToolchain.toolchain;
+        # Some strange wasm errors occur if not built with this old toolchain
+        buildToolchainV = {
+          channel = "nightly";
+          date = "2021-06-28";
+          sha256 = "sha256-vRBxIPRyCcLvh6egPKSHMTmxVD1E0obq71iCM0aOWZo=";
         };
+
+        buildComponents = [ "cargo" "llvm-tools-preview" "rust-std" "rustc" "rustc-dev" ];
+        devComponents = buildComponents ++ [ "clippy-preview" "rustfmt-preview" "rust-src" ];
+
+        devToolchain = let
+            t = fenixArch.toolchainOf devToolchainV;
+        in t.withComponents devComponents;
+
+        naersk-lib =
+          let
+            buildToolchain = fenixArch.combine [
+                ((fenixArch.toolchainOf buildToolchainV).withComponents buildComponents)
+                (rustTargets.wasm32-unknown-unknown.toolchainOf buildToolchainV).toolchain
+            ];
+          in
+            naersk.lib.${system}.override {
+              cargo = buildToolchain;
+              rustc = buildToolchain;
+            };
 
       in {
 
@@ -43,18 +61,14 @@
             protobuf openssl pre-commit pkgconfig
             llvmPackagesR.clang
             dove
-
-            (fenixArch.combine [
-              (rustToolchain.withComponents [ "cargo" "clippy-preview" "llvm-tools-preview" "rust-std" "rustc" "rustc-dev" "rustfmt-preview" ])
-              rustToolchainWasm.toolchain
-            ])
-
+            devToolchain
           ];
 
+          SKIP_WASM_BUILD = "1";
           PROTOC = "${protobuf}/bin/protoc";
           LLVM_CONFIG_PATH="${llvmPackagesR.llvm}/bin/llvm-config";
           LIBCLANG_PATH="${llvmPackagesR.libclang.lib}/lib";
-          RUST_SRC_PATH = "${rustToolchain.rust-src}/lib/rustlib/src/rust/library/";
+          RUST_SRC_PATH = "${devToolchain}/lib/rustlib/src/rust/library/";
           ROCKSDB_LIB_DIR = "${rocksdb}/lib";
         };
 
@@ -66,13 +80,11 @@
             protobuf openssl pre-commit pkgconfig
             llvmPackagesR.clang
             dove
-
           ];
-          SKIP_WASM_BUILD = "1";
+
           PROTOC = "${protobuf}/bin/protoc";
           LLVM_CONFIG_PATH="${llvmPackagesR.llvm}/bin/llvm-config";
           LIBCLANG_PATH="${llvmPackagesR.libclang.lib}/lib";
-          RUST_SRC_PATH = "${rustToolchain.rust-src}/lib/rustlib/src/rust/library/";
           ROCKSDB_LIB_DIR = "${rocksdb}/lib";
         });
 
