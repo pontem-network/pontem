@@ -2,7 +2,7 @@ mod common;
 
 use common::mock::*;
 use common::addr::{alice_public_key, bob_public_key};
-use common::assets::{UserTx, BinAsset};
+use common::assets::transactions;
 
 use sp_mvm::Call as MvmCall;
 use frame_support::{assert_ok, dispatch::GetDispatchInfo};
@@ -20,7 +20,7 @@ fn execute_multisig() {
 
         let now = || Multisig::timepoint();
 
-        let bytecode = UserTx::MultisigTest.bc().to_vec();
+        let bytecode = transactions::MULTISIG_TEST.bytes().to_vec();
         let call = Call::Mvm(MvmCall::execute(bytecode, GAS_LIMIT));
         let weight = call.get_dispatch_info().weight;
         let call = call.encode();
