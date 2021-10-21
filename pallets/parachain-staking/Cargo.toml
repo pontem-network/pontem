@@ -10,7 +10,7 @@ frame-benchmarking = { git = "https://github.com/paritytech/substrate", branch =
 frame-support = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.10", default-features = false }
 frame-system = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.10", default-features = false }
 log = "0.4"
-nimbus-primitives = { git = "https://github.com/purestake/cumulus", rev = "5053470650f19ab4f30e37b4a4f3cf292a8e8fe9", default-features = false }
+nimbus-primitives = { git = "https://github.com/purestake/cumulus", rev = "5053470650f19ab", default-features = false }
 pallet-balances = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.10", default-features = false }
 # TODO: update parity-scale-codec to 2.2.0
 parity-scale-codec = { version = "2.0.0", default-features = false, features = ["derive"] }

@@ -524,12 +524,7 @@ impl WeightTrader for SimpleWeightTrader {
             }
             None => weight as u128,
         };
-        Some(
-            (
-                self.0.clone(),
-                amount,
-                ).into()
-        )
+        Some(MultiAsset { id: self.0.clone().into(), fun: Fungibility::Fungible(amount) })
     }
 }
 

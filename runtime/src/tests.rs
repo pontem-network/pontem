@@ -194,7 +194,7 @@ fn transfer_no_reserve_assets_fails() {
             ParaXTokens::transfer_multiasset(
                 Some(ALICE).into(),
                 Box::new(MultiAsset {
-                    id: (Parent, Parachain(1), GeneralKey("PONT".into())).into(),
+                    id: xcm_emulator::Concrete(GeneralKey("PONT".into()).into()),
                     fun: (100 * PONT as u128).into(),
                 }),
                 Box::new(MultiLocation::new(1, Junctions::X2(Junction::Parachain(2), Junction::AccountId32 {
