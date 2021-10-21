@@ -746,7 +746,7 @@ impl_runtime_apis! {
         // Estimate gas for publish module.
         fn estimate_gas_publish(account: AccountId, module_bc: Vec<u8>, gas_limit: u64) -> Result<MVMApiEstimation, sp_runtime::DispatchError> {
             // TODO: pass real error.
-            let vm_result = Mvm::raw_publish_module(&account, module_bc, gas_limit, true).map_err(|_| sp_runtime::DispatchError::Other("error during VM execution"))?;
+            let vm_result = Mvm::raw_publish_module(&account, module_bc, gas_limit, true)?;
 
             Ok(MVMApiEstimation {
                 gas_used: vm_result.gas_used,
@@ -756,7 +756,7 @@ impl_runtime_apis! {
 
         // Estimate gas for execute script.
         fn estimate_gas_execute(account: AccountId, tx_bc: Vec<u8>, gas_limit: u64) -> Result<MVMApiEstimation, sp_runtime::DispatchError> {
-            let vm_result = Mvm::raw_execute_script(&[account], tx_bc, gas_limit, true).map_err(|_| sp_runtime::DispatchError::Other("error during VM execution"))?;
+            let vm_result = Mvm::raw_execute_script(&[account], tx_bc, gas_limit, true)?;
 
             Ok(MVMApiEstimation {
                 gas_used: vm_result.gas_used,
