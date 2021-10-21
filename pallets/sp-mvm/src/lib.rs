@@ -64,7 +64,9 @@ pub mod pallet {
     use move_core_types::account_address::AccountAddress;
     use move_core_types::language_storage::CORE_CODE_ADDRESS;
 
+    #[cfg(not(feature = "std"))]
     extern crate alloc;
+    #[cfg(not(feature = "std"))]
     use alloc::format;
 
     /// Configure the pallet by specifying the parameters and types on which it depends.
