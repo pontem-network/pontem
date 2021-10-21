@@ -256,9 +256,9 @@ pub fn pontem_inflation_config() -> InflationInfo<Balance> {
             max: 50_000_000 * PONT, // We expect to have staked maximum 50M PONT coins.
         },
         annual: Range {
-            min: Perbill::from_percent(4), // We expect minimum inflation is 4%.
+            min: Perbill::from_percent(4),   // We expect minimum inflation is 4%.
             ideal: Perbill::from_percent(4), // We expect ideal inflation is 4%.
-            max: Perbill::from_percent(5), // We expect max inflation is 5%.
+            max: Perbill::from_percent(5),   // We expect max inflation is 5%.
         },
         // 8766 rounds (hours) in a year
         round: Range {
