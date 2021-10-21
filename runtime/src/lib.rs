@@ -66,8 +66,6 @@ use constants::{currency::*, time::*};
 pub mod primitives;
 use primitives::*;
 
-extern crate alloc;
-
 /// We allow for 0.5 seconds of compute with a 6 second average block time.
 const MAXIMUM_BLOCK_WEIGHT: Weight = WEIGHT_PER_SECOND / 2;
 

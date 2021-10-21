@@ -433,7 +433,6 @@ pub mod pallet {
         ) -> Result<Option<Vec<u8>>, Vec<u8>> {
             let vm = Self::get_vm()
                 .map_err::<Vec<u8>, _>(|e| format!("error while getting vm {:?}", e).into())?;
-            // alloc::fmt::format(format_args!("hello!"));
             vm.get_resource(&AccountAddress::new(addr::account_to_bytes(account)), tag)
                 .map_err(|e| format!("error in get_resource: {:?}", e).into())
         }
