@@ -25,6 +25,7 @@ hex-literal = { optional = true, version = '0.3.1' }
 serde = { version = "1.0.119", optional = true, features = [ "derive" ] } # / 1.0.101
 
 # Substrate dependencies
+scale-info = { version = "1.0", default-features = false, features = ["derive"] }
 frame-benchmarking = { default-features = false, optional = true, git = 'http://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.11' }
 frame-executive = { default-features = false, git = 'http://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.11' }
 frame-support = { default-features = false, git = 'http://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.11' }

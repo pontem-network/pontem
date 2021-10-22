@@ -10,9 +10,9 @@ version = "0.2.2"
 targets = ["x86_64-unknown-linux-gnu"]
 
 [dependencies]
-jsonrpc-core = "15.1.0"
-jsonrpc-core-client = "15.1.0"
-jsonrpc-derive = "15.1.0"
+jsonrpc-core = "18.0"
+jsonrpc-core-client = "18.0"
+jsonrpc-derive = "18.0"
 sp-rpc = { version = "4.0.0-dev", git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.11' }
 sp-runtime = { version = "4.0.0-dev", git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.11' }
 sp-api = { version = "4.0.0-dev", git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.11' }

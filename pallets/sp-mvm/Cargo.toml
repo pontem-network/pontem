@@ -43,6 +43,7 @@ default-features = false
 serde = { version = "1.0", optional = true }
 once_cell = { default-features = false, version = "1.5.2" }
 # substrate:
+scale-info = { version = "1.0", default-features = false, features = ["derive"] }
 frame-support = { default-features = false, git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.11' }
 frame-system = { default-features = false, git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.11' }
 frame-benchmarking = { default-features = false, optional = true, git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.11' }
@@ -64,7 +65,7 @@ serde-alt = { version = "1", default-features = false, package = "alt_serde", fe
 package = "bcs"
 default-features = false
 git = "https://github.com/pontem-network/sp-move-vm.git"
-rev = "52ccf19823c9516d448ac6dc360b42dab4ac97d2"
+rev = "24b03871fed3866c31b5e7beeabe6891e8bc1e49"
 optional = true
 
 
@@ -78,7 +79,7 @@ test-env-log = "*"
 
 [dev-dependencies.move-vm-runtime]
 git = "https://github.com/pontem-network/sp-move-vm.git"
-rev = "52ccf19823c9516d448ac6dc360b42dab4ac97d2"
+rev = "24b03871fed3866c31b5e7beeabe6891e8bc1e49"
 default-features = false
 
 

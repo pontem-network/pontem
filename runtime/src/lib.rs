@@ -228,6 +228,7 @@ impl pallet_vesting::Config for Runtime {
     type BlockNumberToBalance = ConvertInto;
     type MinVestedTransfer = MinVestedTransfer;
     type WeightInfo = pallet_vesting::weights::SubstrateWeight<Runtime>;
+    const MAX_VESTING_SCHEDULES: u32 = 1;
 }
 
 parameter_types! {
@@ -249,11 +250,16 @@ impl pallet_balances::Config for Runtime {
     type ReserveIdentifier = [u8; 8];
 }
 
+parameter_types! {
+    pub const OperationalFeeMultiplier: u8 = 5;
+}
+
 impl pallet_transaction_payment::Config for Runtime {
     type OnChargeTransaction = pallet_transaction_payment::CurrencyAdapter<Balances, ()>;
     type TransactionByteFee = TransactionByteFee;
     type WeightToFee = IdentityFee<Balance>;
     type FeeMultiplierUpdate = ();
+    type OperationalFeeMultiplier = OperationalFeeMultiplier;
 }
 
 impl pallet_sudo::Config for Runtime {
@@ -425,6 +431,7 @@ parameter_types! {
      pub UnitWeightCost: Weight = 1_000_000;
      // One UNIT buys 1 second of weight.
      pub const WeightPrice: (MultiLocation, u128) = (MultiLocation::parent(), UNIT as u128);
+     pub const MaxInstructions: u32 = 100;
 }
 
 match_type! {
@@ -453,10 +460,12 @@ impl Config for XcmConfig {
     type IsTeleporter = NativeAsset; // <- should be enough to allow teleportation of UNIT
     type LocationInverter = LocationInverter<Ancestry>;
     type Barrier = Barrier;
-    type Weigher = FixedWeightBounds<UnitWeightCost, Call>;
+    type Weigher = FixedWeightBounds<UnitWeightCost, Call, MaxInstructions>;
     type Trader = UsingComponents<IdentityFee<Balance>, RelayLocation, AccountId, Balances, ()>;
     type ResponseHandler = (); // Don't handle responses for now.
     type SubscriptionService = PolkadotXcm;
+    type AssetTrap = ();
+    type AssetClaims = ();
 }
 
 /// No local origins on this chain are allowed to dispatch XCM sends/executions.
@@ -479,9 +488,13 @@ impl pallet_xcm::Config for Runtime {
     type XcmExecutor = XcmExecutor<XcmConfig>;
     type XcmExecuteFilter = Everything;
     type XcmTeleportFilter = Everything;
-    type XcmReserveTransferFilter = ();
-    type Weigher = FixedWeightBounds<UnitWeightCost, Call>;
+    type XcmReserveTransferFilter = Everything;
+    type Weigher = FixedWeightBounds<UnitWeightCost, Call, MaxInstructions>;
     type LocationInverter = LocationInverter<Ancestry>;
+    type Origin = Origin;
+    type Call = Call;
+    type AdvertisedXcmVersion = pallet_xcm::CurrentXcmVersion;
+    const VERSION_DISCOVERY_QUEUE_SIZE: u32 = 8;
 }
 
 impl cumulus_pallet_xcm::Config for Runtime {
@@ -664,7 +677,7 @@ impl_runtime_apis! {
 
     impl sp_api::Metadata<Block> for Runtime {
         fn metadata() -> OpaqueMetadata {
-            Runtime::metadata().into()
+            OpaqueMetadata::new(Runtime::metadata().into())
         }
     }
 

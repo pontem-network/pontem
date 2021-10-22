@@ -11,8 +11,6 @@ use sc_consensus_manual_seal::{run_manual_seal, EngineCommand, ManualSealParams}
 use cumulus_primitives_core::ParaId;
 use pontem_runtime::RuntimeApi;
 use sp_blockchain::HeaderBackend;
-use sc_executor::{native_executor_instance};
-pub use sc_executor::NativeExecutor;
 use sc_service::{Configuration, PartialComponents, Role, TFullBackend, TFullClient, TaskManager};
 use sc_telemetry::{Telemetry, TelemetryHandle, TelemetryWorker, TelemetryWorkerHandle};
 use std::sync::Arc;
@@ -22,18 +20,28 @@ use cumulus_client_consensus_common::ParachainConsensus;
 use nimbus_primitives::NimbusId;
 use nimbus_consensus::{build_nimbus_consensus, BuildNimbusConsensusParams};
 use pontem_runtime::primitives::Block;
+use sc_executor::NativeElseWasmExecutor;
 
 type FullBackend = TFullBackend<Block>;
-type FullClient = TFullClient<Block, RuntimeApi, ParachainRuntimeExecutor>;
+type FullClient =
+    TFullClient<Block, RuntimeApi, NativeElseWasmExecutor<ParachainRuntimeExecutor>>;
 type MaybeSelectChain = Option<sc_consensus::LongestChain<FullBackend, Block>>;
 
-// Native executor instance.
-native_executor_instance!(
-    pub ParachainRuntimeExecutor,
-    pontem_runtime::api::dispatch,
-    pontem_runtime::native_version,
-    frame_benchmarking::benchmarking::HostFunctions,
-);
+pub type HostFunctions = frame_benchmarking::benchmarking::HostFunctions;
+
+pub struct ParachainRuntimeExecutor;
+
+impl sc_executor::NativeExecutionDispatch for ParachainRuntimeExecutor {
+    type ExtendHostFunctions = HostFunctions;
+
+    fn dispatch(method: &str, data: &[u8]) -> Option<Vec<u8>> {
+        pontem_runtime::api::dispatch(method, data)
+    }
+
+    fn native_version() -> sc_executor::NativeVersion {
+        pontem_runtime::native_version()
+    }
+}
 
 /// Starts a `ServiceBuilder` for a full service.
 ///
@@ -64,10 +72,17 @@ pub fn new_partial(
         })
         .transpose()?;
 
+    let executor = NativeElseWasmExecutor::new(
+        config.wasm_method,
+        config.default_heap_pages,
+        config.max_runtime_instances,
+    );
+
     let (client, backend, keystore_container, task_manager) =
-        sc_service::new_full_parts::<Block, RuntimeApi, ParachainRuntimeExecutor>(
+        sc_service::new_full_parts::<Block, RuntimeApi, _>(
             &config,
             telemetry.as_ref().map(|(_, telemetry)| telemetry.handle()),
+            executor,
         )?;
     let client = Arc::new(client);
 
