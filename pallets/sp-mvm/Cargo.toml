@@ -29,13 +29,13 @@ package = "parity-scale-codec-derive"
 [dependencies.move-vm]
 package = "mvm"
 git = "https://github.com/pontem-network/sp-move-vm.git"
-rev = "24b03871fed3866c31b5e7beeabe6891e8bc1e49"
+rev = "82c20397c81cfda3396e49e7898e20aeac62440a"
 default-features = false
 features = [ "move_stdlib" ]
 
 [dependencies.move-core-types]
 git = "https://github.com/pontem-network/sp-move-vm.git"
-rev = "24b03871fed3866c31b5e7beeabe6891e8bc1e49"
+rev = "82c20397c81cfda3396e49e7898e20aeac62440a"
 default-features = false
 
 
@@ -66,7 +66,7 @@ serde-alt = { version = "1", default-features = false, package = "alt_serde", fe
 package = "bcs"
 default-features = false
 git = "https://github.com/pontem-network/sp-move-vm.git"
-rev = "24b03871fed3866c31b5e7beeabe6891e8bc1e49"
+rev = "82c20397c81cfda3396e49e7898e20aeac62440a"
 optional = true
 
 
@@ -80,7 +80,7 @@ test-env-log = "*"
 
 [dev-dependencies.move-vm-runtime]
 git = "https://github.com/pontem-network/sp-move-vm.git"
-rev = "24b03871fed3866c31b5e7beeabe6891e8bc1e49"
+rev = "82c20397c81cfda3396e49e7898e20aeac62440a"
 default-features = false
 
 
