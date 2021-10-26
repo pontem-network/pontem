@@ -3,7 +3,7 @@ name = "sp-mvm"
 authors = ["Pontem Network Team <https://pontem.network>"]
 description = "FRAME pallet adding Move-lang support."
 edition = "2018"
-repository = "https://github.com/pontem-network/sp-move"
+repository = "https://github.com/pontem-network/pontem"
 version = "0.3.2"
 
 [package.metadata.docs.rs]
@@ -29,46 +29,34 @@ package = "parity-scale-codec-derive"
 [dependencies.move-vm]
 package = "mvm"
 git = "https://github.com/pontem-network/sp-move-vm.git"
-rev = "231b333e6830a50cadbf6b338ca4a7f33216522b"
+rev = "82c20397c81cfda3396e49e7898e20aeac62440a"
 default-features = false
 features = [ "move_stdlib" ]
 
-[dependencies.vm]
-git = "https://github.com/pontem-network/sp-move-vm.git"
-rev = "231b333e6830a50cadbf6b338ca4a7f33216522b"
-default-features = false
-
-[dependencies.move-vm-runtime]
-git = "https://github.com/pontem-network/sp-move-vm.git"
-rev = "231b333e6830a50cadbf6b338ca4a7f33216522b"
-default-features = false
-
 [dependencies.move-core-types]
 git = "https://github.com/pontem-network/sp-move-vm.git"
-rev = "231b333e6830a50cadbf6b338ca4a7f33216522b"
+rev = "82c20397c81cfda3396e49e7898e20aeac62440a"
 default-features = false
 
-[dependencies.move-vm-types]
-git = "https://github.com/pontem-network/sp-move-vm.git"
-rev = "231b333e6830a50cadbf6b338ca4a7f33216522b"
-default-features = false
 
 [dependencies]
+anyhow = { version = "1.0.43", default-features = false }
 serde = { version = "1.0", optional = true }
 once_cell = { default-features = false, version = "1.5.2" }
 # substrate:
-frame-support = { default-features = false, git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.8' }
-frame-system = { default-features = false, git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.8' }
-frame-benchmarking = { default-features = false, optional = true, git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.8' }
-sp-std = { default-features = false, git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.8' }
-sp-core = { default-features = false, git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.8' }
-timestamp = { default-features = false, package = "pallet-timestamp", git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.8' }
-balances = { default-features = false, package = "pallet-balances", git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.8' }
+scale-info = { version = "1.0", default-features = false, features = ["derive"] }
+frame-support = { default-features = false, git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.11' }
+frame-system = { default-features = false, git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.11' }
+frame-benchmarking = { default-features = false, optional = true, git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.11' }
+sp-std = { default-features = false, git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.11' }
+sp-core = { default-features = false, git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.11' }
+timestamp = { default-features = false, package = "pallet-timestamp", git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.11' }
+balances = { default-features = false, package = "pallet-balances", git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.11' }
 pallet-multisig = { default-features = false, path = '../multisig' }
 # logging, `sp_runtime::print`:
-sp-runtime = { default-features = false, git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.8' }
+sp-runtime = { default-features = false, git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.11' }
 
-sp-io = { default-features = false, git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.8' }
+sp-io = { default-features = false, git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.11' }
 getrandom = { version = "0.2.3", optional = true }
 
 # serde is for lcs/bcs only
@@ -78,7 +66,7 @@ serde-alt = { version = "1", default-features = false, package = "alt_serde", fe
 package = "bcs"
 default-features = false
 git = "https://github.com/pontem-network/sp-move-vm.git"
-rev = "e84b6eab01fb6e2520d86ba6a5fe9466404b12fe"
+rev = "82c20397c81cfda3396e49e7898e20aeac62440a"
 optional = true
 
 
@@ -90,9 +78,9 @@ bcs = { package = "bcs", version = "0.1" }
 env_logger = "*"
 test-env-log = "*"
 
-[dependencies.diem-types]
+[dev-dependencies.move-vm-runtime]
 git = "https://github.com/pontem-network/sp-move-vm.git"
-rev = "e84b6eab01fb6e2520d86ba6a5fe9466404b12fe"
+rev = "82c20397c81cfda3396e49e7898e20aeac62440a"
 default-features = false
 
 
@@ -100,12 +88,10 @@ default-features = false
 default = [
     "std",
 ]
-no-vm-static = []
 std = [
     "serde",
     "log/std",
     "once_cell/std",
-    "vm/std",
     "move-vm/std",
     "move-vm-runtime/std",
     "move-core-types/std",
@@ -118,7 +104,6 @@ std = [
     "frame-support/std",
     "frame-system/std",
     "frame-benchmarking/std",
-    "move-vm-types/std",
     "timestamp/std",
     "getrandom/js",
     "balances/std",
@@ -135,6 +120,11 @@ runtime-benchmarks = [
     "serde-alt",
     "bcs-alt",
 ]
+
+# Optional feature `no-vm-static` that disables VM static initialization,
+# so Move VM will be initialized for each block when it used if this feature is enabled.
+# Otherwise when the feature is disabled VM initialization happens only once, but only cache cleaning for each block.
+no-vm-static = []
 
 # Note: frame-support `try-runtime` feature is released after v3.
 # Uncomment the following line when `frame-support` version > `3.0.0`.

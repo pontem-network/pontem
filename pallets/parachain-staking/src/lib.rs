@@ -70,17 +70,20 @@ pub mod pallet {
     use frame_support::traits::{Currency, Get, Imbalance, ReservableCurrency};
     use frame_system::pallet_prelude::*;
     use parity_scale_codec::{Decode, Encode};
+    use scale_info::TypeInfo;
     use sp_runtime::{
         traits::{AtLeast32BitUnsigned, Saturating, Zero},
         Perbill, Percent, RuntimeDebug,
     };
-    use sp_std::{cmp::Ordering, collections::btree_map::BTreeMap, prelude::*};
+    use sp_std::{cmp::Ordering, prelude::*};
+    #[cfg(feature = "std")]
+    use sp_std::collections::btree_map::BTreeMap;
 
     /// Pallet for parachain staking
     #[pallet::pallet]
     pub struct Pallet<T>(PhantomData<T>);
 
-    #[derive(Default, Clone, Encode, Decode, RuntimeDebug)]
+    #[derive(Default, Clone, Encode, Decode, RuntimeDebug, TypeInfo)]
     pub struct Bond<AccountId, Balance> {
         pub owner: AccountId,
         pub amount: Balance,
@@ -115,7 +118,7 @@ pub mod pallet {
         }
     }
 
-    #[derive(Copy, Clone, PartialEq, Eq, Encode, Decode, RuntimeDebug)]
+    #[derive(Copy, Clone, PartialEq, Eq, Encode, Decode, RuntimeDebug, TypeInfo)]
     /// The activity status of the collator
     pub enum CollatorStatus {
         /// Committed to be online and producing valid blocks (not equivocating)
@@ -132,7 +135,7 @@ pub mod pallet {
         }
     }
 
-    #[derive(Default, Encode, Decode, RuntimeDebug)]
+    #[derive(Default, Encode, Decode, RuntimeDebug, TypeInfo)]
     /// Snapshot of collator state at the start of the round for which they are selected
     pub struct CollatorSnapshot<AccountId, Balance> {
         pub bond: Balance,
@@ -140,7 +143,7 @@ pub mod pallet {
         pub total: Balance,
     }
 
-    #[derive(Encode, Decode, RuntimeDebug)]
+    #[derive(Encode, Decode, RuntimeDebug, TypeInfo)]
     /// Collator state with commission fee, bonded stake, and nominations
     pub struct Collator2<AccountId, Balance> {
         /// The account of this collator
@@ -163,7 +166,7 @@ pub mod pallet {
 
     /// Convey relevant information describing if a nominator was added to the top or bottom
     /// Nominations added to the top yield a new total
-    #[derive(Clone, Copy, PartialEq, Encode, Decode, RuntimeDebug)]
+    #[derive(Clone, Copy, PartialEq, Encode, Decode, RuntimeDebug, TypeInfo)]
     pub enum NominatorAdded<B> {
         AddedToTop { new_total: B },
         AddedToBottom,
@@ -436,7 +439,7 @@ pub mod pallet {
         }
     }
 
-    #[derive(Clone, PartialEq, Encode, Decode, RuntimeDebug)]
+    #[derive(Clone, PartialEq, Encode, Decode, RuntimeDebug, TypeInfo)]
     pub enum NominatorStatus {
         /// Active with no scheduled exit
         Active,
@@ -444,7 +447,7 @@ pub mod pallet {
         Leaving(RoundIndex),
     }
 
-    #[derive(Encode, Decode, RuntimeDebug)]
+    #[derive(Encode, Decode, RuntimeDebug, TypeInfo)]
     /// Nominator state
     pub struct Nominator2<AccountId, Balance> {
         /// All current nominations
@@ -461,7 +464,7 @@ pub mod pallet {
         pub status: NominatorStatus,
     }
 
-    #[derive(Encode, Decode, RuntimeDebug)]
+    #[derive(Encode, Decode, RuntimeDebug, TypeInfo)]
     /// DEPRECATED nominator state
     pub struct Nominator<AccountId, Balance> {
         pub nominations: OrderedSet<Bond<AccountId, Balance>>,
@@ -585,7 +588,7 @@ pub mod pallet {
         }
     }
 
-    #[derive(Copy, Clone, PartialEq, Eq, Encode, Decode, RuntimeDebug)]
+    #[derive(Copy, Clone, PartialEq, Eq, Encode, Decode, RuntimeDebug, TypeInfo)]
     /// The current round index and transition information
     pub struct RoundInfo<BlockNumber> {
         /// Current round index
@@ -633,7 +636,7 @@ pub mod pallet {
         }
     }
 
-    #[derive(Clone, PartialEq, Eq, Encode, Decode, RuntimeDebug)]
+    #[derive(Clone, PartialEq, Eq, Encode, Decode, RuntimeDebug, TypeInfo)]
     /// Reserve information { account, percent_of_inflation }
     pub struct ParachainBondConfig<AccountId> {
         /// Account which receives funds intended for parachain bond
@@ -650,7 +653,7 @@ pub mod pallet {
         }
     }
 
-    #[derive(Encode, Decode, RuntimeDebug, Default)]
+    #[derive(Encode, Decode, RuntimeDebug, Default, TypeInfo)]
     /// Store and process all delayed exits by collators and nominators
     pub struct ExitQ<AccountId> {
         /// Candidate exit set
@@ -1114,12 +1117,12 @@ pub mod pallet {
                     T::Currency::free_balance(&nominator) >= balance,
                     "Account does not have enough balance to place nomination."
                 );
-                let cn_count = if let Some(x) = col_nominator_count.get(&target) {
+                let cn_count = if let Some(x) = col_nominator_count.get(target) {
                     *x
                 } else {
                     0u32
                 };
-                let nn_count = if let Some(x) = nom_nominator_count.get(&nominator) {
+                let nn_count = if let Some(x) = nom_nominator_count.get(nominator) {
                     *x
                 } else {
                     0u32
@@ -1133,12 +1136,12 @@ pub mod pallet {
                 ) {
                     log::warn!("Join nominators failed in genesis with error {:?}", error);
                 } else {
-                    if let Some(x) = col_nominator_count.get_mut(&target) {
+                    if let Some(x) = col_nominator_count.get_mut(target) {
                         *x += 1u32;
                     } else {
                         col_nominator_count.insert(target.clone(), 1u32);
                     };
-                    if let Some(x) = nom_nominator_count.get_mut(&nominator) {
+                    if let Some(x) = nom_nominator_count.get_mut(nominator) {
                         *x += 1u32;
                     } else {
                         nom_nominator_count.insert(nominator.clone(), 1u32);

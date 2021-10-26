@@ -16,12 +16,17 @@
 
 //! A minimal runtime including the author-mapping pallet
 use crate as pallet_author_mapping;
-use frame_support::{construct_runtime, parameter_types, traits::GenesisBuild, weights::Weight};
+use frame_support::{
+    construct_runtime, parameter_types,
+    traits::{Everything, GenesisBuild},
+    weights::Weight,
+};
 use parity_scale_codec::{Decode, Encode};
 #[cfg(feature = "std")]
 use serde::{Deserialize, Serialize};
 use sp_core::H256;
 use sp_io;
+use scale_info::TypeInfo;
 use sp_runtime::{
     testing::Header,
     traits::{BlakeTwo256, IdentityLookup},
@@ -29,7 +34,7 @@ use sp_runtime::{
 };
 
 #[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
-#[derive(Eq, PartialEq, Clone, Copy, Encode, Decode, RuntimeDebug)]
+#[derive(Eq, PartialEq, Clone, Copy, Encode, Decode, RuntimeDebug, TypeInfo)]
 pub enum TestAuthor {
     Alice,
     Bob,
@@ -69,7 +74,7 @@ parameter_types! {
     pub const AvailableBlockRatio: Perbill = Perbill::one();
 }
 impl frame_system::Config for Test {
-    type BaseCallFilter = ();
+    type BaseCallFilter = Everything;
     type DbWeight = ();
     type Origin = Origin;
     type Index = u64;

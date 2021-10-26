@@ -10,7 +10,6 @@ env:
   CARGO_INCREMENTAL: 1
   CARGO_NET_RETRY: 10
   CARGO_TERM_COLOR: always
-  RUSTFLAGS: -D warnings
 
 jobs:
   test:
@@ -27,9 +26,9 @@ jobs:
       matrix:
         cfg:
           - os: macos-latest
-            dove: 1.2.8
+            dove: 1.3.2
           - os: ubuntu-latest
-            dove: 1.2.8
+            dove: 1.3.2
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -85,7 +84,7 @@ jobs:
         os:
           - ubuntu-latest
         dove:
-          - 1.2.8
+          - 1.3.2
 
     steps:
       - name: Checkout repository
@@ -137,7 +136,7 @@ jobs:
           - macos-latest
           - ubuntu-latest
         dove:
-          - 1.2.8
+          - 1.3.2
 
     steps:
       - name: Checkout repository
@@ -172,7 +171,7 @@ jobs:
         uses: actions/upload-artifact@v2.2.3
         with:
           name: node-${{ matrix.os }}-debug
-          path: target/debug/mv-node
-          # path: target/**/mv-node
+          path: target/debug/pontem
+          # path: target/**/pontem
           if-no-files-found: warn
           retention-days: 2

@@ -1,7 +1,7 @@
 use sp_runtime::DispatchError;
 
 mod common;
-use common::assets::*;
+use common::assets::{modules, transactions};
 use common::mock::*;
 use common::addr::*;
 use common::utils;
@@ -24,7 +24,8 @@ fn publish_module_gas_limit() {
     new_test_ext().execute_with(|| {
         let root = root_ps_acc();
 
-        let res = utils::publish_module(root, UserMod::EventProxy, Some(MINIMAL_GAS_LIMIT));
+        let res =
+            utils::publish_module(root, &modules::user::EVENT_PROXY, Some(MINIMAL_GAS_LIMIT));
 
         let error = res.unwrap_err().error;
         check_out_of_gas(error);
@@ -36,7 +37,7 @@ fn publish_gas_limit() {
     new_test_ext().execute_with(|| {
         let origin = origin_ps_acc();
 
-        let res = utils::publish_module(origin, UserMod::Store, Some(MINIMAL_GAS_LIMIT));
+        let res = utils::publish_module(origin, &modules::user::STORE, Some(MINIMAL_GAS_LIMIT));
 
         let error = res.unwrap_err().error;
         check_out_of_gas(error);
@@ -50,7 +51,7 @@ fn execute_gas_limit() {
 
         let origin = origin_ps_acc();
 
-        let res = common::utils::execute_tx(origin, UserTx::InfLoop, Some(GAS_LIMIT));
+        let res = common::utils::execute_tx(origin, &transactions::INF_LOOP, Some(GAS_LIMIT));
 
         let error = res.unwrap_err().error;
         check_out_of_gas(error);

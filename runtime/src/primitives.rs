@@ -1,7 +1,10 @@
-#![cfg_attr(not(feature = "std"), no_std)]
+use sp_runtime::{generic, MultiSignature, OpaqueExtrinsic as UncheckedExtrinsic};
+use sp_runtime::traits::{Verify, IdentifyAccount, BlakeTwo256};
 
-use sp_runtime::{generic, MultiSignature};
-use sp_runtime::traits::{Verify, IdentifyAccount};
+/// TODO
+pub type Block = generic::Block<Header, UncheckedExtrinsic>;
+/// TODO
+pub type Header = generic::Header<BlockNumber, BlakeTwo256>;
 
 /// An index to a block.
 pub type BlockNumber = u32;

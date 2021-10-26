@@ -1,8 +1,8 @@
 # Substrate Move VM
 
-Substrate node template with Move VM pallet on board.
+Substrate node template with [Move VM pallet](/pallets/sp-mvm/) on board.
 
-**It's alpha version. Work in progress, so use it at your own risk.**
+**Work in progress, so use it at your own risk.**
 
 * [Documentation](https://docs.pontem.network).
 
@@ -15,17 +15,34 @@ Read [official documentation](https://docs.pontem.network/02.-getting-started/lo
 Current version built with Nimbus consensus and Parachain Staking implementation.
 Requires relay chain to work correctly.
 
-### Using polka-launch
+### Running in dev-mode
+
+There is a possibility to run a single node in development mode, without any consensus involved.
+
+Add `--dev-service` flag to `cargo run` command to run a single node with disabled consensus:
+
+**IMPORTANT NOTE:** the node with enabled `--dev-service` flag generating blocks when needed (e.g. when a new transaction appears).
+
+```sh
+cargo run --release -- --dev --dev-service --tmp
+```
+
+Use `--sealing` argument to select sealing mode:
+
+1. `instant` (default). Blocks a produced automatically for each transaction
+2. `<number>`. Blocks are produced once per `number` milliseconds
+
+### Using polkadot-launch
 
 Install [polkadot-launch](https://github.com/paritytech/polkadot-launch).
 
-**Note:** you must have polkadot node `v0.9.8` compiled and built placed in `../polkadot/target/release/`.
+**Note:** you must have polkadot node `v0.9.10` compiled and built placed in `../polkadot/target/release/`.
 To use different localion you can modify `./launch-config.json`.
 
 Build Pontem:
 
 ```sh
-cd sp-move
+cd pontem
 make build
 ```
 
@@ -39,11 +56,11 @@ Add Nimbus key:
 
 ```sh
 # Use "//Alice" for URI.
-./target/release/mv-node key insert --keystore-path ~/.pontem/keystore-1 --key-type nmbs
+./target/release/pontem key insert --keystore-path ~/.pontem/keystore-1 --key-type nmbs
 ```
 
 ```sh
-# run mv-node
+# run pontem-node
 polkadot-launch ./launch-config.json
 ```
 
@@ -55,6 +72,32 @@ Observe `9946.log` to verify that the node was launched successfully and is prod
 tail -f ./9946.log
 ```
 
+### Using polkadot-launch via docker-compose
+
+Build container:
+
+```sh
+cd pontem
+docker-compose build
+```
+
+Launching services:
+
+```sh
+docker-compose up -d
+```
+
+Log files are in folder `docker-launch`.
+
+In the `docker-compose.yml` file, you can set the required versions of polkadot and pontem by specifying them in `POLKADOT_VERSION` and `PONTEM_VERSION`, respectively. (note: if you change versions in docker-compose.yaml or change the `.build/launch.Dockerfile`, you need to rerun the `docker-compose build` command).
+
+You can connect using the following ports:
+
+```sh
+127.0.0.1:9944 # Alice relaychain
+127.0.0.1:9946 # Alice parachain
+```
+
 ### Manually
 
 Build Polkadot:
@@ -62,7 +105,8 @@ Build Polkadot:
 ```sh
 git clone https://github.com/paritytech/polkadot.git
 cd polkadot
-git checkout v0.9.8
+git fetch origin
+git checkout release-v0.9.10
 cargo build --release
 ```
 
@@ -77,7 +121,7 @@ Launch Polkadot Relay Chain:
 Build Pontem:
 
 ```sh
-cd sp-move
+cd pontem
 make build
 ```
 
@@ -91,15 +135,15 @@ Add Nimbus key:
 
 ```sh
 # Use "//Alice" for URI.
-./target/release/mv-node key insert --keystore-path ~/.pontem/keystore-1 --key-type nmbs
+./target/release/pontem key insert --keystore-path ~/.pontem/keystore-1 --key-type nmbs
 ```
 
 Launch parachain node as collator:
 
 ```sh
-./target/release/mv-node export-genesis-state --parachain-id 2000 > genesis-state
-./target/release/mv-node export-genesis-wasm > genesis-wasm
-./target/release/mv-node --collator --tmp --keystore-path ~/.pontem/keystore-1 --parachain-id 2000 --port 40335 --ws-port 9946 -- --execution wasm --chain ../polkadot/rococo-local-cfde.json --port 30335
+./target/release/pontem export-genesis-state --parachain-id 2000 > genesis-state
+./target/release/pontem export-genesis-wasm > genesis-wasm
+./target/release/pontem --collator --tmp --keystore-path ~/.pontem/keystore-1 --parachain-id 2000 --port 40335 --ws-port 9946 -- --execution wasm --chain ../polkadot/rococo-local-cfde.json --port 30335
 ```
 
 Register the parachain:
@@ -112,23 +156,11 @@ Register the parachain:
 6. Upload `gensis-wasm` to `validationCode` field.
 7. Change `parachain` field to `Yes`.
 8. Send transaction.
-9. Restart `mv-node`.
+9. Restart `pontem`-node.
 
 ## Metadata
 
-Metadata for Polkadot JS:
-
-```json
-{
-  "Balance": "u64",
-  "RoundIndex": "u32",
-  "AuthorId": "[u8;32]",
-  "RegistrationInfo": {
-    "account": "AccountId",
-    "deposit": "Balance"
-  }
-}
-```
+Metadata for Polkadot JS can be found in [repository containing types](https://github.com/pontem-network/pontem-types/blob/main/src/index.ts).
 
 * Current amount of top collator is 8.
 * Block time is 12 seconds.
@@ -146,20 +178,20 @@ Add new Nimbus key:
 
 ```sh
 # Use "//Bob" for URI.
-./target/release/mv-node key insert --keystore-path ~/.pontem/keystore-2 --key-type nmbs
+./target/release/pontem key insert --keystore-path ~/.pontem/keystore-2 --key-type nmbs
 ```
 
 Get your public key:
 
 ```sh
 # Use "//Bob" for dev purposes URI.
-./target/release/mv-node key inspect
+./target/release/pontem key inspect
 ```
 
 You will see something like:
 
 ```sh
-Secret Key URI `//Bib` is account:
+Secret Key URI `//Bob` is account:
 Secret seed:       0x02ca07977bdc4c93b5e00fcbb991b4e8ae20d05444153fd968e04bed6b4946e7
 Public key (hex):  0xb832ced5ca2de9fe76ef101d8ab1b8dd778e1ab5a809d019c57b78e45ecbaa56
 Public key (SS58): 5GEDm6TY5apP4bhwuTtTzA7z9vHbCL1V2D5nE8sPga6WKhNH
@@ -192,7 +224,7 @@ Now time to launch your node.
 **If you used polkadot-launch to launch everything:**
 
 ```sh
-/target/release/mv-node --collator \
+/target/release/pontem --collator \
      --tmp \
     --keystore-path ~/.pontem/keystore-2  \
     --parachain-id 2000 \
@@ -211,7 +243,7 @@ cat 9946.log | grep 40335 # Something like: /ip4/127.0.0.1/tcp/40335/p2p/12D3Koo
 **If you used manual method:**
 
 ```sh
-/target/release/mv-node --collator \
+/target/release/pontem --collator \
     --tmp \
     --keystore-path ~/.pontem/keystore-2  \
     --parachain-id 2000 \

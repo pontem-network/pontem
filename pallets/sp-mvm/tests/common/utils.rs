@@ -8,7 +8,7 @@ use move_core_types::language_storage::ModuleId;
 use move_core_types::language_storage::StructTag;
 use move_core_types::language_storage::TypeTag;
 use move_vm::io::state::State;
-use move_vm_runtime::data_cache::RemoteCache;
+use move_vm_runtime::data_cache::MoveStorage;
 use move_vm::types::ModulePackage;
 
 use sp_mvm::storage::MoveVmStorage;
@@ -22,12 +22,8 @@ pub type AccountId = <Test as frame_system::Config>::AccountId;
 const DEFAULT_GAS_LIMIT: u64 = 1_000_000;
 
 /// Publish module __with__ storage check
-pub fn publish_module<Asset: BinAsset>(
-    signer: AccountId,
-    module: Asset,
-    gas_limit: Option<u64>,
-) -> PsResult {
-    let bytecode = module.bc().to_vec();
+pub fn publish_module(signer: AccountId, module: &Asset, gas_limit: Option<u64>) -> PsResult {
+    let bytecode = module.bytes().to_vec();
     let name = module.name();
     let result = publish_module_unchecked(signer, module, gas_limit)?;
     check_storage_module(to_move_addr(signer), bytecode, name);
@@ -35,24 +31,20 @@ pub fn publish_module<Asset: BinAsset>(
 }
 
 /// Publish module __without__ storage check
-pub fn publish_module_unchecked<Asset: BinAsset>(
+pub fn publish_module_unchecked(
     signer: AccountId,
-    module: Asset,
+    module: &Asset,
     gas_limit: Option<u64>,
 ) -> PsResult {
     let gas_limit = gas_limit.unwrap_or(DEFAULT_GAS_LIMIT);
-    Mvm::publish_module(Origin::signed(signer), module.bc().to_vec(), gas_limit)
+    Mvm::publish_module(Origin::signed(signer), module.bytes().to_vec(), gas_limit)
 }
 
 /// Publish package.
 ///
 /// Publish package __with__ storage check
-pub fn publish_package<Asset: BinAssetPackage>(
-    signer: AccountId,
-    package: Asset,
-    gas_limit: Option<u64>,
-) -> PsResult {
-    let bytecode = package.bc();
+pub fn publish_package(signer: AccountId, package: &Package, gas_limit: Option<u64>) -> PsResult {
+    let bytecode = package.bytes().to_vec();
     let names = package.modules();
     let result = publish_package_unchecked(signer, package, gas_limit)?;
     check_storage_package(to_move_addr(signer), bytecode, names);
@@ -60,19 +52,19 @@ pub fn publish_package<Asset: BinAssetPackage>(
 }
 
 /// Publish module __without__ storage check
-pub fn publish_package_unchecked<Asset: BinAsset>(
+pub fn publish_package_unchecked(
     signer: AccountId,
-    package: Asset,
+    package: &Package,
     gas_limit: Option<u64>,
 ) -> PsResult {
     let gas_limit = gas_limit.unwrap_or(DEFAULT_GAS_LIMIT);
-    Mvm::publish_package(Origin::signed(signer), package.bc().to_vec(), gas_limit)
+    Mvm::publish_package(Origin::signed(signer), package.bytes().to_vec(), gas_limit)
 }
 
-pub fn execute_tx(origin: AccountId, tx: UserTx, gas_limit: Option<u64>) -> PsResult {
+pub fn execute_tx(origin: AccountId, tx: &Asset, gas_limit: Option<u64>) -> PsResult {
     let gas_limit = gas_limit.unwrap_or(DEFAULT_GAS_LIMIT);
     // get bytecode:
-    let bc = tx.bc().to_vec();
+    let bc = tx.bytes().to_vec();
     // execute VM tx:
     let result = Mvm::execute(Origin::signed(origin), bc, gas_limit);
     eprintln!("execute tx result: {:?}", result);

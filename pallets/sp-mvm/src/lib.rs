@@ -1,3 +1,24 @@
+// Copyright 2020-2021 Pontem Foundation LTD.
+// This file is part of Pontem Network.
+// Apache 2.0
+
+//! This pallet enables Move Virtual Machine developed by Facebook's Diem team in your Substrate based chain.
+//! The pallet allows to execute Move Smart contracts, utilizing Move VM adopted for WASM Runtime.
+//! You can find Move VM in the following repository - https://github.com/pontem-network/sp-move-vm
+
+//! Move VM has two types of smart contracts: scripts and modules.
+//! Modules can be stored in the chain storage, under user account (address) and module name, modules code that can be resused multiplay times.
+//! Also, modules store user data, similar to EVM smart contracts.
+//! Scripts executed only one time, during transaction execution, it can access modules, or not (depends on script goal).
+//! Scripts used as entry point, because indeed scripts launch code execution in Move VM.
+//! Read more about scripts and modules in Pontem documentation - https://docs.pontem.network/03.-move-vm/modules
+
+//! All provided extrinsics functions require to configure a gas limit, similar to EVM.
+//! Current pallet contains following extrinsics to iterate with Move VM:
+//! execute(tx_bc: Vec<u8>, gas_limit: u64) - execute Move script with bytecode `tx_bc`.
+//! publish_module(module_bc: Vec<u8>, gas_limit: u64) - publish Move module with bytecode `module_bc`.
+//! publish_package(package: Vec<u8>, gas_limit: u64) - publish package (a set of Move modules) from binary `package`.
+
 #![cfg_attr(not(feature = "std"), no_std)]
 
 #[macro_use]
@@ -10,9 +31,6 @@ extern crate bcs_alt as bcs;
 #[cfg(feature = "runtime-benchmarks")]
 mod benchmarking;
 
-/// Edit this file to define custom logic or remove it if it is not needed.
-/// Learn more about FRAME and the core library of Substrate FRAME pallets:
-/// <https://substrate.dev/docs/en/knowledgebase/runtime/frame>
 pub use pallet::*;
 pub mod addr;
 pub mod balance;
@@ -52,7 +70,7 @@ pub mod pallet {
     use sp_runtime::traits::UniqueSaturatedInto;
     use parity_scale_codec::{FullCodec, FullEncode};
 
-    use move_vm::Vm;
+    use move_vm::{Vm, StateAccess};
     use move_vm::mvm::Mvm;
     use move_vm::io::context::ExecutionContext;
     use move_vm::types::Gas;
@@ -63,6 +81,11 @@ pub mod pallet {
 
     use move_core_types::account_address::AccountAddress;
     use move_core_types::language_storage::CORE_CODE_ADDRESS;
+
+    #[cfg(not(feature = "std"))]
+    extern crate alloc;
+    #[cfg(not(feature = "std"))]
+    use alloc::format;
 
     /// Configure the pallet by specifying the parameters and types on which it depends.
     #[pallet::config]
@@ -96,7 +119,6 @@ pub mod pallet {
     // Pallets use events to inform users when important changes are made.
     // https://substrate.dev/docs/en/knowledgebase/runtime/events
     #[pallet::event]
-    #[pallet::metadata(T::AccountId = "AccountId")]
     #[pallet::generate_deposit(pub fn deposit_event)]
     pub enum Event<T: Config> {
         /// Event provided by Move VM
@@ -124,6 +146,10 @@ pub mod pallet {
     where
         OriginFor<T>: Into<Result<pallet_multisig::Origin<T>, OriginFor<T>>>,
     {
+        /// Execute Move script.
+        ///
+        /// User can send his Move script (compiled using 'dove tx' command) for execution by Move VM.
+        /// The gas limit should be provided.
         #[pallet::weight(T::GasWeightMapping::gas_to_weight(*gas_limit))]
         pub fn execute(
             origin: OriginFor<T>,
@@ -143,6 +169,10 @@ pub mod pallet {
             Ok(result)
         }
 
+        /// Publish Move module.
+        ///
+        /// User can publish his Move module under his address.
+        /// The gas limit should be provided.
         #[pallet::weight(T::GasWeightMapping::gas_to_weight(*gas_limit))]
         pub fn publish_module(
             origin: OriginFor<T>,
@@ -164,13 +194,18 @@ pub mod pallet {
             Ok(result)
         }
 
-        /// Batch publish module-package produced by Dove compiler
+        /// Publish module package (could be generated using 'dove build --package'), e.g.: several modules in one transaction.
+        ///
+        /// Deploy several modules in one transaction. Could be called by root in case needs to update Standard Library.
+        /// Read more about Standard Library - https://docs.pontem.network/03.-move-vm/stdlib
+        /// The gas limit should be provided.
         #[pallet::weight(T::GasWeightMapping::gas_to_weight(*gas_limit))]
         pub fn publish_package(
             origin: OriginFor<T>,
             package: Vec<u8>,
             gas_limit: u64,
         ) -> DispatchResultWithPostInfo {
+            // Allows to update Standard Library if root.
             let sender = match ensure_root(origin.clone()) {
                 Ok(_) => {
                     debug!("executing `publish package` with root");
@@ -199,58 +234,26 @@ pub mod pallet {
 
             Ok(result)
         }
-
-        /// Batch publish std-modules by root account only
-        // #[pallet::weight(T::GasWeightMapping::gas_to_weight(*gas_limit) * modules.len().into())]
-        #[pallet::weight(T::GasWeightMapping::gas_to_weight(*gas_limit))]
-        pub fn publish_std(
-            origin: OriginFor<T>,
-            modules: Vec<Vec<u8>>,
-            gas_limit: u64,
-        ) -> DispatchResultWithPostInfo {
-            ensure_root(origin)?;
-            debug!("executing `publish STD` with root");
-
-            let vm = Self::get_vm()?;
-            // TODO: use gas_used
-            let mut _gas_used = 0;
-            let mut results = Vec::with_capacity(modules.len());
-            'deploy: for module in modules.into_iter() {
-                // Overflow shound't happen.
-                // As gas_limit always large or equal to used, otherwise getting out of gas error.
-                let gas = Self::get_move_gas_limit(gas_limit - _gas_used)?;
-
-                let tx = ModuleTx::new(module, CORE_CODE_ADDRESS);
-                let res = vm.publish_module(gas, tx, false);
-                debug!("publish result: {:?}", res);
-
-                let is_ok = result::is_ok(&res);
-                _gas_used += res.gas_used;
-                results.push(res);
-                if !is_ok {
-                    break 'deploy;
-                }
-
-                // Emit an event:
-                Self::deposit_event(Event::StdModulePublished);
-            }
-
-            // produce result with spended gas:
-            let result = result::from_vm_results::<T>(&results)?;
-
-            Ok(result)
-        }
     }
 
+    /// Genesis configuration.
+    ///
+    /// Allows to configure Move VM in the genesis block.
+    /// Accepts Standard Library modules list and initialize state by calling initialize function with arguments.
     #[pallet::genesis_config]
     pub struct GenesisConfig<T: Config> {
         pub _phantom: std::marker::PhantomData<T>,
-        pub stdlib: Vec<u8>,         // Standard library bytes.
-        pub init_module: Vec<u8>,    // Module name for genesis init.
-        pub init_func: Vec<u8>,      // Init function name.
-        pub init_args: Vec<Vec<u8>>, // Arguments.
+        /// Standard library bytes.
+        pub stdlib: Vec<u8>,
+        /// Module name for genesis init.
+        pub init_module: Vec<u8>,
+        // Init function name.
+        pub init_func: Vec<u8>,
+        // Init function arguments.
+        pub init_args: Vec<Vec<u8>>,
     }
 
+    /// Default genesis configuration.
     #[cfg(feature = "std")]
     impl<T: Config> Default for GenesisConfig<T> {
         fn default() -> Self {
@@ -264,6 +267,7 @@ pub mod pallet {
         }
     }
 
+    /// Initialize Move VM during genesis block.
     #[pallet::genesis_build]
     impl<T: Config> GenesisBuild<T> for GenesisConfig<T> {
         fn build(&self) {
@@ -284,6 +288,7 @@ pub mod pallet {
         }
     }
 
+    /// Clearing Move VM cache once block processed.
     #[pallet::hooks]
     impl<T: Config> Hooks<BlockNumberFor<T>> for Pallet<T> {
         #[cfg(not(feature = "no-vm-static"))]
@@ -295,7 +300,7 @@ pub mod pallet {
         }
     }
 
-    // get VM methods unification
+    /// Get VM methods unification.
     impl<T: Config> Pallet<T> {
         #[cfg(not(feature = "no-vm-static"))]
         fn get_vm() -> Result<&'static VmWrapperTy, Error<T>> {
@@ -313,15 +318,19 @@ pub mod pallet {
         }
     }
 
+    /// Move VM allows us to configure Gas Price, but we use constant for gas price, as we follow general Substrate approach with weight and tips.
     const GAS_UNIT_PRICE: u64 = 1;
 
     impl<T: Config> Pallet<T> {
         #![allow(clippy::useless_conversion)]
+        /// Returns gas limit object requires for execute/publish functions.
         fn get_move_gas_limit(gas_limit: u64) -> Result<Gas, Error<T>> {
             Gas::new(gas_limit, GAS_UNIT_PRICE).map_err(|_| Error::InvalidGasAmountMaxValue)
         }
 
-        // TODO: support for multiplay signers.
+        /// Execute Move VM script with provided signers, script byte code, gas limit, and dry run configuration.
+        /// In case of dry run nothing would be written to storage after execution (required mostly by RPC calls, e.g. estimate gas etc).
+        /// Multiple signers supported by utilizing multisig pallet.
         pub fn raw_execute_script(
             signers: &[T::AccountId],
             tx_bc: Vec<u8>,
@@ -389,6 +398,8 @@ pub mod pallet {
             Ok(res)
         }
 
+        /// Publish Move module script with provided account, module bytecode, gas limit, and dry run configuration.
+        /// In case of dry run nothing would be written to storage after execution (required mostly by RPC calls, e.g. estimate gas etc).
         pub fn raw_publish_module(
             account: &T::AccountId,
             module_bc: Vec<u8>,
@@ -409,9 +420,33 @@ pub mod pallet {
 
             Ok(res)
         }
+
+        pub fn get_module_abi(module_id: &[u8]) -> Result<Option<Vec<u8>>, Vec<u8>> {
+            let vm = Self::get_vm()
+                .map_err::<Vec<u8>, _>(|e| format!("error while getting vm {:?}", e).into())?;
+            vm.get_module_abi(module_id)
+                .map_err(|e| format!("error in get_module_abi: {:?}", e).into())
+        }
+
+        pub fn get_module(module_id: &[u8]) -> Result<Option<Vec<u8>>, Vec<u8>> {
+            let vm = Self::get_vm()
+                .map_err::<Vec<u8>, _>(|e| format!("error while getting vm {:?}", e).into())?;
+            vm.get_module(module_id)
+                .map_err(|e| format!("error in get_module: {:?}", e).into())
+        }
+
+        pub fn get_resource(
+            account: &T::AccountId,
+            tag: &[u8],
+        ) -> Result<Option<Vec<u8>>, Vec<u8>> {
+            let vm = Self::get_vm()
+                .map_err::<Vec<u8>, _>(|e| format!("error while getting vm {:?}", e).into())?;
+            vm.get_resource(&AccountAddress::new(addr::account_to_bytes(account)), tag)
+                .map_err(|e| format!("error in get_resource: {:?}", e).into())
+        }
     }
 
-    /// Get storage adapter ready for the VM
+    /// Get storage adapter ready for the VM.
     impl<T: Config, K, V> super::storage::MoveVmStorage<T, K, V> for Pallet<T>
     where
         K: FullEncode,
@@ -430,6 +465,9 @@ pub mod pallet {
         }
     }
 
+    /// Implement traits allows to create Move VM.
+    ///
+    /// Supports both static (created at launch of chain), and dynamic one (usually we use regulated one);.
     impl<T: Config> mvm::TryCreateMoveVm<T> for Pallet<T> {
         #[cfg(not(feature = "no-vm-static"))]
         type Vm = Mvm<boxed::StorageAdapter, event::DefaultEventHandler, boxed::BalancesAdapter>;
@@ -441,6 +479,9 @@ pub mod pallet {
         >;
         type Error = Error<T>;
 
+        /// Try to create Move VM instance.
+        ///
+        /// If successful it returns a VM instance, otherwise error.
         fn try_create_move_vm() -> Result<Self::Vm, Self::Error> {
             trace!("MoveVM created");
             Mvm::new(
@@ -479,6 +520,8 @@ pub mod pallet {
         }
     }
 
+    /// Errors that occur during Move VM execution.
+    /// Based on initial Move VM errors, but adopted for Substrate.
     #[pallet::error]
     pub enum Error<T> {
         /// Internal: numeric convertion error, overflow
@@ -868,6 +911,10 @@ pub mod pallet {
         UnknownAbility,
         // Documentation_missing
         InvalidFlagBits,
+        // Wrong secondary keys addresses count
+        SecondaryKeysAddressesCountMismatch,
+        // List of signers contain duplicates
+        SignersContainDuplicates,
     }
 }
 

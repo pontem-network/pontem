@@ -1,21 +1,12 @@
 {
   inputs = {
-    fenix.url = "github:nix-community/fenix";
-    naersk = {
-      url = "github:nmattia/naersk";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
-    utils.url = "github:numtide/flake-utils";
-
-    move-tools = {
-      url = "github:pontem-network/move-tools"; 
-      # Nested flake locks are not working correctly for the time being 
-      # (Nix PR fixing this is here: https://github.com/NixOS/nix/pull/4641)
-      # Thus we rely on flake-compat. 
-      flake = false;
-    };
-
+    fenix.url = github:nix-community/fenix;
+    naersk.url = github:nmattia/naersk;
+    nixpkgs.url = github:NixOS/nixpkgs/staging-next;
+    utils.url = github:numtide/flake-utils;
+    move-tools.url = github:pontem-network/move-tools;
+#    naersk.inputs.nixpkgs.follows = "nixpkgs";
+#    fenix.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs = flake-args@{ self, nixpkgs, utils, naersk, fenix, move-tools, ... }:
@@ -26,15 +17,41 @@
         rustTargets = fenixArch.targets;
         llvmPackagesR = pkgs.llvmPackages_12;
 
-        dove = (import move-tools).defaultPackage."${system}";
+        dove = move-tools.defaultPackage."${system}";
 
-        rustToolchain = fenixArch.stable;
-        rustToolchainWasm = rustTargets.wasm32-unknown-unknown.latest;
-
-        naersk-lib = naersk.lib.${system}.override {
-          cargo = rustToolchain.toolchain;
-          rustc = rustToolchain.toolchain;
+        devToolchainV = {
+          channel = "nightly";
+          # date = "2021-09-13";
+          # sha256 = "sha256:1f7anbyrcv4w44k2rb6939bvsq1k82bks5q1mm5fzx92k8m9518c";
+          date = "2021-08-13";
+          sha256 = "sha256:0g1j230zp38jdnkvw3a4q10cjf57avwpnixi6a477d1df0pxbl5n";
         };
+
+        # Some strange wasm errors occur if not built with this old toolchain
+        buildToolchainV = {
+          channel = "nightly";
+          date = "2021-06-28";
+          sha256 = "sha256-vRBxIPRyCcLvh6egPKSHMTmxVD1E0obq71iCM0aOWZo=";
+        };
+
+        buildComponents = [ "cargo" "llvm-tools-preview" "rust-std" "rustc" "rustc-dev" ];
+        devComponents = buildComponents ++ [ "clippy-preview" "rustfmt-preview" "rust-src" ];
+
+        devToolchain = let
+            t = fenixArch.toolchainOf devToolchainV;
+        in t.withComponents devComponents;
+
+        naersk-lib =
+          let
+            buildToolchain = fenixArch.combine [
+                ((fenixArch.toolchainOf buildToolchainV).withComponents buildComponents)
+                (rustTargets.wasm32-unknown-unknown.toolchainOf buildToolchainV).toolchain
+            ];
+          in
+            naersk.lib.${system}.override {
+              cargo = buildToolchain;
+              rustc = buildToolchain;
+            };
 
       in {
 
@@ -43,23 +60,33 @@
           buildInputs = [
             protobuf openssl pre-commit pkgconfig
             llvmPackagesR.clang
-            move-tools.defaultPackage."${system}"
-
-            (fenixArch.combine [
-              (fenixArch.latest.withComponents [ "cargo" "clippy-preview" "llvm-tools-preview" "rust-std" "rustc" "rustc-dev" "rustfmt-preview" ])
-              rustTargets.wasm32-unknown-unknown.latest.toolchain
-            ])
-
+            dove
+            devToolchain
           ];
 
-#          SKIP_WASM_BUILD = 1;
+          SKIP_WASM_BUILD = "1";
           PROTOC = "${protobuf}/bin/protoc";
-          # PROTOC_INCLUDE="${protobuf}/include";
           LLVM_CONFIG_PATH="${llvmPackagesR.llvm}/bin/llvm-config";
           LIBCLANG_PATH="${llvmPackagesR.libclang.lib}/lib";
-          RUST_SRC_PATH = "${rustToolchain.rust-src}/lib/rustlib/src/rust/library/";
+          RUST_SRC_PATH = "${devToolchain}/lib/rustlib/src/rust/library/";
           ROCKSDB_LIB_DIR = "${rocksdb}/lib";
         };
+
+        defaultPackage = naersk-lib.buildPackage (with pkgs; {
+          name = "pontem-node";
+          src = ./.;
+          targets = [ "pontem-node" ];
+          buildInputs = [
+            protobuf openssl pre-commit pkgconfig
+            llvmPackagesR.clang
+            dove
+          ];
+
+          PROTOC = "${protobuf}/bin/protoc";
+          LLVM_CONFIG_PATH="${llvmPackagesR.llvm}/bin/llvm-config";
+          LIBCLANG_PATH="${llvmPackagesR.libclang.lib}/lib";
+          ROCKSDB_LIB_DIR = "${rocksdb}/lib";
+        });
 
       });
 

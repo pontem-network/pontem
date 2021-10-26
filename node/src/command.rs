@@ -17,18 +17,16 @@
 
 use crate::{
     chain_spec,
-    service::{self, new_partial, ParachainRuntimeExecutor},
+    service::{self, new_partial},
 };
 use crate::cli::{Cli, Subcommand, RelayChainCli};
 use cumulus_primitives_core::ParaId;
 use sc_cli::{
-    ChainSpec, CliConfiguration, DefaultConfigurationValues, ImportParams, KeystoreParams,
-    NetworkParams, Result, RuntimeVersion, SharedParams, SubstrateCli,
+    ChainSpec, DefaultConfigurationValues, ImportParams, KeystoreParams, NetworkParams, Result,
+    RuntimeVersion, SharedParams, SubstrateCli,
 };
-use sc_service::{
-    config::{PrometheusConfig, BasePath},
-};
-use mv_node_runtime::{RuntimeApi, Block};
+use sc_service::config::{PrometheusConfig, BasePath};
+use pontem_runtime::Block;
 use cumulus_client_service::genesis::generate_genesis_block;
 use sp_core::hexdisplay::HexDisplay;
 use polkadot_parachain::primitives::AccountIdConversion;
@@ -80,7 +78,7 @@ impl SubstrateCli for Cli {
     }
 
     fn native_runtime_version(_: &Box<dyn ChainSpec>) -> &'static RuntimeVersion {
-        &mv_node_runtime::VERSION
+        &pontem_runtime::VERSION
     }
 }
 
@@ -97,7 +95,7 @@ impl SubstrateCli for RelayChainCli {
         "Parachain Collator\n\nThe command-line arguments provided first will be \
 		passed to the parachain node, while the arguments provided after -- will be passed \
 		to the relaychain node.\n\n\
-		mv-node [parachain-args] -- [relaychain-args]"
+		pontem [parachain-args] -- [relaychain-args]"
             .into()
     }
 
@@ -127,13 +125,9 @@ macro_rules! construct_async_run {
 	(|$components:ident, $cli:ident, $cmd:ident, $config:ident| $( $code:tt )* ) => {{
 		let runner = $cli.create_runner($cmd)?;
 		runner.async_run(|$config| {
-			let $components = new_partial::<
-				RuntimeApi,
-				ParachainRuntimeExecutor,
-				_
-			>(
+			let $components = new_partial(
 				&$config,
-				crate::service::parachain_build_import_queue,
+				false,
 			)?;
 			let task_manager = $components.task_manager;
 			{ $( $code )* }.map(|v| (v, task_manager))
@@ -175,19 +169,12 @@ pub fn run() -> sc_cli::Result<()> {
             let runner = cli.create_runner(cmd)?;
 
             runner.sync_run(|config| {
-                let polkadot_cli = RelayChainCli::new(
-                    &config,
-                    [RelayChainCli::executable_name().to_string()]
-                        .iter()
-                        .chain(cli.relaychain_args.iter()),
-                );
+                let polkadot_cli =
+                    RelayChainCli::new(&config, cli.relaychain_args.iter().cloned());
 
-                let polkadot_config = SubstrateCli::create_configuration(
-                    &polkadot_cli,
-                    &polkadot_cli,
-                    config.task_executor.clone(),
-                )
-                .map_err(|err| format!("Relay chain argument error: {}", err))?;
+                let polkadot_config = polkadot_cli
+                    .create_configuration(&polkadot_cli, config.tokio_handle.clone())
+                    .map_err(|err| format!("Relay chain argument error: {}", err))?;
 
                 cmd.run(config, polkadot_config)
             })
@@ -221,7 +208,7 @@ pub fn run() -> sc_cli::Result<()> {
             let output_buf = if params.raw {
                 raw_header
             } else {
-                format!("0x{:?}", HexDisplay::from(&block.header().encode())).into_bytes()
+                format!("0x{:?}", HexDisplay::from(&raw_header)).into_bytes()
             };
 
             if let Some(output) = &params.output {
@@ -257,15 +244,16 @@ pub fn run() -> sc_cli::Result<()> {
             let runner = cli.create_runner(&cli.run.normalize())?;
 
             runner.run_node_until_exit(|config| async move {
+                if cli.dev_service {
+                    let author_id =
+                        chain_spec::get_from_seed::<nimbus_primitives::NimbusId>("Alice");
+                    return service::new_dev(config, author_id, cli.sealing).map_err(Into::into);
+                }
+
                 let para_id =
                     chain_spec::Extensions::try_get(&*config.chain_spec).map(|e| e.para_id);
 
-                let polkadot_cli = RelayChainCli::new(
-                    &config,
-                    [RelayChainCli::executable_name().to_string()]
-                        .iter()
-                        .chain(cli.relaychain_args.iter()),
-                );
+                let polkadot_cli = RelayChainCli::new(&config, cli.relaychain_args.into_iter());
 
                 let id = ParaId::from(cli.run.parachain_id.or(para_id).unwrap_or(200));
 
@@ -276,13 +264,10 @@ pub fn run() -> sc_cli::Result<()> {
                     generate_genesis_block(&config.chain_spec).map_err(|e| format!("{:?}", e))?;
                 let genesis_state = format!("0x{:?}", HexDisplay::from(&block.header().encode()));
 
-                let task_executor = config.task_executor.clone();
-                let polkadot_config = SubstrateCli::create_configuration(
-                    &polkadot_cli,
-                    &polkadot_cli,
-                    task_executor,
-                )
-                .map_err(|err| format!("Relay chain argument error: {}", err))?;
+                let task_executor = config.tokio_handle.clone();
+                let polkadot_config = polkadot_cli
+                    .create_configuration(&polkadot_cli, task_executor)
+                    .map_err(|err| format!("Relay chain argument error: {}", err))?;
 
                 info!("Parachain id: {:?}", id);
                 info!("Parachain Account: {}", parachain_account);
@@ -323,7 +308,7 @@ impl DefaultConfigurationValues for RelayChainCli {
     }
 }
 
-impl CliConfiguration<Self> for RelayChainCli {
+impl sc_cli::CliConfiguration<Self> for RelayChainCli {
     fn shared_params(&self) -> &SharedParams {
         self.base.base.shared_params()
     }
@@ -399,10 +384,6 @@ impl CliConfiguration<Self> for RelayChainCli {
 
     fn rpc_cors(&self, is_dev: bool) -> Result<Option<Vec<String>>> {
         self.base.base.rpc_cors(is_dev)
-    }
-
-    fn telemetry_external_transport(&self) -> Result<Option<sc_service::config::ExtTransport>> {
-        self.base.base.telemetry_external_transport()
     }
 
     fn default_heap_pages(&self) -> Result<Option<u64>> {

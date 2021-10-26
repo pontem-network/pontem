@@ -22,17 +22,20 @@ use cumulus_pallet_parachain_system::RelaychainBlockNumberProvider;
 use nimbus_primitives::NimbusId;
 
 // Polkadot & XCM imports
-use polkadot_parachain::primitives::Sibling;
-use xcm::v0::{MultiAsset, MultiLocation, MultiLocation::*, Junction::*, BodyId, NetworkId, Xcm};
-use xcm_builder::{
-    AccountId32Aliases, CurrencyAdapter, LocationInverter, ParentIsDefault, RelayChainAsNative,
-    SiblingParachainAsNative, SiblingParachainConvertsVia, SignedAccountId32AsNative,
-    SovereignSignedViaLocation, EnsureXcmOrigin, AllowUnpaidExecutionFrom, ParentAsSuperuser,
-    AllowTopLevelPaidExecutionFrom, TakeWeightCredit, FixedWeightBounds, IsConcrete, NativeAsset,
-    UsingComponents, SignedToAccountId32,
+use {
+    polkadot_parachain::primitives::Sibling,
+    xcm::latest::prelude::*,
+    xcm_builder::{
+        AccountId32Aliases, CurrencyAdapter, LocationInverter, ParentIsDefault,
+        RelayChainAsNative, SiblingParachainAsNative, SiblingParachainConvertsVia,
+        SignedAccountId32AsNative, SovereignSignedViaLocation, EnsureXcmOrigin,
+        AllowUnpaidExecutionFrom, ParentAsSuperuser, AllowTopLevelPaidExecutionFrom,
+        TakeWeightCredit, FixedWeightBounds, IsConcrete, NativeAsset, UsingComponents,
+        SignedToAccountId32,
+    },
+    xcm_executor::{Config, XcmExecutor},
+    pallet_xcm::XcmPassthrough,
 };
-use xcm_executor::{Config, XcmExecutor};
-use pallet_xcm::XcmPassthrough;
 
 // A few exports that help ease life for downstream crates.
 #[cfg(any(feature = "std", test))]
@@ -43,8 +46,8 @@ pub use sp_runtime::{Permill, Percent, Perbill, MultiAddress};
 pub use pallet_vesting::Call as VestingCall;
 
 pub use frame_support::{
-    PalletId, construct_runtime, parameter_types, StorageValue, match_type,
-    traits::{KeyOwnerProofSystem, Randomness, All, IsInVec, EnsureOrigin},
+    construct_runtime, parameter_types, StorageValue, match_type,
+    traits::{KeyOwnerProofSystem, Randomness, IsInVec, Everything, EnsureOrigin},
     weights::{
         Weight, IdentityFee, DispatchClass,
         constants::{
@@ -66,7 +69,7 @@ pub use parachain_staking::{InflationInfo, Range};
 pub mod constants;
 use constants::{currency::*, time::*};
 pub mod primitives;
-use primitives::*;
+use primitives::{*, Index};
 
 /// We allow for 0.5 seconds of compute with a 6 second average block time.
 const MAXIMUM_BLOCK_WEIGHT: Weight = WEIGHT_PER_SECOND / 2;
@@ -81,8 +84,8 @@ impl_opaque_keys! {
 //   https://substrate.dev/docs/en/knowledgebase/runtime/upgrades#runtime-versioning
 #[sp_version::runtime_version]
 pub const VERSION: RuntimeVersion = RuntimeVersion {
-    spec_name: create_runtime_str!("mv-node"),
-    impl_name: create_runtime_str!("mv-node"),
+    spec_name: create_runtime_str!("pontem-node"),
+    impl_name: create_runtime_str!("pontem-node"),
     authoring_version: 1,
     // The version of the runtime specification. A full node will not attempt to use its native
     //   runtime in substitute for the on-chain Wasm runtime unless all of `spec_name`,
@@ -150,7 +153,7 @@ parameter_types! {
 
 impl frame_system::Config for Runtime {
     /// The basic call filter to use in dispatchable.
-    type BaseCallFilter = ();
+    type BaseCallFilter = frame_support::traits::Everything;
     /// Block & extrinsics weights: base values and limits.
     type BlockWeights = RuntimeBlockWeights;
     /// The maximum length of a block (in bytes).
@@ -332,6 +335,7 @@ impl pallet_vesting::Config for Runtime {
     type BlockNumberToBalance = ConvertInto;
     type MinVestedTransfer = MinVestedTransfer;
     type WeightInfo = pallet_vesting::weights::SubstrateWeight<Runtime>;
+    const MAX_VESTING_SCHEDULES: u32 = 1;
 }
 
 parameter_types! {
@@ -353,11 +357,16 @@ impl pallet_balances::Config for Runtime {
     type ReserveIdentifier = [u8; 8];
 }
 
+parameter_types! {
+    pub const OperationalFeeMultiplier: u8 = 5;
+}
+
 impl pallet_transaction_payment::Config for Runtime {
     type OnChargeTransaction = pallet_transaction_payment::CurrencyAdapter<Balances, ()>;
     type TransactionByteFee = TransactionByteFee;
     type WeightToFee = IdentityFee<Balance>;
     type FeeMultiplierUpdate = ();
+    type OperationalFeeMultiplier = OperationalFeeMultiplier;
 }
 
 impl pallet_sudo::Config for Runtime {
@@ -468,10 +477,10 @@ impl pallet_author_slot_filter::Config for Runtime {
 impl pallet_randomness_collective_flip::Config for Runtime {}
 
 parameter_types! {
-    pub const RelayLocation: MultiLocation = X1(Parent);
+    pub const RelayLocation: MultiLocation = MultiLocation::parent();
     pub const RelayNetwork: NetworkId = NetworkId::Polkadot;
     pub RelayOrigin: Origin = cumulus_pallet_xcm::Origin::Relay.into();
-    pub Ancestry: MultiLocation = X1(Parachain(ParachainInfo::parachain_id().into()));
+    pub Ancestry: MultiLocation = Parachain(ParachainInfo::parachain_id().into()).into();
 }
 
 /// Type for specifying how a `MultiLocation` can be converted into an `AccountId`. This is used
@@ -525,26 +534,29 @@ pub type XcmOriginToTransactDispatchOrigin = (
 );
 
 parameter_types! {
-    // One XCM operation is 1_000_000 weight - almost certainly a conservative estimate.
-    pub UnitWeightCost: Weight = 1_000_000;
-    // One UNIT buys 1 second of weight.
-    pub const WeightPrice: (MultiLocation, u128) = (X1(Parent), UNIT as u128);
+     // One XCM operation is 1_000_000 weight - almost certainly a conservative estimate.
+     pub UnitWeightCost: Weight = 1_000_000;
+     // One UNIT buys 1 second of weight.
+     pub const WeightPrice: (MultiLocation, u128) = (MultiLocation::parent(), UNIT as u128);
+     pub const MaxInstructions: u32 = 100;
 }
 
 match_type! {
-    pub type ParentOrParentsUnitPlurality: impl Contains<MultiLocation> = {
-        X1(Parent) | X2(Parent, Plurality { id: BodyId::Unit, .. })
-    };
+     pub type ParentOrParentsUnitPlurality: impl Contains<MultiLocation> = {
+         MultiLocation { parents: 1, interior: Here } |
+         MultiLocation { parents: 1, interior: X1(Plurality { id: BodyId::Unit, .. }) }
+     };
 }
 
 pub type Barrier = (
     TakeWeightCredit,
-    AllowTopLevelPaidExecutionFrom<All<MultiLocation>>,
+    AllowTopLevelPaidExecutionFrom<Everything>,
     AllowUnpaidExecutionFrom<ParentOrParentsUnitPlurality>,
     // ^^^ Parent & its unit plurality gets free execution
 );
 
 pub struct XcmConfig;
+
 impl Config for XcmConfig {
     type Call = Call;
     type XcmSender = XcmRouter;
@@ -555,9 +567,12 @@ impl Config for XcmConfig {
     type IsTeleporter = NativeAsset; // <- should be enough to allow teleportation of UNIT
     type LocationInverter = LocationInverter<Ancestry>;
     type Barrier = Barrier;
-    type Weigher = FixedWeightBounds<UnitWeightCost, Call>;
+    type Weigher = FixedWeightBounds<UnitWeightCost, Call, MaxInstructions>;
     type Trader = UsingComponents<IdentityFee<Balance>, RelayLocation, AccountId, Balances, ()>;
     type ResponseHandler = (); // Don't handle responses for now.
+    type SubscriptionService = PolkadotXcm;
+    type AssetTrap = ();
+    type AssetClaims = ();
 }
 
 /// No local origins on this chain are allowed to dispatch XCM sends/executions.
@@ -567,7 +582,7 @@ pub type LocalOriginToLocation = SignedToAccountId32<Origin, AccountId, RelayNet
 /// queues.
 pub type XcmRouter = (
     // Two routers - use UMP to communicate with the relay chain:
-    cumulus_primitives_utility::ParentAsUmp<ParachainSystem>,
+    cumulus_primitives_utility::ParentAsUmp<ParachainSystem, ()>,
     // ..and XCMP to communicate with the sibling chains.
     XcmpQueue,
 );
@@ -578,10 +593,15 @@ impl pallet_xcm::Config for Runtime {
     type XcmRouter = XcmRouter;
     type ExecuteXcmOrigin = EnsureXcmOrigin<Origin, LocalOriginToLocation>;
     type XcmExecutor = XcmExecutor<XcmConfig>;
-    type XcmExecuteFilter = All<(MultiLocation, Xcm<Call>)>;
-    type XcmTeleportFilter = All<(MultiLocation, Vec<MultiAsset>)>;
-    type XcmReserveTransferFilter = ();
-    type Weigher = FixedWeightBounds<UnitWeightCost, Call>;
+    type XcmExecuteFilter = Everything;
+    type XcmTeleportFilter = Everything;
+    type XcmReserveTransferFilter = Everything;
+    type Weigher = FixedWeightBounds<UnitWeightCost, Call, MaxInstructions>;
+    type LocationInverter = LocationInverter<Ancestry>;
+    type Origin = Origin;
+    type Call = Call;
+    type AdvertisedXcmVersion = pallet_xcm::CurrentXcmVersion;
+    const VERSION_DISCOVERY_QUEUE_SIZE: u32 = 8;
 }
 
 impl cumulus_pallet_xcm::Config for Runtime {
@@ -593,6 +613,7 @@ impl cumulus_pallet_xcmp_queue::Config for Runtime {
     type Event = Event;
     type XcmExecutor = XcmExecutor<XcmConfig>;
     type ChannelInfo = ParachainSystem;
+    type VersionWrapper = ();
 }
 
 impl cumulus_pallet_dmp_queue::Config for Runtime {
@@ -675,6 +696,7 @@ impl cumulus_pallet_parachain_system::CheckInherents<Block> for CheckInherents {
     }
 }
 
+// XCM runtime version.
 // Create the runtime by composing the FRAME pallets that were previously configured.
 construct_runtime!(
     pub enum Runtime where
@@ -768,7 +790,7 @@ impl_runtime_apis! {
 
     impl sp_api::Metadata<Block> for Runtime {
         fn metadata() -> OpaqueMetadata {
-            Runtime::metadata().into()
+            OpaqueMetadata::new(Runtime::metadata().into())
         }
     }
 
@@ -850,7 +872,7 @@ impl_runtime_apis! {
         // Estimate gas for publish module.
         fn estimate_gas_publish(account: AccountId, module_bc: Vec<u8>, gas_limit: u64) -> Result<MVMApiEstimation, sp_runtime::DispatchError> {
             // TODO: pass real error.
-            let vm_result = Mvm::raw_publish_module(&account, module_bc, gas_limit, true).map_err(|_| sp_runtime::DispatchError::Other("error during VM execution"))?;
+            let vm_result = Mvm::raw_publish_module(&account, module_bc, gas_limit, true)?;
 
             Ok(MVMApiEstimation {
                 gas_used: vm_result.gas_used,
@@ -860,13 +882,32 @@ impl_runtime_apis! {
 
         // Estimate gas for execute script.
         fn estimate_gas_execute(account: AccountId, tx_bc: Vec<u8>, gas_limit: u64) -> Result<MVMApiEstimation, sp_runtime::DispatchError> {
-            let vm_result = Mvm::raw_execute_script(&[account], tx_bc, gas_limit, true).map_err(|_| sp_runtime::DispatchError::Other("error during VM execution"))?;
+            let vm_result = Mvm::raw_execute_script(&[account], tx_bc, gas_limit, true)?;
 
             Ok(MVMApiEstimation {
                 gas_used: vm_result.gas_used,
                 status_code: vm_result.status_code as u64,
             })
         }
+
+        // Get module binary by it's address
+        fn get_module(module_id: Vec<u8>) -> Result<Option<Vec<u8>>, Vec<u8>> {
+            Mvm::get_module(&module_id.as_slice())
+        }
+
+        // Get module ABI by it's address
+        fn get_module_abi(module_id: Vec<u8>) -> Result<Option<Vec<u8>>, Vec<u8>> {
+            Mvm::get_module_abi(&module_id.as_slice())
+        }
+
+        // Get resource
+        fn get_resource(
+            account_id: AccountId,
+            tag: Vec<u8>,
+        ) -> Result<Option<Vec<u8>>, Vec<u8>> {
+            Mvm::get_resource(&account_id, &tag.as_slice())
+        }
+
     }
 
     impl sp_session::SessionKeys<Block> for Runtime {
@@ -908,6 +949,27 @@ impl_runtime_apis! {
 
     #[cfg(feature = "runtime-benchmarks")]
     impl frame_benchmarking::Benchmark<Block> for Runtime {
+        fn benchmark_metadata(extra: bool) -> (
+            Vec<frame_benchmarking::BenchmarkList>,
+            Vec<frame_support::traits::StorageInfo>,
+        ) {
+            use frame_benchmarking::{list_benchmark, Benchmarking, BenchmarkList};
+            use frame_support::traits::StorageInfoTrait;
+            use frame_system_benchmarking::Pallet as SystemBench;
+
+            let mut list = Vec::<BenchmarkList>::new();
+
+            list_benchmark!(list, extra, frame_system, SystemBench::<Runtime>);
+            list_benchmark!(list, extra, pallet_balances, Balances);
+            list_benchmark!(list, extra, pallet_timestamp, Timestamp);
+            list_benchmark!(list, extra, pallet_vesting, Vesting);
+            list_benchmark!(list, extra, sp_mvm, Mvm);
+
+            let storage_info = AllPalletsWithSystem::storage_info();
+
+            return (list, storage_info)
+        }
+
         fn dispatch_benchmark(
             config: frame_benchmarking::BenchmarkConfig
         ) -> Result<Vec<frame_benchmarking::BenchmarkBatch>, sp_runtime::RuntimeString> {

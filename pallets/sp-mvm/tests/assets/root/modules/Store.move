@@ -1,3 +1,4 @@
+address {{sender}} {
 module Store {
     struct U64 has key { val: u64 }
 
@@ -26,4 +27,5 @@ module Store {
         let vec = VectorU8 { val: val };
         move_to<VectorU8>(account, vec);
     }
+}
 }

@@ -1,6 +1,8 @@
 [package]
 name = "benchmark_assets"
+dialect = "pont"
+dove_version = ">=1.3.2"
 
 dependencies = [
-    { git = "https://github.com/pontem-network/move-stdlib.git", rev = "7f200e70d2fc98863ecc8e004e9ee2255e97bf5a" }
+    { git = "https://github.com/pontem-network/move-stdlib.git", rev = "34cedad7436f7dad6c9a521f3f6199324737d69f" }
 ]
