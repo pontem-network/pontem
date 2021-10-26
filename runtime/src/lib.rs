@@ -54,6 +54,7 @@ pub use frame_support::{
             BlockExecutionWeight, ExtrinsicBaseWeight, RocksDbWeight, WEIGHT_PER_SECOND,
         },
     },
+    PalletId,
     error::{BadOrigin},
 };
 use frame_system::{
@@ -206,6 +207,7 @@ impl frame_system::Config for Runtime {
 parameter_types! {
     pub const LaunchPeriod: BlockNumber = 20;
     pub const VotingPeriod: BlockNumber = 20;
+    pub const VoteLockingPeriod: BlockNumber = 20;
     pub const FastTrackVotingPeriod: BlockNumber = 20;
     pub const EnactmentPeriod: BlockNumber = 20;
     pub const CooloffPeriod: BlockNumber = 20;
@@ -241,6 +243,7 @@ impl pallet_democracy::Config for Runtime {
     type EnactmentPeriod = EnactmentPeriod;
     type LaunchPeriod = LaunchPeriod;
     type VotingPeriod = VotingPeriod;
+    type VoteLockingPeriod = VoteLockingPeriod;
     type FastTrackVotingPeriod = FastTrackVotingPeriod;
     type MinimumDeposit = MinimumDeposit;
 
