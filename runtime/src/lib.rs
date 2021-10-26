@@ -304,7 +304,9 @@ impl pallet_treasury::Config for Runtime {
 
 parameter_types! {
     pub MaximumSchedulerWeight: Weight = Perbill::from_percent(80) * RuntimeBlockWeights::get().max_block;
+    pub const MaxScheduledPerBlock: u32 = 50;
 }
+
 impl pallet_scheduler::Config for Runtime {
     type Event = Event;
     type Origin = Origin;
@@ -312,8 +314,8 @@ impl pallet_scheduler::Config for Runtime {
     type Call = Call;
     type MaximumWeight = MaximumSchedulerWeight;
     type ScheduleOrigin = EnsureRoot<AccountId>;
-    type MaxScheduledPerBlock = ();
-    type WeightInfo = ();
+    type MaxScheduledPerBlock = MaxScheduledPerBlock;
+    type WeightInfo = pallet_scheduler::weights::SubstrateWeight<Runtime>;
 }
 
 parameter_types! {
@@ -730,21 +732,20 @@ construct_runtime!(
         AuthorFilter: pallet_author_slot_filter::{Pallet, Call, Storage, Event, Config} = 42,
         AuthorMapping: pallet_author_mapping::{Pallet, Call, Config<T>, Storage, Event<T>} = 43,
 
+        // Democracy 
+        Scheduler: pallet_scheduler::{Pallet, Call, Storage, Config, Event<T>} = 50,
+        Treasury: pallet_treasury::{Pallet, Call, Storage, Config, Event<T>} = 51,
+        Democracy: pallet_democracy::{Pallet, Call, Storage, Config<T>, Event<T>} = 52,
+
         // XCM helpers
-        XcmpQueue: cumulus_pallet_xcmp_queue::{Pallet, Call, Storage, Event<T>} = 50,
-        PolkadotXcm: pallet_xcm::{Pallet, Call, Event<T>, Origin} = 51,
-        CumulusXcm: cumulus_pallet_xcm::{Pallet, Call, Event<T>, Origin} = 52,
-        DmpQueue: cumulus_pallet_dmp_queue::{Pallet, Call, Storage, Event<T>} = 53,
+        XcmpQueue: cumulus_pallet_xcmp_queue::{Pallet, Call, Storage, Event<T>} = 60,
+        PolkadotXcm: pallet_xcm::{Pallet, Call, Event<T>, Origin} = 61,
+        CumulusXcm: cumulus_pallet_xcm::{Pallet, Call, Event<T>, Origin} = 62,
+        DmpQueue: cumulus_pallet_dmp_queue::{Pallet, Call, Storage, Event<T>} = 63,
 
         // Move VM
         Mvm: sp_mvm::{Pallet, Call, Storage, Config<T>, Event<T>},
-
         MultiSig: pallet_multisig::{Pallet, Call, Origin<T>, Storage, Event<T>},
-
-        Scheduler: pallet_scheduler::{Pallet, Call, Storage, Config, Event<T>},
-        Treasury: pallet_treasury::{Pallet, Call, Storage, Config, Event<T>},
-        Democracy: pallet_democracy::{Pallet, Call, Storage, Config<T>, Event<T>},
-
     }
 );
 
