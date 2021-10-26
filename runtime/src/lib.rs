@@ -270,30 +270,35 @@ impl pallet_democracy::Config for Runtime {
 }
 
 parameter_types! {
-    pub const SpendPeriod: BlockNumber = 20;
-    pub const BountyUpdatePeriod: BlockNumber = 20;
+    pub const SpendPeriod: BlockNumber = 6 * DAYS;
     pub const TreasuryPalletId: PalletId = PalletId(*b"py/trsry");
+    /// 5% would be slashed if proposal rejected.
     pub const ProposalBond: Permill = Permill::from_percent(5);
-    pub const ProposalBondMinimum: Balance = 1;
+    /// 100 PONT required to make proposal.
+    pub const ProposalBondMinimum: Balance = 100 * PONT;
     pub const Burn: Permill = Permill::from_percent(50);
     pub const BountyCuratorDeposit: Permill = Permill::from_percent(50);
     pub const MaxApprovals: u32 = 100;
 }
 
 impl pallet_treasury::Config for Runtime {
-    type Currency = pallet_balances::Pallet<Self>;
+    type Currency = Balances;
+    // Only root for now, governance later.
     type ApproveOrigin = EnsureRoot<AccountId>;
+    // Only root for now, governance later.
     type RejectOrigin = EnsureRoot<AccountId>;
     type PalletId = TreasuryPalletId;
     type MaxApprovals = MaxApprovals;
     type Event = Event;
-    type OnSlash = ();
+    // If proposal rejected - send deposit to treasury.
+    type OnSlash = Treasury;
     type ProposalBond = ProposalBond;
     type ProposalBondMinimum = ProposalBondMinimum;
     type SpendPeriod = SpendPeriod;
-    type Burn = Burn;
-    type BurnDestination = (); // Just gets burned.
-    type WeightInfo = ();
+    // Not burning.
+    type Burn = ();
+    type BurnDestination = ();
+    type WeightInfo = pallet_treasury::weights::SubstrateWeight<Runtime>;
     type SpendFunds = ();
 }
 
