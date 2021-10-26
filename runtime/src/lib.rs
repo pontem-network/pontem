@@ -205,19 +205,24 @@ impl frame_system::Config for Runtime {
 }
 
 parameter_types! {
-    pub const LaunchPeriod: BlockNumber = 20;
-    pub const VotingPeriod: BlockNumber = 20;
-    pub const VoteLockingPeriod: BlockNumber = 20;
-    pub const FastTrackVotingPeriod: BlockNumber = 20;
-    pub const EnactmentPeriod: BlockNumber = 20;
-    pub const CooloffPeriod: BlockNumber = 20;
+    pub const EnactmentPeriod: BlockNumber = 3 * DAYS;
+    pub const LaunchPeriod: BlockNumber = 3 * DAYS;
+    pub const VotingPeriod: BlockNumber = 5 * DAYS;
+    pub const VoteLockingPeriod: BlockNumber = 1 * DAYS;
+    pub const FastTrackVotingPeriod: BlockNumber = 3 * HOURS;
+    pub const CooloffPeriod: BlockNumber = 14 * DAYS;
 
-    pub const MinimumDeposit: Balance = 1;
-    pub const PreimageByteDeposit: BlockNumber = 0;
+    // 100 PONT as minimum deposit.
+    pub const MinimumDeposit: Balance = 100 * PONT;
+
+    // e.g. 100 PONT for 1 MB.
+    pub const PreimageByteDeposit: Balance = 1000000;
 
     pub const MaxVotes: u32 = 100;
     pub const MaxProposals: u32 = 100;
-    pub const InstantAllowed: bool = false;
+
+    // Allow emergency.
+    pub const InstantAllowed: bool = true;
 }
 pub struct AssumeRootIsSudo();
 impl EnsureOrigin<Origin> for AssumeRootIsSudo {
@@ -239,12 +244,14 @@ impl EnsureOrigin<Origin> for AssumeRootIsSudo {
 impl pallet_democracy::Config for Runtime {
     type Proposal = Call;
     type Event = Event;
-    type Currency = pallet_balances::Pallet<Self>;
+    type Currency = Balances;
+
     type EnactmentPeriod = EnactmentPeriod;
     type LaunchPeriod = LaunchPeriod;
     type VotingPeriod = VotingPeriod;
     type VoteLockingPeriod = VoteLockingPeriod;
     type FastTrackVotingPeriod = FastTrackVotingPeriod;
+
     type MinimumDeposit = MinimumDeposit;
 
     type ExternalOrigin = EnsureRoot<AccountId>;
@@ -265,7 +272,7 @@ impl pallet_democracy::Config for Runtime {
     type Scheduler = Scheduler;
     type MaxVotes = MaxVotes;
     type PalletsOrigin = OriginCaller;
-    type WeightInfo = ();
+    type WeightInfo = pallet_democracy::weights::SubstrateWeight<Runtime>;
     type MaxProposals = MaxProposals;
 }
 
@@ -732,7 +739,7 @@ construct_runtime!(
         AuthorFilter: pallet_author_slot_filter::{Pallet, Call, Storage, Event, Config} = 42,
         AuthorMapping: pallet_author_mapping::{Pallet, Call, Config<T>, Storage, Event<T>} = 43,
 
-        // Democracy 
+        // Democracy
         Scheduler: pallet_scheduler::{Pallet, Call, Storage, Config, Event<T>} = 50,
         Treasury: pallet_treasury::{Pallet, Call, Storage, Config, Event<T>} = 51,
         Democracy: pallet_democracy::{Pallet, Call, Storage, Config<T>, Event<T>} = 52,
