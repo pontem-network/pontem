@@ -20,10 +20,11 @@ use parity_scale_codec::{Decode, Encode};
 use serde::{Deserialize, Serialize};
 use sp_runtime::RuntimeDebug;
 use sp_std::prelude::*;
+use scale_info::TypeInfo;
 
 /// An ordered set backed by `Vec`
 #[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
-#[derive(RuntimeDebug, PartialEq, Eq, Encode, Decode, Default)]
+#[derive(RuntimeDebug, PartialEq, Eq, Encode, Decode, Default, TypeInfo)]
 pub struct OrderedSet<T>(pub Vec<T>);
 
 impl<T: Ord> OrderedSet<T> {

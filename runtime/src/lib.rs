@@ -17,6 +17,7 @@ use sp_api::impl_runtime_apis;
 use sp_version::RuntimeVersion;
 #[cfg(feature = "std")]
 use sp_version::NativeVersion;
+use scale_info::TypeInfo;
 
 use cumulus_pallet_parachain_system::RelaychainBlockNumberProvider;
 use nimbus_primitives::NimbusId;
@@ -237,6 +238,7 @@ impl pallet_vesting::Config for Runtime {
     type BlockNumberToBalance = ConvertInto;
     type MinVestedTransfer = MinVestedTransfer;
     type WeightInfo = pallet_vesting::weights::SubstrateWeight<Runtime>;
+    const MAX_VESTING_SCHEDULES: u32 = 1;
 }
 
 parameter_types! {
@@ -258,11 +260,16 @@ impl pallet_balances::Config for Runtime {
     type ReserveIdentifier = [u8; 8];
 }
 
+parameter_types! {
+    pub const OperationalFeeMultiplier: u8 = 5;
+}
+
 impl pallet_transaction_payment::Config for Runtime {
     type OnChargeTransaction = pallet_transaction_payment::CurrencyAdapter<Balances, ()>;
     type TransactionByteFee = TransactionByteFee;
     type WeightToFee = IdentityFee<Balance>;
     type FeeMultiplierUpdate = ();
+    type OperationalFeeMultiplier = OperationalFeeMultiplier;
 }
 
 impl pallet_sudo::Config for Runtime {
@@ -430,6 +437,7 @@ parameter_types! {
      pub UnitWeightCost: Weight = 1_000_000;
      // One UNIT buys 1 second of weight.
      pub const WeightPrice: (MultiLocation, u128) = (MultiLocation::parent(), UNIT as u128);
+     pub const MaxInstructions: u32 = 100;
 }
 
 match_type! {
@@ -502,15 +510,25 @@ impl WeightTrader for SimpleWeightTrader {
             Some(CurrencyId::Ksm) => {
                 use frame_support::weights::WeightToFeePolynomial;
                 let fee = kusama::KusamaWeightToFee::calc(&weight);
-                asset_id.clone().into_multiasset(Fungibility::Fungible(fee as u128))
+                asset_id
+                    .clone()
+                    .into_multiasset(Fungibility::Fungible(fee as u128))
             }
-            None => asset_id.clone().into_multiasset(Fungibility::Fungible(weight as u128)),
+            None => asset_id
+                .clone()
+                .into_multiasset(Fungibility::Fungible(weight as u128)),
         };
 
-        if let MultiAsset { id: Concrete(ref id), .. } = required {
+        if let MultiAsset {
+            id: Concrete(ref id),
+            ..
+        } = required
+        {
             self.0 = id.clone();
         }
-        let unused = payment.checked_sub(required).map_err(|_| XcmError::TooExpensive)?;
+        let unused = payment
+            .checked_sub(required)
+            .map_err(|_| XcmError::TooExpensive)?;
         Ok(unused)
     }
 
@@ -524,7 +542,10 @@ impl WeightTrader for SimpleWeightTrader {
             }
             None => weight as u128,
         };
-        Some(MultiAsset { id: self.0.clone().into(), fun: Fungibility::Fungible(amount) })
+        Some(MultiAsset {
+            id: self.0.clone().into(),
+            fun: Fungibility::Fungible(amount),
+        })
     }
 }
 
@@ -540,10 +561,12 @@ impl Config for XcmConfig {
     type IsTeleporter = (); // <- should be enough to allow teleportation of UNIT
     type LocationInverter = LocationInverter<Ancestry>;
     type Barrier = Barrier;
-    type Weigher = FixedWeightBounds<UnitWeightCost, Call>;
+    type Weigher = FixedWeightBounds<UnitWeightCost, Call, MaxInstructions>;
     type Trader = SimpleWeightTrader;
     type ResponseHandler = (); // Don't handle responses for now.
     type SubscriptionService = PolkadotXcm;
+    type AssetTrap = ();
+    type AssetClaims = ();
 }
 
 /// No local origins on this chain are allowed to dispatch XCM sends/executions.
@@ -566,9 +589,13 @@ impl pallet_xcm::Config for Runtime {
     type XcmExecutor = XcmExecutor<XcmConfig>;
     type XcmExecuteFilter = Everything;
     type XcmTeleportFilter = Everything;
-    type XcmReserveTransferFilter = ();
-    type Weigher = FixedWeightBounds<UnitWeightCost, Call>;
+    type XcmReserveTransferFilter = Everything;
+    type Weigher = FixedWeightBounds<UnitWeightCost, Call, MaxInstructions>;
     type LocationInverter = LocationInverter<Ancestry>;
+    type Origin = Origin;
+    type Call = Call;
+    type AdvertisedXcmVersion = pallet_xcm::CurrentXcmVersion;
+    const VERSION_DISCOVERY_QUEUE_SIZE: u32 = 8;
 }
 
 impl cumulus_pallet_xcm::Config for Runtime {
@@ -663,7 +690,7 @@ impl cumulus_pallet_parachain_system::CheckInherents<Block> for CheckInherents {
     }
 }
 
-#[derive(Encode, Decode, Eq, PartialEq, Copy, Clone, RuntimeDebug, PartialOrd, Ord)]
+#[derive(Encode, Decode, Eq, PartialEq, Copy, Clone, RuntimeDebug, PartialOrd, Ord, TypeInfo)]
 #[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
 pub enum CurrencyId {
     // Relaychain's currency.
@@ -705,8 +732,14 @@ impl Convert<MultiLocation, Option<CurrencyId>> for CurrencyIdConvert {
     fn convert(location: MultiLocation) -> Option<CurrencyId> {
         const PONT_KEY: &[u8] = b"PONT";
         match location {
-            MultiLocation { parents: 1, interior: Junctions::Here } => Some(CurrencyId::Ksm),
-            MultiLocation { parents: 1, interior: X2(Parachain(_id), GeneralKey(key)) } if key == PONT_KEY => Some(CurrencyId::Pont),
+            MultiLocation {
+                parents: 1,
+                interior: Junctions::Here,
+            } => Some(CurrencyId::Ksm),
+            MultiLocation {
+                parents: 1,
+                interior: X2(Parachain(_id), GeneralKey(key)),
+            } if key == PONT_KEY => Some(CurrencyId::Pont),
             _ => None,
         }
     }
@@ -714,7 +747,11 @@ impl Convert<MultiLocation, Option<CurrencyId>> for CurrencyIdConvert {
 
 impl Convert<MultiAsset, Option<CurrencyId>> for CurrencyIdConvert {
     fn convert(asset: MultiAsset) -> Option<CurrencyId> {
-        if let MultiAsset { id: Concrete(id), fun: _ } = asset {
+        if let MultiAsset {
+            id: Concrete(id),
+            fun: _,
+        } = asset
+        {
             Self::convert(id)
         } else {
             None
@@ -737,7 +774,7 @@ impl orml_tokens::Config for Runtime {
     type ExistentialDeposits = ExistentialDeposits;
     type OnDust = ();
     type MaxLocks = MaxLocks;
-    type DustRemovalWhitelist = ();
+    type DustRemovalWhitelist = Everything;
 }
 
 pub struct AccountIdToMultiLocation;
@@ -746,7 +783,8 @@ impl Convert<AccountId, MultiLocation> for AccountIdToMultiLocation {
         X1(Junction::AccountId32 {
             network: NetworkId::Any,
             id: account.into(),
-        }).into()
+        })
+        .into()
     }
 }
 
@@ -763,7 +801,7 @@ impl orml_xtokens::Config for Runtime {
     type AccountIdToMultiLocation = AccountIdToMultiLocation;
     type SelfLocation = SelfLocation;
     type XcmExecutor = XcmExecutor<XcmConfig>;
-    type Weigher = FixedWeightBounds<UnitWeightCost, Call>;
+    type Weigher = FixedWeightBounds<UnitWeightCost, Call, MaxInstructions>;
     type BaseXcmWeight = BaseXcmWeight;
     type LocationInverter = LocationInverter<Ancestry>;
 }
@@ -865,7 +903,7 @@ impl_runtime_apis! {
 
     impl sp_api::Metadata<Block> for Runtime {
         fn metadata() -> OpaqueMetadata {
-            Runtime::metadata().into()
+            OpaqueMetadata::new(Runtime::metadata().into())
         }
     }
 
@@ -947,7 +985,7 @@ impl_runtime_apis! {
         // Estimate gas for publish module.
         fn estimate_gas_publish(account: AccountId, module_bc: Vec<u8>, gas_limit: u64) -> Result<MVMApiEstimation, sp_runtime::DispatchError> {
             // TODO: pass real error.
-            let vm_result = Mvm::raw_publish_module(&account, module_bc, gas_limit, true).map_err(|_| sp_runtime::DispatchError::Other("error during VM execution"))?;
+            let vm_result = Mvm::raw_publish_module(&account, module_bc, gas_limit, true)?;
 
             Ok(MVMApiEstimation {
                 gas_used: vm_result.gas_used,
@@ -957,13 +995,32 @@ impl_runtime_apis! {
 
         // Estimate gas for execute script.
         fn estimate_gas_execute(account: AccountId, tx_bc: Vec<u8>, gas_limit: u64) -> Result<MVMApiEstimation, sp_runtime::DispatchError> {
-            let vm_result = Mvm::raw_execute_script(&[account], tx_bc, gas_limit, true).map_err(|_| sp_runtime::DispatchError::Other("error during VM execution"))?;
+            let vm_result = Mvm::raw_execute_script(&[account], tx_bc, gas_limit, true)?;
 
             Ok(MVMApiEstimation {
                 gas_used: vm_result.gas_used,
                 status_code: vm_result.status_code as u64,
             })
         }
+
+        // Get module binary by it's address
+        fn get_module(module_id: Vec<u8>) -> Result<Option<Vec<u8>>, Vec<u8>> {
+            Mvm::get_module(&module_id.as_slice())
+        }
+
+        // Get module ABI by it's address
+        fn get_module_abi(module_id: Vec<u8>) -> Result<Option<Vec<u8>>, Vec<u8>> {
+            Mvm::get_module_abi(&module_id.as_slice())
+        }
+
+        // Get resource
+        fn get_resource(
+            account_id: AccountId,
+            tag: Vec<u8>,
+        ) -> Result<Option<Vec<u8>>, Vec<u8>> {
+            Mvm::get_resource(&account_id, &tag.as_slice())
+        }
+
     }
 
     impl sp_session::SessionKeys<Block> for Runtime {

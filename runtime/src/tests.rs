@@ -31,10 +31,16 @@ fn send_relay_chain_asset_to_relay_chain() {
             Some(ALICE).into(),
             CurrencyId::Ksm,
             dollar(CurrencyId::Ksm) as _,
-            Box::new(MultiLocation::new(1, Junctions::X1(Junction::AccountId32 {
-                    network: NetworkId::Any,
-                    id: BOB.into(),
-                }))),
+            Box::new(
+                MultiLocation::new(
+                    1,
+                    Junctions::X1(Junction::AccountId32 {
+                        network: NetworkId::Any,
+                        id: BOB.into(),
+                    })
+                )
+                .into()
+            ),
             3_000_000_000,
         ));
         assert_eq!(
@@ -66,10 +72,19 @@ fn cannot_lost_fund_on_send_failed() {
                 Some(ALICE).into(),
                 CurrencyId::Pont,
                 500 * PONT,
-                Box::new(MultiLocation::new(1, Junctions::X2(Junction::Parachain(100), Junction::AccountId32 {
-                        network: NetworkId::Kusama,
-                        id: BOB.into(),
-                    }))),
+                Box::new(
+                    MultiLocation::new(
+                        1,
+                        Junctions::X2(
+                            Junction::Parachain(100),
+                            Junction::AccountId32 {
+                                network: NetworkId::Kusama,
+                                id: BOB.into(),
+                            }
+                        )
+                    )
+                    .into()
+                ),
                 30 * PONT,
             ),
             Error::<crate::Runtime>::XcmExecutionFailed
@@ -95,10 +110,19 @@ fn send_relay_chain_asset_to_sibling() {
             Some(ALICE).into(),
             CurrencyId::Ksm,
             3 * dollar(CurrencyId::Ksm) as u64,
-                Box::new(MultiLocation::new(1, Junctions::X2(Junction::Parachain(2), Junction::AccountId32 {
-                        network: NetworkId::Any,
-                        id: BOB.into(),
-                    }))),
+            Box::new(
+                MultiLocation::new(
+                    1,
+                    Junctions::X2(
+                        Junction::Parachain(2),
+                        Junction::AccountId32 {
+                            network: NetworkId::Any,
+                            id: BOB.into(),
+                        }
+                    )
+                )
+                .into()
+            ),
             3_000_000,
         ));
         assert_eq!(
@@ -128,10 +152,19 @@ fn send_sibling_asset_to_sibling() {
             Some(ALICE).into(),
             CurrencyId::Pont,
             500 * PONT,
-                Box::new(MultiLocation::new(1, Junctions::X2(Junction::Parachain(2), Junction::AccountId32 {
-                        network: NetworkId::Any,
-                        id: BOB.into(),
-                    }))),
+            Box::new(
+                MultiLocation::new(
+                    1,
+                    Junctions::X2(
+                        Junction::Parachain(2),
+                        Junction::AccountId32 {
+                            network: NetworkId::Any,
+                            id: BOB.into(),
+                        }
+                    )
+                )
+                .into()
+            ),
             3_000_000,
         ));
 
@@ -160,10 +193,19 @@ fn send_self_parachain_asset_to_sibling() {
             Some(ALICE).into(),
             CurrencyId::Pont,
             500 * PONT,
-                Box::new(MultiLocation::new(1, Junctions::X2(Junction::Parachain(2), Junction::AccountId32 {
-                        network: NetworkId::Any,
-                        id: BOB.into(),
-                    }))),
+            Box::new(
+                MultiLocation::new(
+                    1,
+                    Junctions::X2(
+                        Junction::Parachain(2),
+                        Junction::AccountId32 {
+                            network: NetworkId::Any,
+                            id: BOB.into(),
+                        }
+                    )
+                )
+                .into()
+            ),
             3_000_000,
         ));
 
@@ -193,14 +235,26 @@ fn transfer_no_reserve_assets_fails() {
         assert_noop!(
             ParaXTokens::transfer_multiasset(
                 Some(ALICE).into(),
-                Box::new(MultiAsset {
-                    id: xcm_emulator::Concrete(GeneralKey("PONT".into()).into()),
-                    fun: (100 * PONT as u128).into(),
-                }),
-                Box::new(MultiLocation::new(1, Junctions::X2(Junction::Parachain(2), Junction::AccountId32 {
-                        network: NetworkId::Any,
-                        id: BOB.into(),
-                    }))),
+                Box::new(
+                    MultiAsset {
+                        id: xcm_emulator::Concrete(GeneralKey("PONT".into()).into()),
+                        fun: (100 * PONT as u128).into(),
+                    }
+                    .into()
+                ),
+                Box::new(
+                    MultiLocation::new(
+                        1,
+                        Junctions::X2(
+                            Junction::Parachain(2),
+                            Junction::AccountId32 {
+                                network: NetworkId::Any,
+                                id: BOB.into(),
+                            }
+                        )
+                    )
+                    .into()
+                ),
                 50 * PONT,
             ),
             Error::<crate::Runtime>::AssetHasNoReserve
@@ -216,14 +270,26 @@ fn transfer_to_self_chain_fails() {
         assert_noop!(
             ParaXTokens::transfer_multiasset(
                 Some(ALICE).into(),
-                Box::new(MultiAsset {
-                    id: (Parent, Parachain(1), GeneralKey("PONT".into())).into(),
-                    fun: (100 * PONT as u128).into(),
-                }),
-                Box::new(MultiLocation::new(1, Junctions::X2(Junction::Parachain(1), Junction::AccountId32 {
-                        network: NetworkId::Any,
-                        id: BOB.into(),
-                    }))),
+                Box::new(
+                    MultiAsset {
+                        id: (Parent, Parachain(1), GeneralKey("PONT".into())).into(),
+                        fun: (100 * PONT as u128).into(),
+                    }
+                    .into()
+                ),
+                Box::new(
+                    MultiLocation::new(
+                        1,
+                        Junctions::X2(
+                            Junction::Parachain(1),
+                            Junction::AccountId32 {
+                                network: NetworkId::Any,
+                                id: BOB.into(),
+                            }
+                        )
+                    )
+                    .into()
+                ),
                 50 * PONT,
             ),
             Error::<crate::Runtime>::NotCrossChainTransfer
@@ -239,14 +305,23 @@ fn transfer_to_invalid_dest_fails() {
         assert_noop!(
             ParaXTokens::transfer_multiasset(
                 Some(ALICE).into(),
-                Box::new(MultiAsset {
-                    id: (Parent, Parachain(1), GeneralKey("PONT".into())).into(),
-                    fun: (100 * PONT as u128).into(),
-                }),
-                Box::new(MultiLocation::new(0, Junctions::X1(Junction::AccountId32 {
-                        network: NetworkId::Any,
-                        id: BOB.into(),
-                    }))),
+                Box::new(
+                    MultiAsset {
+                        id: (Parent, Parachain(1), GeneralKey("PONT".into())).into(),
+                        fun: (100 * PONT as u128).into(),
+                    }
+                    .into()
+                ),
+                Box::new(
+                    MultiLocation::new(
+                        0,
+                        Junctions::X1(Junction::AccountId32 {
+                            network: NetworkId::Any,
+                            id: BOB.into(),
+                        })
+                    )
+                    .into()
+                ),
                 50 * PONT,
             ),
             Error::<crate::Runtime>::InvalidDest

@@ -32,6 +32,8 @@ pub trait TryCreateMoveVm<T> {
 pub use vm_static::*;
 #[cfg(not(feature = "no-vm-static"))]
 mod vm_static {
+    use anyhow::Error;
+    use move_vm::StateAccess;
     use move_vm::io::context::ExecutionContext;
     use move_vm::types::Gas;
     use move_vm::types::ScriptTx;
@@ -57,6 +59,27 @@ mod vm_static {
     pub struct VmWrapper<T: move_vm::Vm>(T);
     unsafe impl<T: move_vm::Vm> Send for VmWrapper<T> {}
     unsafe impl<T: move_vm::Vm> Sync for VmWrapper<T> {}
+
+    impl StateAccess for VmWrapperTy {
+        fn get_module(&self, module_id: &[u8]) -> Result<Option<sp_std::vec::Vec<u8>>, Error> {
+            self.0.get_module(module_id)
+        }
+
+        fn get_module_abi(
+            &self,
+            module_id: &[u8],
+        ) -> Result<Option<sp_std::vec::Vec<u8>>, Error> {
+            self.0.get_module_abi(module_id)
+        }
+
+        fn get_resource(
+            &self,
+            address: &move_core_types::account_address::AccountAddress,
+            tag: &[u8],
+        ) -> Result<Option<sp_std::vec::Vec<u8>>, Error> {
+            self.0.get_resource(address, tag)
+        }
+    }
 
     impl<T: move_vm::Vm> VmWrapper<T> {
         pub fn new(vm: T) -> Self {
