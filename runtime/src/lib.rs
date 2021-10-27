@@ -279,9 +279,10 @@ impl pallet_democracy::Config for Runtime {
 parameter_types! {
     pub const SpendPeriod: BlockNumber = 6 * DAYS;
     pub const TreasuryPalletId: PalletId = PalletId(*b"py/trsry");
-    /// 5% would be slashed if proposal rejected.
+    /// 5% of proposal value should be reserved from proposer balance,
+    /// but not less than ProposalBondMinimum.
+    /// This value would be slashed if proposal rejected.
     pub const ProposalBond: Permill = Permill::from_percent(5);
-    /// 100 PONT required to make proposal.
     pub const ProposalBondMinimum: Balance = 100 * PONT;
     pub const MaxApprovals: u32 = 100;
 }
