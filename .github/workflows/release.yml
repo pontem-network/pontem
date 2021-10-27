@@ -3,6 +3,12 @@ on:
   push:
     tags:
       - v?[0-9]+.[0-9]+.*
+  workflow_call:
+    inputs:
+      tag:
+        description: Target tag
+        required: true
+        type: string
 
 jobs:
   release:
@@ -15,17 +21,27 @@ jobs:
     steps:
       - name: Extract the version tag
         id: version
-        run: echo ::set-output name=value::$(echo $GITHUB_REF | cut -d / -f 3)
+        run: |
+          if [ -z "${{ inputs.tag }}" ]; then
+              echo ::set-output name=value::$(echo $GITHUB_REF | cut -d / -f 3)
+          else
+              echo ::set-output name=value::${{ inputs.tag }}
+          fi
 
       # checkout needed for changelog only
       - name: Checkout
         uses: actions/checkout@v2
-        with: { fetch-depth: 0 }
+        with:
+          fetch-depth: 0
+          ref: ${{ steps.version.outputs.value }}
 
       - id: changelog
         name: Generate Changelog
         continue-on-error: true
         run: |
+          # XXX: Why not all tags fetched?
+          git fetch --tags --all --prune-tags --force
+
           TAG_FIRST=$(git describe --abbrev=0 --tags $(git describe --abbrev=0)^)
           TAG_SECOND=$(git describe --abbrev=0)
           echo "Generating changelog between tags: ${{ steps.version.outputs.value }}...$TAG_FIRST...$TAG_SECOND"
@@ -69,8 +85,8 @@ jobs:
         with:
           draft: true
           prerelease: true
-          tag_name: ${{ github.ref }}
-          release_name: ${{ github.ref }}
+          tag_name: ${{ steps.version.outputs.value }}
+          release_name: ${{ steps.version.outputs.value }}
           body_path: ${{ steps.changelog.outputs.file }}
 
       - name: Save urls for other workflows

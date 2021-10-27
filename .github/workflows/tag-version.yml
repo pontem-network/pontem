@@ -1,4 +1,4 @@
-name: Push Tag
+name: Tag Version
 on:
   push:
     branches:
@@ -13,8 +13,24 @@ jobs:
         uses: actions/checkout@v2
 
       - id: new_tag
+        name: try create tag
         uses: ./.github/actions/tag-crate-version
         with:
           crate: pontem-node
           version-to-tag: "v$1"
           token: ${{ secrets.GITHUB_TOKEN }}
+
+    outputs:
+      crate: ${{ steps.new_tag.outputs.crate }}
+      version: ${{ steps.new_tag.outputs.current }}
+      tag: ${{ steps.new_tag.outputs.tag }}
+      prev-tag: ${{ steps.new_tag.outputs.previous }}
+      success: ${{ steps.new_tag.outputs.success }}
+
+  release:
+    needs: push-tag
+    if: needs.push-tag.outputs.success
+    uses: pontem-network/pontem/.github/workflows/release.yml@master
+    # SHOULD BE uses: ${{ github.event.repository.full_name }}/.github/workflows/release.yml@${{ github.ref }} or ${{ needs.push-tag.outputs.tag }}
+    with:
+      tag: ${{ needs.push-tag.outputs.tag }}

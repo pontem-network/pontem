@@ -63,8 +63,7 @@ async function run(opts, impl) {
 	const last_tag = await get_last_tag(opts.pwd);
 
 	console.log("crate:", crate);
-	console.log("new_tag:", new_tag);
-	console.log("last_tag:", last_tag);
+	console.log("tags:", last_tag, "=>", new_tag);
 
 	let output = {
 		crate: crate.name,
@@ -72,19 +71,27 @@ async function run(opts, impl) {
 		tag: new_tag,
 	};
 
+	set_github_action_output(output);
+
+	function notice_or_error(message) {
+		if (message.toString().toLowerCase().includes("already exists")) {
+			notice(message);
+		} else {
+			fail(message);
+		}
+	}
+
 	if (last_tag) {
 		const matched = last_tag.match(new RegExp(opts.tag_to_version));
 		const last_ver = matched ? matched[1] : last_tag;
-		output['previous'] = last_ver;
+		set_github_action_output({ previous: last_ver });
 
 		if (last_ver != crate.version)
-			await push_tag(opts.pwd, new_tag);
+			await push_tag(opts.pwd, new_tag).then(() => set_github_action_output({ success: true })).catch(notice_or_error);
 	}
 	else {
-		await push_tag(opts.pwd, new_tag);
+		await push_tag(opts.pwd, new_tag).then(() => set_github_action_output({ success: true })).catch(notice_or_error);
 	}
-
-	set_github_action_output(output);
 }
 
 
@@ -110,6 +117,7 @@ function set_github_action_output(output) {
 	const core = require('@actions/core');
 	for (key in output) {
 		core.setOutput(key, output[key]);
+		// console.log(`::set-output name=${key}::${output[key]}`);
 	}
 }
 
@@ -133,11 +141,11 @@ async function get_crate(name, pwd, impl) {
 
 async function get_last_tag(pwd) {
 	const opt = { cwd: pwd };
-	await exec("git describe --abbrev=0", opt).then((stdout, stderr) => {
-		if (!stdout || stdout.trim().length == 0)
-			return;
-		return stdout.trim();
-	}).catch(err => { /* nothing */ });
+
+	const { err, stdout, stderr } = await exec("git describe --abbrev=0", opt);
+	if (err) { return fail(err); }
+	let result = stdout.trim();
+	return result;
 }
 
 async function push_tag(pwd, tag, annotation = undefined) {
@@ -160,4 +168,12 @@ function fail(error) {
 	} catch (_) {
 		console.error(error);
 	}
+}
+
+function warning(message) {
+	console.log(`::warning ::${message}`);
+}
+
+function notice(message) {
+	console.log(`::notice ::${message}`);
 }

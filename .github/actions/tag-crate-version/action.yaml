@@ -33,12 +33,21 @@ outputs:
   tag:
     description: "Current tag just created."
     value: ${{ steps.run.outputs.tag }}
+  success:
+    description: "New tag was pushed successfully."
+    value: ${{ steps.run.outputs.success }}
+
 runs:
   using: composite
   steps:
     - name: install deps
       shell: bash
       run: cd $GITHUB_ACTION_PATH && npm i
+
+    - name: fetch tags
+      shell: bash
+      run: git fetch --tags --prune --unshallow
+
     - id: run
       name: run
       shell: bash
@@ -49,6 +58,7 @@ runs:
         INP_TAG_TO_VERSION: ${{ inputs.tag-to-version }}
         INP_VERSION_TO_TAG: ${{ inputs.version-to-tag }}
         INP_GITHUB_TOKEN: ${{ inputs.token }}
+
 branding:
   icon: "package"
   color: "orange"
