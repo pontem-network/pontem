@@ -283,8 +283,6 @@ parameter_types! {
     pub const ProposalBond: Permill = Permill::from_percent(5);
     /// 100 PONT required to make proposal.
     pub const ProposalBondMinimum: Balance = 100 * PONT;
-    pub const Burn: Permill = Permill::from_percent(50);
-    pub const BountyCuratorDeposit: Permill = Permill::from_percent(50);
     pub const MaxApprovals: u32 = 100;
 }
 
