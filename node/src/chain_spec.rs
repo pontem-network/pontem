@@ -9,7 +9,7 @@ use sp_runtime::{
 use pontem_runtime::{
     GenesisConfig, SudoConfig, SystemConfig, BalancesConfig, WASM_BINARY, ParachainInfoConfig,
     VestingConfig, MvmConfig, ParachainStakingConfig, InflationInfo, Range, AuthorFilterConfig,
-    AuthorMappingConfig,
+    AuthorMappingConfig, TreasuryConfig, DemocracyConfig, SchedulerConfig,
     primitives::{AccountId, Signature, Balance},
     constants::currency::{PONT, DECIMALS},
 };
@@ -241,6 +241,9 @@ fn testnet_genesis(
                 .map(|k| (k, 100, 1000, 90_000 * PONT)) // K - address, 100 - when vesting starts, 1000 - how much blocks for vesting, 10 * PONT - free balance.
                 .collect(),
         },
+        treasury: TreasuryConfig {},
+        democracy: DemocracyConfig::default(),
+        scheduler: SchedulerConfig {},
     }
 }
 
