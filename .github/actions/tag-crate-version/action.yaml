@@ -1,0 +1,64 @@
+name: Tag Crate Version
+description: "Create tag with version of specified crate if it updated."
+author: "Alex Koz."
+inputs:
+  crate:
+    required: false
+    description: "Name of crate of interest. Default is root package."
+  pwd:
+    default: "./"
+    required: false
+    description: "Current working directory."
+  tag-to-version:
+    default: /v?([0-9]+.[0-9]+.*)/
+    required: false
+    description: "Regex to determine version from tag."
+  version-to-tag:
+    default: "v$1"
+    required: false
+    description: "Temptate for the tag, where `$1` is a placeholder for the version."
+  token:
+    required: false
+    description: "GITHUB_TOKEN"
+outputs:
+  crate:
+    description: "Crate name."
+    value: ${{ steps.run.outputs.crate }}
+  current:
+    description: "Current version of the crate."
+    value: ${{ steps.run.outputs.current }}
+  previous:
+    description: "Previous version of the crate. Tetermined from previous tag."
+    value: ${{ steps.run.outputs.previous }}
+  tag:
+    description: "Current tag just created."
+    value: ${{ steps.run.outputs.tag }}
+  success:
+    description: "New tag was pushed successfully."
+    value: ${{ steps.run.outputs.success }}
+
+runs:
+  using: composite
+  steps:
+    - name: install deps
+      shell: bash
+      run: cd $GITHUB_ACTION_PATH && npm i
+
+    - name: fetch tags
+      shell: bash
+      run: git fetch --tags --prune --unshallow
+
+    - id: run
+      name: run
+      shell: bash
+      run: node $GITHUB_ACTION_PATH/main.js
+      env:
+        INP_CRATE: ${{ inputs.crate }}
+        INP_PWD: ${{ inputs.pwd }}
+        INP_TAG_TO_VERSION: ${{ inputs.tag-to-version }}
+        INP_VERSION_TO_TAG: ${{ inputs.version-to-tag }}
+        INP_GITHUB_TOKEN: ${{ inputs.token }}
+
+branding:
+  icon: "package"
+  color: "orange"

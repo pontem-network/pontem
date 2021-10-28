@@ -1,0 +1,21 @@
+{
+  "main": "with-cargo.js",
+  "scripts": {
+    "build": "ncc build with-cargo.js -sm --target es2014"
+  },
+  "dependencies": {
+    "@actions/core": "^1.5.0",
+    "@actions/github": "^5.0.0",
+    "@ltd/j-toml": "^1.15.0"
+  },
+  "name": "git-tag-crate-version",
+  "version": "0.1.0",
+  "private": true,
+  "description": "",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/username/repository.git"
+  },
+  "license": "",
+  "README": ""
+}
