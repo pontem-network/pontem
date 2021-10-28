@@ -43,13 +43,14 @@ pub mod pallet {
     use frame_support::pallet_prelude::*;
     use frame_support::traits::{Currency, ReservableCurrency};
     use frame_system::pallet_prelude::*;
+    use scale_info::TypeInfo;
     use nimbus_primitives::AccountLookup;
 
     pub type BalanceOf<T> = <<T as Config>::DepositCurrency as Currency<
         <T as frame_system::Config>::AccountId,
     >>::Balance;
 
-    #[derive(Encode, Decode, PartialEq, Eq)]
+    #[derive(Encode, Decode, PartialEq, Eq, TypeInfo)]
     pub struct RegistrationInfo<AccountId, Balance> {
         account: AccountId,
         deposit: Balance,

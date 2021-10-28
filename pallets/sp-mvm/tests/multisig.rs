@@ -21,7 +21,10 @@ fn execute_multisig() {
         let now = || Multisig::timepoint();
 
         let bytecode = transactions::MULTISIG_TEST.bytes().to_vec();
-        let call = Call::Mvm(MvmCall::execute(bytecode, GAS_LIMIT));
+        let call = Call::Mvm(MvmCall::execute {
+            tx_bc: bytecode,
+            gas_limit: GAS_LIMIT,
+        });
         let weight = call.get_dispatch_info().weight;
         let call = call.encode();
         let call_hash = sp_core::blake2_256(&call);

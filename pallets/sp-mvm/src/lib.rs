@@ -18,7 +18,6 @@
 //! execute(tx_bc: Vec<u8>, gas_limit: u64) - execute Move script with bytecode `tx_bc`.
 //! publish_module(module_bc: Vec<u8>, gas_limit: u64) - publish Move module with bytecode `module_bc`.
 //! publish_package(package: Vec<u8>, gas_limit: u64) - publish package (a set of Move modules) from binary `package`.
-//! publish_std(modules: Vec<Vec<u8>>, gas_limit: u64) - publish a list of Standard Library modules (only callable by root). Would be possible to execute it only by gov in the future.
 
 #![cfg_attr(not(feature = "std"), no_std)]
 
@@ -71,7 +70,7 @@ pub mod pallet {
     use sp_runtime::traits::UniqueSaturatedInto;
     use parity_scale_codec::{FullCodec, FullEncode};
 
-    use move_vm::Vm;
+    use move_vm::{Vm, StateAccess};
     use move_vm::mvm::Mvm;
     use move_vm::io::context::ExecutionContext;
     use move_vm::types::Gas;
@@ -82,6 +81,11 @@ pub mod pallet {
 
     use move_core_types::account_address::AccountAddress;
     use move_core_types::language_storage::CORE_CODE_ADDRESS;
+
+    #[cfg(not(feature = "std"))]
+    extern crate alloc;
+    #[cfg(not(feature = "std"))]
+    use alloc::format;
 
     /// Configure the pallet by specifying the parameters and types on which it depends.
     #[pallet::config]
@@ -115,7 +119,6 @@ pub mod pallet {
     // Pallets use events to inform users when important changes are made.
     // https://substrate.dev/docs/en/knowledgebase/runtime/events
     #[pallet::event]
-    #[pallet::metadata(T::AccountId = "AccountId")]
     #[pallet::generate_deposit(pub fn deposit_event)]
     pub enum Event<T: Config> {
         /// Event provided by Move VM
@@ -228,49 +231,6 @@ pub mod pallet {
 
             // produce result with spended gas:
             let result = result::from_vm_result::<T>(vm_result)?;
-
-            Ok(result)
-        }
-
-        /// Batch publish Standard Library modules by root account only.
-        ///
-        /// Not recommended to use, would be deprecated.
-        /// TODO??? (same for other methods): #[pallet::weight(T::GasWeightMapping::gas_to_weight(*gas_limit) * modules.len().into())]
-        #[pallet::weight(T::GasWeightMapping::gas_to_weight(*gas_limit))]
-        pub fn publish_std(
-            origin: OriginFor<T>,
-            modules: Vec<Vec<u8>>,
-            gas_limit: u64,
-        ) -> DispatchResultWithPostInfo {
-            ensure_root(origin)?;
-            debug!("executing `publish STD` with root");
-
-            let vm = Self::get_vm()?;
-            // TODO: use gas_used
-            let mut _gas_used = 0;
-            let mut results = Vec::with_capacity(modules.len());
-            'deploy: for module in modules.into_iter() {
-                // Overflow shound't happen.
-                // As gas_limit always large or equal to used, otherwise getting out of gas error.
-                let gas = Self::get_move_gas_limit(gas_limit - _gas_used)?;
-
-                let tx = ModuleTx::new(module, CORE_CODE_ADDRESS);
-                let res = vm.publish_module(gas, tx, false);
-                debug!("publish result: {:?}", res);
-
-                let is_ok = result::is_ok(&res);
-                _gas_used += res.gas_used;
-                results.push(res);
-                if !is_ok {
-                    break 'deploy;
-                }
-
-                // Emit an event:
-                Self::deposit_event(Event::StdModulePublished);
-            }
-
-            // produce result with spended gas:
-            let result = result::from_vm_results::<T>(&results)?;
 
             Ok(result)
         }
@@ -459,6 +419,30 @@ pub mod pallet {
             debug!("publication result: {:?}", res);
 
             Ok(res)
+        }
+
+        pub fn get_module_abi(module_id: &[u8]) -> Result<Option<Vec<u8>>, Vec<u8>> {
+            let vm = Self::get_vm()
+                .map_err::<Vec<u8>, _>(|e| format!("error while getting vm {:?}", e).into())?;
+            vm.get_module_abi(module_id)
+                .map_err(|e| format!("error in get_module_abi: {:?}", e).into())
+        }
+
+        pub fn get_module(module_id: &[u8]) -> Result<Option<Vec<u8>>, Vec<u8>> {
+            let vm = Self::get_vm()
+                .map_err::<Vec<u8>, _>(|e| format!("error while getting vm {:?}", e).into())?;
+            vm.get_module(module_id)
+                .map_err(|e| format!("error in get_module: {:?}", e).into())
+        }
+
+        pub fn get_resource(
+            account: &T::AccountId,
+            tag: &[u8],
+        ) -> Result<Option<Vec<u8>>, Vec<u8>> {
+            let vm = Self::get_vm()
+                .map_err::<Vec<u8>, _>(|e| format!("error while getting vm {:?}", e).into())?;
+            vm.get_resource(&AccountAddress::new(addr::account_to_bytes(account)), tag)
+                .map_err(|e| format!("error in get_resource: {:?}", e).into())
         }
     }
 
