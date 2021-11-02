@@ -40,7 +40,10 @@
 
         devToolchain = let
             t = fenixArch.toolchainOf devToolchainV;
-        in t.withComponents devComponents;
+        in fenixArch.combine [
+            (t.withComponents devComponents)
+            (rustTargets.wasm32-unknown-unknown.toolchainOf devToolchainV).toolchain
+        ];
 
         naersk-lib =
           let
@@ -67,7 +70,6 @@
             libiconv darwin.apple_sdk.frameworks.Security
           ]);
 
-          SKIP_WASM_BUILD = "1";
           PROTOC = "${protobuf}/bin/protoc";
           LLVM_CONFIG_PATH="${llvmPackagesR.llvm}/bin/llvm-config";
           LIBCLANG_PATH="${llvmPackagesR.libclang.lib}/lib";
