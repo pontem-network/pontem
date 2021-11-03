@@ -110,5 +110,8 @@ default-features = false
 features = [ "move_stdlib" ]
 
 [features]
-default = []
+default = [
+  'polkadot-service/westend-native',
+  'polkadot-cli/westend-native',
+]
 runtime-benchmarks = ['pontem-runtime/runtime-benchmarks', 'polkadot-service/runtime-benchmarks']
