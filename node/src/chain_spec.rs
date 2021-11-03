@@ -20,7 +20,7 @@ use std::include_bytes;
 use nimbus_primitives::NimbusId;
 use crate::vm_config::build as build_vm_config;
 
-/// Address format for Pontem.
+/// SS58 prefix for Pontem address.
 const SS58_FORMAT: u8 = 42;
 
 /// Specialized `ChainSpec`. This is a specialization of the general Substrate ChainSpec type.
