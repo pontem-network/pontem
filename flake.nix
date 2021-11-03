@@ -2,11 +2,12 @@
   inputs = {
     fenix.url = github:nix-community/fenix;
     naersk.url = github:nmattia/naersk;
-    nixpkgs.url = github:NixOS/nixpkgs/staging-next;
     utils.url = github:numtide/flake-utils;
     move-tools.url = github:pontem-network/move-tools;
-#    naersk.inputs.nixpkgs.follows = "nixpkgs";
-#    fenix.inputs.nixpkgs.follows = "nixpkgs";
+
+    nixpkgs.follows = "move-tools/nixpkgs";
+    naersk.follows = "move-tools/naersk";
+    fenix.follows = "move-tools/fenix";
   };
 
   outputs = flake-args@{ self, nixpkgs, utils, naersk, fenix, move-tools, ... }:
@@ -39,7 +40,10 @@
 
         devToolchain = let
             t = fenixArch.toolchainOf devToolchainV;
-        in t.withComponents devComponents;
+        in fenixArch.combine [
+            (t.withComponents devComponents)
+            (rustTargets.wasm32-unknown-unknown.toolchainOf devToolchainV).toolchain
+        ];
 
         naersk-lib =
           let
@@ -62,9 +66,10 @@
             llvmPackagesR.clang
             dove
             devToolchain
-          ];
+          ] ++ (pkgs.lib.optionals stdenv.isDarwin [
+            libiconv darwin.apple_sdk.frameworks.Security
+          ]);
 
-          SKIP_WASM_BUILD = "1";
           PROTOC = "${protobuf}/bin/protoc";
           LLVM_CONFIG_PATH="${llvmPackagesR.llvm}/bin/llvm-config";
           LIBCLANG_PATH="${llvmPackagesR.libclang.lib}/lib";

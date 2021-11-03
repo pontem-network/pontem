@@ -43,13 +43,17 @@ use codec::{Encode, Decode};
 pub use sp_runtime::BuildStorage;
 pub use pallet_timestamp::Call as TimestampCall;
 pub use pallet_balances::Call as BalancesCall;
+use pallet_balances::NegativeImbalance;
 pub use sp_runtime::{Permill, Percent, Perbill, MultiAddress};
 pub use pallet_vesting::Call as VestingCall;
 
 pub use frame_support::{
     pallet_prelude::RuntimeDebug,
     construct_runtime, parameter_types, StorageValue, match_type,
-    traits::{KeyOwnerProofSystem, Randomness, IsInVec, Everything, EnsureOrigin, Get},
+    traits::{
+        KeyOwnerProofSystem, Randomness, IsInVec, Everything, EnsureOrigin, OnUnbalanced,
+        Imbalance, Get
+    },
     weights::{
         Weight, IdentityFee, DispatchClass,
         constants::{
@@ -383,12 +387,36 @@ impl pallet_balances::Config for Runtime {
     type ReserveIdentifier = [u8; 8];
 }
 
+/// Fees distribution type.
+pub struct DealWithFees<R>(sp_std::marker::PhantomData<R>);
+
+/// Distribute part of fees to treasury, part burn.
+/// Current values - 20% to treasury, the rest - burned.
+///
+/// Based on Moonbeam implementation - https://github.com/PureStake/moonbeam
+impl<R> OnUnbalanced<NegativeImbalance<R>> for DealWithFees<R>
+where
+    R: pallet_balances::Config + pallet_treasury::Config,
+    pallet_treasury::Pallet<R>: OnUnbalanced<NegativeImbalance<R>>,
+{
+    fn on_unbalanceds<B>(mut fees_then_tips: impl Iterator<Item = NegativeImbalance<R>>) {
+        if let Some(fees) = fees_then_tips.next() {
+            // for fees, 80% are burned, 20% to the treasury
+            let (_, to_treasury) = fees.ration(80, 20);
+            // Balances pallet automatically burns dropped Negative Imbalances by decreasing
+            // total_supply accordingly
+            <pallet_treasury::Pallet<R> as OnUnbalanced<_>>::on_unbalanced(to_treasury);
+        }
+    }
+}
+
 parameter_types! {
     pub const OperationalFeeMultiplier: u8 = 5;
 }
 
 impl pallet_transaction_payment::Config for Runtime {
-    type OnChargeTransaction = pallet_transaction_payment::CurrencyAdapter<Balances, ()>;
+    type OnChargeTransaction =
+        pallet_transaction_payment::CurrencyAdapter<Balances, DealWithFees<Runtime>>;
     type TransactionByteFee = TransactionByteFee;
     type WeightToFee = IdentityFee<Balance>;
     type FeeMultiplierUpdate = ();
