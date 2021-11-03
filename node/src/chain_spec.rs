@@ -9,7 +9,8 @@ use sp_runtime::{
 use pontem_runtime::{
     GenesisConfig, SudoConfig, SystemConfig, BalancesConfig, WASM_BINARY, ParachainInfoConfig,
     VestingConfig, MvmConfig, ParachainStakingConfig, InflationInfo, Range, AuthorFilterConfig,
-    AuthorMappingConfig, TokensConfig, CurrencyId, TreasuryConfig, DemocracyConfig, SchedulerConfig,
+    AuthorMappingConfig, TokensConfig, CurrencyId, TreasuryConfig, DemocracyConfig,
+    SchedulerConfig,
     primitives::{AccountId, Signature, Balance},
     constants::currency::{PONT, DECIMALS},
 };

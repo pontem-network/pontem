@@ -52,7 +52,7 @@ pub use frame_support::{
     construct_runtime, parameter_types, StorageValue, match_type,
     traits::{
         KeyOwnerProofSystem, Randomness, IsInVec, Everything, EnsureOrigin, OnUnbalanced,
-        Imbalance, Get
+        Imbalance, Get,
     },
     weights::{
         Weight, IdentityFee, DispatchClass,
