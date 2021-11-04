@@ -191,7 +191,7 @@ fn testnet_genesis(
             balances: endowed_accounts
                 .iter()
                 .cloned()
-                .map(|k| (k, CurrencyId::Pont, 100_000 * PONT))
+                .map(|k| (k, CurrencyId::PONT, 100_000 * PONT))
                 .collect(),
         },
         system: SystemConfig {

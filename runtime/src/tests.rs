@@ -23,14 +23,14 @@ fn send_relay_chain_asset_to_relay_chain() {
     TestNet::reset();
 
     Relay::execute_with(|| {
-        let _ = RelayBalances::deposit_creating(&para_a_account(), 2 * dollar(CurrencyId::Ksm));
+        let _ = RelayBalances::deposit_creating(&para_a_account(), 2 * dollar(CurrencyId::KSM));
     });
 
     ParaA::execute_with(|| {
         assert_ok!(ParaXTokens::transfer(
             Some(ALICE).into(),
-            CurrencyId::Ksm,
-            dollar(CurrencyId::Ksm) as _,
+            CurrencyId::KSM,
+            dollar(CurrencyId::KSM) as _,
             Box::new(
                 MultiLocation::new(
                     1,
@@ -44,19 +44,19 @@ fn send_relay_chain_asset_to_relay_chain() {
             3_000_000_000,
         ));
         assert_eq!(
-            ParaTokens::free_balance(CurrencyId::Ksm, &ALICE),
-            1999 * dollar(CurrencyId::Ksm) as u64
+            ParaTokens::free_balance(CurrencyId::KSM, &ALICE),
+            1999 * dollar(CurrencyId::KSM) as u64
         );
     });
 
     Relay::execute_with(|| {
         assert_eq!(
             RelayBalances::free_balance(&para_a_account()),
-            dollar(CurrencyId::Ksm)
+            dollar(CurrencyId::KSM)
         );
         assert_eq!(
             RelayBalances::free_balance(&BOB),
-            dollar(CurrencyId::Ksm) - 79999995
+            dollar(CurrencyId::KSM) - 79999995
         );
     });
 }
@@ -66,11 +66,11 @@ fn cannot_lost_fund_on_send_failed() {
     TestNet::reset();
 
     ParaA::execute_with(|| {
-        assert_ok!(ParaTokens::deposit(CurrencyId::Pont, &ALICE, 1_000 * PONT));
+        assert_ok!(ParaTokens::deposit(CurrencyId::PONT, &ALICE, 1_000 * PONT));
         assert_noop!(
             ParaXTokens::transfer(
                 Some(ALICE).into(),
-                CurrencyId::Pont,
+                CurrencyId::PONT,
                 500 * PONT,
                 Box::new(
                     MultiLocation::new(
@@ -91,7 +91,7 @@ fn cannot_lost_fund_on_send_failed() {
         );
 
         assert_eq!(
-            ParaTokens::free_balance(CurrencyId::Pont, &ALICE),
+            ParaTokens::free_balance(CurrencyId::PONT, &ALICE),
             1_000 * PONT
         );
     });
@@ -102,14 +102,14 @@ fn send_relay_chain_asset_to_sibling() {
     TestNet::reset();
 
     Relay::execute_with(|| {
-        let _ = RelayBalances::deposit_creating(&para_a_account(), 3 * dollar(CurrencyId::Ksm));
+        let _ = RelayBalances::deposit_creating(&para_a_account(), 3 * dollar(CurrencyId::KSM));
     });
 
     ParaA::execute_with(|| {
         assert_ok!(ParaXTokens::transfer(
             Some(ALICE).into(),
-            CurrencyId::Ksm,
-            3 * dollar(CurrencyId::Ksm) as u64,
+            CurrencyId::KSM,
+            3 * dollar(CurrencyId::KSM) as u64,
             Box::new(
                 MultiLocation::new(
                     1,
@@ -126,15 +126,15 @@ fn send_relay_chain_asset_to_sibling() {
             3_000_000,
         ));
         assert_eq!(
-            ParaTokens::free_balance(CurrencyId::Ksm, &ALICE),
-            1997 * dollar(CurrencyId::Ksm) as u64
+            ParaTokens::free_balance(CurrencyId::KSM, &ALICE),
+            1997 * dollar(CurrencyId::KSM) as u64
         );
     });
 
     ParaB::execute_with(|| {
         assert_eq!(
-            ParaTokens::free_balance(CurrencyId::Ksm, &BOB),
-            3 * dollar(CurrencyId::Ksm) as u64 - 160000
+            ParaTokens::free_balance(CurrencyId::KSM, &BOB),
+            3 * dollar(CurrencyId::KSM) as u64 - 160000
         );
     });
 }
@@ -144,13 +144,13 @@ fn send_sibling_asset_to_sibling() {
     TestNet::reset();
 
     ParaA::execute_with(|| {
-        assert_ok!(ParaTokens::deposit(CurrencyId::Pont, &ALICE, 1_000 * PONT));
+        assert_ok!(ParaTokens::deposit(CurrencyId::PONT, &ALICE, 1_000 * PONT));
     });
 
     ParaA::execute_with(|| {
         assert_ok!(ParaXTokens::transfer(
             Some(ALICE).into(),
-            CurrencyId::Pont,
+            CurrencyId::PONT,
             500 * PONT,
             Box::new(
                 MultiLocation::new(
@@ -169,14 +169,14 @@ fn send_sibling_asset_to_sibling() {
         ));
 
         assert_eq!(
-            ParaTokens::free_balance(CurrencyId::Pont, &ALICE),
+            ParaTokens::free_balance(CurrencyId::PONT, &ALICE),
             500 * PONT
         );
     });
 
     ParaB::execute_with(|| {
         assert_eq!(
-            ParaTokens::free_balance(CurrencyId::Pont, &BOB),
+            ParaTokens::free_balance(CurrencyId::PONT, &BOB),
             500 * PONT - 3
         );
     });
@@ -187,11 +187,11 @@ fn send_self_parachain_asset_to_sibling() {
     TestNet::reset();
 
     ParaA::execute_with(|| {
-        assert_ok!(ParaTokens::deposit(CurrencyId::Pont, &ALICE, 1_000 * PONT));
+        assert_ok!(ParaTokens::deposit(CurrencyId::PONT, &ALICE, 1_000 * PONT));
 
         assert_ok!(ParaXTokens::transfer(
             Some(ALICE).into(),
-            CurrencyId::Pont,
+            CurrencyId::PONT,
             500 * PONT,
             Box::new(
                 MultiLocation::new(
@@ -210,18 +210,18 @@ fn send_self_parachain_asset_to_sibling() {
         ));
 
         assert_eq!(
-            ParaTokens::free_balance(CurrencyId::Pont, &ALICE),
+            ParaTokens::free_balance(CurrencyId::PONT, &ALICE),
             500 * PONT
         );
         assert_eq!(
-            ParaTokens::free_balance(CurrencyId::Pont, &sibling_b_account()),
+            ParaTokens::free_balance(CurrencyId::PONT, &sibling_b_account()),
             500 * PONT
         );
     });
 
     ParaB::execute_with(|| {
         assert_eq!(
-            ParaTokens::free_balance(CurrencyId::Pont, &BOB),
+            ParaTokens::free_balance(CurrencyId::PONT, &BOB),
             500 * PONT - 3
         );
     });
