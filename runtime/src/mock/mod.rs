@@ -64,8 +64,8 @@ pub fn para_ext(para_id: u32) -> TestExternalities {
     orml_tokens::GenesisConfig::<Runtime> {
         balances: vec![(
             ALICE,
-            CurrencyId::Ksm,
-            2000 * dollar(CurrencyId::Ksm) as u64,
+            CurrencyId::KSM,
+            2000 * dollar(CurrencyId::KSM) as u64,
         )],
     }
     .assimilate_storage(&mut t)
@@ -120,7 +120,7 @@ pub fn relay_ext() -> TestExternalities {
         .unwrap();
 
     pallet_balances::GenesisConfig::<Runtime> {
-        balances: vec![(ALICE, 2000 * dollar(CurrencyId::Ksm))],
+        balances: vec![(ALICE, 2000 * dollar(CurrencyId::KSM))],
     }
     .assimilate_storage(&mut t)
     .unwrap();

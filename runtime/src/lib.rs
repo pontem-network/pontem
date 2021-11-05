@@ -974,15 +974,15 @@ construct_runtime!(
         TransactionPayment: pallet_transaction_payment::{Pallet, Storage},
         Sudo: pallet_sudo::{Pallet, Call, Config<T>, Storage, Event<T>},
 
-        // xtokens
-        Tokens: orml_tokens::{Pallet, Storage, Event<T>, Config<T>},
-
         ParachainSystem: cumulus_pallet_parachain_system::{Pallet, Call, Config, Storage, Inherent, Event<T>} = 20,
         ParachainInfo: parachain_info::{Pallet, Storage, Config} = 21,
 
+        // Balances.
         Balances: pallet_balances::{Pallet, Call, Storage, Config<T>, Event<T>} = 30,
         Vesting: pallet_vesting::{Pallet, Call, Storage, Config<T>, Event<T>},
+        Tokens: orml_tokens::{Pallet, Storage, Event<T>, Config<T>},
 
+        // Staking.
         ParachainStaking: parachain_staking::{Pallet, Call, Storage, Event<T>, Config<T>} = 40,
         AuthorInherent: pallet_author_inherent::{Pallet, Call, Storage, Inherent} = 41,
         AuthorFilter: pallet_author_slot_filter::{Pallet, Call, Storage, Event, Config} = 42,
