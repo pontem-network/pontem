@@ -46,7 +46,6 @@ decl_test_network! {
 pub type RelayBalances = pallet_balances::Pallet<kusama_runtime::Runtime>;
 pub type ParaTokens = orml_tokens::Pallet<crate::Runtime>;
 pub type ParaXTokens = orml_xtokens::Pallet<crate::Runtime>;
-pub type ParaXCM = pallet_xcm::Pallet<crate::Runtime>;
 
 pub fn para_ext(para_id: u32) -> TestExternalities {
     let mut t = frame_system::GenesisConfig::default()
