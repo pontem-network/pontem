@@ -10,7 +10,7 @@ use pontem_runtime::{
     GenesisConfig, SudoConfig, SystemConfig, BalancesConfig, WASM_BINARY, ParachainInfoConfig,
     VestingConfig, MvmConfig, ParachainStakingConfig, InflationInfo, Range, AuthorFilterConfig,
     AuthorMappingConfig, TokensConfig, CurrencyId, TreasuryConfig, DemocracyConfig,
-    SchedulerConfig,
+    PolkadotXcmConfig, SchedulerConfig,
     primitives::{AccountId, Signature, Balance},
     constants::currency::{PONT, DECIMALS},
 };
@@ -208,6 +208,9 @@ fn testnet_genesis(
                 .collect(),
         },
         parachain_system: Default::default(),
+        polkadot_xcm: PolkadotXcmConfig {
+            safe_xcm_version: Some(2),
+        },
         parachain_info: ParachainInfoConfig { parachain_id: id },
         sudo: SudoConfig {
             // Assign network admin rights.
