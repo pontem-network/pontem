@@ -259,6 +259,27 @@ Good documentation also can be found in [Moonriver/Moonbeam Docs](https://docs.m
 
 See [Move VM Pallet documentation](https://docs.pontem.network/02.-getting-started/getting_started).
 
+### XCM
+
+The XCM implemented includes assets transferring between Parachains and Relaychain using [XTokens](https://github.com/open-web3-stack/open-runtime-module-library/tree/master/xtokens) pallet.
+
+* Transfers from Relaychain to Parachain happens with `reserveTransferAssets`.
+* XCM teleport and executions are currently disabled.
+* Supports PONT and KSM tokens.
+
+**Dev Relaychain**
+
+In case you want to run node with dev Relaychain (e.g. using `polkadot-launch`), after launching Relaychain send transaction using **sudo** account:
+
+1. Navigate to [sudo](https://polkadot.js.org/apps/?rpc=ws://127.0.0.1:9946#/sudo).
+2. Choose `xcmPallet` pallet.
+3. Choose `forceDefaultXcmVersion(maybeXcmVersion)` function.
+4. Enable option `maybeXcmVersion`.
+5. Put `2` into the `maybeXcmVersion` field.
+6. Send transaction.
+
+Now you can use XCM.
+
 ## LICENSE
 
 See [LICENSE](/LICENSE).
