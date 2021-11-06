@@ -8,6 +8,10 @@ pub mod currency {
 
     // 1 PONT.
     pub const PONT: Balance = u64::pow(10, DECIMALS);
+
+    // Essential Deposits.
+    pub const PONT_EXISTENTIAL_DEPOSIT: Balance = 100;
+    pub const KSM_EXISTENTIAL_DEPOSIT: Balance = 100000;
 }
 
 // Time related constants.
