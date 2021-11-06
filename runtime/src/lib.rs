@@ -29,8 +29,8 @@ use xcm_builder::{
     AccountId32Aliases, LocationInverter, ParentIsDefault, RelayChainAsNative,
     SiblingParachainAsNative, SiblingParachainConvertsVia, SignedAccountId32AsNative,
     SovereignSignedViaLocation, EnsureXcmOrigin, AllowSubscriptionsFrom,
-    AllowTopLevelPaidExecutionFrom, TakeWeightCredit, FixedWeightBounds, SignedToAccountId32,
-    AllowUnpaidExecutionFrom,
+    AllowTopLevelPaidExecutionFrom, AllowKnownQueryResponses, TakeWeightCredit,
+    FixedWeightBounds, SignedToAccountId32, AllowUnpaidExecutionFrom,
 };
 use xcm::latest::AssetId;
 use xcm_executor::{XcmExecutor, traits::WeightTrader, Assets};
@@ -52,8 +52,8 @@ pub use frame_support::{
     pallet_prelude::RuntimeDebug,
     construct_runtime, parameter_types, StorageValue, match_type,
     traits::{
-        KeyOwnerProofSystem, Randomness, IsInVec, Everything, EnsureOrigin, OnUnbalanced,
-        Imbalance, Get,
+        KeyOwnerProofSystem, Randomness, IsInVec, Everything, Nothing, EnsureOrigin,
+        OnUnbalanced, Imbalance, Get,
     },
     weights::{
         Weight, IdentityFee, DispatchClass,
@@ -352,7 +352,7 @@ impl pallet_timestamp::Config for Runtime {
 }
 
 parameter_types! {
-    pub const ExistentialDeposit: u64 = 500;
+    pub const ExistentialDeposit: u64 = PONT_EXISTENTIAL_DEPOSIT;
     pub const TransferFee: u64 = 1 * MILLIUNIT;
     pub const CreationFee: u64 = 1 * MILLIUNIT;
     pub const TransactionByteFee: u64 = 1 * MILLIUNIT;
@@ -533,7 +533,7 @@ impl pallet_randomness_collective_flip::Config for Runtime {}
 
 parameter_types! {
     pub const RelayLocation: MultiLocation = MultiLocation::parent();
-    pub const RelayNetwork: NetworkId = NetworkId::Polkadot;
+    pub const RelayNetwork: NetworkId = NetworkId::Kusama;
     pub RelayOrigin: Origin = cumulus_pallet_xcm::Origin::Relay.into();
     pub Ancestry: MultiLocation = Parachain(ParachainInfo::parachain_id().into()).into();
 }
@@ -582,10 +582,8 @@ pub type XcmOriginToTransactDispatchOrigin = (
 );
 
 parameter_types! {
-     // One XCM operation is 1_000_000 weight - almost certainly a conservative estimate.
-     pub UnitWeightCost: Weight = 1_000_000;
-     // One UNIT buys 1 second of weight.
-     pub const WeightPrice: (MultiLocation, u128) = (MultiLocation::parent(), UNIT as u128);
+     // One XCM operation is 2_000_000 weight - almost certainly a conservative estimate.
+     pub UnitWeightCost: Weight = 2_000_000;
      pub const MaxInstructions: u32 = 100;
 }
 
@@ -599,6 +597,7 @@ match_type! {
 pub type Barrier = (
     TakeWeightCredit,
     AllowTopLevelPaidExecutionFrom<Everything>,
+    AllowKnownQueryResponses<PolkadotXcm>,
     AllowSubscriptionsFrom<Everything>,
     AllowUnpaidExecutionFrom<ParentOrParentsUnitPlurality>,
     // ^^^ Parent & its unit plurality gets free execution
@@ -736,8 +735,8 @@ impl pallet_xcm::Config for Runtime {
     type XcmRouter = XcmRouter;
     type ExecuteXcmOrigin = EnsureXcmOrigin<Origin, LocalOriginToLocation>;
     type XcmExecutor = XcmExecutor<XcmConfig>;
-    type XcmExecuteFilter = Everything;
-    type XcmTeleportFilter = Everything;
+    type XcmExecuteFilter = Nothing;
+    type XcmTeleportFilter = Nothing;
     type XcmReserveTransferFilter = Everything;
     type Weigher = FixedWeightBounds<UnitWeightCost, Call, MaxInstructions>;
     type LocationInverter = LocationInverter<Ancestry>;
@@ -756,7 +755,7 @@ impl cumulus_pallet_xcmp_queue::Config for Runtime {
     type Event = Event;
     type XcmExecutor = XcmExecutor<XcmConfig>;
     type ChannelInfo = ParachainSystem;
-    type VersionWrapper = ();
+    type VersionWrapper = PolkadotXcm;
 }
 
 impl cumulus_pallet_dmp_queue::Config for Runtime {
@@ -909,8 +908,11 @@ impl Convert<MultiAsset, Option<CurrencyId>> for CurrencyIdConvert {
 }
 
 parameter_type_with_key! {
-    pub ExistentialDeposits: |_currency_id: CurrencyId| -> Balance {
-        Default::default()
+    pub ExistentialDeposits: |currency_id: CurrencyId| -> Balance {
+        match currency_id {
+            CurrencyId::PONT => PONT_EXISTENTIAL_DEPOSIT,
+            CurrencyId::KSM =>  KSM_EXISTENTIAL_DEPOSIT,
+        }
     };
 }
 
@@ -971,7 +973,6 @@ construct_runtime!(
         System: frame_system::{Pallet, Call, Config, Storage, Event<T>},
         RandomnessCollectiveFlip: pallet_randomness_collective_flip::{Pallet, Storage},
         Timestamp: pallet_timestamp::{Pallet, Call, Storage, Inherent},
-        TransactionPayment: pallet_transaction_payment::{Pallet, Storage},
         Sudo: pallet_sudo::{Pallet, Call, Config<T>, Storage, Event<T>},
 
         ParachainSystem: cumulus_pallet_parachain_system::{Pallet, Call, Config, Storage, Inherent, Event<T>} = 20,
@@ -981,6 +982,7 @@ construct_runtime!(
         Balances: pallet_balances::{Pallet, Call, Storage, Config<T>, Event<T>} = 30,
         Vesting: pallet_vesting::{Pallet, Call, Storage, Config<T>, Event<T>},
         Tokens: orml_tokens::{Pallet, Storage, Event<T>, Config<T>},
+        TransactionPayment: pallet_transaction_payment::{Pallet, Storage},
 
         // Staking.
         ParachainStaking: parachain_staking::{Pallet, Call, Storage, Event<T>, Config<T>} = 40,
@@ -995,7 +997,7 @@ construct_runtime!(
 
         // XCM helpers
         XcmpQueue: cumulus_pallet_xcmp_queue::{Pallet, Call, Storage, Event<T>} = 60,
-        PolkadotXcm: pallet_xcm::{Pallet, Call, Event<T>, Storage, Origin} = 61,
+        PolkadotXcm: pallet_xcm::{Pallet, Config, Call, Event<T>, Storage, Origin} = 61,
         CumulusXcm: cumulus_pallet_xcm::{Pallet, Call, Event<T>, Origin} = 62,
         DmpQueue: cumulus_pallet_dmp_queue::{Pallet, Call, Storage, Event<T>} = 63,
         Xtokens: orml_xtokens::{Pallet, Storage, Call, Event<T>} = 64,
