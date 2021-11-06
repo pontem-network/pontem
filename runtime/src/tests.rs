@@ -19,6 +19,35 @@ fn sibling_b_account() -> AccountId32 {
 }
 
 #[test]
+fn transfer_from_relay_chain() {
+    TestNet::reset();
+
+    Relay::execute_with(|| {
+        assert_ok!(kusama_runtime::XcmPallet::reserve_transfer_assets(
+            kusama_runtime::Origin::signed(ALICE.into()),
+            Box::new(Parachain(1).into().into()),
+            Box::new(
+                Junction::AccountId32 {
+                    id: BOB.into(),
+                    network: NetworkId::Any
+                }
+                .into()
+                .into()
+            ),
+            Box::new((Here, dollar(CurrencyId::KSM) * 100).into()),
+            0
+        ));
+    });
+
+    ParaA::execute_with(|| {
+        assert_eq!(
+            Tokens::free_balance(CurrencyId::KSM, &AccountId::from(BOB)),
+            99999999893333
+        );
+    });
+}
+
+#[test]
 fn send_relay_chain_asset_to_relay_chain() {
     TestNet::reset();
 
@@ -165,7 +194,7 @@ fn send_sibling_asset_to_sibling() {
                 )
                 .into()
             ),
-            3_000_000,
+            4_000_000,
         ));
 
         assert_eq!(
@@ -177,7 +206,7 @@ fn send_sibling_asset_to_sibling() {
     ParaB::execute_with(|| {
         assert_eq!(
             ParaTokens::free_balance(CurrencyId::PONT, &BOB),
-            500 * PONT - 3
+            500 * PONT - 4
         );
     });
 }
@@ -206,7 +235,7 @@ fn send_self_parachain_asset_to_sibling() {
                 )
                 .into()
             ),
-            3_000_000,
+            4_000_000,
         ));
 
         assert_eq!(
@@ -222,7 +251,7 @@ fn send_self_parachain_asset_to_sibling() {
     ParaB::execute_with(|| {
         assert_eq!(
             ParaTokens::free_balance(CurrencyId::PONT, &BOB),
-            500 * PONT - 3
+            500 * PONT - 4
         );
     });
 }
