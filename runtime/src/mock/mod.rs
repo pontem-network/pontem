@@ -46,6 +46,7 @@ decl_test_network! {
 pub type RelayBalances = pallet_balances::Pallet<kusama_runtime::Runtime>;
 pub type ParaTokens = orml_tokens::Pallet<crate::Runtime>;
 pub type ParaXTokens = orml_xtokens::Pallet<crate::Runtime>;
+pub type ParaXCM = pallet_xcm::Pallet<crate::Runtime>;
 
 pub fn para_ext(para_id: u32) -> TestExternalities {
     let mut t = frame_system::GenesisConfig::default()
@@ -57,6 +58,14 @@ pub fn para_ext(para_id: u32) -> TestExternalities {
     };
     <parachain_info::GenesisConfig as GenesisBuild<Runtime, _>>::assimilate_storage(
         &parachain_info_config,
+        &mut t,
+    )
+    .unwrap();
+
+    <pallet_xcm::GenesisConfig as GenesisBuild<Runtime>>::assimilate_storage(
+        &pallet_xcm::GenesisConfig {
+            safe_xcm_version: Some(2),
+        },
         &mut t,
     )
     .unwrap();
@@ -129,6 +138,14 @@ pub fn relay_ext() -> TestExternalities {
         config: default_parachains_host_configuration(),
     }
     .assimilate_storage(&mut t)
+    .unwrap();
+
+    <pallet_xcm::GenesisConfig as GenesisBuild<Runtime>>::assimilate_storage(
+        &pallet_xcm::GenesisConfig {
+            safe_xcm_version: Some(2),
+        },
+        &mut t,
+    )
     .unwrap();
 
     let mut ext = TestExternalities::new(t);
