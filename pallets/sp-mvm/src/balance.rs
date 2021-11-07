@@ -117,7 +117,7 @@ where
         address_to_account::<T::AccountId>(address)
             .map_err(|_| error!("Can't convert address from Move to Substrate."))
             .and_then(|address| {
-                <balances::Pallet<T>>::reducible_balance(&address, true)
+                <balances::Pallet<T>>::reducible_balance(&address, false)
                     .try_into()
                     .map_err(|_err| error!("Convert native balance to VM balance type."))
             })

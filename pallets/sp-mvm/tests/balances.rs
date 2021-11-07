@@ -1,4 +1,6 @@
 use frame_support::assert_ok;
+use frame_support::traits::fungible::Inspect;
+
 use serde::Deserialize;
 use move_core_types::identifier::Identifier;
 use move_core_types::language_storage::StructTag;
@@ -69,7 +71,7 @@ fn execute_get_balance() {
         // check storage:
         check_storage_u64(to_move_addr(account), INITIAL_BALANCE);
 
-        let balance = balances::Pallet::<Test>::free_balance(&account);
+        let balance = balances::Pallet::<Test>::reducible_balance(&account, false);
         assert_eq!(INITIAL_BALANCE, balance);
     });
 }
@@ -80,7 +82,7 @@ fn execute_transfer() {
         let bob = origin_ps_acc();
         let alice_account = alice_public_key();
 
-        let bob_init_balance = balances::Pallet::<Test>::free_balance(&bob);
+        let bob_init_balance = balances::Pallet::<Test>::reducible_balance(&bob, false);
         eprintln!("Bob balance: {}", bob_init_balance);
 
         // publish user module
@@ -94,11 +96,11 @@ fn execute_transfer() {
         check_storage_u64(to_move_addr(bob), INITIAL_BALANCE - 2000);
 
         // check bob balance after script
-        let bob_balance = balances::Pallet::<Test>::free_balance(&bob);
+        let bob_balance = balances::Pallet::<Test>::reducible_balance(&bob, false);
         assert_eq!(bob_init_balance - 2000, bob_balance);
 
         // check alice balance after script
-        let alice_balance = balances::Pallet::<Test>::free_balance(&alice_account);
+        let alice_balance = balances::Pallet::<Test>::reducible_balance(&alice_account, false);
         assert_eq!(INITIAL_BALANCE + 2000, alice_balance);
     });
 }
@@ -115,7 +117,7 @@ mod adapter {
         new_test_ext().execute_with(|| {
             let origin = origin_ps_acc();
             let account = to_move_addr(origin.clone());
-            let expected = balances::Pallet::<Test>::free_balance(&origin);
+            let expected = balances::Pallet::<Test>::reducible_balance(&origin, false);
             let value = adapter.get_balance(&account, "PONT".as_bytes());
             assert_eq!(Some(expected), value);
         });
@@ -125,13 +127,13 @@ mod adapter {
         new_test_ext().execute_with(|| {
             let origin = origin_ps_acc();
             let account = to_move_addr(origin.clone());
-            let initial_balance = balances::Pallet::<Test>::free_balance(&origin);
+            let initial_balance = balances::Pallet::<Test>::reducible_balance(&origin, false);
 
             let expected_balance = initial_balance / 2;
 
             adapter.sub(&account, "PONT".as_bytes(), expected_balance);
 
-            let actual_balance = balances::Pallet::<Test>::free_balance(&origin);
+            let actual_balance = balances::Pallet::<Test>::reducible_balance(&origin, false);
 
             assert_eq!(expected_balance, actual_balance);
         });
@@ -141,11 +143,11 @@ mod adapter {
         new_test_ext().execute_with(|| {
             let origin = origin_ps_acc();
             let account = to_move_addr(origin.clone());
-            let initial_balance = balances::Pallet::<Test>::free_balance(&origin);
+            let initial_balance = balances::Pallet::<Test>::reducible_balance(&origin, false);
 
             adapter.add(&account, "PONT".as_bytes(), initial_balance);
 
-            let actual_balance = balances::Pallet::<Test>::free_balance(&origin);
+            let actual_balance = balances::Pallet::<Test>::reducible_balance(&origin, false);
             assert_eq!(initial_balance * 2, actual_balance);
         });
     }
