@@ -19,6 +19,7 @@ use frame_support::traits::Currency;
 use frame_support::traits::Imbalance;
 use frame_support::traits::WithdrawReasons;
 use frame_support::traits::ExistenceRequirement;
+use frame_support::traits::fungible::Inspect;
 use move_vm::io::balance::CurrencyInfo;
 
 /// Balance type.
@@ -116,7 +117,7 @@ where
         address_to_account::<T::AccountId>(address)
             .map_err(|_| error!("Can't convert address from Move to Substrate."))
             .and_then(|address| {
-                <balances::Pallet<T> as Currency<T::AccountId>>::free_balance(&address)
+                <balances::Pallet<T>>::reducible_balance(&address, true)
                     .try_into()
                     .map_err(|_err| error!("Convert native balance to VM balance type."))
             })
@@ -152,7 +153,6 @@ where
                     })
             })
             .map(|imbalance| imbalance.peek())
-            // TODO: return result
             .ok();
         trace!("native balance deposit imbalance: {:?}", imbalance);
     }
@@ -183,7 +183,7 @@ where
                         <balances::Pallet<T> as Currency<T::AccountId>>::withdraw(
                             &address,
                             amount,
-                            WithdrawReasons::RESERVE,
+                            WithdrawReasons::RESERVE | WithdrawReasons::TRANSFER,
                             ExistenceRequirement::AllowDeath,
                         )
                         .map_err(|_err| error!("Can't withdraw native balance."))
