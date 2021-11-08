@@ -12,6 +12,7 @@ use pontem_runtime::{
     AuthorMappingConfig, TreasuryConfig, DemocracyConfig, SchedulerConfig,
     primitives::{AccountId, Signature, Balance},
     constants::currency::{PONT, DECIMALS},
+    constants::SS58_PREFIX,
 };
 use serde::{Serialize, Deserialize};
 use serde_json::json;
@@ -21,7 +22,7 @@ use nimbus_primitives::NimbusId;
 use crate::vm_config::build as build_vm_config;
 
 /// SS58 prefix for Pontem address.
-const SS58_FORMAT: u8 = 42;
+const SS58_FORMAT: u8 = SS58_PREFIX;
 
 /// Specialized `ChainSpec`. This is a specialization of the general Substrate ChainSpec type.
 pub type ChainSpec = sc_service::GenericChainSpec<GenesisConfig, Extensions>;

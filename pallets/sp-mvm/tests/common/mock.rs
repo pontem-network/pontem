@@ -13,6 +13,7 @@ use frame_support::traits::{OnInitialize, OnFinalize};
 use sp_runtime::traits::{BlakeTwo256, IdentityLookup};
 use sp_runtime::{testing::Header};
 
+use super::addr::SS58_PREFIX;
 use super::addr::origin_ps_acc;
 use super::addr::root_ps_acc;
 use super::addr::alice_public_key;
@@ -50,7 +51,7 @@ frame_support::construct_runtime!(
 
 parameter_types! {
     pub const BlockHashCount: u64 = 250;
-    pub const SS58Prefix: u8 = 42;
+    pub const SS58Prefix: u8 = SS58_PREFIX;
 }
 
 impl system::Config for Test {

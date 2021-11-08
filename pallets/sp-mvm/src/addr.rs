@@ -91,15 +91,15 @@ mod tests {
     // Expected data for tests
     // pair: (SS58, public key / AccountId)
     const ALICE: (&str, &str) = (
-        "5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY",
+        "gkQ5K6EnLRgZkwozG8GiBAEnJyM6FxzbSaSmVhKJ2w8FcK7ih",
         "D43593C715FDD31C61141ABD04A99FD6822C8558854CCDE39A5684E7A56DA27D",
     );
     const BOB: (&str, &str) = (
-        "5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty",
+        "gkNW9pAcCHxZrnoVkhLkEQtsLsW5NWTC75cdAdxAMs9LNYCYg",
         "8EAF04151687736326C9FEA17E25FC5287613693C912909CB226AA4794F26A48",
     );
     const STD: (&str, &str) = (
-        "5C4hrfjw9DjXZTzV3MwzrrAr9P1MJhSrvWGWqi1eSuyUqAsg",
+        "gkKH52LJ2UumhVBim1n3mCsSj3ctj3GkV8JLVLdhJakxmEDcq",
         "0000000000000000000000000000000000000000000000000000000000000001",
     );
     const ALL: &'static [(&str, &str)] = &[ALICE, BOB, STD];
@@ -107,7 +107,7 @@ mod tests {
     #[test]
     fn convert_address() {
         for pair in ALL.iter() {
-            let pk = Public::from_ss58check(pair.0).unwrap();
+            let pk = Public::from_ss58check_with_version(pair.0).unwrap().0;
             let addr = account_to_account_address(&pk);
             assert_eq!(pair.1, addr.to_string());
         }
@@ -116,7 +116,7 @@ mod tests {
     #[test]
     fn convert_address_revert() {
         for pair in ALL.iter() {
-            let pk_expected = Public::from_ss58check(pair.0).unwrap();
+            let pk_expected = Public::from_ss58check_with_version(pair.0).unwrap().0;
             let addr = account_to_account_address(&pk_expected);
             let pk_decoded = address_to_account(&addr).expect("Cannot decode address");
             assert_eq!(pk_expected, pk_decoded);
@@ -126,7 +126,7 @@ mod tests {
     #[test]
     fn account_to_bytes() {
         for pair in ALL.iter() {
-            let pk_expected = Public::from_ss58check(pair.0).unwrap();
+            let pk_expected = Public::from_ss58check_with_version(pair.0).unwrap().0;
             let bytes = super::account_to_bytes(&pk_expected);
             let bytes_expected = AccountAddress::from_hex_literal(&format!("0x{}", pair.1))
                 .expect("Cannot decode address, this cannot be, so unreachable.")

@@ -1,3 +1,6 @@
+// SS58 PREFIX.
+pub const SS58_PREFIX: u8 = 105;
+
 // Currency constants.
 pub mod currency {
     use crate::primitives::Balance;

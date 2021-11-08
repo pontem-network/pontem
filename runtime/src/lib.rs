@@ -72,7 +72,7 @@ pub use sp_mvm_rpc_runtime::types::MVMApiEstimation;
 pub use parachain_staking::{InflationInfo, Range};
 
 pub mod constants;
-use constants::{currency::*, time::*};
+use constants::{SS58_PREFIX, currency::*, time::*};
 pub mod primitives;
 use primitives::{*, Index};
 
@@ -151,7 +151,7 @@ parameter_types! {
         .build_or_panic();
     pub RuntimeBlockLength: BlockLength = BlockLength
         ::max_with_normal_ratio(5 * 1024 * 1024, NORMAL_DISPATCH_RATIO);
-    pub const SS58Prefix: u8 = 42;
+    pub const SS58Prefix: u8 = SS58_PREFIX;
 }
 
 // Configure FRAME pallets to include in runtime.
@@ -201,7 +201,7 @@ impl frame_system::Config for Runtime {
     type AccountData = pallet_balances::AccountData<Balance>;
     /// Weight information for the extrinsics of this pallet.
     type SystemWeightInfo = ();
-    /// This is used as an identifier of the chain. 42 is the generic substrate prefix.
+    /// This is used as an identifier of the chain. 105 is the Pontem Network.
     type SS58Prefix = SS58Prefix;
     /// What to do if the user wants the code set to something. Just use `()` unless you are in
     /// cumulus.
