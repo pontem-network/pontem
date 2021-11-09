@@ -21,24 +21,38 @@
 #![cfg(test)]
 
 use frame_support::{
-	assert_ok, ord_parameter_types, parameter_types,
+	ord_parameter_types, parameter_types,
 	traits::{Everything, GenesisBuild, Nothing},
 	PalletId,
 };
 use orml_traits::parameter_type_with_key;
-use primitives::{CurrencyId, ReserveIdentifier, TokenSymbol};
-use sp_core::H256;
+use sp_core::{H256, crypto::Ss58Codec};
+use codec::{Decode, Encode};
+
 use sp_runtime::{
 	testing::Header,
 	traits::{AccountIdConversion, IdentityLookup},
 	AccountId32, Perbill,
 };
-use support::{mocks::MockAddressMapping, AddressMapping};
 
 use super::*;
 use frame_system::EnsureSignedBy;
-use sp_core::{bytes::from_hex, H160};
-use sp_std::str::FromStr;
+
+#[cfg(feature = "std")]
+use serde::{Deserialize, Serialize};
+use scale_info::TypeInfo;
+
+// Currencies id.
+#[derive(Encode, Decode, Eq, PartialEq, Copy, Clone, RuntimeDebug, PartialOrd, Ord, TypeInfo)]
+#[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
+pub enum CurrencyId {
+    // Relaychain's currency.
+    KSM,
+    // Our native currency.
+    PONT,
+    // Test.
+    TEST,
+}
 
 pub use crate as currencies;
 
@@ -90,21 +104,21 @@ parameter_types! {
 	pub const MaxLocks: u32 = 100;
 }
 
-impl tokens::Config for Runtime {
+impl orml_tokens::Config for Runtime {
 	type Event = Event;
 	type Balance = Balance;
 	type Amount = i64;
 	type CurrencyId = CurrencyId;
 	type ExistentialDeposits = ExistentialDeposits;
-	type OnDust = tokens::TransferDust<Runtime, DustAccount>;
+	type OnDust = orml_tokens::TransferDust<Runtime, DustAccount>;
 	type WeightInfo = ();
 	type MaxLocks = MaxLocks;
 	type DustRemovalWhitelist = Nothing;
 }
 
-pub const NATIVE_CURRENCY_ID: CurrencyId = CurrencyId::Token(TokenSymbol::ACA);
-pub const X_TOKEN_ID: CurrencyId = CurrencyId::Token(TokenSymbol::AUSD);
-pub const DOT: CurrencyId = CurrencyId::Token(TokenSymbol::DOT);
+pub const NATIVE_CURRENCY_ID: CurrencyId = CurrencyId::PONT;
+pub const X_TOKEN_ID: CurrencyId = CurrencyId::TEST;
+pub const DOT: CurrencyId = CurrencyId::KSM;
 
 parameter_types! {
 	pub const GetNativeCurrencyId: CurrencyId = NATIVE_CURRENCY_ID;
@@ -123,7 +137,7 @@ impl pallet_balances::Config for Runtime {
 	type AccountStore = System;
 	type MaxLocks = ();
 	type MaxReserves = MaxReserves;
-	type ReserveIdentifier = ReserveIdentifier;
+	type ReserveIdentifier = [u8; 8];
 	type WeightInfo = ();
 }
 
@@ -139,48 +153,9 @@ impl pallet_timestamp::Config for Runtime {
 	type WeightInfo = ();
 }
 
-parameter_types! {
-	pub const NewContractExtraBytes: u32 = 1;
-	pub NetworkContractSource: H160 = alice_evm_addr();
-}
-
 ord_parameter_types! {
 	pub const CouncilAccount: AccountId32 = AccountId32::from([1u8; 32]);
 	pub const TreasuryAccount: AccountId32 = AccountId32::from([2u8; 32]);
-	pub const NetworkContractAccount: AccountId32 = AccountId32::from([0u8; 32]);
-	pub const StorageDepositPerByte: u128 = 10;
-	pub const DeveloperDeposit: u64 = 1000;
-	pub const DeploymentFee: u64 = 200;
-}
-
-impl module_evm::Config for Runtime {
-	type AddressMapping = MockAddressMapping;
-	type Currency = PalletBalances;
-	type TransferAll = ();
-	type NewContractExtraBytes = NewContractExtraBytes;
-	type StorageDepositPerByte = StorageDepositPerByte;
-	type Event = Event;
-	type Precompiles = ();
-	type ChainId = ();
-	type GasToWeight = ();
-	type ChargeTransactionPayment = ();
-	type NetworkContractOrigin = EnsureSignedBy<NetworkContractAccount, AccountId>;
-	type NetworkContractSource = NetworkContractSource;
-
-	type DeveloperDeposit = DeveloperDeposit;
-	type DeploymentFee = DeploymentFee;
-	type TreasuryAccount = TreasuryAccount;
-	type FreeDeploymentOrigin = EnsureSignedBy<CouncilAccount, AccountId32>;
-
-	type Runner = module_evm::runner::stack::Runner<Self>;
-	type FindAuthor = ();
-	type Task = ();
-	type IdleScheduler = ();
-	type WeightInfo = ();
-}
-
-impl module_evm_bridge::Config for Runtime {
-	type EVM = EVM;
 }
 
 impl Config for Runtime {
@@ -188,9 +163,8 @@ impl Config for Runtime {
 	type MultiCurrency = Tokens;
 	type NativeCurrency = AdaptedBasicCurrency;
 	type GetNativeCurrencyId = GetNativeCurrencyId;
+	type CurrencyId = CurrencyId;
 	type WeightInfo = ();
-	type AddressMapping = MockAddressMapping;
-	type EVMBridge = EVMBridge;
 	type SweepOrigin = EnsureSignedBy<CouncilAccount, AccountId>;
 	type OnDust = crate::TransferDust<Runtime, DustAccount>;
 }
@@ -198,10 +172,8 @@ impl Config for Runtime {
 pub type NativeCurrency = Currency<Runtime, GetNativeCurrencyId>;
 pub type AdaptedBasicCurrency = BasicCurrencyAdapter<Runtime, PalletBalances, i64, u64>;
 
-pub type SignedExtra = module_evm::SetEvmOrigin<Runtime>;
-
-pub type Block = sp_runtime::generic::Block<Header, UncheckedExtrinsic>;
-pub type UncheckedExtrinsic = sp_runtime::generic::UncheckedExtrinsic<u32, Call, u32, SignedExtra>;
+pub type Block = frame_system::mocking::MockBlock<Runtime>;
+pub type UncheckedExtrinsic = frame_system::mocking::MockUncheckedExtrinsic<Runtime>;
 
 frame_support::construct_runtime!(
 	pub enum Runtime where
@@ -211,69 +183,24 @@ frame_support::construct_runtime!(
 	{
 		System: frame_system::{Pallet, Call, Config, Storage, Event<T>},
 		Balances: pallet_balances::{Pallet, Call, Storage, Config<T>, Event<T>},
-		Tokens: tokens::{Pallet, Storage, Event<T>, Config<T>},
+		Tokens: orml_tokens::{Pallet, Storage, Event<T>, Config<T>},
 		Currencies: currencies::{Pallet, Call, Event<T>},
-		EVM: module_evm::{Pallet, Config<T>, Call, Storage, Event<T>},
-		EVMBridge: module_evm_bridge::{Pallet},
 	}
 );
 
 pub fn alice() -> AccountId {
-	<Runtime as Config>::AddressMapping::get_account_id(&alice_evm_addr())
-}
-
-pub fn alice_evm_addr() -> EvmAddress {
-	EvmAddress::from_str("1000000000000000000000000000000000000001").unwrap()
+	AccountId::from_ss58check("5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY").unwrap()
 }
 
 pub fn bob() -> AccountId {
-	<Runtime as Config>::AddressMapping::get_account_id(&bob_evm_addr())
-}
-
-pub fn bob_evm_addr() -> EvmAddress {
-	EvmAddress::from_str("1000000000000000000000000000000000000002").unwrap()
+	AccountId::from_ss58check("5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty").unwrap()
 }
 
 pub fn eva() -> AccountId {
-	<Runtime as Config>::AddressMapping::get_account_id(&eva_evm_addr())
-}
-
-pub fn eva_evm_addr() -> EvmAddress {
-	EvmAddress::from_str("1000000000000000000000000000000000000005").unwrap()
+	AccountId::from_ss58check("5ECW6Y5ukt1DH2zrbHXnXwCiUM1MjeoGHNhvdHLRRjDY8pf5").unwrap()
 }
 
 pub const ID_1: LockIdentifier = *b"1       ";
-
-pub fn erc20_address() -> EvmAddress {
-	EvmAddress::from_str("0000000000000000000000000000000002000000").unwrap()
-}
-
-pub fn deploy_contracts() {
-	let code = from_hex(include!("../../evm-bridge/src/erc20_demo_contract")).unwrap();
-	assert_ok!(EVM::create_network_contract(
-		Origin::signed(NetworkContractAccount::get()),
-		code,
-		0,
-		2_100_000,
-		10000
-	));
-
-	System::assert_last_event(Event::EVM(module_evm::Event::Created(
-		alice_evm_addr(),
-		erc20_address(),
-		vec![module_evm::Log {
-			address: H160::from_str("0x0000000000000000000000000000000002000000").unwrap(),
-			topics: vec![
-				H256::from_str("0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef").unwrap(),
-				H256::from_str("0x0000000000000000000000000000000000000000000000000000000000000000").unwrap(),
-				H256::from_str("0x0000000000000000000000001000000000000000000000000000000000000001").unwrap(),
-			],
-			data: H256::from_low_u64_be(10000).as_bytes().to_vec(),
-		}],
-	)));
-
-	assert_ok!(EVM::deploy_free(Origin::signed(CouncilAccount::get()), erc20_address()));
-}
 
 pub struct ExtBuilder {
 	balances: Vec<(AccountId, CurrencyId, Balance)>,
@@ -317,7 +244,7 @@ impl ExtBuilder {
 		.assimilate_storage(&mut t)
 		.unwrap();
 
-		tokens::GenesisConfig::<Runtime> {
+		orml_tokens::GenesisConfig::<Runtime> {
 			balances: self
 				.balances
 				.into_iter()
@@ -326,10 +253,6 @@ impl ExtBuilder {
 		}
 		.assimilate_storage(&mut t)
 		.unwrap();
-
-		module_evm::GenesisConfig::<Runtime>::default()
-			.assimilate_storage(&mut t)
-			.unwrap();
 
 		let mut ext = sp_io::TestExternalities::new(t);
 		ext.execute_with(|| System::set_block_number(1));

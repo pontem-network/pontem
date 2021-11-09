@@ -7807,6 +7807,7 @@ dependencies = [
  "frame-system-rpc-runtime-api",
  "hex-literal",
  "kusama-runtime",
+ "module-currencies",
  "nimbus-primitives",
  "orml-tokens",
  "orml-traits",

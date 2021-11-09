@@ -22,7 +22,7 @@
 #![allow(clippy::unused_unit)]
 #![allow(clippy::upper_case_acronyms)]
 
-use codec::Codec;
+use codec::{Codec, FullCodec};
 use frame_support::{
 	pallet_prelude::*,
 	traits::{
@@ -49,8 +49,6 @@ use sp_std::{
 	vec::Vec,
 };
 
-use primitives::currency::CurrencyId;
-
 mod mock;
 mod tests;
 pub mod weights;
@@ -72,17 +70,18 @@ pub mod module {
 	#[pallet::config]
 	pub trait Config: frame_system::Config {
 		type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
+		type CurrencyId: FullCodec + Eq + PartialEq + Copy + MaybeSerializeDeserialize + Debug + scale_info::TypeInfo;
 		type MultiCurrency: TransferAll<Self::AccountId>
-			+ MultiCurrencyExtended<Self::AccountId, CurrencyId = CurrencyId>
-			+ MultiLockableCurrency<Self::AccountId, CurrencyId = CurrencyId>
-			+ MultiReservableCurrency<Self::AccountId, CurrencyId = CurrencyId>;
+			+ MultiCurrencyExtended<Self::AccountId, CurrencyId = Self::CurrencyId>
+			+ MultiLockableCurrency<Self::AccountId, CurrencyId = Self::CurrencyId>
+			+ MultiReservableCurrency<Self::AccountId, CurrencyId = Self::CurrencyId>;
 		type NativeCurrency: BasicCurrencyExtended<Self::AccountId, Balance = BalanceOf<Self>, Amount = AmountOf<Self>>
 			+ BasicLockableCurrency<Self::AccountId, Balance = BalanceOf<Self>>
 			+ BasicReservableCurrency<Self::AccountId, Balance = BalanceOf<Self>>;
 
 		/// The native currency id
 		#[pallet::constant]
-		type GetNativeCurrencyId: Get<CurrencyId>;
+		type GetNativeCurrencyId: Get<Self::CurrencyId>;
 
 		/// Weight information for extrinsics in this module.
 		type WeightInfo: WeightInfo;
@@ -91,7 +90,7 @@ pub mod module {
 		type SweepOrigin: EnsureOrigin<Self::Origin>;
 
 		/// Handler to burn or transfer account's dust
-		type OnDust: OnDust<Self::AccountId, CurrencyId, BalanceOf<Self>>;
+		type OnDust: OnDust<Self::AccountId, Self::CurrencyId, BalanceOf<Self>>;
 	}
 
 	#[pallet::error]

@@ -23,13 +23,11 @@
 use super::*;
 use frame_support::{assert_noop, assert_ok};
 use mock::{
-	alice, bob, deploy_contracts, erc20_address, eva, AccountId, AdaptedBasicCurrency, CouncilAccount, Currencies,
-	DustAccount, Event, ExtBuilder, NativeCurrency, Origin, PalletBalances, Runtime, System, Tokens, DOT, EVM, ID_1,
+	alice, bob, eva, AccountId, AdaptedBasicCurrency, CouncilAccount, Currencies,
+	DustAccount, Event, ExtBuilder, NativeCurrency, Origin, PalletBalances, Runtime, System, Tokens, DOT, ID_1,
 	NATIVE_CURRENCY_ID, X_TOKEN_ID,
 };
-use sp_core::H160;
 use sp_runtime::traits::BadOrigin;
-use support::EVM as EVMTrait;
 
 #[test]
 fn multi_lockable_currency_should_work() {
@@ -116,7 +114,6 @@ fn multi_currency_should_work() {
 		.one_hundred_for_alice_n_bob()
 		.build()
 		.execute_with(|| {
-			<EVM as EVMTrait<AccountId>>::set_origin(alice());
 			assert_ok!(Currencies::transfer(Some(alice()).into(), bob(), X_TOKEN_ID, 50));
 			assert_eq!(Currencies::free_balance(X_TOKEN_ID, &alice()), 50);
 			assert_eq!(Currencies::free_balance(X_TOKEN_ID, &bob()), 150);
@@ -340,543 +337,45 @@ fn call_event_should_work() {
 }
 
 #[test]
-fn erc20_total_issuance_should_work() {
-	ExtBuilder::default()
-		.balances(vec![(alice(), NATIVE_CURRENCY_ID, 100000)])
-		.build()
-		.execute_with(|| {
-			deploy_contracts();
-			assert_eq!(Currencies::total_issuance(CurrencyId::Erc20(erc20_address())), 10000);
-		});
-}
-
-#[test]
-fn erc20_free_balance_should_work() {
-	ExtBuilder::default()
-		.balances(vec![(alice(), NATIVE_CURRENCY_ID, 100000)])
-		.build()
-		.execute_with(|| {
-			deploy_contracts();
-			// empty address
-			assert_eq!(
-				Currencies::free_balance(CurrencyId::Erc20(H160::default()), &alice()),
-				0
-			);
-			assert_eq!(Currencies::free_balance(CurrencyId::Erc20(erc20_address()), &bob()), 0);
-
-			assert_eq!(
-				Currencies::free_balance(CurrencyId::Erc20(erc20_address()), &alice()),
-				10000
-			);
-			assert_eq!(Currencies::free_balance(CurrencyId::Erc20(erc20_address()), &bob()), 0);
-		});
-}
-
-#[test]
-fn erc20_total_balance_should_work() {
-	ExtBuilder::default()
-		.balances(vec![(alice(), NATIVE_CURRENCY_ID, 100000)])
-		.build()
-		.execute_with(|| {
-			deploy_contracts();
-			// empty address
-			assert_eq!(
-				Currencies::total_balance(CurrencyId::Erc20(H160::default()), &alice()),
-				0
-			);
-			assert_eq!(Currencies::total_balance(CurrencyId::Erc20(H160::default()), &bob()), 0);
-
-			assert_eq!(
-				Currencies::total_balance(CurrencyId::Erc20(erc20_address()), &alice()),
-				10000
-			);
-			assert_eq!(Currencies::total_balance(CurrencyId::Erc20(erc20_address()), &bob()), 0);
-		});
-}
-
-#[test]
-fn erc20_ensure_withdraw_should_work() {
-	ExtBuilder::default()
-		.balances(vec![(alice(), NATIVE_CURRENCY_ID, 100000)])
-		.build()
-		.execute_with(|| {
-			deploy_contracts();
-			<EVM as EVMTrait<AccountId>>::set_origin(alice());
-			assert_ok!(Currencies::ensure_can_withdraw(
-				CurrencyId::Erc20(erc20_address()),
-				&alice(),
-				100
-			));
-			assert_eq!(
-				Currencies::ensure_can_withdraw(CurrencyId::Erc20(erc20_address()), &bob(), 100),
-				Err(Error::<Runtime>::BalanceTooLow.into()),
-			);
-			assert_ok!(Currencies::transfer(
-				Origin::signed(alice()),
-				bob(),
-				CurrencyId::Erc20(erc20_address()),
-				100
-			));
-			assert_ok!(Currencies::ensure_can_withdraw(
-				CurrencyId::Erc20(erc20_address()),
-				&bob(),
-				100
-			));
-			assert_eq!(
-				Currencies::ensure_can_withdraw(CurrencyId::Erc20(erc20_address()), &bob(), 101),
-				Err(Error::<Runtime>::BalanceTooLow.into()),
-			);
-		});
-}
-
-#[test]
-fn erc20_transfer_should_work() {
-	ExtBuilder::default()
-		.balances(vec![
-			(alice(), NATIVE_CURRENCY_ID, 100000),
-			(bob(), NATIVE_CURRENCY_ID, 100000),
-		])
-		.build()
-		.execute_with(|| {
-			deploy_contracts();
-			let alice_balance = 10000;
-			<EVM as EVMTrait<AccountId>>::set_origin(alice());
-			<EVM as EVMTrait<AccountId>>::set_origin(bob());
-			assert_ok!(Currencies::transfer(
-				Origin::signed(alice()),
-				bob(),
-				CurrencyId::Erc20(erc20_address()),
-				100
-			));
-
-			assert_eq!(
-				Currencies::free_balance(CurrencyId::Erc20(erc20_address()), &bob()),
-				100
-			);
-			assert_eq!(
-				Currencies::total_balance(CurrencyId::Erc20(erc20_address()), &bob()),
-				100
-			);
-
-			assert_eq!(
-				Currencies::free_balance(CurrencyId::Erc20(erc20_address()), &alice()),
-				alice_balance - 100
-			);
-			assert_eq!(
-				Currencies::total_balance(CurrencyId::Erc20(erc20_address()), &alice()),
-				alice_balance - 100
-			);
-
-			assert_ok!(Currencies::transfer(
-				Origin::signed(bob()),
-				alice(),
-				CurrencyId::Erc20(erc20_address()),
-				10
-			));
-
-			assert_eq!(Currencies::free_balance(CurrencyId::Erc20(erc20_address()), &bob()), 90);
-			assert_eq!(
-				Currencies::total_balance(CurrencyId::Erc20(erc20_address()), &bob()),
-				90
-			);
-
-			assert_eq!(
-				Currencies::free_balance(CurrencyId::Erc20(erc20_address()), &alice()),
-				alice_balance - 90
-			);
-			assert_eq!(
-				Currencies::total_balance(CurrencyId::Erc20(erc20_address()), &alice()),
-				alice_balance - 90
-			);
-		});
-}
-
-#[test]
-fn erc20_transfer_should_fail() {
-	ExtBuilder::default()
-		.balances(vec![
-			(alice(), NATIVE_CURRENCY_ID, 100000),
-			(bob(), NATIVE_CURRENCY_ID, 100000),
-		])
-		.build()
-		.execute_with(|| {
-			deploy_contracts();
-
-			// Real origin not found
-			assert_noop!(
-				Currencies::transfer(Origin::signed(alice()), bob(), CurrencyId::Erc20(erc20_address()), 100),
-				Error::<Runtime>::RealOriginNotFound
-			);
-
-			<EVM as EVMTrait<AccountId>>::set_origin(alice());
-			<EVM as EVMTrait<AccountId>>::set_origin(bob());
-
-			// empty address
-			assert!(
-				Currencies::transfer(Origin::signed(alice()), bob(), CurrencyId::Erc20(H160::default()), 100).is_err()
-			);
-
-			// bob can't transfer. bob balance 0
-			assert!(
-				Currencies::transfer(Origin::signed(bob()), alice(), CurrencyId::Erc20(erc20_address()), 1).is_err()
-			);
-		});
-}
-
-#[test]
-fn erc20_can_reserve_should_work() {
-	ExtBuilder::default()
-		.balances(vec![(alice(), NATIVE_CURRENCY_ID, 100000)])
-		.build()
-		.execute_with(|| {
-			deploy_contracts();
-			assert!(Currencies::can_reserve(CurrencyId::Erc20(erc20_address()), &alice(), 1),);
-		});
-}
-
-#[test]
-fn erc20_slash_reserve_should_work() {
-	ExtBuilder::default()
-		.balances(vec![(alice(), NATIVE_CURRENCY_ID, 100000)])
-		.build()
-		.execute_with(|| {
-			deploy_contracts();
-			assert_eq!(
-				Currencies::slash_reserved(CurrencyId::Erc20(erc20_address()), &alice(), 1),
-				1
-			);
-			assert_ok!(Currencies::reserve(CurrencyId::Erc20(erc20_address()), &alice(), 100));
-			assert_eq!(
-				Currencies::slash_reserved(CurrencyId::Erc20(erc20_address()), &alice(), 10),
-				10
-			);
-		});
-}
-
-#[test]
-fn erc20_reserve_should_work() {
-	ExtBuilder::default()
-		.balances(vec![(alice(), NATIVE_CURRENCY_ID, 100000)])
-		.build()
-		.execute_with(|| {
-			deploy_contracts();
-			let alice_balance = 10000;
-			assert_eq!(
-				Currencies::reserved_balance(CurrencyId::Erc20(erc20_address()), &alice()),
-				0
-			);
-			assert_eq!(
-				Currencies::free_balance(CurrencyId::Erc20(erc20_address()), &alice()),
-				alice_balance
-			);
-
-			assert_ok!(Currencies::reserve(CurrencyId::Erc20(erc20_address()), &alice(), 100));
-
-			assert_eq!(
-				Currencies::reserved_balance(CurrencyId::Erc20(erc20_address()), &alice()),
-				100
-			);
-			assert_eq!(
-				Currencies::free_balance(CurrencyId::Erc20(erc20_address()), &alice()),
-				alice_balance - 100
-			);
-		});
-}
-
-#[test]
-fn erc20_unreserve_should_work() {
-	ExtBuilder::default()
-		.balances(vec![(alice(), NATIVE_CURRENCY_ID, 100000)])
-		.build()
-		.execute_with(|| {
-			deploy_contracts();
-			let alice_balance = 10000;
-			assert_eq!(
-				Currencies::free_balance(CurrencyId::Erc20(erc20_address()), &alice()),
-				alice_balance
-			);
-			assert_eq!(
-				Currencies::reserved_balance(CurrencyId::Erc20(erc20_address()), &alice()),
-				0
-			);
-			assert_eq!(
-				Currencies::unreserve(CurrencyId::Erc20(erc20_address()), &alice(), 0),
-				0
-			);
-			assert_eq!(
-				Currencies::unreserve(CurrencyId::Erc20(erc20_address()), &alice(), 50),
-				50
-			);
-			assert_ok!(Currencies::reserve(CurrencyId::Erc20(erc20_address()), &alice(), 30));
-			assert_eq!(
-				Currencies::free_balance(CurrencyId::Erc20(erc20_address()), &alice()),
-				alice_balance - 30
-			);
-			assert_eq!(
-				Currencies::reserved_balance(CurrencyId::Erc20(erc20_address()), &alice()),
-				30
-			);
-			assert_eq!(
-				Currencies::unreserve(CurrencyId::Erc20(erc20_address()), &alice(), 15),
-				0
-			);
-			assert_eq!(
-				Currencies::free_balance(CurrencyId::Erc20(erc20_address()), &alice()),
-				alice_balance - 15
-			);
-			assert_eq!(
-				Currencies::reserved_balance(CurrencyId::Erc20(erc20_address()), &alice()),
-				15
-			);
-			assert_eq!(
-				Currencies::unreserve(CurrencyId::Erc20(erc20_address()), &alice(), 30),
-				15
-			);
-			assert_eq!(
-				Currencies::free_balance(CurrencyId::Erc20(erc20_address()), &alice()),
-				alice_balance
-			);
-			assert_eq!(
-				Currencies::reserved_balance(CurrencyId::Erc20(erc20_address()), &alice()),
-				0
-			);
-		});
-}
-
-#[test]
-fn erc20_should_not_slash() {
-	ExtBuilder::default()
-		.balances(vec![(alice(), NATIVE_CURRENCY_ID, 100000)])
-		.build()
-		.execute_with(|| {
-			deploy_contracts();
-			assert!(!Currencies::can_slash(CurrencyId::Erc20(erc20_address()), &alice(), 1),);
-			// calling slash will return 0
-			assert_eq!(Currencies::slash(CurrencyId::Erc20(erc20_address()), &alice(), 1), 0);
-		});
-}
-
-#[test]
-fn erc20_should_not_be_lockable() {
-	ExtBuilder::default()
-		.balances(vec![(alice(), NATIVE_CURRENCY_ID, 100000)])
-		.build()
-		.execute_with(|| {
-			deploy_contracts();
-			assert_noop!(
-				Currencies::set_lock(ID_1, CurrencyId::Erc20(erc20_address()), &alice(), 1),
-				Error::<Runtime>::Erc20InvalidOperation
-			);
-			assert_noop!(
-				Currencies::extend_lock(ID_1, CurrencyId::Erc20(erc20_address()), &alice(), 1),
-				Error::<Runtime>::Erc20InvalidOperation
-			);
-			assert_noop!(
-				Currencies::remove_lock(ID_1, CurrencyId::Erc20(erc20_address()), &alice()),
-				Error::<Runtime>::Erc20InvalidOperation
-			);
-		});
-}
-
-#[test]
-fn erc20_repatriate_reserved_should_work() {
-	ExtBuilder::default()
-		.balances(vec![
-			(alice(), NATIVE_CURRENCY_ID, 100000),
-			(bob(), NATIVE_CURRENCY_ID, 100000),
-		])
-		.build()
-		.execute_with(|| {
-			deploy_contracts();
-			let bob_balance = 100;
-			let alice_balance = 10000 - bob_balance;
-			<EVM as EVMTrait<AccountId>>::set_origin(alice());
-			assert_ok!(Currencies::transfer(
-				Origin::signed(alice()),
-				bob(),
-				CurrencyId::Erc20(erc20_address()),
-				bob_balance
-			));
-
-			assert_eq!(
-				Currencies::free_balance(CurrencyId::Erc20(erc20_address()), &alice()),
-				alice_balance
-			);
-			assert_eq!(
-				Currencies::reserved_balance(CurrencyId::Erc20(erc20_address()), &alice()),
-				0
-			);
-			assert_eq!(
-				Currencies::repatriate_reserved(
-					CurrencyId::Erc20(erc20_address()),
-					&alice(),
-					&alice(),
-					0,
-					BalanceStatus::Free
-				),
-				Ok(0)
-			);
-			assert_eq!(
-				Currencies::repatriate_reserved(
-					CurrencyId::Erc20(erc20_address()),
-					&alice(),
-					&alice(),
-					50,
-					BalanceStatus::Free
-				),
-				Ok(50)
-			);
-			assert_eq!(
-				Currencies::free_balance(CurrencyId::Erc20(erc20_address()), &alice()),
-				alice_balance
-			);
-			assert_eq!(
-				Currencies::reserved_balance(CurrencyId::Erc20(erc20_address()), &alice()),
-				0
-			);
-
-			assert_eq!(
-				Currencies::free_balance(CurrencyId::Erc20(erc20_address()), &bob()),
-				bob_balance
-			);
-			assert_eq!(
-				Currencies::reserved_balance(CurrencyId::Erc20(erc20_address()), &bob()),
-				0
-			);
-			assert_ok!(Currencies::reserve(CurrencyId::Erc20(erc20_address()), &bob(), 50));
-			assert_eq!(Currencies::free_balance(CurrencyId::Erc20(erc20_address()), &bob()), 50);
-			assert_eq!(
-				Currencies::reserved_balance(CurrencyId::Erc20(erc20_address()), &bob()),
-				50
-			);
-			assert_eq!(
-				Currencies::repatriate_reserved(
-					CurrencyId::Erc20(erc20_address()),
-					&bob(),
-					&bob(),
-					60,
-					BalanceStatus::Reserved
-				),
-				Ok(10)
-			);
-			assert_eq!(Currencies::free_balance(CurrencyId::Erc20(erc20_address()), &bob()), 50);
-			assert_eq!(
-				Currencies::reserved_balance(CurrencyId::Erc20(erc20_address()), &bob()),
-				50
-			);
-
-			assert_eq!(
-				Currencies::repatriate_reserved(
-					CurrencyId::Erc20(erc20_address()),
-					&bob(),
-					&alice(),
-					30,
-					BalanceStatus::Reserved
-				),
-				Ok(0)
-			);
-			assert_eq!(
-				Currencies::free_balance(CurrencyId::Erc20(erc20_address()), &alice()),
-				alice_balance
-			);
-			assert_eq!(
-				Currencies::reserved_balance(CurrencyId::Erc20(erc20_address()), &alice()),
-				30
-			);
-			assert_eq!(Currencies::free_balance(CurrencyId::Erc20(erc20_address()), &bob()), 50);
-			assert_eq!(
-				Currencies::reserved_balance(CurrencyId::Erc20(erc20_address()), &bob()),
-				20
-			);
-
-			assert_eq!(
-				Currencies::repatriate_reserved(
-					CurrencyId::Erc20(erc20_address()),
-					&bob(),
-					&alice(),
-					30,
-					BalanceStatus::Free
-				),
-				Ok(10)
-			);
-			assert_eq!(
-				Currencies::free_balance(CurrencyId::Erc20(erc20_address()), &alice()),
-				alice_balance + 20
-			);
-			assert_eq!(
-				Currencies::reserved_balance(CurrencyId::Erc20(erc20_address()), &alice()),
-				30
-			);
-			assert_eq!(Currencies::free_balance(CurrencyId::Erc20(erc20_address()), &bob()), 50);
-			assert_eq!(
-				Currencies::reserved_balance(CurrencyId::Erc20(erc20_address()), &bob()),
-				0
-			);
-		});
-}
-
-#[test]
-fn erc20_invalid_operation() {
-	ExtBuilder::default()
-		.balances(vec![(alice(), NATIVE_CURRENCY_ID, 100000)])
-		.build()
-		.execute_with(|| {
-			deploy_contracts();
-			assert_noop!(
-				Currencies::deposit(CurrencyId::Erc20(erc20_address()), &alice(), 1),
-				Error::<Runtime>::Erc20InvalidOperation
-			);
-			assert_noop!(
-				Currencies::withdraw(CurrencyId::Erc20(erc20_address()), &alice(), 1),
-				Error::<Runtime>::Erc20InvalidOperation
-			);
-			assert_noop!(
-				Currencies::update_balance(Origin::root(), alice(), CurrencyId::Erc20(erc20_address()), 1),
-				Error::<Runtime>::Erc20InvalidOperation,
-			);
-		});
-}
-
-#[test]
 fn sweep_dust_tokens_works() {
 	ExtBuilder::default().build().execute_with(|| {
-		tokens::Accounts::<Runtime>::insert(
+		orml_tokens::Accounts::<Runtime>::insert(
 			bob(),
 			DOT,
-			tokens::AccountData {
+			orml_tokens::AccountData {
 				free: 1,
 				frozen: 0,
 				reserved: 0,
 			},
 		);
-		tokens::Accounts::<Runtime>::insert(
+		orml_tokens::Accounts::<Runtime>::insert(
 			eva(),
 			DOT,
-			tokens::AccountData {
+			orml_tokens::AccountData {
 				free: 2,
 				frozen: 0,
 				reserved: 0,
 			},
 		);
-		tokens::Accounts::<Runtime>::insert(
+		orml_tokens::Accounts::<Runtime>::insert(
 			alice(),
 			DOT,
-			tokens::AccountData {
+			orml_tokens::AccountData {
 				free: 0,
 				frozen: 1,
 				reserved: 0,
 			},
 		);
-		tokens::Accounts::<Runtime>::insert(
+		orml_tokens::Accounts::<Runtime>::insert(
 			DustAccount::get(),
 			DOT,
-			tokens::AccountData {
+			orml_tokens::AccountData {
 				free: 100,
 				frozen: 0,
 				reserved: 0,
 			},
 		);
-		tokens::TotalIssuance::<Runtime>::insert(DOT, 104);
+		orml_tokens::TotalIssuance::<Runtime>::insert(DOT, 104);
 
 		let accounts = vec![bob(), eva(), alice()];
 
@@ -893,7 +392,7 @@ fn sweep_dust_tokens_works() {
 		System::assert_last_event(Event::Currencies(crate::Event::DustSwept(DOT, bob(), 1)));
 
 		// bob's account is gone
-		assert_eq!(tokens::Accounts::<Runtime>::contains_key(bob(), DOT), false);
+		assert_eq!(orml_tokens::Accounts::<Runtime>::contains_key(bob(), DOT), false);
 		assert_eq!(Currencies::free_balance(DOT, &bob()), 0);
 
 		// eva's account remains, not below ED
@@ -978,19 +477,5 @@ fn sweep_dust_native_currency_works() {
 		assert_eq!(Currencies::free_balance(NATIVE_CURRENCY_ID, &DustAccount::get()), 101);
 		// Total issuance remains the same
 		assert_eq!(Currencies::total_issuance(NATIVE_CURRENCY_ID), 104);
-	});
-}
-
-#[test]
-fn sweep_dust_erc20_not_allowed() {
-	ExtBuilder::default().build().execute_with(|| {
-		assert_noop!(
-			Currencies::sweep_dust(
-				Origin::signed(CouncilAccount::get()),
-				CurrencyId::Erc20(erc20_address()),
-				vec![]
-			),
-			Error::<Runtime>::Erc20InvalidOperation
-		);
 	});
 }

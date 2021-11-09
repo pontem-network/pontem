@@ -76,6 +76,8 @@ pub mod constants;
 use constants::{currency::*, time::*};
 use primitives::{*, currency::CurrencyId, Index};
 
+use module_currencies::BasicCurrencyAdapter;
+
 #[cfg(test)]
 mod mock;
 #[cfg(test)]
@@ -540,7 +542,7 @@ pub type LocationToAccountId = (
 );
 
 pub type LocalAssetTransactor = MultiCurrencyAdapter<
-    Tokens,
+    Currencies,
     (),
     IsNativeConcrete<CurrencyId, CurrencyIdConvert>,
     AccountId,
@@ -843,7 +845,7 @@ impl Convert<CurrencyId, Option<MultiLocation>> for CurrencyIdConvert {
                     Junction::GeneralKey(NATIVE_SYMBOL.to_vec()),
                 )
                     .into(),
-            ),
+            )
         }
     }
 }
@@ -882,7 +884,7 @@ parameter_type_with_key! {
     pub ExistentialDeposits: |currency_id: CurrencyId| -> Balance {
         match currency_id {
             CurrencyId::PONT => PONT_EXISTENTIAL_DEPOSIT,
-            CurrencyId::KSM  => KSM_EXISTENTIAL_DEPOSIT,
+            CurrencyId::KSM  => KSM_EXISTENTIAL_DEPOSIT
         }
     };
 }
@@ -901,6 +903,17 @@ impl orml_tokens::Config for Runtime {
 
 parameter_types! {
 	pub const GetNativeCurrencyId: CurrencyId = CurrencyId::PONT;
+}
+
+impl module_currencies::Config for Runtime {
+    type Event = Event;
+    type CurrencyId = CurrencyId;
+    type MultiCurrency = Tokens;
+    type NativeCurrency = BasicCurrencyAdapter<Runtime, Balances, Amount, BlockNumber>;
+    type GetNativeCurrencyId = GetNativeCurrencyId;
+    type WeightInfo = ();
+    type SweepOrigin = EnsureRoot<AccountId>;
+    type OnDust = ();
 }
 
 pub struct AccountIdToMultiLocation;
@@ -957,6 +970,7 @@ construct_runtime!(
         Balances: pallet_balances::{Pallet, Call, Storage, Config<T>, Event<T>} = 30,
         Vesting: pallet_vesting::{Pallet, Call, Storage, Config<T>, Event<T>},
         Tokens: orml_tokens::{Pallet, Storage, Event<T>, Config<T>},
+        Currencies: module_currencies::{Pallet, Call, Storage, Event<T>},
         TransactionPayment: pallet_transaction_payment::{Pallet, Storage},
 
         // Staking.

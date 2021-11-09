@@ -235,7 +235,7 @@ fn send_self_parachain_asset_to_sibling() {
                 )
                 .into()
             ),
-            4_000_000,
+            8_000_000,
         ));
 
         assert_eq!(

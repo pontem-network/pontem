@@ -89,8 +89,8 @@ pallet-multisig = { default-features = false, path = '../pallets/multisig' }
 sp-mvm-rpc-runtime = { path = '../pallets/sp-mvm/rpc/runtime', default-features = false }
 parachain-staking = { path = '../pallets/parachain-staking', default-features = false }
 pallet-author-mapping = { path = "../pallets/author-mapping", default-features = false }
-# module-currencies = { path = "../pallets/module-currencies", default-features = false }
 primitives = { path = "../primitives", default-features = false }
+module-currencies = { path = "../pallets/currencies", default-features = false }
 
 [dev-dependencies]
 xcm-emulator = { git = 'https://github.com/vitvakatu/xcm-simulator', branch = 'polkadot-v0.9.11' }
