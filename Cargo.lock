@@ -4716,6 +4716,27 @@ version = "0.1.0"
 source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=82c20397c81cfda3396e49e7898e20aeac62440a#82c20397c81cfda3396e49e7898e20aeac62440a"
 
 [[package]]
+name = "module-currencies"
+version = "2.0.0"
+dependencies = [
+ "frame-support",
+ "frame-system",
+ "orml-tokens",
+ "orml-traits",
+ "orml-utilities",
+ "pallet-balances",
+ "pallet-timestamp",
+ "parity-scale-codec",
+ "primitives",
+ "scale-info",
+ "serde",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+ "sp-std",
+]
+
+[[package]]
 name = "more-asserts"
 version = "0.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -7725,6 +7746,7 @@ dependencies = [
  "polkadot-primitives",
  "polkadot-service",
  "pontem-runtime",
+ "primitives",
  "sc-basic-authorship",
  "sc-chain-spec",
  "sc-cli",
@@ -7812,6 +7834,7 @@ dependencies = [
  "polkadot-parachain",
  "polkadot-primitives",
  "polkadot-runtime-parachains",
+ "primitives",
  "scale-info",
  "serde",
  "smallvec 1.7.0",
@@ -7865,6 +7888,17 @@ dependencies = [
  "impl-serde",
  "scale-info",
  "uint 0.9.1",
+]
+
+[[package]]
+name = "primitives"
+version = "3.0.0"
+dependencies = [
+ "parity-scale-codec",
+ "scale-info",
+ "serde",
+ "sp-core",
+ "sp-runtime",
 ]
 
 [[package]]

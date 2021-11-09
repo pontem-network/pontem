@@ -1,22 +1,28 @@
 // Currency constants.
 pub mod currency {
-    use crate::primitives::Balance;
+    use primitives::Balance;
 
     // Currencies constants.
     // Decimals.
     pub const DECIMALS: u32 = 10;
 
-    // 1 PONT.
+    // Units.
     pub const PONT: Balance = u64::pow(10, DECIMALS);
+    pub const UNIT: Balance = PONT;
+    pub const MILLIUNIT: Balance = UNIT / 1_000;
+    pub const MICROUNIT: Balance = MILLIUNIT / 1_000;
 
     // Essential Deposits.
     pub const PONT_EXISTENTIAL_DEPOSIT: Balance = 100;
     pub const KSM_EXISTENTIAL_DEPOSIT: Balance = 100000;
+
+    // Native currency symbol.
+    pub const NATIVE_SYMBOL: &[u8] = b"PONT";
 }
 
 // Time related constants.
 pub mod time {
-    use crate::primitives::{BlockNumber};
+    use primitives::{BlockNumber};
 
     /// This determines the average expected block time that we are targeting.
     /// Blocks will be produced at a minimum duration defined by `SLOT_DURATION`.
