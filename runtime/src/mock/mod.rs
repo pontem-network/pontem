@@ -72,10 +72,7 @@ pub fn mock_para_ext(para_id: u32) -> TestExternalities {
     .unwrap();
 
     pallet_balances::GenesisConfig::<Runtime> {
-        balances: vec![
-            (ALICE, 2000 * PONT),
-            (BOB, 2000 * PONT)
-        ],
+        balances: vec![(ALICE, 2000 * PONT), (BOB, 2000 * PONT)],
     }
     .assimilate_storage(&mut t)
     .unwrap();

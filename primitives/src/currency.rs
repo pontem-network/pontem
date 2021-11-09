@@ -12,14 +12,14 @@ pub enum CurrencyId {
     // Relaychain's currency.
     KSM,
     // Our native currency.
-    PONT
+    PONT,
 }
 
 impl CurrencyId {
     pub fn decimals(&self) -> Option<u8> {
         match self {
             Self::KSM => Some(12),
-            Self::PONT => Some(10)
+            Self::PONT => Some(10),
         }
     }
 }

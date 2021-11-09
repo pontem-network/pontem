@@ -845,7 +845,7 @@ impl Convert<CurrencyId, Option<MultiLocation>> for CurrencyIdConvert {
                     Junction::GeneralKey(NATIVE_SYMBOL.to_vec()),
                 )
                     .into(),
-            )
+            ),
         }
     }
 }
@@ -902,7 +902,7 @@ impl orml_tokens::Config for Runtime {
 }
 
 parameter_types! {
-	pub const GetNativeCurrencyId: CurrencyId = CurrencyId::PONT;
+    pub const GetNativeCurrencyId: CurrencyId = CurrencyId::PONT;
 }
 
 impl module_currencies::Config for Runtime {

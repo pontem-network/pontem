@@ -164,7 +164,6 @@ fn send_relay_chain_asset_to_sibling() {
     });
 }
 
-
 #[test]
 fn send_self_parachain_asset_to_sibling() {
     TestNet::reset();
@@ -190,10 +189,7 @@ fn send_self_parachain_asset_to_sibling() {
             4_000_000,
         ));
 
-        assert_eq!(
-            ParaABalances::free_balance(&ALICE),
-            15000000000000
-        );
+        assert_eq!(ParaABalances::free_balance(&ALICE), 15000000000000);
     });
 
     ParaB::execute_with(|| {
@@ -225,17 +221,11 @@ fn send_self_parachain_asset_to_sibling() {
             4_000_000,
         ));
 
-        assert_eq!(
-            ParaBTokens::free_balance(MockCurrencyId::PONT, &BOB),
-            0
-        );
+        assert_eq!(ParaBTokens::free_balance(MockCurrencyId::PONT, &BOB), 0);
     });
 
     ParaA::execute_with(|| {
-        assert_eq!(
-            ParaABalances::free_balance(&BOB),
-            500 * PONT - 8
-        );
+        assert_eq!(ParaABalances::free_balance(&BOB), 500 * PONT - 8);
     });
 }
 

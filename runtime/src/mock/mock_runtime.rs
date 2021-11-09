@@ -1,5 +1,5 @@
 /// We need mock runtime with tokens and different native currency.
-/// It supports asset from Pontem (with Parachain ID == 1). 
+/// It supports asset from Pontem (with Parachain ID == 1).
 use sp_std::prelude::*;
 use sp_runtime::{
     AccountId32,
@@ -53,9 +53,7 @@ pub use frame_support::{
     PalletId,
     error::{BadOrigin},
 };
-use frame_system::{
-    EnsureRoot
-};
+use frame_system::{EnsureRoot};
 
 /// Import the Move-pallet.
 pub use sp_mvm::gas::{GasWeightMapping};
@@ -77,7 +75,7 @@ pub type BlockNumber = u64;
 pub type Index = u64;
 
 parameter_types! {
-	pub const BlockHashCount: BlockNumber = 250;
+    pub const BlockHashCount: BlockNumber = 250;
 }
 
 impl frame_system::Config for Runtime {
@@ -457,7 +455,7 @@ impl Convert<MultiLocation, Option<CurrencyId>> for CurrencyIdConvert {
                 parents: 1,
                 interior: X2(Parachain(id), GeneralKey(key)),
             } => {
-                if id == 1 && key == b"PONT".to_vec()  {
+                if id == 1 && key == b"PONT".to_vec() {
                     return Some(CurrencyId::PONT);
                 }
 
@@ -505,7 +503,7 @@ impl orml_tokens::Config for Runtime {
 }
 
 parameter_types! {
-	pub const GetNativeCurrencyId: CurrencyId = CurrencyId::XPONT;
+    pub const GetNativeCurrencyId: CurrencyId = CurrencyId::XPONT;
 }
 
 impl module_currencies::Config for Runtime {
