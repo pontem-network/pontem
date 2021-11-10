@@ -1,4 +1,8 @@
+/// Supported currencies.
+/// TODO: would be good to replace with Acala currencies: https://github.com/AcalaNetwork/Acala/blob/master/primitives/src/currency.rs.
+/// Or implement something similar (without EVM/DEX, etc.)
 use sp_core::RuntimeDebug;
+use sp_std::vec::Vec;
 use codec::{Decode, Encode};
 use scale_info::TypeInfo;
 
@@ -15,11 +19,19 @@ pub enum CurrencyId {
     PONT,
 }
 
+/// Implement currencies.
 impl CurrencyId {
-    pub fn decimals(&self) -> Option<u8> {
+    pub fn decimals(&self) -> u8 {
         match self {
-            Self::KSM => Some(12),
-            Self::PONT => Some(10),
+            Self::KSM => 12,
+            Self::PONT => 10,
+        }
+    }
+
+    pub fn symbol(&self) -> Vec<u8> {
+        match self {
+            Self::KSM => b"KSM".to_vec(),
+            Self::PONT => b"PONT".to_vec(),
         }
     }
 }
