@@ -82,6 +82,7 @@ orml-tokens = { default-features = false, git = 'https://github.com/open-web3-st
 orml-xcm = { default-features = false, git = 'https://github.com/open-web3-stack/open-runtime-module-library', rev = '38b53d39a' }
 orml-traits = { default-features = false, git = 'https://github.com/open-web3-stack/open-runtime-module-library', rev = '38b53d39a' }
 orml-xcm-support = { default-features = false, git = 'https://github.com/open-web3-stack/open-runtime-module-library', rev = '38b53d39a' }
+orml-unknown-tokens = { default-features = false, git = 'https://github.com/open-web3-stack/open-runtime-module-library', rev = '38b53d39a' }
 
 # local dependencies
 sp-mvm = { path = '../pallets/sp-mvm', default-features = false }

@@ -5243,6 +5243,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "orml-unknown-tokens"
+version = "0.4.1-dev"
+source = "git+https://github.com/open-web3-stack/open-runtime-module-library?rev=38b53d39a#38b53d39a59c230f4d80d8d8da60cd8c14073523"
+dependencies = [
+ "frame-support",
+ "frame-system",
+ "orml-xcm-support",
+ "parity-scale-codec",
+ "scale-info",
+ "sp-std",
+ "xcm",
+]
+
+[[package]]
 name = "orml-utilities"
 version = "0.4.1-dev"
 source = "git+https://github.com/open-web3-stack/open-runtime-module-library?rev=38b53d39a#38b53d39a59c230f4d80d8d8da60cd8c14073523"
@@ -6198,7 +6212,7 @@ dependencies = [
 [[package]]
 name = "pallet-xcm"
 version = "0.9.11"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.11#eb9f107e3a04687dcf80111563f2bcea7d5b15d3"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.11#169bab55d13221251b41abfbf97f27820067f0c2"
 dependencies = [
  "frame-support",
  "frame-system",
@@ -6792,7 +6806,7 @@ dependencies = [
 [[package]]
 name = "polkadot-core-primitives"
 version = "0.9.11"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.11#eb9f107e3a04687dcf80111563f2bcea7d5b15d3"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.11#169bab55d13221251b41abfbf97f27820067f0c2"
 dependencies = [
  "parity-scale-codec",
  "parity-util-mem",
@@ -7316,7 +7330,7 @@ dependencies = [
 [[package]]
 name = "polkadot-parachain"
 version = "0.9.11"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.11#eb9f107e3a04687dcf80111563f2bcea7d5b15d3"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.11#169bab55d13221251b41abfbf97f27820067f0c2"
 dependencies = [
  "derive_more",
  "frame-support",
@@ -7333,7 +7347,7 @@ dependencies = [
 [[package]]
 name = "polkadot-primitives"
 version = "0.9.11"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.11#eb9f107e3a04687dcf80111563f2bcea7d5b15d3"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.11#169bab55d13221251b41abfbf97f27820067f0c2"
 dependencies = [
  "bitvec 0.20.4",
  "frame-system",
@@ -7811,6 +7825,7 @@ dependencies = [
  "nimbus-primitives",
  "orml-tokens",
  "orml-traits",
+ "orml-unknown-tokens",
  "orml-xcm",
  "orml-xcm-support",
  "orml-xtokens",
@@ -12246,7 +12261,7 @@ dependencies = [
 [[package]]
 name = "xcm"
 version = "0.9.11"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.11#eb9f107e3a04687dcf80111563f2bcea7d5b15d3"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.11#169bab55d13221251b41abfbf97f27820067f0c2"
 dependencies = [
  "derivative",
  "impl-trait-for-tuples",
@@ -12303,7 +12318,7 @@ dependencies = [
 [[package]]
 name = "xcm-executor"
 version = "0.9.11"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.11#eb9f107e3a04687dcf80111563f2bcea7d5b15d3"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.11#169bab55d13221251b41abfbf97f27820067f0c2"
 dependencies = [
  "frame-benchmarking",
  "frame-support",
@@ -12321,7 +12336,7 @@ dependencies = [
 [[package]]
 name = "xcm-procedural"
 version = "0.1.0"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.11#eb9f107e3a04687dcf80111563f2bcea7d5b15d3"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.11#169bab55d13221251b41abfbf97f27820067f0c2"
 dependencies = [
  "proc-macro2",
  "quote",

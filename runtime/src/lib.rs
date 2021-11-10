@@ -543,7 +543,7 @@ pub type LocationToAccountId = (
 
 pub type LocalAssetTransactor = MultiCurrencyAdapter<
     Currencies,
-    (),
+    UnknownTokens,
     IsNativeConcrete<CurrencyId, CurrencyIdConvert>,
     AccountId,
     LocationToAccountId,
@@ -901,6 +901,10 @@ impl orml_tokens::Config for Runtime {
     type DustRemovalWhitelist = Everything;
 }
 
+impl orml_unknown_tokens::Config for Runtime {
+	type Event = Event;
+}
+
 parameter_types! {
     pub const GetNativeCurrencyId: CurrencyId = CurrencyId::PONT;
 }
@@ -990,7 +994,8 @@ construct_runtime!(
         CumulusXcm: cumulus_pallet_xcm::{Pallet, Call, Event<T>, Origin} = 62,
         DmpQueue: cumulus_pallet_dmp_queue::{Pallet, Call, Storage, Event<T>} = 63,
         Xtokens: orml_xtokens::{Pallet, Storage, Call, Event<T>} = 64,
-        OrmlXcm: orml_xcm::{Pallet, Call, Event<T>} = 65,
+        UnknownTokens: orml_unknown_tokens::{Pallet, Storage, Event} = 65,
+        OrmlXcm: orml_xcm::{Pallet, Call, Event<T>} = 66,
 
         // Move VM
         Mvm: sp_mvm::{Pallet, Call, Storage, Config<T>, Event<T>},
