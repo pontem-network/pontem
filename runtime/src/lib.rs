@@ -804,7 +804,7 @@ impl GasWeightMapping for MoveVMGasWeightMapping {
 
 /// Configure the Move-pallet in pallets/sp-mvm.
 impl sp_mvm::Config for Runtime {
-    /// Event.s
+    /// Events.
     type Event = Event;
 
     /// Gas weight mapping.
@@ -812,6 +812,9 @@ impl sp_mvm::Config for Runtime {
 
     /// Only sudo can deploy modules under 0x or update standard library.
     type UpdaterOrigin = EnsureRoot<AccountId>;
+
+    /// Currency id.
+    type CurrencyId = CurrencyId;
 }
 
 struct CheckInherents;

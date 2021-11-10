@@ -2,7 +2,9 @@
 /// TODO: would be good to replace with Acala currencies: https://github.com/AcalaNetwork/Acala/blob/master/primitives/src/currency.rs.
 /// Or implement something similar (without EVM/DEX, etc.)
 use sp_core::RuntimeDebug;
+use sp_std::convert::TryFrom;
 use sp_std::vec::Vec;
+use sp_std::cmp::PartialEq;
 use codec::{Decode, Encode};
 use scale_info::TypeInfo;
 
@@ -33,5 +35,22 @@ impl CurrencyId {
             Self::KSM => b"KSM".to_vec(),
             Self::PONT => b"PONT".to_vec(),
         }
+    }
+}
+
+/// Try from.
+impl TryFrom<Vec<u8>> for CurrencyId {
+    type Error = ();
+
+    fn try_from(value: Vec<u8>) -> Result<Self, Self::Error> {
+        if value == b"PONT".to_vec() {
+            return Ok(CurrencyId::PONT);
+        }
+
+        if value == b"KSM".to_vec() {
+            return Ok(CurrencyId::KSM);
+        }
+
+        Err(())
     }
 }

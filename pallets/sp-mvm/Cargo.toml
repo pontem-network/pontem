@@ -15,12 +15,12 @@ version = "0.4"
 default-features = false
 
 [dependencies.parity-scale-codec]
-version = "2.2.0"
+version = "2.3.1"
 default-features = false
 package = "parity-scale-codec"
 
 [dependencies.parity-scale-codec-derive]
-version = "2.2.0"
+version = "2.3.1"
 default-features = false
 package = "parity-scale-codec-derive"
 
@@ -58,6 +58,9 @@ sp-runtime = { default-features = false, git = 'https://github.com/paritytech/su
 
 sp-io = { default-features = false, git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.11' }
 getrandom = { version = "0.2.3", optional = true }
+
+# Orml
+orml-traits = { default-features = false, git = 'https://github.com/open-web3-stack/open-runtime-module-library', rev = '38b53d39a' }
 
 # serde is for lcs/bcs only
 # used for benchmarking (runtime, std, no-std)

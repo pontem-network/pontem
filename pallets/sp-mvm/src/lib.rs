@@ -61,7 +61,7 @@ pub mod pallet {
     use core::convert::TryInto;
     use core::convert::TryFrom;
 
-    use sp_std::prelude::*;
+    use sp_std::{vec::Vec, prelude::*};
     use frame_system::pallet_prelude::*;
     use frame_support as support;
     use support::pallet_prelude::*;
@@ -100,6 +100,17 @@ pub mod pallet {
 
         /// The AccountId that can perform a standard library update or deploy module under 0x address.
         type UpdaterOrigin: EnsureOrigin<Self::Origin>;
+
+        /// Currency id indetifier.
+        type CurrencyId: FullCodec
+            + Eq
+            + PartialEq
+            + Copy
+            + MaybeSerializeDeserialize
+            + scale_info::TypeInfo
+            + TryFrom<Vec<u8>>;
+
+        //type Multicurrency: orml_traits::MultiCurrency<AccountId, CurrencyId = CurrencyId>;
     }
 
     #[pallet::pallet]
