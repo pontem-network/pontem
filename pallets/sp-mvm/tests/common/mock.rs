@@ -148,6 +148,7 @@ impl sp_mvm::Config for Test {
     // type Event = TestEvent;
     type Event = Event;
     type GasWeightMapping = MoveVMGasWeightMapping;
+    type StdlibOrigin = Origin;
 }
 
 parameter_types! {

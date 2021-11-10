@@ -804,8 +804,14 @@ impl GasWeightMapping for MoveVMGasWeightMapping {
 
 /// Configure the Move-pallet in pallets/sp-mvm.
 impl sp_mvm::Config for Runtime {
+    /// Event.s
     type Event = Event;
+
+    /// Gas weight mapping.
     type GasWeightMapping = MoveVMGasWeightMapping;
+
+    /// Only sudo can deploy modules under 0x or update standard library.
+    type UpdaterOrigin = EnsureRoot<AccountId>;
 }
 
 struct CheckInherents;
@@ -830,7 +836,7 @@ impl cumulus_pallet_parachain_system::CheckInherents<Block> for CheckInherents {
 }
 
 pub fn dollar(currency_id: CurrencyId) -> u128 {
-    10u128.pow(currency_id.decimals().expect("Unknown decimals").into())
+    10u128.pow(currency_id.decimals().into())
 }
 
 pub struct CurrencyIdConvert;

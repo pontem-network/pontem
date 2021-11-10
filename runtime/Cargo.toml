@@ -13,12 +13,11 @@ targets = ['x86_64-unknown-linux-gnu']
 [build-dependencies]
 substrate-wasm-builder = '4.0.0'
 
-# TODO: update parity-scale-codec to 2.2.0
 [dependencies.codec]
 default-features = false
 features = [ 'derive' ]
 package = 'parity-scale-codec'
-version = '2.0.0'
+version = '2.3.1'
 
 [dependencies]
 hex-literal = { optional = true, version = '0.3.1' }

@@ -98,8 +98,8 @@ pub mod pallet {
         /// Gas to weight convertion settings.
         type GasWeightMapping: gas::GasWeightMapping;
 
-        // doesn't really needed now:
-        // type Currency: Currency<Self::AccountId>;
+        /// The AccountId that can perform a standard library update or deploy module under 0x address.
+        type UpdaterOrigin: EnsureOrigin<Self::Origin>;
     }
 
     #[pallet::pallet]
@@ -206,7 +206,7 @@ pub mod pallet {
             gas_limit: u64,
         ) -> DispatchResultWithPostInfo {
             // Allows to update Standard Library if root.
-            let sender = match ensure_root(origin.clone()) {
+            let sender = match T::UpdaterOrigin::ensure_origin(origin.clone()) {
                 Ok(_) => {
                     debug!("executing `publish package` with root");
                     CORE_CODE_ADDRESS
