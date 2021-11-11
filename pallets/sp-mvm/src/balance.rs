@@ -198,14 +198,22 @@ where
         }
     }
 
-    // As we have only one currency now, calling PONT, we ignore paths.
-    // TODO: support tickets instead of paths.
+    // Get currency total issuance using ticker.
     fn get_currency_info(
         &self,
-        _path: &move_vm::io::traits::CurrencyAccessPath,
+        ticker: &[u8],
     ) -> Option<CurrencyInfo> {
-        match Currencies::total_issuance(CurrencyId::default()).try_into() {
-            Ok(total_value) => Some(CurrencyInfo { total_value }),
+        let currency_id = CurrencyId::try_from(ticker.to_vec());
+
+        match currency_id {
+            Ok(id) => {
+                let total_value = Currencies::total_issuance(id).try_into();
+
+                match total_value {
+                    Ok(total_value) => Some(CurrencyInfo { total_value }),
+                    Err(_) => None,
+                }
+            }
             Err(_) => None,
         }
     }

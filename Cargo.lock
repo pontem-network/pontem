@@ -7915,6 +7915,7 @@ dependencies = [
  "serde",
  "sp-core",
  "sp-runtime",
+ "sp-std",
 ]
 
 [[package]]
@@ -10436,6 +10437,7 @@ dependencies = [
  "move-vm-runtime",
  "mvm",
  "once_cell",
+ "orml-traits",
  "pallet-balances",
  "pallet-multisig 3.0.0",
  "pallet-timestamp",
