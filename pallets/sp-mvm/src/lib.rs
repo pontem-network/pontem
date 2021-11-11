@@ -66,7 +66,7 @@ pub mod pallet {
     use frame_support as support;
     use support::dispatch::fmt::Debug;
     use support::pallet_prelude::*;
-    use support::traits::UnixTime;
+    use support::traits::{UnixTime, tokens::fungibles};
     use support::PalletId;
     use support::dispatch::DispatchResultWithPostInfo;
     use sp_runtime::traits::{UniqueSaturatedInto};
@@ -120,9 +120,12 @@ pub mod pallet {
 
         // Multicurrency pallet.
         type Currencies: orml_traits::MultiCurrency<
-            <Self as frame_system::Config>::AccountId,
-            CurrencyId = Self::CurrencyId,
-        >;
+                <Self as frame_system::Config>::AccountId,
+                CurrencyId = Self::CurrencyId,
+            > + fungibles::Inspect<
+                <Self as frame_system::Config>::AccountId,
+                AssetId = Self::CurrencyId,
+            >;
     }
 
     #[pallet::pallet]

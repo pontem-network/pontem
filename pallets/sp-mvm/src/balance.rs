@@ -25,6 +25,8 @@ use sp_std::cmp::PartialEq;
 use move_vm::io::balance::CurrencyInfo;
 use sp_std::{vec::Vec, prelude::*, default::Default};
 use sp_runtime::traits::AccountIdConversion;
+use frame_support::traits::tokens::fungibles;
+use orml_traits::MultiCurrency;
 
 #[derive(PartialEq, Eq, Clone, Copy)]
 /// Ticker struct.
@@ -73,7 +75,8 @@ impl<AccountId: Encode + Decode + Default, Currencies, CurrencyId>
 /// Using deposit/withdraw to PalletId we are solving total issuance issue.
 impl<
         AccountId: Encode + Decode + Default,
-        Currencies: orml_traits::MultiCurrency<AccountId, CurrencyId = CurrencyId>,
+        Currencies: MultiCurrency<AccountId, CurrencyId = CurrencyId>
+            + fungibles::Inspect<AccountId, AssetId = CurrencyId>,
         CurrencyId: FullCodec
             + Eq
             + PartialEq
@@ -84,7 +87,7 @@ impl<
             + Default,
     > BalanceAccess for BalancesAdapter<AccountId, Currencies, CurrencyId>
 where
-    Currencies::Balance: TryFrom<VmBalance>,
+    <Currencies as MultiCurrency<AccountId>>::Balance: TryFrom<VmBalance>,
 {
     /// Query native coin balance.
     ///
@@ -108,7 +111,7 @@ where
                     .map_err(|_| error!("can't convert address from Move to Substrate."))
                     .and_then(|address| {
                         // TODO: replace with reducible_balance.
-                        Currencies::free_balance(id, &address)
+                        Currencies::reducible_balance(id, &address, false)
                             .try_into()
                             .map_err(|_err| {
                                 error!("can't convert native balance to VM balance type.")
@@ -143,9 +146,10 @@ where
                 address_to_account::<AccountId>(address)
                     .map_err(|_err| error!("Can't convert address from Move to Substrate."))
                     .and_then(|address| {
-                        let amount: Currencies::Balance = amount.try_into().map_err(|_err| {
-                            error!("Can't convert VM balance to native balance type.")
-                        })?;
+                        let amount: <Currencies as MultiCurrency<AccountId>>::Balance =
+                            amount.try_into().map_err(|_err| {
+                                error!("Can't convert VM balance to native balance type.")
+                            })?;
                         Currencies::withdraw(id, &self.get_pallet_account(), amount)
                             .map_err(|_err| error!("Can't withdraw from pallet"))?;
                         Currencies::deposit(id, &address, amount)
@@ -181,9 +185,10 @@ where
                 address_to_account::<AccountId>(address)
                     .map_err(|_| error!("Can't convert address from Move to Substrate."))
                     .and_then(|address| {
-                        let amount: Currencies::Balance = amount.try_into().map_err(|_err| {
-                            error!("Can't convert VM balance to native balance type.")
-                        })?;
+                        let amount: <Currencies as MultiCurrency<AccountId>>::Balance =
+                            amount.try_into().map_err(|_err| {
+                                error!("Can't convert VM balance to native balance type.")
+                            })?;
                         Currencies::withdraw(id, &address, amount)
                             .map_err(|_err| error!("Can't deposit native balance."))?;
                         Currencies::deposit(id, &self.get_pallet_account(), amount)
@@ -199,15 +204,13 @@ where
     }
 
     // Get currency total issuance using ticker.
-    fn get_currency_info(
-        &self,
-        ticker: &[u8],
-    ) -> Option<CurrencyInfo> {
+    fn get_currency_info(&self, ticker: &[u8]) -> Option<CurrencyInfo> {
         let currency_id = CurrencyId::try_from(ticker.to_vec());
 
         match currency_id {
             Ok(id) => {
-                let total_value = Currencies::total_issuance(id).try_into();
+                let total_value =
+                    <Currencies as fungibles::Inspect<AccountId>>::total_issuance(id).try_into();
 
                 match total_value {
                     Ok(total_value) => Some(CurrencyInfo { total_value }),
@@ -230,7 +233,8 @@ pub mod boxed {
     use frame_support::dispatch::fmt::Debug;
     use parity_scale_codec::{FullCodec, Decode, Encode};
     use move_core_types::account_address::AccountAddress;
-    use frame_support::PalletId;
+    use frame_support::{PalletId, traits::tokens::fungibles};
+    use orml_traits::MultiCurrency;
 
     pub type BalancesAdapter = BalancesBoxedAdapter;
 
@@ -244,7 +248,9 @@ pub mod boxed {
 
     impl<
             AccountId: Encode + Decode + Sized + Default + 'static,
-            Currencies: orml_traits::MultiCurrency<AccountId, CurrencyId = CurrencyId> + 'static,
+            Currencies: MultiCurrency<AccountId, CurrencyId = CurrencyId>
+                + fungibles::Inspect<AccountId, AssetId = CurrencyId>
+                + 'static,
             CurrencyId: FullCodec
                 + Eq
                 + PartialEq
@@ -281,7 +287,9 @@ pub mod boxed {
 
     impl<
             AccountId: Encode + Decode + Sized + Default + 'static,
-            Currencies: orml_traits::MultiCurrency<AccountId, CurrencyId = CurrencyId> + 'static,
+            Currencies: orml_traits::MultiCurrency<AccountId, CurrencyId = CurrencyId>
+                + fungibles::Inspect<AccountId, AssetId = CurrencyId>
+                + 'static,
             CurrencyId: FullCodec
                 + Eq
                 + PartialEq

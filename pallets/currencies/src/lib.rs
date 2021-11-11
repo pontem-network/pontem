@@ -26,6 +26,7 @@ use codec::{Codec, FullCodec};
 use frame_support::{
     pallet_prelude::*,
     traits::{
+        tokens::{fungibles, fungible, DepositConsequence, WithdrawConsequence},
         Currency as PalletCurrency, ExistenceRequirement, Get, Imbalance,
         LockableCurrency as PalletLockableCurrency,
         ReservableCurrency as PalletReservableCurrency, WithdrawReasons,
@@ -86,13 +87,15 @@ pub mod module {
         type MultiCurrency: TransferAll<Self::AccountId>
             + MultiCurrencyExtended<Self::AccountId, CurrencyId = Self::CurrencyId>
             + MultiLockableCurrency<Self::AccountId, CurrencyId = Self::CurrencyId>
-            + MultiReservableCurrency<Self::AccountId, CurrencyId = Self::CurrencyId>;
+            + MultiReservableCurrency<Self::AccountId, CurrencyId = Self::CurrencyId>
+            + fungibles::Inspect<Self::AccountId>;
         type NativeCurrency: BasicCurrencyExtended<
                 Self::AccountId,
                 Balance = BalanceOf<Self>,
                 Amount = AmountOf<Self>,
             > + BasicLockableCurrency<Self::AccountId, Balance = BalanceOf<Self>>
-            + BasicReservableCurrency<Self::AccountId, Balance = BalanceOf<Self>>;
+            + BasicReservableCurrency<Self::AccountId, Balance = BalanceOf<Self>>
+            + fungible::Inspect<Self::AccountId>;
 
         /// The native currency id
         #[pallet::constant]
@@ -500,6 +503,103 @@ impl<T: Config> MultiReservableCurrency<T::AccountId> for Pallet<T> {
     }
 }
 
+/// Implement 'fungibles:Inspect' for Pallet.
+impl<T: Config> fungibles::Inspect<T::AccountId> for Pallet<T>
+where
+    T::NativeCurrency: fungible::Inspect<T::AccountId, Balance = BalanceOf<T>>,
+    T::MultiCurrency:
+        fungibles::Inspect<T::AccountId, Balance = BalanceOf<T>, AssetId = T::CurrencyId>,
+{
+    type Balance = BalanceOf<T>;
+    type AssetId = T::CurrencyId;
+
+    fn total_issuance(currency_id: Self::AssetId) -> Self::Balance {
+        match currency_id {
+            id if id == T::GetNativeCurrencyId::get() => {
+                <T::NativeCurrency as fungible::Inspect<T::AccountId>>::total_issuance()
+            }
+            _ => <T::MultiCurrency as fungibles::Inspect<T::AccountId>>::total_issuance(
+                currency_id,
+            ),
+        }
+    }
+
+    fn minimum_balance(currency_id: Self::AssetId) -> Self::Balance {
+        match currency_id {
+            id if id == T::GetNativeCurrencyId::get() => {
+                <T::NativeCurrency as fungible::Inspect<T::AccountId>>::minimum_balance()
+            }
+            _ => <T::MultiCurrency as fungibles::Inspect<T::AccountId>>::minimum_balance(
+                currency_id,
+            ),
+        }
+    }
+
+    fn balance(currency_id: Self::AssetId, who: &T::AccountId) -> Self::Balance {
+        match currency_id {
+            id if id == T::GetNativeCurrencyId::get() => {
+                <T::NativeCurrency as fungible::Inspect<T::AccountId>>::balance(who)
+            }
+            _ => {
+                <T::MultiCurrency as fungibles::Inspect<T::AccountId>>::balance(currency_id, who)
+            }
+        }
+    }
+
+    fn reducible_balance(
+        currency_id: Self::AssetId,
+        who: &T::AccountId,
+        keep_alive: bool,
+    ) -> Self::Balance {
+        match currency_id {
+            id if id == T::GetNativeCurrencyId::get() => {
+                <T::NativeCurrency as fungible::Inspect<T::AccountId>>::reducible_balance(
+                    who, keep_alive,
+                )
+            }
+            _ => <T::MultiCurrency as fungibles::Inspect<T::AccountId>>::reducible_balance(
+                currency_id,
+                who,
+                keep_alive,
+            ),
+        }
+    }
+
+    fn can_deposit(
+        currency_id: Self::AssetId,
+        who: &T::AccountId,
+        amount: Self::Balance,
+    ) -> DepositConsequence {
+        match currency_id {
+            id if id == T::GetNativeCurrencyId::get() => {
+                <T::NativeCurrency as fungible::Inspect<T::AccountId>>::can_deposit(who, amount)
+            }
+            _ => <T::MultiCurrency as fungibles::Inspect<T::AccountId>>::can_deposit(
+                currency_id,
+                who,
+                amount,
+            ),
+        }
+    }
+
+    fn can_withdraw(
+        currency_id: Self::AssetId,
+        who: &T::AccountId,
+        amount: Self::Balance,
+    ) -> WithdrawConsequence<Self::Balance> {
+        match currency_id {
+            id if id == T::GetNativeCurrencyId::get() => {
+                <T::NativeCurrency as fungible::Inspect<T::AccountId>>::can_withdraw(who, amount)
+            }
+            _ => <T::MultiCurrency as fungibles::Inspect<T::AccountId>>::can_withdraw(
+                currency_id,
+                who,
+                amount,
+            ),
+        }
+    }
+}
+
 pub struct Currency<T, GetCurrencyId>(marker::PhantomData<T>, marker::PhantomData<GetCurrencyId>);
 
 impl<T, GetCurrencyId> BasicCurrency<T::AccountId> for Currency<T, GetCurrencyId>
@@ -846,6 +946,43 @@ where
         status: BalanceStatus,
     ) -> result::Result<Self::Balance, DispatchError> {
         Currency::repatriate_reserved(slashed, beneficiary, value, status)
+    }
+}
+
+// Adapt 'fungible::Inspect'
+impl<T, AccountId, Currency, Amount, Moment> fungible::Inspect<AccountId>
+    for BasicCurrencyAdapter<T, Currency, Amount, Moment>
+where
+    T: Config,
+    Currency: fungible::Inspect<AccountId, Balance = BalanceOf<T>>,
+{
+    type Balance = BalanceOf<T>;
+
+    fn total_issuance() -> Self::Balance {
+        Currency::total_issuance()
+    }
+
+    fn minimum_balance() -> Self::Balance {
+        Currency::minimum_balance()
+    }
+
+    fn balance(who: &AccountId) -> Self::Balance {
+        Currency::balance(who)
+    }
+
+    fn reducible_balance(who: &AccountId, keep_alive: bool) -> Self::Balance {
+        Currency::reducible_balance(who, keep_alive)
+    }
+
+    fn can_deposit(who: &AccountId, amount: Self::Balance) -> DepositConsequence {
+        Currency::can_deposit(who, amount)
+    }
+
+    fn can_withdraw(
+        who: &AccountId,
+        amount: Self::Balance,
+    ) -> WithdrawConsequence<Self::Balance> {
+        Currency::can_withdraw(who, amount)
     }
 }
 
