@@ -67,8 +67,9 @@ pub mod pallet {
     use support::dispatch::fmt::Debug;
     use support::pallet_prelude::*;
     use support::traits::UnixTime;
+    use support::PalletId;
     use support::dispatch::DispatchResultWithPostInfo;
-    use sp_runtime::traits::UniqueSaturatedInto;
+    use sp_runtime::traits::{UniqueSaturatedInto};
     use parity_scale_codec::{FullCodec, FullEncode};
 
     use move_vm::{Vm, StateAccess};
@@ -101,6 +102,10 @@ pub mod pallet {
 
         /// The AccountId that can perform a standard library update or deploy module under 0x address.
         type UpdaterOrigin: EnsureOrigin<Self::Origin>;
+
+        /// The treasury's pallet id, used for deriving its sovereign account ID.
+        #[pallet::constant]
+        type PalletId: Get<PalletId>;
 
         /// Currency id indetifier.
         type CurrencyId: FullCodec
@@ -509,7 +514,7 @@ pub mod pallet {
                     <T as frame_system::Config>::AccountId,
                     T::Currencies,
                     T::CurrencyId,
-                >::new()
+                >::new(T::PalletId::get())
                 .into(),
             )
             .map_err(|err| {

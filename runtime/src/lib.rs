@@ -802,6 +802,11 @@ impl GasWeightMapping for MoveVMGasWeightMapping {
     }
 }
 
+parameter_types! {
+    /// VM pallet address (used to reserve funds during VM native operations).
+    pub const MVMPalletId: PalletId = PalletId(*b"pont/mvm");
+}
+
 /// Configure the Move-pallet in pallets/sp-mvm.
 impl sp_mvm::Config for Runtime {
     /// Events.
@@ -812,6 +817,9 @@ impl sp_mvm::Config for Runtime {
 
     /// Only sudo can deploy modules under 0x or update standard library.
     type UpdaterOrigin = EnsureRoot<AccountId>;
+
+    /// Pallet Id.
+    type PalletId = MVMPalletId;
 
     /// Currency id.
     type CurrencyId = CurrencyId;
