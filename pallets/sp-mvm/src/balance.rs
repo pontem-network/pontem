@@ -15,10 +15,6 @@ use core::convert::TryInto;
 use move_vm::io::traits::{Balance as VmBalance, BalanceAccess};
 
 use crate::addr::address_to_account;
-use frame_support::traits::Currency;
-use frame_support::traits::Imbalance;
-use frame_support::traits::WithdrawReasons;
-use frame_support::traits::ExistenceRequirement;
 use frame_support::pallet_prelude::MaybeSerializeDeserialize;
 use frame_support::dispatch::fmt::Debug;
 use parity_scale_codec::{FullCodec, Decode};
@@ -95,10 +91,11 @@ where
                     address,
                     PrintedTicker(ticker)
                 );
-                
+
                 address_to_account::<AccountId>(address)
                 .map_err(|_| error!("can't convert address from Move to Substrate."))
                 .and_then(|address| {
+                    // TODO: replace with reducible_balance.
                     Currencies::free_balance(id, &address)
                         .try_into()
                         .map_err(|_err| error!("can't convert native balance to VM balance type."))
@@ -110,12 +107,6 @@ where
                 return None;
             }
         }
-
-        //trace!(
-        //    "native balance requested for address: {} (ticker: {})",
-        //    address,
-        //    currencyId
-        //);
     }
 
     /// Add native coins to account.
@@ -129,25 +120,25 @@ where
     ) {
         let currency_id = CurrencyId::try_from(ticker.to_vec());
 
+        trace!("deposit native balance '{}'", PrintedTicker(ticker));
         match currency_id {
             Ok(id) => {
-                //trace!("withdraw resource {} requested, amount: {}", currencyId, amount);
                 address_to_account::<AccountId>(address)
                     .map_err(|_err| error!("Can't convert address from Move to Substrate."))
                     .and_then(|address| {
-                        amount
+                            amount
                             .try_into()
                             .map_err(|_err| {
                                 error!("Can't convert VM balance to native balance type.")
                             })
                             .map(|amount: Currencies::Balance| {
                                 Currencies::deposit(id, &address, amount)
+                                .map_err(|_err| error!("Can't deposit native balance."))
                             })
                     })
                     .ok();
-                //trace!("native balance deposit imbalance: {:?}", imbalance);
             }
-            Err(e) => trace!("add: error getting currency id"),
+            Err(_) => trace!("native balance ticker '{}' not supported", PrintedTicker(ticker)),
         }
     }
 
@@ -164,7 +155,7 @@ where
 
         match currency_id {
             Ok(id) => {
-                //trace!("deposit resource {} requested, amount: {}", currencyId, amount);
+                trace!("withdraw balance {} requested, amount: {}", PrintedTicker(ticker), amount);
                 address_to_account::<AccountId>(address)
                     .map_err(|_| error!("Can't convert address from Move to Substrate."))
                     .and_then(|address| {
@@ -179,9 +170,8 @@ where
                             })
                     })
                     .ok();
-                //trace!("native balance withdraw imbalance: {:?}", imbalance);
             }
-            Err(e) => trace!("sub: error getting currency id"),
+            Err(_) => trace!("native balance ticker '{}' not supported", PrintedTicker(ticker)),
         }
     }
 
