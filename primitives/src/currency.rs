@@ -5,6 +5,7 @@ use sp_core::RuntimeDebug;
 use sp_std::convert::TryFrom;
 use sp_std::vec::Vec;
 use sp_std::cmp::PartialEq;
+use sp_std::default::Default;
 use codec::{Decode, Encode};
 use scale_info::TypeInfo;
 
@@ -52,5 +53,11 @@ impl TryFrom<Vec<u8>> for CurrencyId {
         }
 
         Err(())
+    }
+}
+
+impl Default for CurrencyId {
+    fn default() -> Self {
+        CurrencyId::PONT
     }
 }

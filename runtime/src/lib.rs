@@ -815,6 +815,9 @@ impl sp_mvm::Config for Runtime {
 
     /// Currency id.
     type CurrencyId = CurrencyId;
+
+    /// Currencies (Multicurrency).
+    type Currencies = Currencies;
 }
 
 struct CheckInherents;

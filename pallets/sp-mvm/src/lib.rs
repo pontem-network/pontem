@@ -61,9 +61,10 @@ pub mod pallet {
     use core::convert::TryInto;
     use core::convert::TryFrom;
 
-    use sp_std::{vec::Vec, prelude::*};
+    use sp_std::{vec::Vec, prelude::*, default::Default};
     use frame_system::pallet_prelude::*;
     use frame_support as support;
+    use support::dispatch::fmt::Debug;
     use support::pallet_prelude::*;
     use support::traits::UnixTime;
     use support::dispatch::DispatchResultWithPostInfo;
@@ -108,9 +109,12 @@ pub mod pallet {
             + Copy
             + MaybeSerializeDeserialize
             + scale_info::TypeInfo
-            + TryFrom<Vec<u8>>;
+            + Debug
+            + TryFrom<Vec<u8>>
+            + Default;
 
-        //type Multicurrency: orml_traits::MultiCurrency<AccountId, CurrencyId = CurrencyId>;
+        // Multicurrency pallet.
+        type Currencies: orml_traits::MultiCurrency<<Self as frame_system::Config>::AccountId, CurrencyId = Self::CurrencyId>;
     }
 
     #[pallet::pallet]
@@ -498,7 +502,7 @@ pub mod pallet {
             Mvm::new(
                 Self::move_vm_storage().into(),
                 Self::create_move_event_handler(),
-                balance::BalancesAdapter::<T>::new().into(),
+                balance::BalancesAdapter::<<T as frame_system::Config>::AccountId, T::Currencies, T::CurrencyId>::new().into(),
             )
             .map_err(|err| {
                 error!("{}", err);
