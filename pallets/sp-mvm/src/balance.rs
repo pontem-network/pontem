@@ -26,11 +26,28 @@ use sp_std::cmp::PartialEq;
 use move_vm::io::balance::CurrencyInfo;
 use sp_std::{vec::Vec, prelude::*, default::Default};
 
+#[derive(PartialEq, Eq, Clone, Copy)]
+/// Ticker struct.
+pub struct PrintedTicker<'a>(&'a [u8]);
+
+/// Display trait impl for printed ticker struct.
+impl<'a> core::fmt::Display for PrintedTicker<'a> {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        f.write_str(core::str::from_utf8(self.0).expect("Could not read as utf-8"))
+            .expect("Could not write into formatter");
+        Ok(())
+    }
+}
+
 /// Balance Adapter struct.
-pub struct BalancesAdapter<AccountId, Currencies, CurrencyId>(core::marker::PhantomData<(AccountId, Currencies, CurrencyId)>);
+pub struct BalancesAdapter<AccountId, Currencies, CurrencyId>(
+    core::marker::PhantomData<(AccountId, Currencies, CurrencyId)>,
+);
 
 /// Default Balance Adapter.
-impl<AccountId, Currencies, CurrencyId> Default for BalancesAdapter<AccountId, Currencies, CurrencyId> {
+impl<AccountId, Currencies, CurrencyId> Default
+    for BalancesAdapter<AccountId, Currencies, CurrencyId>
+{
     fn default() -> Self {
         Self(core::marker::PhantomData)
     }
@@ -47,13 +64,19 @@ impl<AccountId, Currencies, CurrencyId> BalancesAdapter<AccountId, Currencies, C
 ///
 /// It's a trait required to Move VM and allows for poxy balances between Substrate and VM.
 impl<
-    AccountId: Decode + Sized,
-    Currencies: orml_traits::MultiCurrency<AccountId, CurrencyId = CurrencyId>, 
-    CurrencyId: FullCodec + Eq + PartialEq + Copy + MaybeSerializeDeserialize + Debug + TryFrom<Vec<u8>> + Default
-    > BalanceAccess 
-    for BalancesAdapter<AccountId, Currencies, CurrencyId>
+        AccountId: Decode + Sized,
+        Currencies: orml_traits::MultiCurrency<AccountId, CurrencyId = CurrencyId>,
+        CurrencyId: FullCodec
+            + Eq
+            + PartialEq
+            + Copy
+            + MaybeSerializeDeserialize
+            + Debug
+            + TryFrom<Vec<u8>>
+            + Default,
+    > BalanceAccess for BalancesAdapter<AccountId, Currencies, CurrencyId>
 where
-    Currencies::Balance: TryFrom<VmBalance>
+    Currencies::Balance: TryFrom<VmBalance>,
 {
     /// Query native coin balance.
     ///
@@ -67,17 +90,23 @@ where
 
         match currency_id {
             Ok(id) => {
+                trace!(
+                    "native balance requested for address: {} (ticker: {})",
+                    address,
+                    PrintedTicker(ticker)
+                );
+                
                 address_to_account::<AccountId>(address)
-                .map_err(|_| error!("Can't convert address from Move to Substrate."))
+                .map_err(|_| error!("can't convert address from Move to Substrate."))
                 .and_then(|address| {
                     Currencies::free_balance(id, &address)
                         .try_into()
-                        .map_err(|_err| error!("Convert native balance to VM balance type."))
+                        .map_err(|_err| error!("can't convert native balance to VM balance type."))
                 })
                 .ok()
-            },
+            }
             Err(_) => {
-                trace!("native balance ticker not supported");
+                trace!("native balance ticker '{}' not supported", PrintedTicker(ticker));
                 return None;
             }
         }
@@ -108,18 +137,18 @@ where
                     .and_then(|address| {
                         amount
                             .try_into()
-                            .map_err(|_err| error!("Can't convert VM balance to native balance type."))
+                            .map_err(|_err| {
+                                error!("Can't convert VM balance to native balance type.")
+                            })
                             .map(|amount: Currencies::Balance| {
                                 Currencies::deposit(id, &address, amount)
                             })
                     })
                     .ok();
                 //trace!("native balance deposit imbalance: {:?}", imbalance);
-            },
-            Err(e) => trace!("add: error getting currency id")
+            }
+            Err(e) => trace!("add: error getting currency id"),
         }
-
-        
     }
 
     /// Reduce native coin balance of account.
@@ -141,14 +170,17 @@ where
                     .and_then(|address| {
                         amount
                             .try_into()
-                            .map_err(|_err| error!("Can't convert VM balance to native balance type."))
+                            .map_err(|_err| {
+                                error!("Can't convert VM balance to native balance type.")
+                            })
                             .and_then(|amount: Currencies::Balance| {
-                                Currencies::withdraw(id, &address, amount).map_err(|_err| error!("Can't withdraw native balance."))
+                                Currencies::withdraw(id, &address, amount)
+                                    .map_err(|_err| error!("Can't withdraw native balance."))
                             })
                     })
                     .ok();
                 //trace!("native balance withdraw imbalance: {:?}", imbalance);
-            },
+            }
             Err(e) => trace!("sub: error getting currency id"),
         }
     }
@@ -189,36 +221,54 @@ pub mod boxed {
 
     impl<
             AccountId: Decode + Sized + 'static,
-            Currencies: orml_traits::MultiCurrency<AccountId, CurrencyId = CurrencyId> + 'static, 
-            CurrencyId: FullCodec + Eq + PartialEq + Copy + MaybeSerializeDeserialize + Debug + TryFrom<Vec<u8>> + Default + 'static
-        > 
-        From<super::BalancesAdapter<AccountId, Currencies, CurrencyId>> 
-        for BalancesBoxedAdapter 
-        {
-            fn from(adapter: super::BalancesAdapter<AccountId, Currencies, CurrencyId>) -> Self {
-                Self {
-                    f_get: Box::new(move |address, ticker| adapter.get_balance(address, ticker)),
-                    f_deposit: Box::new(|address, ticker, amount| {
-                        let adapter = super::BalancesAdapter::<AccountId, Currencies, CurrencyId>::new();
-                        adapter.add(address, ticker, amount)
-                    }),
-                    f_withdraw: Box::new(|address, ticker, amount| {
-                        let adapter = super::BalancesAdapter::<AccountId, Currencies, CurrencyId>::new();
-                        adapter.sub(address, ticker, amount)
-                    }),
-                }
+            Currencies: orml_traits::MultiCurrency<AccountId, CurrencyId = CurrencyId> + 'static,
+            CurrencyId: FullCodec
+                + Eq
+                + PartialEq
+                + Copy
+                + MaybeSerializeDeserialize
+                + Debug
+                + TryFrom<Vec<u8>>
+                + Default
+                + 'static,
+        > From<super::BalancesAdapter<AccountId, Currencies, CurrencyId>>
+        for BalancesBoxedAdapter
+    {
+        fn from(adapter: super::BalancesAdapter<AccountId, Currencies, CurrencyId>) -> Self {
+            Self {
+                f_get: Box::new(move |address, ticker| adapter.get_balance(address, ticker)),
+                f_deposit: Box::new(|address, ticker, amount| {
+                    let adapter =
+                        super::BalancesAdapter::<AccountId, Currencies, CurrencyId>::new();
+                    adapter.add(address, ticker, amount)
+                }),
+                f_withdraw: Box::new(|address, ticker, amount| {
+                    let adapter =
+                        super::BalancesAdapter::<AccountId, Currencies, CurrencyId>::new();
+                    adapter.sub(address, ticker, amount)
+                }),
             }
+        }
     }
 
     impl<
             AccountId: Decode + Sized + 'static,
-            Currencies: orml_traits::MultiCurrency<AccountId, CurrencyId = CurrencyId> + 'static, 
-            CurrencyId: FullCodec + Eq + PartialEq + Copy + MaybeSerializeDeserialize + Debug + TryFrom<Vec<u8>> + Default + 'static
-        > 
-        From<&'static super::BalancesAdapter<AccountId, Currencies, CurrencyId>>
+            Currencies: orml_traits::MultiCurrency<AccountId, CurrencyId = CurrencyId> + 'static,
+            CurrencyId: FullCodec
+                + Eq
+                + PartialEq
+                + Copy
+                + MaybeSerializeDeserialize
+                + Debug
+                + TryFrom<Vec<u8>>
+                + Default
+                + 'static,
+        > From<&'static super::BalancesAdapter<AccountId, Currencies, CurrencyId>>
         for BalancesBoxedAdapter
     {
-        fn from(balances: &'static super::BalancesAdapter<AccountId, Currencies, CurrencyId>) -> Self {
+        fn from(
+            balances: &'static super::BalancesAdapter<AccountId, Currencies, CurrencyId>,
+        ) -> Self {
             Self {
                 f_get: Box::new(move |addr, id| balances.get_balance(addr, id)),
                 f_deposit: Box::new(move |addr, id, val| balances.add(addr, id, val)),

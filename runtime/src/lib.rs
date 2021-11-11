@@ -914,7 +914,7 @@ impl orml_tokens::Config for Runtime {
 }
 
 impl orml_unknown_tokens::Config for Runtime {
-	type Event = Event;
+    type Event = Event;
 }
 
 parameter_types! {

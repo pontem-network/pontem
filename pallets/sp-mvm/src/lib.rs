@@ -114,7 +114,10 @@ pub mod pallet {
             + Default;
 
         // Multicurrency pallet.
-        type Currencies: orml_traits::MultiCurrency<<Self as frame_system::Config>::AccountId, CurrencyId = Self::CurrencyId>;
+        type Currencies: orml_traits::MultiCurrency<
+            <Self as frame_system::Config>::AccountId,
+            CurrencyId = Self::CurrencyId,
+        >;
     }
 
     #[pallet::pallet]
@@ -502,7 +505,12 @@ pub mod pallet {
             Mvm::new(
                 Self::move_vm_storage().into(),
                 Self::create_move_event_handler(),
-                balance::BalancesAdapter::<<T as frame_system::Config>::AccountId, T::Currencies, T::CurrencyId>::new().into(),
+                balance::BalancesAdapter::<
+                    <T as frame_system::Config>::AccountId,
+                    T::Currencies,
+                    T::CurrencyId,
+                >::new()
+                .into(),
             )
             .map_err(|err| {
                 error!("{}", err);
