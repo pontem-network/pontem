@@ -1,4 +1,6 @@
-use frame_support::{traits::VestingSchedule, assert_ok, assert_err_ignore_postinfo, dispatch::DispatchError};
+use frame_support::{
+    traits::VestingSchedule, assert_ok, assert_err_ignore_postinfo, dispatch::DispatchError,
+};
 use serde::Deserialize;
 use move_core_types::identifier::Identifier;
 use move_core_types::language_storage::StructTag;
@@ -180,7 +182,12 @@ fn transfer_vested_fails() {
         let bob_init_balance = balances::Pallet::<Test>::free_balance(&bob);
 
         // vest balance all bob balance
-        assert_ok!(pallet_vesting::Pallet::<Test>::add_vesting_schedule(&bob, bob_init_balance, bob_init_balance / 100, 1));
+        assert_ok!(pallet_vesting::Pallet::<Test>::add_vesting_schedule(
+            &bob,
+            bob_init_balance,
+            bob_init_balance / 100,
+            1
+        ));
 
         // publish user module
         publish_module(bob, &modules::user::STORE, None).unwrap();
@@ -188,11 +195,14 @@ fn transfer_vested_fails() {
         // execute tx:
         // should return error.
         let result = execute_tx(bob, &transactions::TRANSFER, None);
-        assert_err_ignore_postinfo!(result, DispatchError::Module {
-            index: 6,
-            error: 153,
-            message: Some("Aborted")
-        });
+        assert_err_ignore_postinfo!(
+            result,
+            DispatchError::Module {
+                index: 6,
+                error: 153,
+                message: Some("Aborted")
+            }
+        );
     });
 }
 
@@ -206,7 +216,12 @@ fn transfer_token_vested_fails() {
         let bob_init_balance = orml_tokens::Pallet::<Test>::free_balance(currency, &bob);
 
         // vest balance all bob balance
-        assert_ok!(orml_tokens::Pallet::<Test>::set_lock(Default::default(), currency, &bob, bob_init_balance));
+        assert_ok!(orml_tokens::Pallet::<Test>::set_lock(
+            Default::default(),
+            currency,
+            &bob,
+            bob_init_balance
+        ));
 
         // publish user module
         publish_module(bob, &modules::user::STORE, None).unwrap();
@@ -214,11 +229,14 @@ fn transfer_token_vested_fails() {
         // execute tx:
         // should return error.
         let result = execute_tx(bob, &transactions::TRANSFER_TOKEN, None);
-        assert_err_ignore_postinfo!(result, DispatchError::Module {
-            index: 6,
-            error: 153,
-            message: Some("Aborted")
-        });
+        assert_err_ignore_postinfo!(
+            result,
+            DispatchError::Module {
+                index: 6,
+                error: 153,
+                message: Some("Aborted")
+            }
+        );
     });
 }
 
