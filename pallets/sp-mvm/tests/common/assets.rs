@@ -57,7 +57,7 @@ pub static ROOT_PACKAGE: Package = Package::new(
     Asset::new("", "tests/assets/root/artifacts/bundles/assets.pac"),
 );
 pub static USER_PACKAGE: Package = Package::new(
-    &["Store", "EventProxy"],
+    &["Store", "Bank", "EventProxy"],
     Asset::new("", "tests/assets/user/artifacts/bundles/assets.pac"),
 );
 
