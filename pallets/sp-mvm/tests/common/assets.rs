@@ -109,9 +109,17 @@ pub mod transactions {
         "store_native_balance",
         "tests/assets/user/artifacts/transactions/store_native_balance.mvt",
     );
+    pub static STORE_TOKEN_BALANCE: Asset = Asset::new(
+        "store_token_balance",
+        "tests/assets/user/artifacts/transactions/store_token_balance.mvt",
+    );
     pub static TRANSFER: Asset = Asset::new(
         "transfer",
         "tests/assets/user/artifacts/transactions/transfer.mvt",
+    );
+    pub static TRANSFER_TOKEN: Asset = Asset::new(
+        "transfer_token",
+        "tests/assets/user/artifacts/transactions/transfer_token.mvt",
     );
     pub static MULTISIG_TEST: Asset = Asset::new(
         "multisig_test",
