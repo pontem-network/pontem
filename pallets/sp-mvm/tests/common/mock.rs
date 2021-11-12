@@ -4,28 +4,31 @@ use sp_mvm::gas;
 use sp_core::H256;
 use sp_std::convert::TryFrom;
 use frame_system as system;
+use system::EnsureRoot;
 use frame_support::{
-    parameter_types,
+    PalletId, parameter_types,
+    traits::Everything,
     weights::{Weight, constants::WEIGHT_PER_SECOND},
 };
 use std::include_bytes;
 use frame_support::traits::{OnInitialize, OnFinalize};
 use sp_runtime::traits::{BlakeTwo256, IdentityLookup};
 use sp_runtime::{testing::Header};
+use orml_traits::parameter_type_with_key;
+
+pub use primitives::currency::CurrencyId;
+use module_currencies::BasicCurrencyAdapter;
 
 use super::addr::origin_ps_acc;
 use super::addr::root_ps_acc;
 use super::addr::alice_public_key;
 use super::vm_config::build as build_vm_config;
 
-type UncheckedExtrinsic = frame_system::mocking::MockUncheckedExtrinsic<Test>;
-type Block = frame_system::mocking::MockBlock<Test>;
+type UncheckedExtrinsic = system::mocking::MockUncheckedExtrinsic<Test>;
+type Block = system::mocking::MockBlock<Test>;
 
 /// Initial balance for all existent test accounts
 pub const INITIAL_BALANCE: <Test as balances::Config>::Balance = 42000;
-
-/// Balance of an account.
-pub type Balance = u64;
 
 // Unit = the base number of indivisible units for balances
 pub const UNIT: Balance = 1_000_000_000_000;
@@ -39,9 +42,11 @@ frame_support::construct_runtime!(
         NodeBlock = Block,
         UncheckedExtrinsic = UncheckedExtrinsic,
     {
-        System: frame_system::{Pallet, Call, Config, Storage, Event<T>},
+        System: system::{Pallet, Call, Config, Storage, Event<T>},
         Timestamp: timestamp::{Pallet, Call, Storage, Inherent},
         Balances: balances::{Pallet, Call, Storage, Config<T>, Event<T>},
+        Tokens: orml_tokens::{Pallet, Storage, Event<T>},
+        Currencies: module_currencies::{Pallet, Call, Storage, Event<T>},
         Mvm: sp_mvm::{Pallet, Call, Config<T>, Storage, Event<T>},
         Multisig: pallet_multisig::{Pallet, Call, Origin<T>, Storage, Event<T>},
         // Sudo: pallet_sudo::{Module, Call, Config<T>, Storage, Event<T>},
@@ -53,6 +58,11 @@ parameter_types! {
     pub const SS58Prefix: u8 = 42;
 }
 
+pub type AccountId = sp_core::sr25519::Public;
+pub type Amount = i64;
+pub type BlockNumber = u64;
+pub type Balance = u64;
+
 impl system::Config for Test {
     type BaseCallFilter = frame_support::traits::Everything;
     type BlockWeights = ();
@@ -61,10 +71,10 @@ impl system::Config for Test {
     type Origin = Origin;
     type Call = Call;
     type Index = u64;
-    type BlockNumber = u64;
+    type BlockNumber = BlockNumber;
     type Hash = H256;
     type Hashing = BlakeTwo256;
-    type AccountId = sp_core::sr25519::Public;
+    type AccountId = AccountId;
     type Lookup = IdentityLookup<Self::AccountId>;
     type Header = Header;
     type Event = Event;
@@ -142,13 +152,49 @@ impl balances::Config for Test {
     type ReserveIdentifier = [u8; 8];
 }
 
-// ----------------- //
+parameter_type_with_key! {
+    pub ExistentialDeposits: |_currency_id: CurrencyId| -> Balance {
+        100
+    };
+}
 
+impl orml_tokens::Config for Test {
+    type Event = Event;
+    type Balance = Balance;
+    type Amount = primitives::Amount;
+    type CurrencyId = CurrencyId;
+    type WeightInfo = ();
+    type ExistentialDeposits = ExistentialDeposits;
+    type OnDust = ();
+    type MaxLocks = MaxLocks;
+    type DustRemovalWhitelist = Everything;
+}
+
+parameter_types! {
+    pub const GetNativeCurrencyId: CurrencyId = CurrencyId::PONT;
+}
+impl module_currencies::Config for Test {
+    type Event = Event;
+    type CurrencyId = CurrencyId;
+    type MultiCurrency = Tokens;
+    type NativeCurrency = BasicCurrencyAdapter<Test, Balances, Amount, BlockNumber>;
+    type GetNativeCurrencyId = GetNativeCurrencyId;
+    type WeightInfo = ();
+    type SweepOrigin = EnsureRoot<AccountId>;
+    type OnDust = ();
+}
+
+// ----------------- //
+parameter_types! {
+    pub const MVMPalletId: PalletId = PalletId(*b"pont/mvm");
+}
 impl sp_mvm::Config for Test {
-    // type Event = TestEvent;
     type Event = Event;
     type GasWeightMapping = MoveVMGasWeightMapping;
-    type StdlibOrigin = Origin;
+    type UpdaterOrigin = EnsureRoot<AccountId>;
+    type PalletId = MVMPalletId;
+    type CurrencyId = CurrencyId;
+    type Currencies = Currencies;
 }
 
 parameter_types! {
@@ -177,26 +223,12 @@ pub fn new_test_ext() -> sp_io::TestExternalities {
     let mut sys = system::GenesisConfig::default()
         .build_storage::<Test>()
         .expect("Frame system builds valid default genesis config");
-    /*
-    let negative = <balances::Pallet<T> as Currency<T::AccountId>>::withdraw(
-        &address,
-        amount.try_into().ok().unwrap(),
-        WithdrawReasons::RESERVE,
-        ExistenceRequirement::AllowDeath,
-    )
-
-    */
-
     balances::GenesisConfig::<Test> {
         balances: vec![
             (root_ps_acc(), INITIAL_BALANCE),
             (origin_ps_acc(), INITIAL_BALANCE),
             (alice_public_key(), INITIAL_BALANCE),
         ],
-        // balances: Vec::<(
-        //     <Test as system::Config>::AccountId,
-        //     <Test as balances::Config>::Balance,
-        // )>::new(),
     }
     .assimilate_storage(&mut sys)
     .expect("Pallet balances storage can't be assimilated");

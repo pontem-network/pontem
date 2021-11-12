@@ -107,9 +107,12 @@ mod adapter {
     use move_vm::io::traits::BalanceAccess;
     use sp_mvm::balance::BalancesAdapter;
     use sp_mvm::balance::boxed::BalancesAdapter as BoxedBalancesAdapter;
+    use frame_support::traits::tokens::currency::Currency;
 
     use super::*;
     use test_env_log::test;
+
+    pub type AccountId = <Test as frame_system::Config>::AccountId;
 
     fn test_get_balance_with<T: BalanceAccess>(adapter: &T) {
         new_test_ext().execute_with(|| {
@@ -141,48 +144,65 @@ mod adapter {
         new_test_ext().execute_with(|| {
             let origin = origin_ps_acc();
             let account = to_move_addr(origin.clone());
+            let pallet_account = sp_mvm::Pallet::<Test>::get_account_id();
             let initial_balance = balances::Pallet::<Test>::free_balance(&origin);
+
+            let _ = balances::Pallet::<Test>::deposit_creating(&pallet_account, initial_balance);
 
             adapter.add(&account, "PONT".as_bytes(), initial_balance);
 
             let actual_balance = balances::Pallet::<Test>::free_balance(&origin);
+            let pallet_actual_balance = balances::Pallet::<Test>::free_balance(&pallet_account);
             assert_eq!(initial_balance * 2, actual_balance);
+            assert_eq!(pallet_actual_balance, 0);
         });
     }
 
     #[test]
     fn get_balance() {
-        let adapter = BalancesAdapter::<Test>::new();
+        let adapter =
+            BalancesAdapter::<AccountId, Currencies, CurrencyId>::new(MVMPalletId::get());
         test_get_balance_with(&adapter);
     }
 
     #[test]
     fn get_balance_boxed() {
-        let adapter = BoxedBalancesAdapter::from(BalancesAdapter::<Test>::new());
+        let adapter =
+            BoxedBalancesAdapter::from(
+                BalancesAdapter::<AccountId, Currencies, CurrencyId>::new(MVMPalletId::get()),
+            );
         test_get_balance_with(&adapter);
     }
 
     #[test]
     fn sub() {
-        let adapter = BalancesAdapter::<Test>::new();
+        let adapter =
+            BalancesAdapter::<AccountId, Currencies, CurrencyId>::new(MVMPalletId::get());
         test_sub_with(&adapter);
     }
 
     #[test]
     fn sub_boxed() {
-        let adapter = BoxedBalancesAdapter::from(BalancesAdapter::<Test>::new());
+        let adapter =
+            BoxedBalancesAdapter::from(
+                BalancesAdapter::<AccountId, Currencies, CurrencyId>::new(MVMPalletId::get()),
+            );
         test_sub_with(&adapter);
     }
 
     #[test]
     fn add() {
-        let adapter = BalancesAdapter::<Test>::new();
+        let adapter =
+            BalancesAdapter::<AccountId, Currencies, CurrencyId>::new(MVMPalletId::get());
         test_add_with(&adapter);
     }
 
     #[test]
     fn add_boxed() {
-        let adapter = BoxedBalancesAdapter::from(BalancesAdapter::<Test>::new());
+        let adapter =
+            BoxedBalancesAdapter::from(
+                BalancesAdapter::<AccountId, Currencies, CurrencyId>::new(MVMPalletId::get()),
+            );
         test_add_with(&adapter);
     }
 }

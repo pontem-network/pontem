@@ -69,7 +69,7 @@ pub mod pallet {
     use support::traits::{UnixTime, tokens::fungibles};
     use support::PalletId;
     use support::dispatch::DispatchResultWithPostInfo;
-    use sp_runtime::traits::{UniqueSaturatedInto};
+    use sp_runtime::traits::{UniqueSaturatedInto, AccountIdConversion};
     use parity_scale_codec::{FullCodec, FullEncode};
 
     use move_vm::{Vm, StateAccess};
@@ -352,6 +352,11 @@ pub mod pallet {
         /// Returns gas limit object requires for execute/publish functions.
         fn get_move_gas_limit(gas_limit: u64) -> Result<Gas, Error<T>> {
             Gas::new(gas_limit, GAS_UNIT_PRICE).map_err(|_| Error::InvalidGasAmountMaxValue)
+        }
+
+        /// Get pallet account id.
+        pub fn get_account_id() -> T::AccountId {
+            T::PalletId::get().into_account()
         }
 
         /// Execute Move VM script with provided signers, script byte code, gas limit, and dry run configuration.

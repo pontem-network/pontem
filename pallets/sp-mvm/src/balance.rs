@@ -29,7 +29,7 @@ use frame_support::traits::tokens::fungibles;
 use orml_traits::MultiCurrency;
 
 #[derive(PartialEq, Eq, Clone, Copy)]
-/// Ticker struct.
+/// Printed ticker struct.
 pub struct PrintedTicker<'a>(&'a [u8]);
 
 /// Display trait impl for printed ticker struct.
@@ -110,7 +110,6 @@ where
                 address_to_account::<AccountId>(address)
                     .map_err(|_| error!("can't convert address from Move to Substrate."))
                     .and_then(|address| {
-                        // TODO: replace with reducible_balance.
                         Currencies::reducible_balance(id, &address, false)
                             .try_into()
                             .map_err(|_err| {
@@ -192,7 +191,7 @@ where
                         Currencies::withdraw(id, &address, amount)
                             .map_err(|_err| error!("Can't deposit native balance."))?;
                         Currencies::deposit(id, &self.get_pallet_account(), amount)
-                            .map_err(|_err| error!("Can't withdraw from pallet"))
+                            .map_err(|_err| error!("Can't deposit to pallet"))
                     })
                     .ok();
             }
@@ -210,7 +209,7 @@ where
         match currency_id {
             Ok(id) => {
                 let total_value =
-                    <Currencies as fungibles::Inspect<AccountId>>::total_issuance(id).try_into();
+                    <Currencies as MultiCurrency<AccountId>>::total_issuance(id).try_into();
 
                 match total_value {
                     Ok(total_value) => Some(CurrencyInfo { total_value }),
@@ -333,20 +332,5 @@ pub mod boxed {
         ) -> Option<move_vm::io::balance::CurrencyInfo> {
             None
         }
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::PONT;
-
-    #[test]
-    fn is_ticker_supported() {
-        assert!(!super::is_ticker_supported(super::Ticker::new(
-            "NOT_SUPPORTED"
-        )));
-        assert!(super::is_ticker_supported(PONT));
-        assert!(super::is_ticker_supported(super::Ticker::new("PONT")));
-        assert!(super::is_ticker_supported("PONT".into()));
     }
 }
