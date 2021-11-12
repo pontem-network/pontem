@@ -80,10 +80,8 @@ pub mod modules {
             "EventProxy",
             "tests/assets/user/artifacts/modules/49_EventProxy.mv",
         );
-        pub static BANK: Asset = Asset::new(
-            "BankPONT",
-            "tests/assets/user/artifacts/modules/48_BankPONT.mv",
-        );
+        pub static BANK: Asset =
+            Asset::new("Bank", "tests/assets/user/artifacts/modules/48_Bank.mv");
     }
 }
 
@@ -129,8 +127,12 @@ pub mod transactions {
         "multisig_test",
         "tests/assets/user/artifacts/transactions/multisig_test.mvt",
     );
-    pub static DEPOSIT_BANK: Asset = Asset::new(
-        "deposit_bank",
-        "tests/assets/user/artifacts/transactions/deposit_bank.mvt",
+    pub static DEPOSIT_BANK_PONT: Asset = Asset::new(
+        "deposit_bank_pont",
+        "tests/assets/user/artifacts/transactions/deposit_bank_pont.mvt",
+    );
+    pub static DEPOSIT_BANK_KSM: Asset = Asset::new(
+        "deposit_bank_ksm",
+        "tests/assets/user/artifacts/transactions/deposit_bank_ksm.mvt",
     );
 }

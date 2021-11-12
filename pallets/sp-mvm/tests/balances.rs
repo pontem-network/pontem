@@ -56,6 +56,7 @@ where
     check_storage_res(address, tag, expected);
 }
 
+/// Get native token balance inside VM.
 #[test]
 fn execute_get_balance() {
     new_test_ext().execute_with(|| {
@@ -76,6 +77,7 @@ fn execute_get_balance() {
     });
 }
 
+/// Get token balance inside VM.
 #[test]
 fn execute_get_token_balance() {
     new_test_ext().execute_with(|| {
@@ -103,6 +105,7 @@ fn execute_get_token_balance() {
     });
 }
 
+/// Transfer native token inside VM.
 #[test]
 fn execute_transfer() {
     new_test_ext().execute_with(|| {
@@ -132,6 +135,7 @@ fn execute_transfer() {
     });
 }
 
+/// Transfer tokens inside VM.
 #[test]
 fn execute_token_transfer() {
     new_test_ext().execute_with(|| {
@@ -167,6 +171,7 @@ fn execute_token_transfer() {
     });
 }
 
+/// Check total issuance during transfer native token to Move module.
 #[test]
 fn check_total_supply() {
     new_test_ext().execute_with(|| {
@@ -180,7 +185,7 @@ fn check_total_supply() {
         publish_module(bob, &modules::user::BANK, None).unwrap();
 
         // execute tx:
-        let result = execute_tx(bob, &transactions::DEPOSIT_BANK, None);
+        let result = execute_tx(bob, &transactions::DEPOSIT_BANK_PONT, None);
         assert_ok!(result);
 
         // check bob balance after script
@@ -189,6 +194,39 @@ fn check_total_supply() {
 
         // check new total supply, so nothing missed.
         let new_total_issuance = balances::Pallet::<Test>::total_issuance();
+        assert_eq!(new_total_issuance, total_issuance);
+    });
+}
+
+/// Check total issuance during transfer tokens to Move module.
+#[test]
+fn check_token_total_supply() {
+    new_test_ext().execute_with(|| {
+        let bob = origin_ps_acc();
+        let to_transfer = 2000;
+        let currency = CurrencyId::KSM;
+
+        assert_ok!(orml_tokens::Pallet::<Test>::deposit(
+            currency,
+            &bob,
+            to_transfer
+        ));
+        let total_issuance = orml_tokens::Pallet::<Test>::total_issuance(currency);
+        let bob_init_balance = orml_tokens::Pallet::<Test>::free_balance(currency, &bob);
+
+        // publish bank module
+        publish_module(bob, &modules::user::BANK, None).unwrap();
+
+        // execute tx:
+        let result = execute_tx(bob, &transactions::DEPOSIT_BANK_KSM, None);
+        assert_ok!(result);
+
+        // check bob balance after script
+        let bob_balance = orml_tokens::Pallet::<Test>::free_balance(currency, &bob);
+        assert_eq!(bob_init_balance - to_transfer, bob_balance);
+
+        // check new total supply, so nothing missed.
+        let new_total_issuance = orml_tokens::Pallet::<Test>::total_issuance(currency);
         assert_eq!(new_total_issuance, total_issuance);
     });
 }
