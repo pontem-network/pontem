@@ -75,6 +75,7 @@ optional = true
 [dev-dependencies]
 # serde is for lcs/bcs and construct_runtime
 # used for tests (std) only
+pallet-vesting = { default-features = false, package = "pallet-vesting", git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.11' }
 primitives = { path = "../../primitives" }
 module-currencies = { path = "../currencies" }
 orml-tokens = { default-features = false, git = 'https://github.com/open-web3-stack/open-runtime-module-library', rev = '38b53d39a' }
@@ -113,6 +114,7 @@ std = [
     "getrandom/js",
     "balances/std",
     "orml-traits/std",
+    "pallet-vesting/std",
 ]
 
 runtime-benchmarks = [

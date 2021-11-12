@@ -10,9 +10,10 @@ use frame_support::{
     traits::Everything,
     weights::{Weight, constants::WEIGHT_PER_SECOND},
 };
+use sp_std::vec;
 use std::include_bytes;
 use frame_support::traits::{OnInitialize, OnFinalize};
-use sp_runtime::traits::{BlakeTwo256, IdentityLookup};
+use sp_runtime::traits::{BlakeTwo256, IdentityLookup, ConvertInto};
 use sp_runtime::{testing::Header};
 use orml_traits::parameter_type_with_key;
 
@@ -45,6 +46,7 @@ frame_support::construct_runtime!(
         System: system::{Pallet, Call, Config, Storage, Event<T>},
         Timestamp: timestamp::{Pallet, Call, Storage, Inherent},
         Balances: balances::{Pallet, Call, Storage, Config<T>, Event<T>},
+        Vesting: pallet_vesting::{Pallet, Call, Storage, Config<T>, Event<T>},
         Tokens: orml_tokens::{Pallet, Storage, Event<T>},
         Currencies: module_currencies::{Pallet, Call, Storage, Event<T>},
         Mvm: sp_mvm::{Pallet, Call, Config<T>, Storage, Event<T>},
@@ -150,6 +152,19 @@ impl balances::Config for Test {
     type WeightInfo = balances::weights::SubstrateWeight<Self>;
     type MaxReserves = MaxReserves;
     type ReserveIdentifier = [u8; 8];
+}
+
+parameter_types! {
+    pub const MinVestedTransfer: Balance = 1;
+}
+
+impl pallet_vesting::Config for Test {
+    type Event = Event;
+    type Currency = Balances;
+    type BlockNumberToBalance = ConvertInto;
+    type MinVestedTransfer = MinVestedTransfer;
+    type WeightInfo = ();
+    const MAX_VESTING_SCHEDULES: u32 = 1;
 }
 
 parameter_type_with_key! {

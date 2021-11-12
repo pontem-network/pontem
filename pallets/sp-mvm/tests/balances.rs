@@ -1,4 +1,4 @@
-use frame_support::assert_ok;
+use frame_support::{traits::VestingSchedule, assert_ok, assert_err_ignore_postinfo, dispatch::DispatchError};
 use serde::Deserialize;
 use move_core_types::identifier::Identifier;
 use move_core_types::language_storage::StructTag;
@@ -11,7 +11,7 @@ use common::addr::*;
 use common::utils::*;
 use test_env_log::test;
 
-use orml_traits::MultiCurrency;
+use orml_traits::{MultiCurrency, MultiLockableCurrency};
 
 #[derive(Deserialize, Debug, PartialEq)]
 struct StoreU128 {
@@ -168,6 +168,57 @@ fn execute_token_transfer() {
         // check alice balance after script
         let alice_balance = orml_tokens::Pallet::<Test>::free_balance(currency, &alice_account);
         assert_eq!(to_transfer, alice_balance);
+    });
+}
+
+/// Trying to transfer vested native balance inside VM, should fail.
+#[test]
+fn transfer_vested_fails() {
+    new_test_ext().execute_with(|| {
+        let bob = origin_ps_acc();
+
+        let bob_init_balance = balances::Pallet::<Test>::free_balance(&bob);
+
+        // vest balance all bob balance
+        assert_ok!(pallet_vesting::Pallet::<Test>::add_vesting_schedule(&bob, bob_init_balance, bob_init_balance / 100, 1));
+
+        // publish user module
+        publish_module(bob, &modules::user::STORE, None).unwrap();
+
+        // execute tx:
+        // should return error.
+        let result = execute_tx(bob, &transactions::TRANSFER, None);
+        assert_err_ignore_postinfo!(result, DispatchError::Module {
+            index: 6,
+            error: 153,
+            message: Some("Aborted")
+        });
+    });
+}
+
+/// Trying to transfer vested token balance inside VM, should fail.
+#[test]
+fn transfer_token_vested_fails() {
+    new_test_ext().execute_with(|| {
+        let bob = origin_ps_acc();
+        let currency = CurrencyId::KSM;
+
+        let bob_init_balance = orml_tokens::Pallet::<Test>::free_balance(currency, &bob);
+
+        // vest balance all bob balance
+        assert_ok!(orml_tokens::Pallet::<Test>::set_lock(Default::default(), currency, &bob, bob_init_balance));
+
+        // publish user module
+        publish_module(bob, &modules::user::STORE, None).unwrap();
+
+        // execute tx:
+        // should return error.
+        let result = execute_tx(bob, &transactions::TRANSFER_TOKEN, None);
+        assert_err_ignore_postinfo!(result, DispatchError::Module {
+            index: 6,
+            error: 153,
+            message: Some("Aborted")
+        });
     });
 }
 
