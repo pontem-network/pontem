@@ -108,9 +108,9 @@ fn execute_transfer() {
     new_test_ext().execute_with(|| {
         let bob = origin_ps_acc();
         let alice_account = alice_public_key();
+        let to_transfer = 2000;
 
         let bob_init_balance = balances::Pallet::<Test>::free_balance(&bob);
-        eprintln!("Bob balance: {}", bob_init_balance);
 
         // publish user module
         publish_module(bob, &modules::user::STORE, None).unwrap();
@@ -124,11 +124,11 @@ fn execute_transfer() {
 
         // check bob balance after script
         let bob_balance = balances::Pallet::<Test>::free_balance(&bob);
-        assert_eq!(bob_init_balance - 2000, bob_balance);
+        assert_eq!(bob_init_balance - to_transfer, bob_balance);
 
         // check alice balance after script
         let alice_balance = balances::Pallet::<Test>::free_balance(&alice_account);
-        assert_eq!(INITIAL_BALANCE + 2000, alice_balance);
+        assert_eq!(INITIAL_BALANCE + to_transfer, alice_balance);
     });
 }
 
@@ -146,7 +146,6 @@ fn execute_token_transfer() {
         ));
 
         let bob_init_balance = orml_tokens::Pallet::<Test>::free_balance(currency, &bob);
-        eprintln!("Bob balance: {}", bob_init_balance);
 
         // publish user module
         publish_module(bob, &modules::user::STORE, None).unwrap();
@@ -165,6 +164,32 @@ fn execute_token_transfer() {
         // check alice balance after script
         let alice_balance = orml_tokens::Pallet::<Test>::free_balance(currency, &alice_account);
         assert_eq!(to_transfer, alice_balance);
+    });
+}
+
+#[test]
+fn check_total_supply() {
+    new_test_ext().execute_with(|| {
+        let bob = origin_ps_acc();
+        let to_transfer = 2000;
+
+        let total_issuance = balances::Pallet::<Test>::total_issuance();
+        let bob_init_balance = balances::Pallet::<Test>::free_balance(&bob);
+
+        // publish bank module
+        publish_module(bob, &modules::user::BANK, None).unwrap();
+
+        // execute tx:
+        let result = execute_tx(bob, &transactions::DEPOSIT_BANK, None);
+        assert_ok!(result);
+
+        // check bob balance after script
+        let bob_balance = balances::Pallet::<Test>::free_balance(&bob);
+        assert_eq!(bob_init_balance - to_transfer, bob_balance);
+
+        // check new total supply, so nothing missed.
+        let new_total_issuance = balances::Pallet::<Test>::total_issuance();
+        assert_eq!(new_total_issuance, total_issuance);
     });
 }
 

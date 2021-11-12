@@ -20,6 +20,7 @@ dove tx "store_token_balance()"
 dove tx "transfer(treasury, 5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY, 2000)"
 dove tx "transfer_token(treasury, 5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY, 2000)"
 dove tx "multisig_test()"
+dove tx "deposit_bank(2000)"
 #dove tx "store_native_deposit(false)"
 #dove tx "store_native_deposit(true)" -o=store_native_deposit_reg
 #dove tx "store_native_withdraw(false)"
