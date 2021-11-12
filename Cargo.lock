@@ -10460,6 +10460,7 @@ dependencies = [
  "pallet-balances",
  "pallet-multisig 3.0.0",
  "pallet-timestamp",
+ "pallet-vesting",
  "parity-scale-codec",
  "parity-scale-codec-derive",
  "primitives",
