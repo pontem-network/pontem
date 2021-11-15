@@ -1,15 +1,11 @@
-# Substrate Move VM
+# Pontem
 
-Substrate node template with [Move VM pallet](/pallets/sp-mvm/) on board.
+Pontem parachain node with [Move VM pallet](/pallets/sp-mvm/) on board.
 
-**Work in progress, so use it at your own risk.**
-
-* [Documentation](https://docs.pontem.network).
-
-## Installation
-
-Read [official documentation](https://docs.pontem.network/02.-getting-started/local_node).
-
+* [Pontem docs](https://docs.pontem.network) - if you want to learn about Pontem network.
+* [Validator docs](https://docs.pontem.network/03.-staking/collator) - if you want to launch a validator node.
+* [Bootstrap](https://github.com/pontem-network/bootstrap) - if you want to up node quickly (not for development).
+ 
 ## Local Relaychain & Parachain Launch
 
 Current version built with Nimbus consensus and Parachain Staking implementation.
