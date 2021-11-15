@@ -57,7 +57,7 @@ pub static ROOT_PACKAGE: Package = Package::new(
     Asset::new("", "tests/assets/root/artifacts/bundles/assets.pac"),
 );
 pub static USER_PACKAGE: Package = Package::new(
-    &["Store", "EventProxy"],
+    &["Store", "Bank", "EventProxy"],
     Asset::new("", "tests/assets/user/artifacts/bundles/assets.pac"),
 );
 
@@ -78,8 +78,10 @@ pub mod modules {
             Asset::new("Store", "tests/assets/user/artifacts/modules/2_Store.mv");
         pub static EVENT_PROXY: Asset = Asset::new(
             "EventProxy",
-            "tests/assets/user/artifacts/modules/47_EventProxy.mv",
+            "tests/assets/user/artifacts/modules/49_EventProxy.mv",
         );
+        pub static BANK: Asset =
+            Asset::new("Bank", "tests/assets/user/artifacts/modules/48_Bank.mv");
     }
 }
 
@@ -109,12 +111,28 @@ pub mod transactions {
         "store_native_balance",
         "tests/assets/user/artifacts/transactions/store_native_balance.mvt",
     );
+    pub static STORE_TOKEN_BALANCE: Asset = Asset::new(
+        "store_token_balance",
+        "tests/assets/user/artifacts/transactions/store_token_balance.mvt",
+    );
     pub static TRANSFER: Asset = Asset::new(
         "transfer",
         "tests/assets/user/artifacts/transactions/transfer.mvt",
     );
+    pub static TRANSFER_TOKEN: Asset = Asset::new(
+        "transfer_token",
+        "tests/assets/user/artifacts/transactions/transfer_token.mvt",
+    );
     pub static MULTISIG_TEST: Asset = Asset::new(
         "multisig_test",
         "tests/assets/user/artifacts/transactions/multisig_test.mvt",
+    );
+    pub static DEPOSIT_BANK_PONT: Asset = Asset::new(
+        "deposit_bank_pont",
+        "tests/assets/user/artifacts/transactions/deposit_bank_pont.mvt",
+    );
+    pub static DEPOSIT_BANK_KSM: Asset = Asset::new(
+        "deposit_bank_ksm",
+        "tests/assets/user/artifacts/transactions/deposit_bank_ksm.mvt",
     );
 }

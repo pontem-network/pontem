@@ -70,9 +70,9 @@ checksum = "739f4a8db6605981345c5654f3a85b056ce52f37a39d34da03f25bf2151ea16e"
 
 [[package]]
 name = "ahash"
-version = "0.7.5"
+version = "0.7.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "991984e3fd003e7ba02eb724f87a0f997b78677c46c0e91f8424ad7394c9886a"
+checksum = "fcb51a0695d8f838b1ee009b3fbf66bda078cd64590202a864a8f3e8c4315c47"
 dependencies = [
  "getrandom 0.2.3",
  "once_cell",
@@ -411,16 +411,16 @@ checksum = "cdb031dd78e28731d87d56cc8ffef4a8f36ca26c38fe2de700543e627f8a464a"
 
 [[package]]
 name = "backtrace"
-version = "0.3.61"
+version = "0.3.62"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e7a905d892734eea339e896738c14b9afce22b5318f64b951e70bf3844419b01"
+checksum = "091bcdf2da9950f96aa522681ce805e6857f6ca8df73833d35736ab2dc78e152"
 dependencies = [
  "addr2line",
  "cc",
  "cfg-if 1.0.0",
  "libc",
  "miniz_oxide",
- "object",
+ "object 0.27.1",
  "rustc-demangle",
 ]
 
@@ -464,7 +464,7 @@ checksum = "904dfeac50f3cdaba28fc6f57fdcddb75f49ed61346676a78c4ffe55877802fd"
 [[package]]
 name = "bcs"
 version = "0.1.1"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=82c20397c81cfda3396e49e7898e20aeac62440a#82c20397c81cfda3396e49e7898e20aeac62440a"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=892b723b75cce13509332a0d81f25f3965ac7fb0#892b723b75cce13509332a0d81f25f3965ac7fb0"
 dependencies = [
  "alt_serde",
 ]
@@ -725,7 +725,7 @@ dependencies = [
 [[package]]
 name = "borrow-graph"
 version = "0.0.1"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=82c20397c81cfda3396e49e7898e20aeac62440a#82c20397c81cfda3396e49e7898e20aeac62440a"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=892b723b75cce13509332a0d81f25f3965ac7fb0#892b723b75cce13509332a0d81f25f3965ac7fb0"
 dependencies = [
  "mirai-annotations",
 ]
@@ -932,15 +932,15 @@ dependencies = [
 
 [[package]]
 name = "bumpalo"
-version = "3.7.1"
+version = "3.8.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d9df67f7bf9ef8498769f994239c45613ef0c5899415fb58e9add412d2c1a538"
+checksum = "8f1e260c3a9040a7c19a12468758f4c16f31a81a1fe087482be9570ec864bb6c"
 
 [[package]]
 name = "byte-slice-cast"
-version = "1.1.0"
+version = "1.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ca0796d76a983651b4a0ddda16203032759f2fd9103d9181f7c65c06ee8872e6"
+checksum = "1d30c751592b77c499e7bce34d99d67c2c11bdc0574e9a488ddade14150a4698"
 
 [[package]]
 name = "byte-tools"
@@ -951,7 +951,7 @@ checksum = "e3b5ca7a04898ad4bcd41c90c5285445ff5b791899bb1b0abdd2a2aa791211d7"
 [[package]]
 name = "bytecode-verifier"
 version = "0.1.0"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=82c20397c81cfda3396e49e7898e20aeac62440a#82c20397c81cfda3396e49e7898e20aeac62440a"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=892b723b75cce13509332a0d81f25f3965ac7fb0#892b723b75cce13509332a0d81f25f3965ac7fb0"
 dependencies = [
  "anyhow",
  "borrow-graph",
@@ -959,7 +959,7 @@ dependencies = [
  "mirai-annotations",
  "move-binary-format",
  "move-core-types",
- "petgraph 0.5.1 (git+https://github.com/pontem-network/petgraph.git)",
+ "petgraph_core",
 ]
 
 [[package]]
@@ -1053,7 +1053,7 @@ dependencies = [
 [[package]]
 name = "cell"
 version = "0.1.0"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=82c20397c81cfda3396e49e7898e20aeac62440a#82c20397c81cfda3396e49e7898e20aeac62440a"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=892b723b75cce13509332a0d81f25f3965ac7fb0#892b723b75cce13509332a0d81f25f3965ac7fb0"
 dependencies = [
  "once_cell",
 ]
@@ -1494,7 +1494,7 @@ source = "git+https://github.com/purestake/cumulus?branch=nimbus-polkadot-v0.9.1
 dependencies = [
  "cumulus-client-consensus-common",
  "cumulus-client-network",
- "cumulus-primitives-core",
+ "cumulus-primitives-core 0.1.0 (git+https://github.com/purestake/cumulus?branch=nimbus-polkadot-v0.9.11)",
  "futures 0.3.17",
  "parity-scale-codec",
  "parking_lot 0.10.2",
@@ -1537,7 +1537,7 @@ source = "git+https://github.com/purestake/cumulus?branch=nimbus-polkadot-v0.9.1
 dependencies = [
  "async-trait",
  "cumulus-client-consensus-common",
- "cumulus-primitives-core",
+ "cumulus-primitives-core 0.1.0 (git+https://github.com/purestake/cumulus?branch=nimbus-polkadot-v0.9.11)",
  "futures 0.3.17",
  "parking_lot 0.10.2",
  "polkadot-client",
@@ -1582,7 +1582,7 @@ name = "cumulus-client-pov-recovery"
 version = "0.1.0"
 source = "git+https://github.com/purestake/cumulus?branch=nimbus-polkadot-v0.9.11#de3a9302ba0b7c64353da769615c0b19397255dd"
 dependencies = [
- "cumulus-primitives-core",
+ "cumulus-primitives-core 0.1.0 (git+https://github.com/purestake/cumulus?branch=nimbus-polkadot-v0.9.11)",
  "futures 0.3.17",
  "futures-timer 3.0.2",
  "parity-scale-codec",
@@ -1608,7 +1608,7 @@ dependencies = [
  "cumulus-client-collator",
  "cumulus-client-consensus-common",
  "cumulus-client-pov-recovery",
- "cumulus-primitives-core",
+ "cumulus-primitives-core 0.1.0 (git+https://github.com/purestake/cumulus?branch=nimbus-polkadot-v0.9.11)",
  "parity-scale-codec",
  "parking_lot 0.10.2",
  "polkadot-overseer",
@@ -1634,7 +1634,7 @@ name = "cumulus-pallet-dmp-queue"
 version = "0.1.0"
 source = "git+https://github.com/purestake/cumulus?branch=nimbus-polkadot-v0.9.11#de3a9302ba0b7c64353da769615c0b19397255dd"
 dependencies = [
- "cumulus-primitives-core",
+ "cumulus-primitives-core 0.1.0 (git+https://github.com/purestake/cumulus?branch=nimbus-polkadot-v0.9.11)",
  "frame-support",
  "frame-system",
  "log",
@@ -1653,7 +1653,7 @@ version = "0.1.0"
 source = "git+https://github.com/purestake/cumulus?branch=nimbus-polkadot-v0.9.11#de3a9302ba0b7c64353da769615c0b19397255dd"
 dependencies = [
  "cumulus-pallet-parachain-system-proc-macro",
- "cumulus-primitives-core",
+ "cumulus-primitives-core 0.1.0 (git+https://github.com/purestake/cumulus?branch=nimbus-polkadot-v0.9.11)",
  "cumulus-primitives-parachain-inherent",
  "environmental",
  "frame-support",
@@ -1692,7 +1692,7 @@ name = "cumulus-pallet-xcm"
 version = "0.1.0"
 source = "git+https://github.com/purestake/cumulus?branch=nimbus-polkadot-v0.9.11#de3a9302ba0b7c64353da769615c0b19397255dd"
 dependencies = [
- "cumulus-primitives-core",
+ "cumulus-primitives-core 0.1.0 (git+https://github.com/purestake/cumulus?branch=nimbus-polkadot-v0.9.11)",
  "frame-support",
  "frame-system",
  "parity-scale-codec",
@@ -1709,7 +1709,7 @@ name = "cumulus-pallet-xcmp-queue"
 version = "0.1.0"
 source = "git+https://github.com/purestake/cumulus?branch=nimbus-polkadot-v0.9.11#de3a9302ba0b7c64353da769615c0b19397255dd"
 dependencies = [
- "cumulus-primitives-core",
+ "cumulus-primitives-core 0.1.0 (git+https://github.com/purestake/cumulus?branch=nimbus-polkadot-v0.9.11)",
  "frame-support",
  "frame-system",
  "log",
@@ -1740,12 +1740,29 @@ dependencies = [
 ]
 
 [[package]]
+name = "cumulus-primitives-core"
+version = "0.1.0"
+source = "git+https://github.com/paritytech/cumulus?branch=polkadot-v0.9.11#ede4d527c4fc5d84c43216b408a873625488574b"
+dependencies = [
+ "frame-support",
+ "impl-trait-for-tuples",
+ "parity-scale-codec",
+ "polkadot-core-primitives",
+ "polkadot-parachain",
+ "polkadot-primitives",
+ "sp-api",
+ "sp-runtime",
+ "sp-std",
+ "sp-trie",
+]
+
+[[package]]
 name = "cumulus-primitives-parachain-inherent"
 version = "0.1.0"
 source = "git+https://github.com/purestake/cumulus?branch=nimbus-polkadot-v0.9.11#de3a9302ba0b7c64353da769615c0b19397255dd"
 dependencies = [
  "async-trait",
- "cumulus-primitives-core",
+ "cumulus-primitives-core 0.1.0 (git+https://github.com/purestake/cumulus?branch=nimbus-polkadot-v0.9.11)",
  "cumulus-test-relay-sproof-builder",
  "parity-scale-codec",
  "polkadot-client",
@@ -1766,7 +1783,7 @@ name = "cumulus-primitives-timestamp"
 version = "0.1.0"
 source = "git+https://github.com/purestake/cumulus?branch=nimbus-polkadot-v0.9.11#de3a9302ba0b7c64353da769615c0b19397255dd"
 dependencies = [
- "cumulus-primitives-core",
+ "cumulus-primitives-core 0.1.0 (git+https://github.com/purestake/cumulus?branch=nimbus-polkadot-v0.9.11)",
  "sp-inherents",
  "sp-std",
  "sp-timestamp",
@@ -1777,7 +1794,7 @@ name = "cumulus-primitives-utility"
 version = "0.1.0"
 source = "git+https://github.com/purestake/cumulus?branch=nimbus-polkadot-v0.9.11#de3a9302ba0b7c64353da769615c0b19397255dd"
 dependencies = [
- "cumulus-primitives-core",
+ "cumulus-primitives-core 0.1.0 (git+https://github.com/purestake/cumulus?branch=nimbus-polkadot-v0.9.11)",
  "frame-support",
  "parity-scale-codec",
  "polkadot-core-primitives",
@@ -1794,7 +1811,7 @@ name = "cumulus-test-relay-sproof-builder"
 version = "0.1.0"
 source = "git+https://github.com/purestake/cumulus?branch=nimbus-polkadot-v0.9.11#de3a9302ba0b7c64353da769615c0b19397255dd"
 dependencies = [
- "cumulus-primitives-core",
+ "cumulus-primitives-core 0.1.0 (git+https://github.com/purestake/cumulus?branch=nimbus-polkadot-v0.9.11)",
  "parity-scale-codec",
  "polkadot-primitives",
  "sp-runtime",
@@ -1881,7 +1898,7 @@ dependencies = [
 [[package]]
 name = "diem-crypto"
 version = "0.0.1"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=82c20397c81cfda3396e49e7898e20aeac62440a#82c20397c81cfda3396e49e7898e20aeac62440a"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=892b723b75cce13509332a0d81f25f3965ac7fb0#892b723b75cce13509332a0d81f25f3965ac7fb0"
 dependencies = [
  "alt_serde",
  "anyhow",
@@ -1903,7 +1920,7 @@ dependencies = [
 [[package]]
 name = "diem-crypto-derive"
 version = "0.0.1"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=82c20397c81cfda3396e49e7898e20aeac62440a#82c20397c81cfda3396e49e7898e20aeac62440a"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=892b723b75cce13509332a0d81f25f3965ac7fb0#892b723b75cce13509332a0d81f25f3965ac7fb0"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -1913,7 +1930,7 @@ dependencies = [
 [[package]]
 name = "diem-nibble"
 version = "0.1.0"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=82c20397c81cfda3396e49e7898e20aeac62440a#82c20397c81cfda3396e49e7898e20aeac62440a"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=892b723b75cce13509332a0d81f25f3965ac7fb0#892b723b75cce13509332a0d81f25f3965ac7fb0"
 dependencies = [
  "alt_serde",
 ]
@@ -1921,7 +1938,7 @@ dependencies = [
 [[package]]
 name = "diem-types"
 version = "0.0.1"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=82c20397c81cfda3396e49e7898e20aeac62440a#82c20397c81cfda3396e49e7898e20aeac62440a"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=892b723b75cce13509332a0d81f25f3965ac7fb0#892b723b75cce13509332a0d81f25f3965ac7fb0"
 dependencies = [
  "alt_serde",
  "anyhow",
@@ -2940,7 +2957,7 @@ version = "0.11.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ab5ef0d4909ef3724cc8cce6ccc8572c5c817592e9285f5464f8e86f8bd3726e"
 dependencies = [
- "ahash 0.7.5",
+ "ahash 0.7.6",
 ]
 
 [[package]]
@@ -3034,9 +3051,9 @@ dependencies = [
 
 [[package]]
 name = "http-body"
-version = "0.4.3"
+version = "0.4.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "399c583b2979440c60be0821a6199eca73bc3c8dcd9d070d75ac726e2c6186e5"
+checksum = "1ff4f84919677303da5f147645dbea6b1881f368d03ac84e1dc09031ebd7b2c6"
 dependencies = [
  "bytes 1.1.0",
  "http",
@@ -3072,9 +3089,9 @@ checksum = "9a3a5bfb195931eeb336b2a7b4d761daec841b97f947d34394601737a7bba5e4"
 
 [[package]]
 name = "hyper"
-version = "0.14.13"
+version = "0.14.14"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "15d1cfb9e4f68655fa04c01f59edb405b6074a0f7118ea881e5026e4a1cd8593"
+checksum = "2b91bb1f221b6ea1f1e4371216b70f40748774c2fb5971b450c07773fb92d26b"
 dependencies = [
  "bytes 1.1.0",
  "futures-channel",
@@ -3230,9 +3247,9 @@ dependencies = [
 
 [[package]]
 name = "instant"
-version = "0.1.11"
+version = "0.1.12"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "716d3d89f35ac6a34fd0eed635395f4c3b76fa889338a4632e5231a8684216bd"
+checksum = "7a5bbe824c507c5da5956355e86a746d82e0e1464f65d862cc5e71da70e94b2c"
 dependencies = [
  "cfg-if 1.0.0",
 ]
@@ -3769,9 +3786,9 @@ checksum = "830d08ce1d1d941e6b30645f1a0eb5643013d835ce3779a5fc208261dbe10f55"
 
 [[package]]
 name = "libc"
-version = "0.2.103"
+version = "0.2.105"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "dd8f7255a17a627354f321ef0055d63b898c6fb27eff628af4d1b66b7331edf6"
+checksum = "869d572136620d55835903746bcb5cdc54cb2851fd0aeec53220b4bb65ef3013"
 
 [[package]]
 name = "libloading"
@@ -4696,7 +4713,28 @@ dependencies = [
 [[package]]
 name = "mirai-annotations"
 version = "0.1.0"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=82c20397c81cfda3396e49e7898e20aeac62440a#82c20397c81cfda3396e49e7898e20aeac62440a"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=892b723b75cce13509332a0d81f25f3965ac7fb0#892b723b75cce13509332a0d81f25f3965ac7fb0"
+
+[[package]]
+name = "module-currencies"
+version = "2.0.0"
+dependencies = [
+ "frame-support",
+ "frame-system",
+ "orml-tokens",
+ "orml-traits",
+ "orml-utilities",
+ "pallet-balances",
+ "pallet-timestamp",
+ "parity-scale-codec",
+ "primitives",
+ "scale-info",
+ "serde",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+ "sp-std",
+]
 
 [[package]]
 name = "more-asserts"
@@ -4707,7 +4745,7 @@ checksum = "0debeb9fcf88823ea64d64e4a815ab1643f33127d995978e099942ce38f25238"
 [[package]]
 name = "move-binary-format"
 version = "0.1.0"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=82c20397c81cfda3396e49e7898e20aeac62440a#82c20397c81cfda3396e49e7898e20aeac62440a"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=892b723b75cce13509332a0d81f25f3965ac7fb0#892b723b75cce13509332a0d81f25f3965ac7fb0"
 dependencies = [
  "anyhow",
  "cell",
@@ -4721,7 +4759,7 @@ dependencies = [
 [[package]]
 name = "move-core-types"
 version = "0.1.0"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=82c20397c81cfda3396e49e7898e20aeac62440a#82c20397c81cfda3396e49e7898e20aeac62440a"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=892b723b75cce13509332a0d81f25f3965ac7fb0#892b723b75cce13509332a0d81f25f3965ac7fb0"
 dependencies = [
  "alt_serde",
  "anyhow",
@@ -4739,7 +4777,7 @@ dependencies = [
 [[package]]
 name = "move-vm-natives"
 version = "0.1.0"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=82c20397c81cfda3396e49e7898e20aeac62440a#82c20397c81cfda3396e49e7898e20aeac62440a"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=892b723b75cce13509332a0d81f25f3965ac7fb0#892b723b75cce13509332a0d81f25f3965ac7fb0"
 dependencies = [
  "byteorder",
  "cell",
@@ -4756,7 +4794,7 @@ dependencies = [
 [[package]]
 name = "move-vm-runtime"
 version = "0.1.0"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=82c20397c81cfda3396e49e7898e20aeac62440a#82c20397c81cfda3396e49e7898e20aeac62440a"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=892b723b75cce13509332a0d81f25f3965ac7fb0#892b723b75cce13509332a0d81f25f3965ac7fb0"
 dependencies = [
  "anyhow",
  "bytecode-verifier",
@@ -4775,7 +4813,7 @@ dependencies = [
 [[package]]
 name = "move-vm-types"
 version = "0.1.0"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=82c20397c81cfda3396e49e7898e20aeac62440a#82c20397c81cfda3396e49e7898e20aeac62440a"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=892b723b75cce13509332a0d81f25f3965ac7fb0#892b723b75cce13509332a0d81f25f3965ac7fb0"
 dependencies = [
  "alt_serde",
  "bcs 0.1.1",
@@ -4884,7 +4922,7 @@ dependencies = [
 [[package]]
 name = "mvm"
 version = "0.1.3"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=82c20397c81cfda3396e49e7898e20aeac62440a#82c20397c81cfda3396e49e7898e20aeac62440a"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=892b723b75cce13509332a0d81f25f3965ac7fb0#892b723b75cce13509332a0d81f25f3965ac7fb0"
 dependencies = [
  "alt_serde",
  "anyhow",
@@ -4961,7 +4999,7 @@ source = "git+https://github.com/purestake/cumulus?branch=nimbus-polkadot-v0.9.1
 dependencies = [
  "async-trait",
  "cumulus-client-consensus-common",
- "cumulus-primitives-core",
+ "cumulus-primitives-core 0.1.0 (git+https://github.com/purestake/cumulus?branch=nimbus-polkadot-v0.9.11)",
  "cumulus-primitives-parachain-inherent",
  "futures 0.3.17",
  "log",
@@ -5101,7 +5139,7 @@ dependencies = [
 [[package]]
 name = "num-variants"
 version = "0.1.0"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=82c20397c81cfda3396e49e7898e20aeac62440a#82c20397c81cfda3396e49e7898e20aeac62440a"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=892b723b75cce13509332a0d81f25f3965ac7fb0#892b723b75cce13509332a0d81f25f3965ac7fb0"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -5126,6 +5164,15 @@ checksum = "39f37e50073ccad23b6d09bcb5b263f4e76d3bb6038e4a3c08e52162ffa8abc2"
 dependencies = [
  "crc32fast",
  "indexmap 1.7.0",
+ "memchr",
+]
+
+[[package]]
+name = "object"
+version = "0.27.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "67ac1d3f9a1d3616fd9a60c8d74296f22406a238b6a72f5cc1e6f314df4ffbf9"
+dependencies = [
  "memchr",
 ]
 
@@ -5160,6 +5207,131 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "3305af35278dd29f46fcdd139e0b1fbfae2153f0e5928b39b035542dd31e37b7"
 dependencies = [
  "num-traits",
+]
+
+[[package]]
+name = "orml-currencies"
+version = "0.4.1-dev"
+source = "git+https://github.com/open-web3-stack/open-runtime-module-library?rev=38b53d39a#38b53d39a59c230f4d80d8d8da60cd8c14073523"
+dependencies = [
+ "frame-support",
+ "frame-system",
+ "orml-traits",
+ "orml-utilities",
+ "parity-scale-codec",
+ "scale-info",
+ "sp-io",
+ "sp-runtime",
+ "sp-std",
+]
+
+[[package]]
+name = "orml-tokens"
+version = "0.4.1-dev"
+source = "git+https://github.com/open-web3-stack/open-runtime-module-library?rev=38b53d39a#38b53d39a59c230f4d80d8d8da60cd8c14073523"
+dependencies = [
+ "frame-support",
+ "frame-system",
+ "orml-traits",
+ "parity-scale-codec",
+ "scale-info",
+ "serde",
+ "sp-runtime",
+ "sp-std",
+]
+
+[[package]]
+name = "orml-traits"
+version = "0.4.1-dev"
+source = "git+https://github.com/open-web3-stack/open-runtime-module-library?rev=38b53d39a#38b53d39a59c230f4d80d8d8da60cd8c14073523"
+dependencies = [
+ "frame-support",
+ "impl-trait-for-tuples",
+ "num-traits",
+ "orml-utilities",
+ "parity-scale-codec",
+ "scale-info",
+ "serde",
+ "sp-io",
+ "sp-runtime",
+ "sp-std",
+ "xcm",
+]
+
+[[package]]
+name = "orml-unknown-tokens"
+version = "0.4.1-dev"
+source = "git+https://github.com/open-web3-stack/open-runtime-module-library?rev=38b53d39a#38b53d39a59c230f4d80d8d8da60cd8c14073523"
+dependencies = [
+ "frame-support",
+ "frame-system",
+ "orml-xcm-support",
+ "parity-scale-codec",
+ "scale-info",
+ "sp-std",
+ "xcm",
+]
+
+[[package]]
+name = "orml-utilities"
+version = "0.4.1-dev"
+source = "git+https://github.com/open-web3-stack/open-runtime-module-library?rev=38b53d39a#38b53d39a59c230f4d80d8d8da60cd8c14073523"
+dependencies = [
+ "frame-support",
+ "parity-scale-codec",
+ "scale-info",
+ "serde",
+ "sp-io",
+ "sp-runtime",
+ "sp-std",
+]
+
+[[package]]
+name = "orml-xcm"
+version = "0.4.1-dev"
+source = "git+https://github.com/open-web3-stack/open-runtime-module-library?rev=38b53d39a#38b53d39a59c230f4d80d8d8da60cd8c14073523"
+dependencies = [
+ "frame-support",
+ "frame-system",
+ "pallet-xcm",
+ "parity-scale-codec",
+ "scale-info",
+ "sp-std",
+ "xcm",
+]
+
+[[package]]
+name = "orml-xcm-support"
+version = "0.4.1-dev"
+source = "git+https://github.com/open-web3-stack/open-runtime-module-library?rev=38b53d39a#38b53d39a59c230f4d80d8d8da60cd8c14073523"
+dependencies = [
+ "frame-support",
+ "orml-traits",
+ "parity-scale-codec",
+ "sp-runtime",
+ "sp-std",
+ "xcm",
+ "xcm-executor",
+]
+
+[[package]]
+name = "orml-xtokens"
+version = "0.4.1-dev"
+source = "git+https://github.com/open-web3-stack/open-runtime-module-library?rev=38b53d39a#38b53d39a59c230f4d80d8d8da60cd8c14073523"
+dependencies = [
+ "cumulus-primitives-core 0.1.0 (git+https://github.com/paritytech/cumulus?branch=polkadot-v0.9.11)",
+ "frame-support",
+ "frame-system",
+ "orml-traits",
+ "orml-xcm-support",
+ "parity-scale-codec",
+ "scale-info",
+ "serde",
+ "sp-io",
+ "sp-runtime",
+ "sp-std",
+ "xcm",
+ "xcm-executor",
 ]
 
 [[package]]
@@ -6056,7 +6228,7 @@ dependencies = [
 [[package]]
 name = "pallet-xcm"
 version = "0.9.11"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.11#eb9f107e3a04687dcf80111563f2bcea7d5b15d3"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.11#169bab55d13221251b41abfbf97f27820067f0c2"
 dependencies = [
  "frame-support",
  "frame-system",
@@ -6093,7 +6265,7 @@ name = "parachain-info"
 version = "0.1.0"
 source = "git+https://github.com/purestake/cumulus?branch=nimbus-polkadot-v0.9.11#de3a9302ba0b7c64353da769615c0b19397255dd"
 dependencies = [
- "cumulus-primitives-core",
+ "cumulus-primitives-core 0.1.0 (git+https://github.com/purestake/cumulus?branch=nimbus-polkadot-v0.9.11)",
  "frame-support",
  "frame-system",
  "parity-scale-codec",
@@ -6426,9 +6598,9 @@ dependencies = [
 ]
 
 [[package]]
-name = "petgraph"
+name = "petgraph_core"
 version = "0.5.1"
-source = "git+https://github.com/pontem-network/petgraph.git#17ae1eae1ee0a580e4f34ccefaf4d611d03eadcb"
+source = "git+https://github.com/pontem-network/petgraph.git?branch=petgraph_core#96e8c14d373dd722d8ad3ec643f9b1e02be30185"
 dependencies = [
  "fixedbitset 0.3.2",
  "hashbrown 0.9.1",
@@ -6495,9 +6667,9 @@ checksum = "8b870d8c151b6f2fb93e84a13146138f05d02ed11c7e7c54f8826aaaf7c9f184"
 
 [[package]]
 name = "pkg-config"
-version = "0.3.20"
+version = "0.3.22"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7c9b1041b4387893b91ee6746cddfc28516aff326a3519fb2adf820932c5e6cb"
+checksum = "12295df4f294471248581bc09bef3c38a5e46f1e36d6a37353621a0c6c357e1f"
 
 [[package]]
 name = "platforms"
@@ -6650,7 +6822,7 @@ dependencies = [
 [[package]]
 name = "polkadot-core-primitives"
 version = "0.9.11"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.11#eb9f107e3a04687dcf80111563f2bcea7d5b15d3"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.11#169bab55d13221251b41abfbf97f27820067f0c2"
 dependencies = [
  "parity-scale-codec",
  "parity-util-mem",
@@ -7174,7 +7346,7 @@ dependencies = [
 [[package]]
 name = "polkadot-parachain"
 version = "0.9.11"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.11#eb9f107e3a04687dcf80111563f2bcea7d5b15d3"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.11#169bab55d13221251b41abfbf97f27820067f0c2"
 dependencies = [
  "derive_more",
  "frame-support",
@@ -7191,7 +7363,7 @@ dependencies = [
 [[package]]
 name = "polkadot-primitives"
 version = "0.9.11"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.11#eb9f107e3a04687dcf80111563f2bcea7d5b15d3"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.11#169bab55d13221251b41abfbf97f27820067f0c2"
 dependencies = [
  "bitvec 0.20.4",
  "frame-system",
@@ -7587,7 +7759,7 @@ dependencies = [
  "cumulus-client-consensus-relay-chain",
  "cumulus-client-network",
  "cumulus-client-service",
- "cumulus-primitives-core",
+ "cumulus-primitives-core 0.1.0 (git+https://github.com/purestake/cumulus?branch=nimbus-polkadot-v0.9.11)",
  "cumulus-primitives-parachain-inherent",
  "frame-benchmarking",
  "frame-benchmarking-cli",
@@ -7604,6 +7776,7 @@ dependencies = [
  "polkadot-primitives",
  "polkadot-service",
  "pontem-runtime",
+ "primitives",
  "sc-basic-authorship",
  "sc-chain-spec",
  "sc-cli",
@@ -7653,7 +7826,7 @@ dependencies = [
  "cumulus-pallet-parachain-system",
  "cumulus-pallet-xcm",
  "cumulus-pallet-xcmp-queue",
- "cumulus-primitives-core",
+ "cumulus-primitives-core 0.1.0 (git+https://github.com/purestake/cumulus?branch=nimbus-polkadot-v0.9.11)",
  "cumulus-primitives-timestamp",
  "cumulus-primitives-utility",
  "frame-benchmarking",
@@ -7663,7 +7836,15 @@ dependencies = [
  "frame-system-benchmarking",
  "frame-system-rpc-runtime-api",
  "hex-literal",
+ "kusama-runtime",
+ "module-currencies",
  "nimbus-primitives",
+ "orml-tokens",
+ "orml-traits",
+ "orml-unknown-tokens",
+ "orml-xcm",
+ "orml-xcm-support",
+ "orml-xtokens",
  "pallet-author-inherent",
  "pallet-author-mapping",
  "pallet-author-slot-filter",
@@ -7683,8 +7864,12 @@ dependencies = [
  "parachain-staking",
  "parity-scale-codec",
  "polkadot-parachain",
+ "polkadot-primitives",
+ "polkadot-runtime-parachains",
+ "primitives",
  "scale-info",
  "serde",
+ "smallvec 1.7.0",
  "sp-api",
  "sp-block-builder",
  "sp-core",
@@ -7700,14 +7885,15 @@ dependencies = [
  "substrate-wasm-builder 4.0.0",
  "xcm",
  "xcm-builder",
+ "xcm-emulator",
  "xcm-executor",
 ]
 
 [[package]]
 name = "ppv-lite86"
-version = "0.2.14"
+version = "0.2.15"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c3ca011bd0129ff4ae15cd04c4eef202cadf6c51c21e47aba319b4e0501db741"
+checksum = "ed0cfbc8191465bed66e1718596ee0b0b35d5ee1f41c5df2189d0fe8bde535ba"
 
 [[package]]
 name = "primitive-types"
@@ -7734,6 +7920,18 @@ dependencies = [
  "impl-serde",
  "scale-info",
  "uint 0.9.1",
+]
+
+[[package]]
+name = "primitives"
+version = "3.0.0"
+dependencies = [
+ "parity-scale-codec",
+ "scale-info",
+ "serde",
+ "sp-core",
+ "sp-runtime",
+ "sp-std",
 ]
 
 [[package]]
@@ -7819,9 +8017,9 @@ checksum = "bc881b2c22681370c6a780e47af9840ef841837bc98118431d4e1868bd0c1086"
 
 [[package]]
 name = "proc-macro2"
-version = "1.0.29"
+version = "1.0.32"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b9f5105d4fdaab20335ca9565e106a5d9b82b6219b5ba735731124ac6711d23d"
+checksum = "ba508cc11742c0dc5c1659771673afbab7a0efab23aa17e854cbab0837ed0b43"
 dependencies = [
  "unicode-xid",
 ]
@@ -7861,7 +8059,7 @@ dependencies = [
  "itertools",
  "log",
  "multimap",
- "petgraph 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "petgraph",
  "prost",
  "prost-types",
  "tempfile",
@@ -9696,9 +9894,9 @@ dependencies = [
 
 [[package]]
 name = "sharded-slab"
-version = "0.1.3"
+version = "0.1.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "740223c51853f3145fe7c90360d2d4232f2b62e3449489c207eccde818979982"
+checksum = "900fba806f70c630b0a382d0d825e17a0f19fcd059a2ade1ff237bcddf446b31"
 dependencies = [
  "lazy_static",
 ]
@@ -9730,9 +9928,9 @@ dependencies = [
 
 [[package]]
 name = "signature"
-version = "1.3.1"
+version = "1.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c19772be3c4dd2ceaacf03cb41d5885f2a02c4d8804884918e3a258480803335"
+checksum = "02658e48d89f2bec991f9a78e69cfa4c316f8d6a6c4ec12fae1aeb263d486788"
 
 [[package]]
 name = "simba"
@@ -9768,9 +9966,9 @@ dependencies = [
 
 [[package]]
 name = "slab"
-version = "0.4.4"
+version = "0.4.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c307a32c1c5c437f38c7fd45d753050587732ba8628319fbdf12a7e289ccc590"
+checksum = "9def91fd1e018fe007022791f865d0ccc9b3a0d5001e01aabb8b40e46000afb5"
 
 [[package]]
 name = "slog"
@@ -10251,15 +10449,21 @@ dependencies = [
  "frame-system",
  "getrandom 0.2.3",
  "log",
+ "module-currencies",
  "move-core-types",
  "move-vm-runtime",
  "mvm",
  "once_cell",
+ "orml-currencies",
+ "orml-tokens",
+ "orml-traits",
  "pallet-balances",
  "pallet-multisig 3.0.0",
  "pallet-timestamp",
+ "pallet-vesting",
  "parity-scale-codec",
  "parity-scale-codec-derive",
+ "primitives",
  "scale-info",
  "serde",
  "sp-core",
@@ -10664,7 +10868,7 @@ dependencies = [
 [[package]]
 name = "stdlib"
 version = "0.1.0"
-source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=82c20397c81cfda3396e49e7898e20aeac62440a#82c20397c81cfda3396e49e7898e20aeac62440a"
+source = "git+https://github.com/pontem-network/sp-move-vm.git?rev=892b723b75cce13509332a0d81f25f3965ac7fb0#892b723b75cce13509332a0d81f25f3965ac7fb0"
 
 [[package]]
 name = "stdlib-fetch"
@@ -10681,9 +10885,9 @@ checksum = "8ea5119cdb4c55b55d432abb513a0429384878c15dde60cc77b1c99de1a95a6a"
 
 [[package]]
 name = "structopt"
-version = "0.3.23"
+version = "0.3.25"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "bf9d950ef167e25e0bdb073cf1d68e9ad2795ac826f2f3f59647817cf23c0bfa"
+checksum = "40b9788f4202aa75c240ecc9c15c65185e6a39ccdeb0fd5d008b98825464c87c"
 dependencies = [
  "clap",
  "lazy_static",
@@ -10692,9 +10896,9 @@ dependencies = [
 
 [[package]]
 name = "structopt-derive"
-version = "0.4.16"
+version = "0.4.18"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "134d838a2c9943ac3125cf6df165eda53493451b719f3255b2a26b85f772d0ba"
+checksum = "dcb5ae327f9cc13b68763b5749770cb9e048a99bd9dfdfa58d0cf05d5f64afe0"
 dependencies = [
  "heck",
  "proc-macro-error 1.0.4",
@@ -10850,9 +11054,9 @@ checksum = "6bdef32e8150c2a081110b42772ffe7d7c9032b606bc226c8260fd97e0976601"
 
 [[package]]
 name = "syn"
-version = "1.0.80"
+version = "1.0.81"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d010a1623fbd906d51d650a9916aaefc05ffa0e4053ff7fe601167f3e715d194"
+checksum = "f2afee18b8beb5a596ecb4a2dce128c719b4ba399d34126b9e4396e3f9860966"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -11474,9 +11678,9 @@ dependencies = [
 
 [[package]]
 name = "value-bag"
-version = "1.0.0-alpha.7"
+version = "1.0.0-alpha.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "dd320e1520f94261153e96f7534476ad869c14022aee1e59af7c778075d840ae"
+checksum = "79923f7731dc61ebfba3633098bf3ac533bbd35ccd8c57e7088d9a5eebe0263f"
 dependencies = [
  "ctor",
  "version_check",
@@ -11743,7 +11947,7 @@ dependencies = [
  "anyhow",
  "gimli",
  "more-asserts",
- "object",
+ "object 0.26.2",
  "target-lexicon",
  "thiserror",
  "wasmparser",
@@ -11786,7 +11990,7 @@ dependencies = [
  "gimli",
  "log",
  "more-asserts",
- "object",
+ "object 0.26.2",
  "rayon",
  "region",
  "serde",
@@ -11810,7 +12014,7 @@ checksum = "d231491878e710c68015228c9f9fc5955fe5c96dbf1485c15f7bed55b622c83c"
 dependencies = [
  "anyhow",
  "more-asserts",
- "object",
+ "object 0.26.2",
  "target-lexicon",
  "wasmtime-debug",
  "wasmtime-environ",
@@ -11827,7 +12031,7 @@ dependencies = [
  "gimli",
  "lazy_static",
  "libc",
- "object",
+ "object 0.26.2",
  "scroll",
  "serde",
  "target-lexicon",
@@ -12080,7 +12284,7 @@ dependencies = [
 [[package]]
 name = "xcm"
 version = "0.9.11"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.11#eb9f107e3a04687dcf80111563f2bcea7d5b15d3"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.11#169bab55d13221251b41abfbf97f27820067f0c2"
 dependencies = [
  "derivative",
  "impl-trait-for-tuples",
@@ -12111,9 +12315,33 @@ dependencies = [
 ]
 
 [[package]]
+name = "xcm-emulator"
+version = "0.1.0"
+source = "git+https://github.com/vitvakatu/xcm-simulator?branch=polkadot-v0.9.11#aa2d9742e05666a0dea63c473452562e3abbea23"
+dependencies = [
+ "cumulus-pallet-dmp-queue",
+ "cumulus-pallet-parachain-system",
+ "cumulus-pallet-xcmp-queue",
+ "cumulus-primitives-core 0.1.0 (git+https://github.com/purestake/cumulus?branch=nimbus-polkadot-v0.9.11)",
+ "cumulus-primitives-parachain-inherent",
+ "cumulus-test-relay-sproof-builder",
+ "frame-support",
+ "frame-system",
+ "parachain-info",
+ "parity-scale-codec",
+ "paste",
+ "polkadot-primitives",
+ "polkadot-runtime-parachains",
+ "sp-io",
+ "sp-std",
+ "xcm",
+ "xcm-executor",
+]
+
+[[package]]
 name = "xcm-executor"
 version = "0.9.11"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.11#eb9f107e3a04687dcf80111563f2bcea7d5b15d3"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.11#169bab55d13221251b41abfbf97f27820067f0c2"
 dependencies = [
  "frame-benchmarking",
  "frame-support",
@@ -12131,7 +12359,7 @@ dependencies = [
 [[package]]
 name = "xcm-procedural"
 version = "0.1.0"
-source = "git+https://github.com/paritytech/polkadot.git?branch=release-v0.9.11#eb9f107e3a04687dcf80111563f2bcea7d5b15d3"
+source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.11#169bab55d13221251b41abfbf97f27820067f0c2"
 dependencies = [
  "proc-macro2",
  "quote",
