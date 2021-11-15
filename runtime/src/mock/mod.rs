@@ -1,5 +1,7 @@
 use crate::*;
 
+pub mod mock_runtime;
+
 use sp_runtime::AccountId32;
 use frame_support::sp_io::TestExternalities;
 use frame_support::traits::GenesisBuild;
@@ -19,9 +21,9 @@ decl_test_parachain! {
 
 decl_test_parachain! {
     pub struct ParaB {
-        Runtime = crate::Runtime,
-        Origin = Origin,
-        new_ext = para_ext(2),
+        Runtime = mock_runtime::Runtime,
+        Origin = mock_runtime::Origin,
+        new_ext = mock_para_ext(2),
     }
 }
 
@@ -44,8 +46,59 @@ decl_test_network! {
 }
 
 pub type RelayBalances = pallet_balances::Pallet<kusama_runtime::Runtime>;
-pub type ParaTokens = orml_tokens::Pallet<crate::Runtime>;
-pub type ParaXTokens = orml_xtokens::Pallet<crate::Runtime>;
+
+pub type ParaATokens = orml_tokens::Pallet<crate::Runtime>;
+pub type ParaBTokens = orml_tokens::Pallet<mock_runtime::Runtime>;
+
+pub type ParaABalances = pallet_balances::Pallet<crate::Runtime>;
+
+pub type ParaAXTokens = orml_xtokens::Pallet<crate::Runtime>;
+pub type ParaBXTokens = orml_xtokens::Pallet<mock_runtime::Runtime>;
+
+pub fn mock_para_ext(para_id: u32) -> TestExternalities {
+    use mock_runtime::Runtime;
+
+    let mut t = frame_system::GenesisConfig::default()
+        .build_storage::<Runtime>()
+        .unwrap();
+
+    let parachain_info_config = parachain_info::GenesisConfig {
+        parachain_id: para_id.into(),
+    };
+    <parachain_info::GenesisConfig as GenesisBuild<Runtime, _>>::assimilate_storage(
+        &parachain_info_config,
+        &mut t,
+    )
+    .unwrap();
+
+    pallet_balances::GenesisConfig::<Runtime> {
+        balances: vec![(ALICE, 2000 * PONT), (BOB, 2000 * PONT)],
+    }
+    .assimilate_storage(&mut t)
+    .unwrap();
+
+    <pallet_xcm::GenesisConfig as GenesisBuild<Runtime>>::assimilate_storage(
+        &pallet_xcm::GenesisConfig {
+            safe_xcm_version: Some(2),
+        },
+        &mut t,
+    )
+    .unwrap();
+
+    orml_tokens::GenesisConfig::<Runtime> {
+        balances: vec![(
+            ALICE,
+            mock_runtime::CurrencyId::KSM,
+            2000 * dollar(CurrencyId::KSM) as u64,
+        )],
+    }
+    .assimilate_storage(&mut t)
+    .unwrap();
+
+    let mut ext = TestExternalities::new(t);
+    ext.execute_with(|| System::set_block_number(1));
+    ext
+}
 
 pub fn para_ext(para_id: u32) -> TestExternalities {
     let mut t = frame_system::GenesisConfig::default()
@@ -59,6 +112,12 @@ pub fn para_ext(para_id: u32) -> TestExternalities {
         &parachain_info_config,
         &mut t,
     )
+    .unwrap();
+
+    pallet_balances::GenesisConfig::<Runtime> {
+        balances: vec![(ALICE, 2000 * PONT)],
+    }
+    .assimilate_storage(&mut t)
     .unwrap();
 
     <pallet_xcm::GenesisConfig as GenesisBuild<Runtime>>::assimilate_storage(
@@ -83,6 +142,7 @@ pub fn para_ext(para_id: u32) -> TestExternalities {
     ext.execute_with(|| System::set_block_number(1));
     ext
 }
+
 fn default_parachains_host_configuration() -> HostConfiguration<BlockNumber> {
     HostConfiguration {
         validation_upgrade_frequency: 1u32,

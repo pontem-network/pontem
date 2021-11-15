@@ -1,21 +1,17 @@
 use crate::mock::*;
+use crate::mock::mock_runtime::CurrencyId as MockCurrencyId;
 use crate::*;
 use orml_xtokens::Error;
 use xcm_emulator::{Junction, TestExt};
 use frame_support::traits::Currency;
 use cumulus_primitives_core::ParaId;
-use polkadot_parachain::primitives::{Sibling, AccountIdConversion};
+use polkadot_parachain::primitives::{AccountIdConversion};
 use frame_support::{assert_noop, assert_ok};
 use orml_traits::MultiCurrency;
 use sp_runtime::AccountId32;
 
 fn para_a_account() -> AccountId32 {
     ParaId::from(1).into_account()
-}
-
-fn sibling_b_account() -> AccountId32 {
-    use sp_runtime::traits::AccountIdConversion;
-    Sibling::from(2).into_account()
 }
 
 #[test]
@@ -56,7 +52,7 @@ fn send_relay_chain_asset_to_relay_chain() {
     });
 
     ParaA::execute_with(|| {
-        assert_ok!(ParaXTokens::transfer(
+        assert_ok!(ParaAXTokens::transfer(
             Some(ALICE).into(),
             CurrencyId::KSM,
             dollar(CurrencyId::KSM) as _,
@@ -73,7 +69,7 @@ fn send_relay_chain_asset_to_relay_chain() {
             3_000_000_000,
         ));
         assert_eq!(
-            ParaTokens::free_balance(CurrencyId::KSM, &ALICE),
+            ParaATokens::free_balance(CurrencyId::KSM, &ALICE),
             1999 * dollar(CurrencyId::KSM) as u64
         );
     });
@@ -95,9 +91,9 @@ fn cannot_lost_fund_on_send_failed() {
     TestNet::reset();
 
     ParaA::execute_with(|| {
-        assert_ok!(ParaTokens::deposit(CurrencyId::PONT, &ALICE, 1_000 * PONT));
+        assert_ok!(ParaATokens::deposit(CurrencyId::PONT, &ALICE, 1_000 * PONT));
         assert_noop!(
-            ParaXTokens::transfer(
+            ParaAXTokens::transfer(
                 Some(ALICE).into(),
                 CurrencyId::PONT,
                 500 * PONT,
@@ -120,7 +116,7 @@ fn cannot_lost_fund_on_send_failed() {
         );
 
         assert_eq!(
-            ParaTokens::free_balance(CurrencyId::PONT, &ALICE),
+            ParaATokens::free_balance(CurrencyId::PONT, &ALICE),
             1_000 * PONT
         );
     });
@@ -135,7 +131,7 @@ fn send_relay_chain_asset_to_sibling() {
     });
 
     ParaA::execute_with(|| {
-        assert_ok!(ParaXTokens::transfer(
+        assert_ok!(ParaAXTokens::transfer(
             Some(ALICE).into(),
             CurrencyId::KSM,
             3 * dollar(CurrencyId::KSM) as u64,
@@ -155,58 +151,15 @@ fn send_relay_chain_asset_to_sibling() {
             3_000_000,
         ));
         assert_eq!(
-            ParaTokens::free_balance(CurrencyId::KSM, &ALICE),
+            ParaATokens::free_balance(CurrencyId::KSM, &ALICE),
             1997 * dollar(CurrencyId::KSM) as u64
         );
     });
 
     ParaB::execute_with(|| {
         assert_eq!(
-            ParaTokens::free_balance(CurrencyId::KSM, &BOB),
+            ParaBTokens::free_balance(MockCurrencyId::KSM, &BOB),
             3 * dollar(CurrencyId::KSM) as u64 - 160000
-        );
-    });
-}
-
-#[test]
-fn send_sibling_asset_to_sibling() {
-    TestNet::reset();
-
-    ParaA::execute_with(|| {
-        assert_ok!(ParaTokens::deposit(CurrencyId::PONT, &ALICE, 1_000 * PONT));
-    });
-
-    ParaA::execute_with(|| {
-        assert_ok!(ParaXTokens::transfer(
-            Some(ALICE).into(),
-            CurrencyId::PONT,
-            500 * PONT,
-            Box::new(
-                MultiLocation::new(
-                    1,
-                    Junctions::X2(
-                        Junction::Parachain(2),
-                        Junction::AccountId32 {
-                            network: NetworkId::Any,
-                            id: BOB.into(),
-                        }
-                    )
-                )
-                .into()
-            ),
-            4_000_000,
-        ));
-
-        assert_eq!(
-            ParaTokens::free_balance(CurrencyId::PONT, &ALICE),
-            500 * PONT
-        );
-    });
-
-    ParaB::execute_with(|| {
-        assert_eq!(
-            ParaTokens::free_balance(CurrencyId::PONT, &BOB),
-            500 * PONT - 4
         );
     });
 }
@@ -216,9 +169,7 @@ fn send_self_parachain_asset_to_sibling() {
     TestNet::reset();
 
     ParaA::execute_with(|| {
-        assert_ok!(ParaTokens::deposit(CurrencyId::PONT, &ALICE, 1_000 * PONT));
-
-        assert_ok!(ParaXTokens::transfer(
+        assert_ok!(ParaAXTokens::transfer(
             Some(ALICE).into(),
             CurrencyId::PONT,
             500 * PONT,
@@ -238,21 +189,43 @@ fn send_self_parachain_asset_to_sibling() {
             4_000_000,
         ));
 
-        assert_eq!(
-            ParaTokens::free_balance(CurrencyId::PONT, &ALICE),
-            500 * PONT
-        );
-        assert_eq!(
-            ParaTokens::free_balance(CurrencyId::PONT, &sibling_b_account()),
-            500 * PONT
-        );
+        assert_eq!(ParaABalances::free_balance(&ALICE), 15000000000000);
     });
 
     ParaB::execute_with(|| {
         assert_eq!(
-            ParaTokens::free_balance(CurrencyId::PONT, &BOB),
+            ParaBTokens::free_balance(MockCurrencyId::PONT, &BOB),
             500 * PONT - 4
         );
+    });
+
+    // Send back to Parachain A.
+    ParaB::execute_with(|| {
+        assert_ok!(ParaBXTokens::transfer(
+            Some(BOB).into(),
+            MockCurrencyId::PONT,
+            500 * PONT - 4,
+            Box::new(
+                MultiLocation::new(
+                    1,
+                    Junctions::X2(
+                        Junction::Parachain(1),
+                        Junction::AccountId32 {
+                            network: NetworkId::Any,
+                            id: BOB.into(),
+                        }
+                    )
+                )
+                .into()
+            ),
+            4_000_000,
+        ));
+
+        assert_eq!(ParaBTokens::free_balance(MockCurrencyId::PONT, &BOB), 0);
+    });
+
+    ParaA::execute_with(|| {
+        assert_eq!(ParaABalances::free_balance(&BOB), 500 * PONT - 8);
     });
 }
 
@@ -262,7 +235,7 @@ fn transfer_no_reserve_assets_fails() {
 
     ParaA::execute_with(|| {
         assert_noop!(
-            ParaXTokens::transfer_multiasset(
+            ParaAXTokens::transfer_multiasset(
                 Some(ALICE).into(),
                 Box::new(
                     MultiAsset {
@@ -297,7 +270,7 @@ fn transfer_to_self_chain_fails() {
 
     ParaA::execute_with(|| {
         assert_noop!(
-            ParaXTokens::transfer_multiasset(
+            ParaAXTokens::transfer_multiasset(
                 Some(ALICE).into(),
                 Box::new(
                     MultiAsset {
@@ -332,7 +305,7 @@ fn transfer_to_invalid_dest_fails() {
 
     ParaA::execute_with(|| {
         assert_noop!(
-            ParaXTokens::transfer_multiasset(
+            ParaAXTokens::transfer_multiasset(
                 Some(ALICE).into(),
                 Box::new(
                     MultiAsset {

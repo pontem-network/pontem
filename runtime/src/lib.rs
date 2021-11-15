@@ -17,7 +17,6 @@ use sp_api::impl_runtime_apis;
 use sp_version::RuntimeVersion;
 #[cfg(feature = "std")]
 use sp_version::NativeVersion;
-use scale_info::TypeInfo;
 
 use cumulus_pallet_parachain_system::RelaychainBlockNumberProvider;
 use nimbus_primitives::NimbusId;
@@ -37,7 +36,6 @@ use xcm_executor::{XcmExecutor, traits::WeightTrader, Assets};
 use pallet_xcm::XcmPassthrough;
 use orml_traits::parameter_type_with_key;
 use orml_xcm_support::{IsNativeConcrete, MultiCurrencyAdapter, MultiNativeAsset};
-use codec::{Encode, Decode};
 
 // A few exports that help ease life for downstream crates.
 #[cfg(any(feature = "std", test))]
@@ -76,16 +74,14 @@ pub use parachain_staking::{InflationInfo, Range};
 
 pub mod constants;
 use constants::{currency::*, time::*};
-pub mod primitives;
-use primitives::{*, Index};
+use primitives::{*, currency::CurrencyId, Index};
+
+use module_currencies::BasicCurrencyAdapter;
 
 #[cfg(test)]
 mod mock;
 #[cfg(test)]
 mod tests;
-
-#[cfg(feature = "std")]
-use serde::{Serialize, Deserialize};
 
 /// We allow for 0.5 seconds of compute with a 6 second average block time.
 const MAXIMUM_BLOCK_WEIGHT: Weight = WEIGHT_PER_SECOND / 2;
@@ -116,11 +112,6 @@ pub const VERSION: RuntimeVersion = RuntimeVersion {
 
 /// 1 in 4 blocks (on average) will be primary babe blocks
 pub const PRIMARY_PROBABILITY: (u64, u64) = (1, 4);
-
-// Currencies constants.
-pub const UNIT: Balance = PONT;
-pub const MILLIUNIT: Balance = UNIT / 1_000;
-pub const MICROUNIT: Balance = MILLIUNIT / 1_000;
 
 /// The version information used to identify this runtime when compiled natively.
 #[cfg(feature = "std")]
@@ -551,8 +542,8 @@ pub type LocationToAccountId = (
 );
 
 pub type LocalAssetTransactor = MultiCurrencyAdapter<
-    Tokens,
-    (),
+    Currencies,
+    UnknownTokens,
     IsNativeConcrete<CurrencyId, CurrencyIdConvert>,
     AccountId,
     LocationToAccountId,
@@ -811,10 +802,30 @@ impl GasWeightMapping for MoveVMGasWeightMapping {
     }
 }
 
+parameter_types! {
+    /// VM pallet address (used to reserve funds during VM native operations).
+    pub const MVMPalletId: PalletId = PalletId(*b"pont/mvm");
+}
+
 /// Configure the Move-pallet in pallets/sp-mvm.
 impl sp_mvm::Config for Runtime {
+    /// Events.
     type Event = Event;
+
+    /// Gas weight mapping.
     type GasWeightMapping = MoveVMGasWeightMapping;
+
+    /// Only sudo can deploy modules under 0x or update standard library.
+    type UpdaterOrigin = EnsureRoot<AccountId>;
+
+    /// Pallet Id.
+    type PalletId = MVMPalletId;
+
+    /// Currency id.
+    type CurrencyId = CurrencyId;
+
+    /// Currencies (Multicurrency).
+    type Currencies = Currencies;
 }
 
 struct CheckInherents;
@@ -838,25 +849,8 @@ impl cumulus_pallet_parachain_system::CheckInherents<Block> for CheckInherents {
     }
 }
 
-#[derive(Encode, Decode, Eq, PartialEq, Copy, Clone, RuntimeDebug, PartialOrd, Ord, TypeInfo)]
-#[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
-pub enum CurrencyId {
-    // Relaychain's currency.
-    KSM,
-    // Our internal currency.
-    PONT,
-}
-impl CurrencyId {
-    fn decimals(&self) -> Option<u8> {
-        match self {
-            Self::KSM => Some(12),
-            Self::PONT => Some(10),
-        }
-    }
-}
-
 pub fn dollar(currency_id: CurrencyId) -> u128 {
-    10u128.pow(currency_id.decimals().expect("Unknown decimals").into())
+    10u128.pow(currency_id.decimals().into())
 }
 
 pub struct CurrencyIdConvert;
@@ -868,7 +862,7 @@ impl Convert<CurrencyId, Option<MultiLocation>> for CurrencyIdConvert {
                 (
                     Parent,
                     Junction::Parachain(ParachainInfo::get().into()),
-                    Junction::GeneralKey("PONT".into()),
+                    Junction::GeneralKey(NATIVE_SYMBOL.to_vec()),
                 )
                     .into(),
             ),
@@ -878,7 +872,6 @@ impl Convert<CurrencyId, Option<MultiLocation>> for CurrencyIdConvert {
 
 impl Convert<MultiLocation, Option<CurrencyId>> for CurrencyIdConvert {
     fn convert(location: MultiLocation) -> Option<CurrencyId> {
-        const PONT_KEY: &[u8] = b"PONT";
         match location {
             MultiLocation {
                 parents: 1,
@@ -887,7 +880,7 @@ impl Convert<MultiLocation, Option<CurrencyId>> for CurrencyIdConvert {
             MultiLocation {
                 parents: 1,
                 interior: X2(Parachain(_id), GeneralKey(key)),
-            } if key == PONT_KEY => Some(CurrencyId::PONT),
+            } if key == NATIVE_SYMBOL => Some(CurrencyId::PONT),
             _ => None,
         }
     }
@@ -911,7 +904,7 @@ parameter_type_with_key! {
     pub ExistentialDeposits: |currency_id: CurrencyId| -> Balance {
         match currency_id {
             CurrencyId::PONT => PONT_EXISTENTIAL_DEPOSIT,
-            CurrencyId::KSM =>  KSM_EXISTENTIAL_DEPOSIT,
+            CurrencyId::KSM  => KSM_EXISTENTIAL_DEPOSIT
         }
     };
 }
@@ -926,6 +919,25 @@ impl orml_tokens::Config for Runtime {
     type OnDust = ();
     type MaxLocks = MaxLocks;
     type DustRemovalWhitelist = Everything;
+}
+
+impl orml_unknown_tokens::Config for Runtime {
+    type Event = Event;
+}
+
+parameter_types! {
+    pub const GetNativeCurrencyId: CurrencyId = CurrencyId::PONT;
+}
+
+impl module_currencies::Config for Runtime {
+    type Event = Event;
+    type CurrencyId = CurrencyId;
+    type MultiCurrency = Tokens;
+    type NativeCurrency = BasicCurrencyAdapter<Runtime, Balances, Amount, BlockNumber>;
+    type GetNativeCurrencyId = GetNativeCurrencyId;
+    type WeightInfo = ();
+    type SweepOrigin = EnsureRoot<AccountId>;
+    type OnDust = ();
 }
 
 pub struct AccountIdToMultiLocation;
@@ -982,6 +994,7 @@ construct_runtime!(
         Balances: pallet_balances::{Pallet, Call, Storage, Config<T>, Event<T>} = 30,
         Vesting: pallet_vesting::{Pallet, Call, Storage, Config<T>, Event<T>},
         Tokens: orml_tokens::{Pallet, Storage, Event<T>, Config<T>},
+        Currencies: module_currencies::{Pallet, Call, Storage, Event<T>},
         TransactionPayment: pallet_transaction_payment::{Pallet, Storage},
 
         // Staking.
@@ -1001,7 +1014,8 @@ construct_runtime!(
         CumulusXcm: cumulus_pallet_xcm::{Pallet, Call, Event<T>, Origin} = 62,
         DmpQueue: cumulus_pallet_dmp_queue::{Pallet, Call, Storage, Event<T>} = 63,
         Xtokens: orml_xtokens::{Pallet, Storage, Call, Event<T>} = 64,
-        OrmlXcm: orml_xcm::{Pallet, Call, Event<T>} = 65,
+        UnknownTokens: orml_unknown_tokens::{Pallet, Storage, Event} = 65,
+        OrmlXcm: orml_xcm::{Pallet, Call, Event<T>} = 66,
 
         // Move VM
         Mvm: sp_mvm::{Pallet, Call, Storage, Config<T>, Event<T>},

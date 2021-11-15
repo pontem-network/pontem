@@ -1,5 +1,9 @@
+#![cfg_attr(not(feature = "std"), no_std)]
+
 use sp_runtime::{generic, MultiSignature, OpaqueExtrinsic as UncheckedExtrinsic};
 use sp_runtime::traits::{Verify, IdentifyAccount, BlakeTwo256};
+
+pub mod currency;
 
 /// TODO
 pub type Block = generic::Block<Header, UncheckedExtrinsic>;
