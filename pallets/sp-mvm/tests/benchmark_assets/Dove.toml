@@ -4,5 +4,5 @@ dialect = "pont"
 dove_version = ">=1.3.2"
 
 dependencies = [
-    { git = "https://github.com/pontem-network/move-stdlib.git", rev = "34cedad7436f7dad6c9a521f3f6199324737d69f" }
+    { git = "https://github.com/pontem-network/move-stdlib.git", rev = "e9bd26720c06705d2e222833a496fda7c67c8e32" }
 ]

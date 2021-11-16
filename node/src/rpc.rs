@@ -6,10 +6,7 @@
 #![warn(missing_docs)]
 
 use std::sync::Arc;
-
-use pontem_runtime::{
-    primitives::{AccountId, Balance, Index},
-};
+use primitives::{AccountId, Balance, Index};
 use sp_api::ProvideRuntimeApi;
 use sp_blockchain::HeaderBackend;
 use sp_block_builder::BlockBuilder;

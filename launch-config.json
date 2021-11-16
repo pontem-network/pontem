@@ -25,7 +25,7 @@
 			}
 		],
 		"runtime_genesis_config": {
-            "parachainsConfiguration": {
+            "configuration": {
                 "config": {
                     "validation_upgrade_frequency": 1,
                     "validation_upgrade_delay": 1
@@ -36,7 +36,7 @@
 	"parachains": [
 		{
 			"bin": "./target/release/pontem",
-			"id": "2000",
+			"id": "1002",
 			"nodes": [
 				{
 					"wsPort": 9946,

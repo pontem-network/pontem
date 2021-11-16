@@ -25,4 +25,4 @@ fc-rpc-core = { version = "1.0.0" }
 
 [dependencies.move-core-types]
 git = "https://github.com/pontem-network/sp-move-vm.git"
-rev = "82c20397c81cfda3396e49e7898e20aeac62440a"
+rev = "892b723b75cce13509332a0d81f25f3965ac7fb0"
