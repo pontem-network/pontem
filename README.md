@@ -11,22 +11,32 @@ Pontem parachain node with [Move VM pallet](/pallets/sp-mvm/) on board.
 Current version built with Nimbus consensus and Parachain Staking implementation.
 Requires relay chain to work correctly.
 
-### Running in dev-mode
+### Requirements
 
-There is a possibility to run a single node in development mode, without any consensus involved.
+* [Rust](https://www.rust-lang.org/tools/install)
+* [Dove](https://github.com/pontem-network/move-tools#installation)
 
-Add `--dev-service` flag to `cargo run` command to run a single node with disabled consensus:
+### Build
 
-**IMPORTANT NOTE:** the node with enabled `--dev-service` flag generating blocks when needed (e.g. when a new transaction appears).
+To build Pontem node run the following commands:
 
 ```sh
-cargo run --release -- --dev --dev-service --tmp
+cd pontem
+make init
+make build
 ```
 
-Use `--sealing` argument to select sealing mode:
+See built binary at:
 
-1. `instant` (default). Blocks a produced automatically for each transaction
-2. `<number>`. Blocks are produced once per `number` milliseconds
+```sh
+./target/release/pontem
+```
+
+There are several options to launch Pontem local parachain:
+
+* [Using polkadot-launch with Relay Chain](#using-polkadot-launch)
+* [Manually with Relay Chain](#manually)
+* [In Dev Mode](#running-in-dev-mode)
 
 ### Using polkadot-launch
 
@@ -34,13 +44,6 @@ Install [polkadot-launch](https://github.com/paritytech/polkadot-launch).
 
 **Note:** you must have polkadot node `v0.9.11` compiled and built placed in `../polkadot/target/release/`.
 To use different localion you can modify `./launch-config.json`.
-
-Build Pontem:
-
-```sh
-cd pontem
-make build
-```
 
 Create keystore path for Pontem:
 
@@ -114,14 +117,7 @@ Launch Polkadot Relay Chain:
 ./target/release/polkadot --chain rococo-local-cfde.json --bob --tmp --port 30334 # In a separate terminal
 ```
 
-Build Pontem:
-
-```sh
-cd pontem
-make build
-```
-
-Create keystore path for Pontem:
+[Build](#build) Pontem node and then create keystore path for Pontem:
 
 ```sh
 mkdir -p ~/.pontem/keystore-1 # Base path
@@ -250,6 +246,24 @@ cat 9946.log | grep 40335 # Something like: /ip4/127.0.0.1/tcp/40335/p2p/12D3Koo
 ```
 
 Good documentation also can be found in [Moonriver/Moonbeam Docs](https://docs.moonbeam.network/staking/stake/).
+
+### Running in dev-mode
+
+There is a possibility to run a single node in development mode, without any consensus involved.
+
+Add `--dev-service` flag to `cargo run` command to run a single node with disabled consensus:
+
+**IMPORTANT NOTE:** the node with enabled `--dev-service` flag generating blocks when needed (e.g. when a new transaction appears).
+
+```sh
+./target/release/pontem --dev --dev-service --tmp
+```
+
+Use `--sealing` argument to select sealing mode:
+
+1. `instant` (default). Blocks a produced automatically for each transaction
+2. `<number>`. Blocks are produced once per `number` milliseconds
+
 
 ## Documentation
 
