@@ -91,6 +91,7 @@ polkadot-parachain = { git = 'http://github.com/paritytech/polkadot.git', branch
 pontem-runtime = { path = '../runtime' }
 sp-mvm-rpc = { path = '../pallets/sp-mvm/rpc' }
 sp-mvm-rpc-runtime = { path = '../pallets/sp-mvm/rpc/runtime' }
+primitives = { path = '../primitives' }
 
 # FIXME: You MUST set the relay chain networks you wish to target in the `features` here
 # Options are found here: https://github.com/paritytech/polkadot/blob/master/cli/Cargo.toml#L64-L71
@@ -105,7 +106,7 @@ polkadot-cli = { git = 'http://github.com/paritytech/polkadot.git', branch = 're
 [dependencies.move-vm]
 package = "mvm"
 git = "https://github.com/pontem-network/sp-move-vm.git"
-rev = "82c20397c81cfda3396e49e7898e20aeac62440a"
+rev = "892b723b75cce13509332a0d81f25f3965ac7fb0"
 default-features = false
 features = [ "move_stdlib" ]
 

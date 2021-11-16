@@ -9,11 +9,11 @@ use sp_runtime::{
 use pontem_runtime::{
     GenesisConfig, SudoConfig, SystemConfig, BalancesConfig, WASM_BINARY, ParachainInfoConfig,
     VestingConfig, MvmConfig, ParachainStakingConfig, InflationInfo, Range, AuthorFilterConfig,
-    AuthorMappingConfig, TreasuryConfig, DemocracyConfig, SchedulerConfig,
-    primitives::{AccountId, Signature, Balance},
-    constants::currency::{PONT, DECIMALS},
-    constants::SS58_PREFIX,
+    AuthorMappingConfig, TreasuryConfig, TokensConfig, DemocracyConfig, PolkadotXcmConfig,
+    SchedulerConfig,
+    constants::currency::{PONT, DECIMALS, NATIVE_SYMBOL},
 };
+use primitives::{AccountId, Signature, Balance};
 use serde::{Serialize, Deserialize};
 use serde_json::json;
 use std::include_bytes;
@@ -65,7 +65,7 @@ fn properties() -> Option<sc_chain_spec::Properties> {
     json!({
         "ss58Format": SS58_FORMAT,
         "tokenDecimals": DECIMALS,
-        "tokenSymbol": "PONT"
+        "tokenSymbol": NATIVE_SYMBOL,
     })
     .as_object()
     .cloned()
@@ -187,6 +187,7 @@ fn testnet_genesis(
     let (init_module, init_func, init_args) = build_vm_config();
 
     GenesisConfig {
+        tokens: TokensConfig { balances: vec![] },
         system: SystemConfig {
             // Add Wasm runtime to storage.
             code: wasm_binary.to_vec(),
@@ -201,6 +202,9 @@ fn testnet_genesis(
                 .collect(),
         },
         parachain_system: Default::default(),
+        polkadot_xcm: PolkadotXcmConfig {
+            safe_xcm_version: Some(2),
+        },
         parachain_info: ParachainInfoConfig { parachain_id: id },
         sudo: SudoConfig {
             // Assign network admin rights.

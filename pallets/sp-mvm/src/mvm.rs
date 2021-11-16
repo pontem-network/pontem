@@ -9,7 +9,8 @@ use crate::balance::BalancesAdapter;
 use crate::storage::*;
 
 /// Default type of Move VM implementation.
-pub type DefaultVm<S, E, R> = Mvm<StorageAdapter<S>, E, BalancesAdapter<R>>;
+pub type DefaultVm<S, E, AccountId, Currencies, CurrencyId> =
+    Mvm<StorageAdapter<S>, E, BalancesAdapter<Currencies, AccountId, CurrencyId>>;
 
 // The trait to create Move VM (without possible errors).
 pub trait CreateMoveVm<T> {
