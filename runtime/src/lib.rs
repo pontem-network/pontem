@@ -862,7 +862,7 @@ impl Convert<CurrencyId, Option<MultiLocation>> for CurrencyIdConvert {
                 (
                     Parent,
                     Junction::Parachain(ParachainInfo::get().into()),
-                    Junction::GeneralKey(NATIVE_SYMBOL.to_vec()),
+                    Junction::GeneralKey(CurrencyId::PONT.symbol()),
                 )
                     .into(),
             ),
@@ -880,7 +880,7 @@ impl Convert<MultiLocation, Option<CurrencyId>> for CurrencyIdConvert {
             MultiLocation {
                 parents: 1,
                 interior: X2(Parachain(_id), GeneralKey(key)),
-            } if key == NATIVE_SYMBOL => Some(CurrencyId::PONT),
+            } if key.to_vec() == CurrencyId::PONT.symbol() => Some(CurrencyId::PONT),
             _ => None,
         }
     }

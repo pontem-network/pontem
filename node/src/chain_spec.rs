@@ -11,7 +11,7 @@ use pontem_runtime::{
     VestingConfig, MvmConfig, ParachainStakingConfig, InflationInfo, Range, AuthorFilterConfig,
     AuthorMappingConfig, TreasuryConfig, TokensConfig, DemocracyConfig, PolkadotXcmConfig,
     SchedulerConfig,
-    constants::currency::{PONT, DECIMALS, NATIVE_SYMBOL},
+    constants::currency::{PONT, DECIMALS},
 };
 use primitives::{AccountId, Signature, Balance};
 use serde::{Serialize, Deserialize};
@@ -65,7 +65,7 @@ fn properties() -> Option<sc_chain_spec::Properties> {
     json!({
         "ss58Format": SS58_FORMAT,
         "tokenDecimals": DECIMALS,
-        "tokenSymbol": NATIVE_SYMBOL,
+        "tokenSymbol": CurrencyId::PONT.symbol(),
     })
     .as_object()
     .cloned()
