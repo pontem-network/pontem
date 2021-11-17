@@ -12,47 +12,88 @@ use scale_info::TypeInfo;
 #[cfg(feature = "std")]
 use serde::{Deserialize, Serialize};
 
-// Currencies id.
-#[derive(Encode, Decode, Eq, PartialEq, Copy, Clone, RuntimeDebug, PartialOrd, Ord, TypeInfo)]
-#[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
-pub enum CurrencyId {
-    // Relaychain's currency.
-    KSM,
-    // Our native currency.
-    PONT,
+pub type CurrencyConversionError = ();
+
+#[allow(dead_code)]
+const fn const_slice_eq(a: &[u8], b: &[u8]) -> bool {
+    let len = a.len();
+    if b.len() != len {
+        return false;
+    }
+    let mut i = 0;
+    while i < len {
+        if a[i] != b[i] {
+            return false;
+        }
+        i += 1;
+    }
+    true
 }
 
-/// Implement currencies.
-impl CurrencyId {
-    pub fn decimals(&self) -> u8 {
-        match self {
-            Self::KSM => 12,
-            Self::PONT => 10,
-        }
-    }
-
-    pub fn symbol(&self) -> Vec<u8> {
-        match self {
-            Self::KSM => b"KSM".to_vec(),
-            Self::PONT => b"PONT".to_vec(),
-        }
-    }
+macro_rules! static_assert {
+    ($cond:expr) => {
+        #[deny(const_err)]
+        const _: [(); 1] = [(); $cond as usize];
+    };
 }
 
-/// Try from.
-impl TryFrom<Vec<u8>> for CurrencyId {
-    type Error = ();
-
-    fn try_from(value: Vec<u8>) -> Result<Self, Self::Error> {
-        if value == b"PONT".to_vec() {
-            return Ok(CurrencyId::PONT);
+macro_rules! def_currencies {
+    (
+        $(#[$ty_attr:meta])*
+        $vis:vis enum $ty_name:ident {
+            $(
+                $(#[$attr:meta])*
+                $name:ident($str:literal, $decimals:expr)
+            ),*
+            $(,)?
+        }
+    ) => {
+        $(#[$ty_attr])*
+        $vis enum $ty_name {
+            $(
+                $(#[$attr])*
+                $name,
+            )*
         }
 
-        if value == b"KSM".to_vec() {
-            return Ok(CurrencyId::KSM);
+        impl $ty_name {
+            pub fn decimals(&self) -> u8 {
+                match self {
+                    $(Self::$name => $decimals,)*
+                }
+            }
+
+            pub fn symbol(&self) -> Vec<u8> {
+                match self {
+                    $(Self::$name => $str.to_vec(),)*
+                }
+            }
         }
 
-        Err(())
+        impl TryFrom<Vec<u8>> for $ty_name {
+            type Error = CurrencyConversionError;
+
+            fn try_from(v: Vec<u8>) -> Result<Self, Self::Error> {
+                match &v[..] {
+                    $($str => Ok(Self::$name),)*
+                    _ => Err(()),
+                }
+            }
+        }
+
+        $(static_assert!(const_slice_eq(stringify!($name).as_bytes(), $str));)*
+    };
+}
+
+def_currencies! {
+    /// Currencies id.
+    #[derive(Encode, Decode, Eq, PartialEq, Copy, Clone, RuntimeDebug, PartialOrd, Ord, TypeInfo)]
+    #[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
+    pub enum CurrencyId {
+        /// Relaychain's currency.
+        KSM(b"KSM", 12),
+        /// Our native currency.
+        PONT(b"PONT", 10),
     }
 }
 
