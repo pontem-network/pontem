@@ -19,7 +19,7 @@ use sp_keystore::SyncCryptoStorePtr;
 use cumulus_client_consensus_common::ParachainConsensus;
 use nimbus_primitives::NimbusId;
 use nimbus_consensus::{build_nimbus_consensus, BuildNimbusConsensusParams};
-use pontem_runtime::primitives::Block;
+use primitives::Block;
 use sc_executor::NativeElseWasmExecutor;
 
 type FullBackend = TFullBackend<Block>;

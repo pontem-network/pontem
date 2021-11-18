@@ -9,10 +9,11 @@ use sp_runtime::{
 use pontem_runtime::{
     GenesisConfig, SudoConfig, SystemConfig, BalancesConfig, WASM_BINARY, ParachainInfoConfig,
     VestingConfig, MvmConfig, ParachainStakingConfig, InflationInfo, Range, AuthorFilterConfig,
-    AuthorMappingConfig, TreasuryConfig, DemocracyConfig, SchedulerConfig,
-    primitives::{AccountId, Signature, Balance},
-    constants::currency::{PONT, DECIMALS},
+    AuthorMappingConfig, TreasuryConfig, TokensConfig, DemocracyConfig, PolkadotXcmConfig,
+    SchedulerConfig,
+    constants::currency::{PONT, DECIMALS, NATIVE_SYMBOL},
 };
+use primitives::{AccountId, Signature, Balance};
 use serde::{Serialize, Deserialize};
 use serde_json::json;
 use std::include_bytes;
@@ -20,9 +21,7 @@ use std::include_bytes;
 use nimbus_primitives::NimbusId;
 use crate::vm_config::build as build_vm_config;
 
-/// Address format for Pontem.
-/// 42 is a placeholder for any Substrate-based chain.
-/// See https://github.com/paritytech/substrate/blob/master/ss58-registry.json
+/// SS58 prefix for Pontem address.
 const SS58_FORMAT: u8 = 42;
 
 /// Specialized `ChainSpec`. This is a specialization of the general Substrate ChainSpec type.
@@ -66,7 +65,7 @@ fn properties() -> Option<sc_chain_spec::Properties> {
     json!({
         "ss58Format": SS58_FORMAT,
         "tokenDecimals": DECIMALS,
-        "tokenSymbol": "PONT"
+        "tokenSymbol": NATIVE_SYMBOL,
     })
     .as_object()
     .cloned()
@@ -188,6 +187,7 @@ fn testnet_genesis(
     let (init_module, init_func, init_args) = build_vm_config();
 
     GenesisConfig {
+        tokens: TokensConfig { balances: vec![] },
         system: SystemConfig {
             // Add Wasm runtime to storage.
             code: wasm_binary.to_vec(),
@@ -202,6 +202,9 @@ fn testnet_genesis(
                 .collect(),
         },
         parachain_system: Default::default(),
+        polkadot_xcm: PolkadotXcmConfig {
+            safe_xcm_version: Some(2),
+        },
         parachain_info: ParachainInfoConfig { parachain_id: id },
         sudo: SudoConfig {
             // Assign network admin rights.
@@ -254,19 +257,19 @@ pub fn pontem_inflation_config() -> InflationInfo<Balance> {
         // How much staked PONTs we expect.
         expect: Range {
             min: 10_000_000 * PONT, // We expect to have staked at least 10M PONT coins.
-            ideal: 25_000_000 * PONT, // We expect to have staked ideal 25M PONT coins.
+            ideal: 20_000_000 * PONT, // We expect to have staked ideal 20M PONT coins.
             max: 50_000_000 * PONT, // We expect to have staked maximum 50M PONT coins.
         },
         annual: Range {
-            min: Perbill::from_percent(10), // We expect minimum inflation is 10%.
-            ideal: Perbill::from_percent(15), // We expect ideal inflation is 15%.
-            max: Perbill::from_percent(20), // We expect max inflation is 20%.
+            min: Perbill::from_percent(4),   // We expect minimum inflation is 4%.
+            ideal: Perbill::from_percent(4), // We expect ideal inflation is 4%.
+            max: Perbill::from_percent(5),   // We expect max inflation is 5%.
         },
         // 8766 rounds (hours) in a year
         round: Range {
-            min: Perbill::from_parts(Perbill::from_percent(10).deconstruct() / 8766),
-            ideal: Perbill::from_parts(Perbill::from_percent(15).deconstruct() / 8766),
-            max: Perbill::from_parts(Perbill::from_percent(20).deconstruct() / 8766),
+            min: Perbill::from_parts(Perbill::from_percent(4).deconstruct() / 8766),
+            ideal: Perbill::from_parts(Perbill::from_percent(4).deconstruct() / 8766),
+            max: Perbill::from_parts(Perbill::from_percent(5).deconstruct() / 8766),
         },
     }
 }
