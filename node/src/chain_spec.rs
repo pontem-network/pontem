@@ -11,9 +11,9 @@ use pontem_runtime::{
     VestingConfig, MvmConfig, ParachainStakingConfig, InflationInfo, Range, AuthorFilterConfig,
     AuthorMappingConfig, TreasuryConfig, TokensConfig, DemocracyConfig, PolkadotXcmConfig,
     SchedulerConfig,
-    constants::{SS58_PREFIX, currency::PONT},
 };
 use primitives::{currency::CurrencyId, AccountId, Signature, Balance};
+use constants::{SS58_PREFIX, currency::PONT};
 use serde::{Serialize, Deserialize};
 use serde_json::json;
 use std::{include_bytes, str::from_utf8};

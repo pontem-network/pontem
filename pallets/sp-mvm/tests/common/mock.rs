@@ -16,11 +16,11 @@ use frame_support::traits::{OnInitialize, OnFinalize};
 use sp_runtime::traits::{BlakeTwo256, IdentityLookup, ConvertInto};
 use sp_runtime::{testing::Header};
 use orml_traits::parameter_type_with_key;
+use constants::SS58_PREFIX;
 
 pub use primitives::currency::CurrencyId;
 use module_currencies::BasicCurrencyAdapter;
 
-use super::addr::SS58_PREFIX;
 use super::addr::origin_ps_acc;
 use super::addr::root_ps_acc;
 use super::addr::alice_public_key;

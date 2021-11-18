@@ -72,7 +72,6 @@ pub use sp_mvm::gas::{GasWeightMapping};
 pub use sp_mvm_rpc_runtime::types::MVMApiEstimation;
 pub use parachain_staking::{InflationInfo, Range};
 
-pub mod constants;
 use constants::{SS58_PREFIX, currency::*, time::*};
 use primitives::{*, currency::CurrencyId, Index};
 

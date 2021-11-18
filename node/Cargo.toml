@@ -92,6 +92,8 @@ pontem-runtime = { path = '../runtime' }
 sp-mvm-rpc = { path = '../pallets/sp-mvm/rpc' }
 sp-mvm-rpc-runtime = { path = '../pallets/sp-mvm/rpc/runtime' }
 primitives = { path = '../primitives' }
+constants = { path = '../constants' }
+
 
 # FIXME: You MUST set the relay chain networks you wish to target in the `features` here
 # Options are found here: https://github.com/paritytech/polkadot/blob/master/cli/Cargo.toml#L64-L71
