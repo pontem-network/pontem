@@ -17,10 +17,9 @@
 //! Test utilities
 use crate as stake;
 use crate::{pallet, AwardedPts, Config, InflationInfo, Points, Range};
-use frame_support::traits::Everything;
 use frame_support::{
     construct_runtime, parameter_types,
-    traits::{GenesisBuild, OnFinalize, OnInitialize},
+    traits::{Everything, GenesisBuild, OnFinalize, OnInitialize},
     weights::Weight,
 };
 use sp_core::H256;

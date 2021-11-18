@@ -18,10 +18,10 @@
 use crate::pallet::{BalanceOf, Config, Pallet};
 use frame_support::traits::Currency;
 use parity_scale_codec::{Decode, Encode};
+use scale_info::TypeInfo;
 #[cfg(feature = "std")]
 use serde::{Deserialize, Serialize};
 use sp_runtime::PerThing;
-use scale_info::TypeInfo;
 use sp_runtime::{Perbill, RuntimeDebug};
 use substrate_fixed::transcendental::pow as floatpow;
 use substrate_fixed::types::{I32F32, I64F64};

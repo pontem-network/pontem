@@ -14,10 +14,10 @@ for now it is one-way.
 
 ## Modifications
 
-No modifications were made at the moment. 
-Used commit [`ac7b649e2fcab`](https://github.com/PureStake/moonbeam/tree/ac7b649e2fcabde78d86db0a37445c2838d6ea85).
+Replaced `moonbeam-polkadot-v*` dependencies with original `polkadot-v*`.
+
+Used commit [`e351d1b `](https://github.com/PureStake/moonbeam/tree/0da382b6bc26aa23a19e3af1201caec262f1288c).
 
 ## License
 
 Licensed under GNU General Public License version 3.
-
