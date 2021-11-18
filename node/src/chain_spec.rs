@@ -11,18 +11,15 @@ use pontem_runtime::{
     VestingConfig, MvmConfig, ParachainStakingConfig, InflationInfo, Range, AuthorFilterConfig,
     AuthorMappingConfig, TreasuryConfig, TokensConfig, DemocracyConfig, PolkadotXcmConfig,
     SchedulerConfig,
-    constants::currency::{PONT, DECIMALS, NATIVE_SYMBOL},
 };
-use primitives::{AccountId, Signature, Balance};
+use primitives::{currency::CurrencyId, AccountId, Signature, Balance};
+use constants::{SS58_PREFIX, currency::PONT};
 use serde::{Serialize, Deserialize};
 use serde_json::json;
-use std::include_bytes;
+use std::{include_bytes, str::from_utf8};
 
 use nimbus_primitives::NimbusId;
 use crate::vm_config::build as build_vm_config;
-
-/// SS58 prefix for Pontem address.
-const SS58_FORMAT: u8 = 42;
 
 /// Specialized `ChainSpec`. This is a specialization of the general Substrate ChainSpec type.
 pub type ChainSpec = sc_service::GenericChainSpec<GenesisConfig, Extensions>;
@@ -62,10 +59,12 @@ where
 }
 
 fn properties() -> Option<sc_chain_spec::Properties> {
+    let currency = CurrencyId::default();
+
     json!({
-        "ss58Format": SS58_FORMAT,
-        "tokenDecimals": DECIMALS,
-        "tokenSymbol": NATIVE_SYMBOL,
+        "ss58Format": SS58_PREFIX,
+        "tokenDecimals": currency.decimals(),
+        "tokenSymbol": from_utf8(&currency.symbol()).unwrap(),
     })
     .as_object()
     .cloned()

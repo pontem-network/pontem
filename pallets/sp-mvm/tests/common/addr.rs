@@ -7,21 +7,21 @@ use move_core_types::account_address::AccountAddress;
 pub use move_core_types::language_storage::CORE_CODE_ADDRESS as ROOT_ADDR;
 use sp_mvm::addr::account_to_account_address;
 
-pub const BOB_SS58: &str = "5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty";
-pub const ALICE_SS58: &str = "5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY";
+pub const BOB_SS58: &str = "gkNW9pAcCHxZrnoVkhLkEQtsLsW5NWTC75cdAdxAMs9LNYCYg";
+pub const ALICE_SS58: &str = "gkQ5K6EnLRgZkwozG8GiBAEnJyM6FxzbSaSmVhKJ2w8FcK7ih";
 
-/// Returns pk for //Bob (5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty)
+/// Returns pk for //Bob (gkNW9pAcCHxZrnoVkhLkEQtsLsW5NWTC75cdAdxAMs9LNYCYg)
 pub fn origin_ps_acc() -> Public {
-    let pk = Public::from_ss58check(BOB_SS58).unwrap();
-    pk
+    let pk = Public::from_ss58check_with_version(BOB_SS58).unwrap();
+    pk.0
 }
 
 pub fn bob_public_key() -> Public {
-    Public::from_ss58check(BOB_SS58).unwrap()
+    Public::from_ss58check_with_version(BOB_SS58).unwrap().0
 }
 
 pub fn alice_public_key() -> Public {
-    Public::from_ss58check(ALICE_SS58).unwrap()
+    Public::from_ss58check_with_version(ALICE_SS58).unwrap().0
 }
 
 /// Returns `AccountAddress` for Bob

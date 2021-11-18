@@ -16,6 +16,7 @@ use frame_support::traits::{OnInitialize, OnFinalize};
 use sp_runtime::traits::{BlakeTwo256, IdentityLookup, ConvertInto};
 use sp_runtime::{testing::Header};
 use orml_traits::parameter_type_with_key;
+use constants::SS58_PREFIX;
 
 pub use primitives::currency::CurrencyId;
 use module_currencies::BasicCurrencyAdapter;
@@ -57,7 +58,7 @@ frame_support::construct_runtime!(
 
 parameter_types! {
     pub const BlockHashCount: u64 = 250;
-    pub const SS58Prefix: u8 = 42;
+    pub const SS58Prefix: u8 = SS58_PREFIX;
 }
 
 pub type AccountId = sp_core::sr25519::Public;

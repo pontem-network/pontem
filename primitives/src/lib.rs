@@ -1,13 +1,15 @@
 #![cfg_attr(not(feature = "std"), no_std)]
-
+/// Primitives types for Pontem runtime.
+/// Contains runtime primitvies and types to resolve currrencies.
 use sp_runtime::{generic, MultiSignature, OpaqueExtrinsic as UncheckedExtrinsic};
 use sp_runtime::traits::{Verify, IdentifyAccount, BlakeTwo256};
 
 pub mod currency;
 
-/// TODO
+/// Block type.
 pub type Block = generic::Block<Header, UncheckedExtrinsic>;
-/// TODO
+
+/// Block header type.
 pub type Header = generic::Header<BlockNumber, BlakeTwo256>;
 
 /// An index to a block.
