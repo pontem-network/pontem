@@ -1,11 +1,12 @@
 {
   inputs = {
     fenix.url = github:nix-community/fenix;
-    naersk.url = github:nmattia/naersk;
+    naersk.url = github:nix-community/naersk;
     utils.url = github:numtide/flake-utils;
     move-tools.url = github:pontem-network/move-tools;
 
     nixpkgs.follows = "move-tools/nixpkgs";
+    # nixpkgs.url = "/home/cab/data/cab/nixpkgs";
     naersk.follows = "move-tools/naersk";
     fenix.follows = "move-tools/fenix";
   };
