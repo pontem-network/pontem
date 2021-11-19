@@ -145,6 +145,7 @@ macro_rules! construct_async_run {
 /// Parse and run command line arguments
 pub fn run() -> sc_cli::Result<()> {
     let cli = Cli::from_args();
+    set_default_ss58_version();
 
     match &cli.subcommand {
         Some(Subcommand::Key(cmd)) => cmd.run(&cli),
@@ -153,22 +154,16 @@ pub fn run() -> sc_cli::Result<()> {
             runner.sync_run(|config| cmd.run(config.chain_spec, config.network))
         }
         Some(Subcommand::CheckBlock(cmd)) => {
-            set_default_ss58_version();
-
             construct_async_run!(|components, cli, cmd, config| {
                 Ok(cmd.run(components.client, components.import_queue))
             })
         }
         Some(Subcommand::ExportBlocks(cmd)) => {
-            set_default_ss58_version();
-
             construct_async_run!(|components, cli, cmd, config| {
                 Ok(cmd.run(components.client, config.database))
             })
         }
         Some(Subcommand::ExportState(cmd)) => {
-            set_default_ss58_version();
-
             construct_async_run!(|components, cli, cmd, config| {
                 Ok(cmd.run(components.client, config.chain_spec))
             })
@@ -196,8 +191,6 @@ pub fn run() -> sc_cli::Result<()> {
             Ok(cmd.run(components.client, components.backend))
         }),
         Some(Subcommand::Benchmark(cmd)) => {
-            set_default_ss58_version();
-
             if cfg!(feature = "runtime-benchmarks") {
                 let runner = cli.create_runner(cmd)?;
 
@@ -211,8 +204,6 @@ pub fn run() -> sc_cli::Result<()> {
             }
         }
         Some(Subcommand::ExportGenesisState(params)) => {
-            set_default_ss58_version();
-
             let mut builder = sc_cli::LoggerBuilder::new("");
             builder.with_profiling(sc_tracing::TracingReceiver::Log, "");
             let _ = builder.init();
@@ -237,8 +228,6 @@ pub fn run() -> sc_cli::Result<()> {
             Ok(())
         }
         Some(Subcommand::ExportGenesisWasm(params)) => {
-            set_default_ss58_version();
-
             let mut builder = sc_cli::LoggerBuilder::new("");
             builder.with_profiling(sc_tracing::TracingReceiver::Log, "");
             let _ = builder.init();
@@ -261,8 +250,6 @@ pub fn run() -> sc_cli::Result<()> {
         }
         None => {
             let runner = cli.create_runner(&cli.run.normalize())?;
-            set_default_ss58_version();
-
             runner.run_node_until_exit(|config| async move {
                 if cli.dev_service {
                     let author_id =
