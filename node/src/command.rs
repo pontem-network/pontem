@@ -28,12 +28,19 @@ use sc_cli::{
 use sc_service::config::{PrometheusConfig, BasePath};
 use pontem_runtime::Block;
 use cumulus_client_service::genesis::generate_genesis_block;
-use sp_core::hexdisplay::HexDisplay;
+use sp_core::{
+    hexdisplay::HexDisplay,
+    crypto::{self, Ss58AddressFormat},
+};
 use polkadot_parachain::primitives::AccountIdConversion;
 use std::{io::Write, net::SocketAddr};
 use sp_runtime::traits::Block as _;
 use log::info;
 use codec::Encode;
+
+fn set_default_ss58_version() {
+    crypto::set_default_ss58_version(Ss58AddressFormat::Custom(constants::SS58_PREFIX.into()));
+}
 
 fn load_spec(
     id: &str,
@@ -138,6 +145,7 @@ macro_rules! construct_async_run {
 /// Parse and run command line arguments
 pub fn run() -> sc_cli::Result<()> {
     let cli = Cli::from_args();
+    set_default_ss58_version();
 
     match &cli.subcommand {
         Some(Subcommand::Key(cmd)) => cmd.run(&cli),
@@ -242,7 +250,6 @@ pub fn run() -> sc_cli::Result<()> {
         }
         None => {
             let runner = cli.create_runner(&cli.run.normalize())?;
-
             runner.run_node_until_exit(|config| async move {
                 if cli.dev_service {
                     let author_id =
