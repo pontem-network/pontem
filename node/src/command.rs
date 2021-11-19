@@ -211,9 +211,7 @@ pub fn run() -> sc_cli::Result<()> {
             }
         }
         Some(Subcommand::ExportGenesisState(params)) => {
-            sp_core::crypto::set_default_ss58_version(
-                sp_core::crypto::Ss58AddressFormat::Custom(105),
-            );
+            set_default_ss58_version();
 
             let mut builder = sc_cli::LoggerBuilder::new("");
             builder.with_profiling(sc_tracing::TracingReceiver::Log, "");
@@ -239,9 +237,7 @@ pub fn run() -> sc_cli::Result<()> {
             Ok(())
         }
         Some(Subcommand::ExportGenesisWasm(params)) => {
-            sp_core::crypto::set_default_ss58_version(
-                sp_core::crypto::Ss58AddressFormat::Custom(105),
-            );
+            set_default_ss58_version();
 
             let mut builder = sc_cli::LoggerBuilder::new("");
             builder.with_profiling(sc_tracing::TracingReceiver::Log, "");
