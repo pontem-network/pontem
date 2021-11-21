@@ -7935,6 +7935,7 @@ dependencies = [
 name = "primitives"
 version = "3.0.0"
 dependencies = [
+ "frame-support",
  "parity-scale-codec",
  "scale-info",
  "serde",
