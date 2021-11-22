@@ -8,6 +8,7 @@ include!(concat!(env!("OUT_DIR"), "/wasm_binary.rs"));
 
 use sp_std::prelude::*;
 use sp_core::OpaqueMetadata;
+use core::convert::TryFrom;
 use sp_runtime::{
     ApplyExtrinsicResult, create_runtime_str, generic, impl_opaque_keys,
     traits::{AccountIdLookup, BlakeTwo256, Block as BlockT, Convert, ConvertInto},
@@ -809,7 +810,6 @@ impl GasWeightMapping for MoveVMGasWeightMapping {
     }
 
     fn weight_to_gas(weight: Weight) -> u64 {
-        use core::convert::TryFrom;
         u64::try_from(weight.wrapping_div(WEIGHT_PER_GAS)).unwrap_or(u32::MAX as u64)
     }
 }
@@ -893,8 +893,6 @@ impl Convert<CurrencyId, Option<MultiLocation>> for CurrencyIdConvert {
 //if key.to_vec() == CurrencyId::PONT.symbol() => Some(CurrencyId::PONT),
 impl Convert<MultiLocation, Option<CurrencyId>> for CurrencyIdConvert {
     fn convert(location: MultiLocation) -> Option<CurrencyId> {
-        use std::convert::TryFrom;
-
         match location {
             MultiLocation {
                 parents: 1,
