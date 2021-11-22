@@ -66,13 +66,14 @@ use frame_system::{
     EnsureRoot, RawOrigin,
     limits::{BlockLength, BlockWeights},
 };
+use polkadot_primitives::v1::Id as ParaId;
 
 /// Import the Move-pallet.
 pub use sp_mvm::gas::{GasWeightMapping};
 pub use sp_mvm_rpc_runtime::types::MVMApiEstimation;
 pub use parachain_staking::{InflationInfo, Range};
 
-use constants::{SS58_PREFIX, currency::*, time::*};
+use constants::{SS58_PREFIX, currency::*, time::*, parachains};
 use primitives::{*, currency::CurrencyId, Index};
 
 use module_currencies::BasicCurrencyAdapter;
@@ -342,7 +343,7 @@ impl pallet_timestamp::Config for Runtime {
 }
 
 parameter_types! {
-    pub const ExistentialDeposit: u64 = PONT_EXISTENTIAL_DEPOSIT;
+    pub ExistentialDeposit: u64 = get_exist_deposit(&CurrencyId::default());
     pub const TransferFee: u64 = 1 * MILLIUNIT;
     pub const CreationFee: u64 = 1 * MILLIUNIT;
     pub const TransactionByteFee: u64 = 1 * MILLIUNIT;
@@ -653,6 +654,13 @@ impl WeightTrader for SimpleWeightTrader {
                     .clone()
                     .into_multiasset(Fungibility::Fungible(fee as u128))
             }
+            Some(CurrencyId::KAR) | Some(CurrencyId::KUSD) | Some(CurrencyId::LKSM) => {
+                use frame_support::weights::WeightToFeePolynomial;
+                let fee = parachains::karura::WeightToFee::calc(&weight);
+                asset_id
+                    .clone()
+                    .into_multiasset(Fungibility::Fungible(fee as u128))
+            }
             None => asset_id
                 .clone()
                 .into_multiasset(Fungibility::Fungible(weight as u128)),
@@ -677,6 +685,11 @@ impl WeightTrader for SimpleWeightTrader {
             Some(CurrencyId::KSM) => {
                 use frame_support::weights::WeightToFeePolynomial;
                 let fee = kusama::KusamaWeightToFee::calc(&weight);
+                fee as u128
+            }
+            Some(CurrencyId::KAR) | Some(CurrencyId::KUSD) | Some(CurrencyId::LKSM) => {
+                use frame_support::weights::WeightToFeePolynomial;
+                let fee = parachains::karura::WeightToFee::calc(&weight);
                 fee as u128
             }
             None => weight as u128,
@@ -861,16 +874,27 @@ impl Convert<CurrencyId, Option<MultiLocation>> for CurrencyIdConvert {
                 (
                     Parent,
                     Junction::Parachain(ParachainInfo::get().into()),
-                    Junction::GeneralKey(CurrencyId::PONT.symbol()),
+                    Junction::GeneralKey(id.symbol()),
                 )
                     .into(),
+            ),
+            CurrencyId::KAR | CurrencyId::KUSD | CurrencyId::LKSM => Some(
+                (
+                    Parent,
+                    Junction::Parachain(parachains::karura::CHAIN_ID.into()),
+                    Junction::GeneralKey(id.symbol())
+                )
+                    .into()
             ),
         }
     }
 }
 
-impl Convert<MultiLocation, Option<CurrencyId>> for CurrencyIdConvert {
+//if key.to_vec() == CurrencyId::PONT.symbol() => Some(CurrencyId::PONT),
+impl Convert<MultiLocation, Option<CurrencyId>> for CurrencyIdConvert {    
     fn convert(location: MultiLocation) -> Option<CurrencyId> {
+        use std::convert::TryFrom;
+
         match location {
             MultiLocation {
                 parents: 1,
@@ -878,8 +902,23 @@ impl Convert<MultiLocation, Option<CurrencyId>> for CurrencyIdConvert {
             } => Some(CurrencyId::KSM),
             MultiLocation {
                 parents: 1,
-                interior: X2(Parachain(_id), GeneralKey(key)),
-            } if key.to_vec() == CurrencyId::PONT.symbol() => Some(CurrencyId::PONT),
+                interior: X2(Parachain(id), GeneralKey(key)),
+            } => {
+                match id {
+                    id if ParaId::from(id) == ParachainInfo::get() => {
+                        match key {
+                            key if key == CurrencyId::default().symbol() => Some(CurrencyId::default()),
+                            _ => None,
+                        }
+                    },
+                    parachains::karura::CHAIN_ID => {
+                        CurrencyId::try_from(key)
+                            .map(|currency_id| Some(currency_id))
+                            .unwrap_or(None)
+                    },
+                    _ => None
+                }
+            }
             _ => None,
         }
     }
@@ -901,10 +940,7 @@ impl Convert<MultiAsset, Option<CurrencyId>> for CurrencyIdConvert {
 
 parameter_type_with_key! {
     pub ExistentialDeposits: |currency_id: CurrencyId| -> Balance {
-        match currency_id {
-            CurrencyId::PONT => PONT_EXISTENTIAL_DEPOSIT,
-            CurrencyId::KSM  => KSM_EXISTENTIAL_DEPOSIT
-        }
+        get_exist_deposit(currency_id)
     };
 }
 
