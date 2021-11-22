@@ -57,9 +57,9 @@ pub mod karura {
         kar_per_second() / 50
     }
 
-	#[test]
-	fn test_karura_chain_id() {
-		// Should be always 2000.
-		assert_eq!(CHAIN_ID, 2000); 
-	}
+    #[test]
+    fn test_karura_chain_id() {
+        // Should be always 2000.
+        assert_eq!(CHAIN_ID, 2000);
+    }
 }
