@@ -8,10 +8,15 @@ repository = 'https://github.com/pontem-network/pontem/'
 version = '3.0.0'
 
 [dependencies]
+smallvec = "1.4.0"
 primitives = { path = "../primitives", default-features = false }
+frame-support = { default-features = false, git = 'http://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.11' }
+sp-runtime = { default-features = false, git = 'http://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.11' }
 
 [features]
 default = ['std']
 std = [
     "primitives/std",
+    "frame-support/std",
+    "sp-runtime/std",
 ]
