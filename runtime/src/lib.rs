@@ -882,16 +882,16 @@ impl Convert<CurrencyId, Option<MultiLocation>> for CurrencyIdConvert {
                 (
                     Parent,
                     Junction::Parachain(parachains::karura::CHAIN_ID.into()),
-                    Junction::GeneralKey(id.symbol())
+                    Junction::GeneralKey(id.symbol()),
                 )
-                    .into()
+                    .into(),
             ),
         }
     }
 }
 
 //if key.to_vec() == CurrencyId::PONT.symbol() => Some(CurrencyId::PONT),
-impl Convert<MultiLocation, Option<CurrencyId>> for CurrencyIdConvert {    
+impl Convert<MultiLocation, Option<CurrencyId>> for CurrencyIdConvert {
     fn convert(location: MultiLocation) -> Option<CurrencyId> {
         use std::convert::TryFrom;
 
@@ -903,22 +903,16 @@ impl Convert<MultiLocation, Option<CurrencyId>> for CurrencyIdConvert {
             MultiLocation {
                 parents: 1,
                 interior: X2(Parachain(id), GeneralKey(key)),
-            } => {
-                match id {
-                    id if ParaId::from(id) == ParachainInfo::get() => {
-                        match key {
-                            key if key == CurrencyId::default().symbol() => Some(CurrencyId::default()),
-                            _ => None,
-                        }
-                    },
-                    parachains::karura::CHAIN_ID => {
-                        CurrencyId::try_from(key)
-                            .map(|currency_id| Some(currency_id))
-                            .unwrap_or(None)
-                    },
-                    _ => None
-                }
-            }
+            } => match id {
+                id if ParaId::from(id) == ParachainInfo::get() => match key {
+                    key if key == CurrencyId::default().symbol() => Some(CurrencyId::default()),
+                    _ => None,
+                },
+                parachains::karura::CHAIN_ID => CurrencyId::try_from(key)
+                    .map(|currency_id| Some(currency_id))
+                    .unwrap_or(None),
+                _ => None,
+            },
             _ => None,
         }
     }

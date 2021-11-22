@@ -62,7 +62,7 @@ impl TryFrom<Vec<u8>> for CurrencyId {
             v if v == CurrencyId::KAR.symbol() => Ok(CurrencyId::KAR),
             v if v == CurrencyId::KUSD.symbol() => Ok(CurrencyId::KUSD),
             v if v == CurrencyId::LKSM.symbol() => Ok(CurrencyId::LKSM),
-            _ => Err(())
+            _ => Err(()),
         }
     }
 }
@@ -103,10 +103,25 @@ fn test_symbols() {
 #[test]
 /// Test try from Vec<u8>.
 fn test_try_from() {
-    assert_eq!(CurrencyId::try_from(b"PONT".to_vec()).unwrap(), CurrencyId::PONT);
-    assert_eq!(CurrencyId::try_from(b"KSM".to_vec()).unwrap(), CurrencyId::KSM);
-    assert_eq!(CurrencyId::try_from(b"KAR".to_vec()).unwrap(), CurrencyId::KAR);
-    assert_eq!(CurrencyId::try_from(b"KUSD".to_vec()).unwrap(), CurrencyId::KUSD);
-    assert_eq!(CurrencyId::try_from(b"LKSM".to_vec()).unwrap(), CurrencyId::LKSM);
+    assert_eq!(
+        CurrencyId::try_from(b"PONT".to_vec()).unwrap(),
+        CurrencyId::PONT
+    );
+    assert_eq!(
+        CurrencyId::try_from(b"KSM".to_vec()).unwrap(),
+        CurrencyId::KSM
+    );
+    assert_eq!(
+        CurrencyId::try_from(b"KAR".to_vec()).unwrap(),
+        CurrencyId::KAR
+    );
+    assert_eq!(
+        CurrencyId::try_from(b"KUSD".to_vec()).unwrap(),
+        CurrencyId::KUSD
+    );
+    assert_eq!(
+        CurrencyId::try_from(b"LKSM".to_vec()).unwrap(),
+        CurrencyId::LKSM
+    );
     assert_eq!(CurrencyId::try_from(b"UNKNOWN".to_vec()), Err(()));
 }
