@@ -103,12 +103,10 @@ fn test_symbols() {
 #[test]
 /// Test try from Vec<u8>.
 fn test_try_from() {
-    use frame_support::assert_err;
-
     assert_eq!(CurrencyId::try_from(b"PONT".to_vec()).unwrap(), CurrencyId::PONT);
     assert_eq!(CurrencyId::try_from(b"KSM".to_vec()).unwrap(), CurrencyId::KSM);
     assert_eq!(CurrencyId::try_from(b"KAR".to_vec()).unwrap(), CurrencyId::KAR);
     assert_eq!(CurrencyId::try_from(b"KUSD".to_vec()).unwrap(), CurrencyId::KUSD);
     assert_eq!(CurrencyId::try_from(b"LKSM".to_vec()).unwrap(), CurrencyId::LKSM);
-    assert_err!(CurrencyId::try_from(b"UNKNOWN".to_vec()), ());
+    assert_eq!(CurrencyId::try_from(b"UNKNOWN".to_vec()), Err(()));
 }

@@ -15,9 +15,6 @@ sp-std = { default-features = false, git = 'http://github.com/paritytech/substra
 sp-core = { default-features = false, git = 'http://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.11' }
 sp-runtime = { default-features = false, git = 'http://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.11' }
 
-[dev-dependencies]
-frame-support = { default-features = false, git = 'http://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.11' }
-
 [features]
 default = ['std']
 std = [
@@ -27,5 +24,4 @@ std = [
     "sp-core/std",
     "sp-std/std",
     "sp-runtime/std",
-    "frame-support/std",
 ]
