@@ -281,7 +281,7 @@ The XCM implemented includes assets transferring between Parachains and Relaycha
 
 In case you want to run node with dev Relaychain (e.g. using `polkadot-launch`), after launching Relaychain send transaction using **sudo** account:
 
-1. Navigate to [sudo](https://polkadot.js.org/apps/?rpc=ws://127.0.0.1:9946#/sudo).
+1. Navigate to [sudo](https://polkadot.js.org/apps/?rpc=ws://127.0.0.1:9944#/sudo).
 2. Choose `xcmPallet` pallet.
 3. Choose `forceDefaultXcmVersion(maybeXcmVersion)` function.
 4. Enable option `maybeXcmVersion`.
