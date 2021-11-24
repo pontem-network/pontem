@@ -37,7 +37,7 @@
         };
 
         buildComponents = [ "cargo" "llvm-tools-preview" "rust-std" "rustc" "rustc-dev" ];
-        devComponents = buildComponents ++ [ "clippy-preview" "rustfmt-preview" "rust-src" ];
+        devComponents = buildComponents ++ [ "clippy-preview" "rustfmt-preview" "rust-src" "rls-preview" "rust-analyzer-preview" ];
 
         devToolchain = let
             t = fenixArch.toolchainOf devToolchainV;
@@ -46,17 +46,22 @@
             (rustTargets.wasm32-unknown-unknown.toolchainOf devToolchainV).toolchain
         ];
 
-        naersk-lib =
-          let
-            buildToolchain = fenixArch.combine [
-                ((fenixArch.toolchainOf buildToolchainV).withComponents buildComponents)
-                (rustTargets.wasm32-unknown-unknown.toolchainOf buildToolchainV).toolchain
-            ];
-          in
-            naersk.lib.${system}.override {
-              cargo = buildToolchain;
-              rustc = buildToolchain;
-            };
+        inherit (
+            let
+              buildToolchain = fenixArch.combine [
+                  ((fenixArch.toolchainOf buildToolchainV).withComponents buildComponents)
+                  (rustTargets.wasm32-unknown-unknown.toolchainOf buildToolchainV).toolchain
+              ];
+              tch = {
+                cargo = buildToolchain;
+                rustc = buildToolchain;
+              };
+            in
+              {
+                naersk = naersk.lib.${system}.override tch;
+                rustPlatform = pkgs.makeRustPlatform tch;
+              }
+          ) naersk-lib rustPlatform;
 
       in {
 
@@ -78,21 +83,55 @@
           ROCKSDB_LIB_DIR = "${rocksdb}/lib";
         };
 
-        defaultPackage = naersk-lib.buildPackage (with pkgs; {
-          name = "pontem-node";
-          src = ./.;
-          targets = [ "pontem-node" ];
-          buildInputs = [
-            protobuf openssl pre-commit pkgconfig
-            llvmPackagesR.clang
-            dove
-          ];
+        boop = builtins.fetchGit {
+          url = "https://github.com/purestake/cumulus";
+          ref = "nimbus-polkadot-v0.9.11";
+          rev = "de3a9302ba0b7c64353da769615c0b19397255dd";
+        };
 
-          PROTOC = "${protobuf}/bin/protoc";
-          LLVM_CONFIG_PATH="${llvmPackagesR.llvm}/bin/llvm-config";
-          LIBCLANG_PATH="${llvmPackagesR.libclang.lib}/lib";
-          ROCKSDB_LIB_DIR = "${rocksdb}/lib";
-        });
+        # altPackage = with pkgs; rustPlatform.buildRustPackage {
+        #   pname = "pontem-node";
+        #   version = "0.0.1";
+        #   src = ./.;
+        #   cargoLock = {
+        #     lockFile = ./Cargo.lock;
+        #     outputHashes = {
+        #       "bcs-0.1.1" = nixpkgs.lib.fakeSha256;
+        #       "beefy-gadget-4.0.0-dev" = nixpkgs.lib.fakeSha256;
+        #       "bp-header-chain-0.1.0" = nixpkgs.lib.fakeSha256;
+        #       "cumulus-client-cli-0.1.0" = nixpkgs.lib.fakeSha256;
+        #     };
+        #   };
+
+        #   targets = [ "pontem-node" ];
+
+        #   buildInputs = [
+        #     protobuf openssl pre-commit pkgconfig
+        #     llvmPackagesR.clang
+        #     dove
+        #   ];
+
+        #   PROTOC = "${protobuf}/bin/protoc";
+        #   LLVM_CONFIG_PATH="${llvmPackagesR.llvm}/bin/llvm-config";
+        #   LIBCLANG_PATH="${llvmPackagesR.libclang.lib}/lib";
+        #   ROCKSDB_LIB_DIR = "${rocksdb}/lib";
+        # };
+
+        # defaultPackage = with pkgs; naersk-lib.buildPackage {
+        #   name = "pontem-node";
+        #   src = ./.;
+        #   targets = [ "pontem-node" ];
+        #   buildInputs = [
+        #     protobuf openssl pre-commit pkgconfig
+        #     llvmPackagesR.clang
+        #     dove
+        #   ];
+
+        #   PROTOC = "${protobuf}/bin/protoc";
+        #   LLVM_CONFIG_PATH="${llvmPackagesR.llvm}/bin/llvm-config";
+        #   LIBCLANG_PATH="${llvmPackagesR.libclang.lib}/lib";
+        #   ROCKSDB_LIB_DIR = "${rocksdb}/lib";
+        # };
 
       });
 
