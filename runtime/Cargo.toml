@@ -87,7 +87,6 @@ orml-unknown-tokens = { default-features = false, git = 'https://github.com/open
 
 # local dependencies
 sp-mvm = { path = '../pallets/sp-mvm', default-features = false }
-pallet-multisig = { default-features = false, path = '../pallets/multisig' }
 sp-mvm-rpc-runtime = { path = '../pallets/sp-mvm/rpc/runtime', default-features = false }
 parachain-staking = { path = '../pallets/parachain-staking', default-features = false }
 pallet-author-mapping = { path = "../pallets/author-mapping", default-features = false }

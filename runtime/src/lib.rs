@@ -761,19 +761,11 @@ parameter_types! {
 
 impl pallet_multisig::Config for Runtime {
     type Event = Event;
-
     type Call = Call;
-
-    type MyOrigin = Origin;
-
     type Currency = Balances;
-
     type MaxSignatories = MaxSigners;
-
     type DepositBase = MultisigCostPerSig;
-
     type DepositFactor = MultisigCostPerFact;
-
     type WeightInfo = ();
 }
 
@@ -1036,7 +1028,7 @@ construct_runtime!(
         // Move VM
         Mvm: sp_mvm::{Pallet, Call, Storage, Config<T>, Event<T>},
         Groupsign: groupsign::{Pallet, Call, Origin<T>, Event<T>},
-        MultiSig: pallet_multisig::{Pallet, Call, Origin<T>, Storage, Event<T>},
+        MultiSig: pallet_multisig::{Pallet, Call, Storage, Event<T>},
     }
 );
 

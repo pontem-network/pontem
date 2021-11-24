@@ -42,15 +42,26 @@ pub mod pallet {
             + Dispatchable<Origin = Self::Origin>
             + GetDispatchInfo
             + From<frame_system::Call<Self>>;
-        
-        
+
         /// Public key type.
         /// Inspiration - https://github.com/JoshOrndorff/recipes/issues/142
-        type Public: IdentifyAccount<AccountId = Self::AccountId> + Clone + TypeInfo + Encode + Decode + PartialEq + sp_std::fmt::Debug;
+        type Public: IdentifyAccount<AccountId = Self::AccountId>
+            + Clone
+            + TypeInfo
+            + Encode
+            + Decode
+            + PartialEq
+            + sp_std::fmt::Debug;
 
         /// Signature type.
         /// Inspiration - https://github.com/JoshOrndorff/recipes/issues/142
-        type Signature: Verify<Signer = Self::Public> + Member + Decode + Encode + TypeInfo + PartialEq + sp_std::fmt::Debug; 
+        type Signature: Verify<Signer = Self::Public>
+            + Member
+            + Decode
+            + Encode
+            + TypeInfo
+            + PartialEq
+            + sp_std::fmt::Debug;
     }
 
     #[pallet::origin]
@@ -142,18 +153,18 @@ pub mod pallet {
             let origin = Origin::new(signers.clone());
             let _ = signed_call.dispatch(T::MyOrigin::from(origin).into()); // result
 
-			// TODO: work with weight here.
-			// Ok(get_result_weight(result)
-			// .map(|actual_weight| {
-			//	T::WeightInfo::as_multi_complete(
-			//		other_signatories_len as u32,
-			//		call_len as u32,
-			//	)
-			//	.saturating_add(actual_weight)
-			//})
-			//.into())
+            // TODO: work with weight here.
+            // Ok(get_result_weight(result)
+            // .map(|actual_weight| {
+            //	T::WeightInfo::as_multi_complete(
+            //		other_signatories_len as u32,
+            //		call_len as u32,
+            //	)
+            //	.saturating_add(actual_weight)
+            //})
+            //.into())
 
-			// TODO: emit event.
+            // TODO: emit event.
 
             Ok(())
         }

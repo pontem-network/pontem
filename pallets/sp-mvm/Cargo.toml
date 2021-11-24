@@ -108,7 +108,7 @@ std = [
     "sp-core/std",
     "sp-runtime/std",
     "parity-scale-codec/std",
-    "pallet-multisig/std",
+    "groupsign/std",
     "frame-support/std",
     "frame-system/std",
     "frame-benchmarking/std",
