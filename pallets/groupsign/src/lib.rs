@@ -1,3 +1,11 @@
+// Copyright 2020-2021 Pontem Foundation LTD.
+// This file is part of Pontem Network.
+// Apache 2.0
+
+//! This pallet enables executing dispatchable calls by using several signers and their signatures.
+//! Executed calls have the option to get signers inside by using T::Origin as origin from the current pallet.
+//! It's useful for some kinds of multisignatures implementations, e.g. Move VM supports multisignature out of the box, 
+//! yet it asks for signers of the current transaction.
 #![cfg_attr(not(feature = "std"), no_std)]
 
 pub use pallet::*;
