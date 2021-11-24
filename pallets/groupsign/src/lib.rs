@@ -97,12 +97,16 @@ use frame_support::{dispatch::{self, Dispatchable, GetDispatchInfo}, ensure, pal
 				return Err(DispatchError::Other("Signatures number does not correspond to signers number"))
 			}
 
-			let caller = ensure_signed(origin);
+			let caller = ensure_signed(origin)?;
 
 			let mut call_preimage = signed_call.encode();
 			call_preimage.extend(valid_since.encode());
 			call_preimage.extend(valid_thru.encode());
 			call_preimage.extend(caller.encode());
+
+			// Get account nonce
+			let _ = frame_system::Pallet::<T>::account_nonce(caller);
+
 			// STOPSHIP: Add caller nonce, this is important!
 			// call_preimage.extend(frame_system::Account::<T>::get(&caller).nonce.encode());
 
