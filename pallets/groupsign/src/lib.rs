@@ -17,8 +17,8 @@ mod benchmarking;
 #[frame_support::pallet]
 pub mod pallet {
 	use codec::FullCodec;
-use frame_support::pallet_prelude::*;
-	use frame_system::pallet_prelude::*;
+use frame_support::{dispatch::{self, Dispatchable, GetDispatchInfo}, ensure, pallet_prelude::*};
+	use frame_system::{CheckNonce, pallet_prelude::*};
 	use sp_runtime::{AccountId32, MultiSignature, MultiSigner, traits::{Lazy, Verify}, verify_encoded_lazy};
 
 
@@ -27,6 +27,11 @@ use frame_support::pallet_prelude::*;
 	pub trait Config: frame_system::Config {
 		/// Because this pallet emits events, it depends on the runtime's definition of an event.
 		type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
+		type Call: Parameter
+             + Dispatchable<Origin = Self::Origin>
+             + GetDispatchInfo
+             + From<frame_system::Call<Self>>;
+
 	}
 
 	#[pallet::pallet]
@@ -80,7 +85,7 @@ use frame_support::pallet_prelude::*;
 		#[pallet::weight(0)]
         pub fn groupsign_call(
             origin: OriginFor<T>,
-            // signed_call: T::Call,
+            signed_call: Box<<T as Config>::Call>,
             signers: Vec<AccountId32>,
 			signatures: Vec<MultiSignature>,
 			valid_since: T::BlockNumber,
@@ -88,35 +93,29 @@ use frame_support::pallet_prelude::*;
 		) -> DispatchResult {
 			// TODO: Validate era
 
-			let message_buf = [0u8; 22];
-			// let f : MultiSignature = 1;
-			// let mut lazy_message: [u8] = *("a message".as_bytes());
+			if signatures.len() != signers.len() {
+				return Err(DispatchError::Other("Signatures number does not correspond to signers number"))
+			}
 
-			// signers.zip(signatures).all(|a| true );
+			let caller = ensure_signed(origin);
+
+			let mut call_preimage = signed_call.encode();
+			call_preimage.extend(valid_since.encode());
+			call_preimage.extend(valid_thru.encode());
+			call_preimage.extend(caller.encode());
+			// STOPSHIP: Add caller nonce, this is important!
+			// call_preimage.extend(frame_system::Account::<T>::get(&caller).nonce.encode());
+
 			let verified = Iterator::zip(signatures.into_iter(), signers.into_iter())
-				.all(|(sig, signer)|  verify_encoded_lazy(&sig, &message_buf, &signer));
+				.all(|(sig, signer)| verify_encoded_lazy(&sig, &call_preimage, &signer));
 
-				// sig.verify(LazyEncode, &signer)
-			// if signatures.len() != signers.len() {
-			// 	return Err(DispatchError::Other("Signatures number does not correspond to signers number"))
-			// }
+			if verified {
+				// Dispatch a call with all the verified accounts.
+				Ok(())
+			} else {
+				return Err(DispatchError::Other("Signature "))
+			}
 
-			// let len = signatures.len();
-
-			// let mut call_preimage = signed_call.encode();
-			// call_preimage.extend(era.encode());
-			// call_preimage.extend(origin.encode());
-            // // TODO: add origin nonce
-
-			// let validation_result = sp_core::sr25519::verify_batch(
-			// 	(0..len)
-			// 		.map(|_| &call_preimage.clone())
-			// 		.collect::<Vec<_>>(),
-			// 	signatures,
-			// 	signers
-			// );
-
-			Ok(())
         }
 
 	}
