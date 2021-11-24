@@ -13,13 +13,16 @@ mod benchmarking;
 
 #[frame_support::pallet]
 pub mod pallet {
+
+    use sp_std::prelude::Box;
     use scale_info::TypeInfo;
     use frame_support::{
-        dispatch::{ Dispatchable, GetDispatchInfo},
+        dispatch::{Dispatchable, GetDispatchInfo},
         ensure,
         pallet_prelude::*,
     };
     use frame_system::pallet_prelude::*;
+    use sp_std::vec::Vec;
     use sp_runtime::{
         traits::{Verify, IdentifyAccount},
         verify_encoded_lazy,
@@ -28,23 +31,26 @@ pub mod pallet {
     /// Configure the pallet by specifying the parameters and types on which it depends.
     #[pallet::config]
     pub trait Config: frame_system::Config {
-        /// Because this pallet emits events, it depends on the runtime's definition of an event.
+        /// Events.
         type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
+
+        /// Origin.
         type MyOrigin: From<Origin<Self>> + Into<<Self as frame_system::Config>::Origin>;
+
+        /// Call types.
         type Call: Parameter
             + Dispatchable<Origin = Self::Origin>
             + GetDispatchInfo
             + From<frame_system::Call<Self>>;
-        type Miltisignature: Verify<
-                Signer = dyn IdentifyAccount<
-                    AccountId = <Self as frame_system::Config>::AccountId,
-                >,
-            > + sp_std::fmt::Debug
-            + sp_std::clone::Clone
-            + TypeInfo
-            + codec::Encode
-            + codec::Decode
-            + sp_std::cmp::PartialEq;
+        
+        
+        /// Public key type.
+        /// Inspiration - https://github.com/JoshOrndorff/recipes/issues/142
+        type Public: IdentifyAccount<AccountId = Self::AccountId> + Clone + TypeInfo + Encode + Decode + PartialEq + sp_std::fmt::Debug;
+
+        /// Signature type.
+        /// Inspiration - https://github.com/JoshOrndorff/recipes/issues/142
+        type Signature: Verify<Signer = Self::Public> + Member + Decode + Encode + TypeInfo + PartialEq + sp_std::fmt::Debug; 
     }
 
     #[pallet::origin]
@@ -96,7 +102,7 @@ pub mod pallet {
             origin: OriginFor<T>,
             signed_call: Box<<T as Config>::Call>,
             signers: Vec<T::AccountId>,
-            signatures: Vec<<T as Config>::Miltisignature>,
+            signatures: Vec<T::Signature>,
             valid_since: T::BlockNumber,
             valid_thru: T::BlockNumber,
         ) -> DispatchResult {

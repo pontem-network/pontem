@@ -777,6 +777,14 @@ impl pallet_multisig::Config for Runtime {
     type WeightInfo = ();
 }
 
+impl groupsign::Config for Runtime {
+    type Event = Event;
+    type Call = Call;
+    type Public = sp_runtime::MultiSigner;
+    type Signature = sp_runtime::MultiSignature;
+    type MyOrigin = Origin;
+}
+
 /// Move VM similar to Ethereum utilizing gas approach.
 /// The gas in case of Pontem and Move VM has been done in a similar way to Moonbeam EVM approach.
 /// To get gas to weight conversion we are doing ratio: `WEIGHT_PER_GAS = WEIGHT_PER_SECOND / GAS_PER_SECOND`.
@@ -1027,6 +1035,7 @@ construct_runtime!(
 
         // Move VM
         Mvm: sp_mvm::{Pallet, Call, Storage, Config<T>, Event<T>},
+        Groupsign: groupsign::{Pallet, Call, Origin<T>, Event<T>},
         MultiSig: pallet_multisig::{Pallet, Call, Origin<T>, Storage, Event<T>},
     }
 );

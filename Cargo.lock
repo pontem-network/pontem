@@ -7920,6 +7920,7 @@ dependencies = [
  "frame-system",
  "frame-system-benchmarking",
  "frame-system-rpc-runtime-api",
+ "groupsign",
  "hex-literal",
  "kusama-runtime",
  "module-currencies",
