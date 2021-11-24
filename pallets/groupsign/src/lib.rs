@@ -147,6 +147,8 @@ pub mod pallet {
 			//})
 			//.into())
 
+			// TODO: emit event.
+
             Ok(())
         }
     }
