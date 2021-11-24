@@ -66,6 +66,8 @@ use frame_support::{dispatch::{self, Dispatchable, GetDispatchInfo}, ensure, pal
 		// NoneValue,
 		/// Errors should have helpful documentation associated with them.
 		// StorageOverflow,
+
+		// Can't verify signature.
 		SignatureVerificationError
 	}
 
@@ -114,13 +116,10 @@ use frame_support::{dispatch::{self, Dispatchable, GetDispatchInfo}, ensure, pal
 			let verified = Iterator::zip(signatures.into_iter(), signers.into_iter())
 				.all(|(sig, signer)| verify_encoded_lazy(&sig, &call_preimage, &signer));
 
-			if verified {
-				// Dispatch a call with all the verified accounts.
-				Ok(())
-			} else {
-				return Err(DispatchError::Other("Signature "))
-			}
-
+			ensure!(verified, Error::<T>::SignatureVerificationError);
+			
+			// Do dispatch call.
+			Ok(())
         }
 
 	}
