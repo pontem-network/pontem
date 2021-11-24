@@ -60,6 +60,8 @@ use frame_support::{dispatch::{self, Dispatchable, GetDispatchInfo}, ensure, pal
 	// Errors inform users that something went wrong.
 	#[pallet::error]
 	pub enum Error<T> {
+		// When signatures length doesn't match signers length.
+		SignaturesLengthDoesntMatch,
 		/// Error names should be descriptive.
 		// NoneValue,
 		/// Errors should have helpful documentation associated with them.
@@ -95,11 +97,12 @@ use frame_support::{dispatch::{self, Dispatchable, GetDispatchInfo}, ensure, pal
 
 			// TODO: Validate era
 
-			if signatures.len() != signers.len() {
-				return Err(DispatchError::Other("Signatures number does not correspond to signers number"))
-			}
+			ensure!(
+				signatures.len() == signers.len(),
+				Error::<T>::SignaturesLengthDoesntMatch
+			);
 
-			// Get account nonce
+			// Get account nonce.
 			let nonce = frame_system::Pallet::<T>::account_nonce(&caller);
 
 			let mut call_preimage = signed_call.encode();
