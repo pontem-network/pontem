@@ -5,7 +5,7 @@ description = "FRAME pallet template for defining custom runtime logic."
 authors = ['Substrate DevHub <https://github.com/substrate-developer-hub>']
 homepage = "https://substrate.io/"
 edition = '2018'
-license = "Unlicense"
+license = "Apache-2.0"
 publish = false
 repository = "https://github.com/substrate-developer-hub/substrate-node-template/"
 
