@@ -3,9 +3,10 @@
 // Apache 2.0
 
 //! This pallet enables executing dispatchable calls by using several signers and their signatures.
-//! Executed calls have the option to get signers inside by using T::Origin as origin from the current pallet.
+//! Executed calls have the option to get signers inside by using `T::Origin` as origin from the current pallet.
 //! It's useful for some kinds of multisignatures implementations, e.g. Move VM supports multisignature out of the box, 
 //! yet it asks for signers of the current transaction.
+//! Signers should sign hash `(blake2_256)` generated from data contains encoded: `call`, `valid_since`, `valid_thru`, `caller`, `nonce`.
 #![cfg_attr(not(feature = "std"), no_std)]
 
 pub use pallet::*;
@@ -29,6 +30,7 @@ pub mod pallet {
         ensure,
         pallet_prelude::*,
     };
+    use sp_core::hashing::blake2_256;
     use frame_system::pallet_prelude::*;
     use sp_std::vec::Vec;
     use sp_runtime::{
@@ -94,10 +96,9 @@ pub mod pallet {
 
     #[pallet::event]
     pub enum Event<T: Config> {
-        /// Event documentation should end with an array that provides descriptive names for event
-        /// parameters. [something, who]
-        // SomethingStored(u32, T::AccountId)
-        Nada,
+        DispatchableExecuted(
+
+        )
     }
 
     // Errors inform users that something went wrong.
@@ -151,9 +152,11 @@ pub mod pallet {
             call_preimage.extend(caller.encode());
             call_preimage.extend(nonce.encode());
 
+            let hash = blake2_256(&call_preimage.as_ref());
+
             // Verify signature.
             let verified = Iterator::zip(signatures.into_iter(), signers.clone().into_iter())
-                .all(|(sig, signer)| verify_encoded_lazy(&sig, &call_preimage, &signer));
+                .all(|(sig, signer)| verify_encoded_lazy(&sig, &hash, &signer));
 
             ensure!(verified, Error::<T>::SignatureVerificationError);
 
