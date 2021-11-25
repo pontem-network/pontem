@@ -1,6 +1,7 @@
 use crate::*;
 
-pub mod mock_runtime;
+mod mock_runtime;
+mod parachain;
 
 use sp_runtime::AccountId32;
 use frame_support::sp_io::TestExternalities;
@@ -13,7 +14,7 @@ pub const BOB: AccountId32 = AccountId32::new([1u8; 32]);
 
 decl_test_parachain! {
     pub struct ParaA {
-        Runtime = crate::Runtime,
+        Runtime = Runtime,
         Origin = Origin,
         new_ext = para_ext(1),
     }

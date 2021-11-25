@@ -78,8 +78,6 @@ use primitives::{*, currency::CurrencyId, Index};
 use module_currencies::BasicCurrencyAdapter;
 
 #[cfg(test)]
-mod mock;
-#[cfg(test)]
 mod tests;
 
 /// We allow for 0.5 seconds of compute with a 6 second average block time.
