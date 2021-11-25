@@ -165,4 +165,6 @@ std = [
     'polkadot-primitives/std',
     'primitives/std',
     'constants/std',
+    'pallet-author-mapping/std',
+    'sp-mvm-rpc-runtime/std',
 ]
