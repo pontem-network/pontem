@@ -1,9 +1,10 @@
 #![allow(dead_code)]
 
 use sp_mvm::gas;
-use sp_core::H256;
-use sp_std::convert::TryFrom;
+use sp_core::{H256, sr25519};
+use sp_std::{convert::TryFrom, fmt::Debug};
 use frame_system as system;
+use parity_scale_codec::{Decode, Encode};
 use system::EnsureRoot;
 use frame_support::{
     PalletId, parameter_types,
@@ -13,10 +14,11 @@ use frame_support::{
 use sp_std::vec;
 use std::include_bytes;
 use frame_support::traits::{OnInitialize, OnFinalize};
-use sp_runtime::traits::{BlakeTwo256, IdentityLookup, ConvertInto};
+use sp_runtime::traits::{Verify, Lazy, BlakeTwo256, IdentityLookup, ConvertInto};
 use sp_runtime::{testing::Header};
 use orml_traits::parameter_type_with_key;
 use constants::SS58_PREFIX;
+use scale_info::TypeInfo;
 
 pub use primitives::currency::CurrencyId;
 use module_currencies::BasicCurrencyAdapter;
@@ -37,6 +39,24 @@ pub const UNIT: Balance = 1_000_000_000_000;
 pub const MILLIUNIT: Balance = 1_000_000_000;
 pub const MICROUNIT: Balance = 1_000_000;
 
+// Implement signature just for test.
+#[derive(Eq, PartialEq, Clone, Default, Encode, Decode, TypeInfo, Debug)]
+pub struct AnySignature(sr25519::Signature);
+
+impl Verify for AnySignature {
+    type Signer = sr25519::Public;
+    fn verify<L: Lazy<[u8]>>(&self, mut msg: L, signer: &sr25519::Public) -> bool {
+        let msg = msg.get();
+        self.0.verify(msg, signer)
+    }
+}
+
+impl From<sr25519::Signature> for AnySignature {
+    fn from(s: sr25519::Signature) -> Self {
+        Self(s)
+    }
+}
+
 // Configure a mock runtime to test the pallet.
 frame_support::construct_runtime!(
     pub enum Test where
@@ -51,8 +71,7 @@ frame_support::construct_runtime!(
         Tokens: orml_tokens::{Pallet, Storage, Event<T>},
         Currencies: module_currencies::{Pallet, Call, Storage, Event<T>},
         Mvm: sp_mvm::{Pallet, Call, Config<T>, Storage, Event<T>},
-        Multisig: pallet_multisig::{Pallet, Call, Origin<T>, Storage, Event<T>},
-        // Sudo: pallet_sudo::{Module, Call, Config<T>, Storage, Event<T>},
+        Groupsign: groupsign::{Pallet, Call, Origin<T>, Event<T>},
     }
 );
 
@@ -220,15 +239,12 @@ parameter_types! {
     pub const MaxSignatories: u16 = 16;
 }
 
-impl pallet_multisig::Config for Test {
+impl groupsign::Config for Test {
     type Event = Event;
     type Call = Call;
+    type Public = AccountId;
+    type Signature = AnySignature;
     type MyOrigin = Origin;
-    type Currency = Balances;
-    type DepositBase = DepositBase;
-    type DepositFactor = DepositFactor;
-    type MaxSignatories = MaxSignatories;
-    type WeightInfo = ();
 }
 
 pub type Sys = system::Pallet<Test>;

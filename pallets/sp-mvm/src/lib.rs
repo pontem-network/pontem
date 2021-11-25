@@ -191,7 +191,9 @@ pub mod pallet {
             tx_bc: Vec<u8>,
             gas_limit: u64,
         ) -> DispatchResultWithPostInfo {
+            // TODO: we should add ensure_groupsin
             let origin: Result<groupsign::Origin<T>, OriginFor<T>> = origin.into();
+
             let signers = match origin {
                 Ok(multisig) => multisig.signers().to_vec(),
                 Err(origin) => vec![ensure_signed(origin)?],
