@@ -95,9 +95,14 @@ pub mod pallet {
     pub struct Pallet<T>(_);
 
     #[pallet::event]
+    #[pallet::generate_deposit(pub(crate) fn deposit_event)]
     pub enum Event<T: Config> {
+        /// When dispatchable executed.
         DispatchableExecuted(
-
+            // Caller.
+            T::AccountId,
+            // Hash of call data.
+            Vec<u8>
         )
     }
 
@@ -175,7 +180,7 @@ pub mod pallet {
             //})
             //.into())
 
-            // TODO: emit event.
+            <Pallet<T>>::deposit_event(Event::DispatchableExecuted(caller, hash.to_vec()));
 
             Ok(())
         }
