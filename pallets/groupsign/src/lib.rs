@@ -4,7 +4,7 @@
 
 //! This pallet enables executing dispatchable calls by using several signers and their signatures.
 //! Executed calls have the option to get signers inside by using `T::Origin` as origin from the current pallet.
-//! It's useful for some kinds of multisignatures implementations, e.g. Move VM supports multisignature out of the box, 
+//! It's useful for some kinds of multisignatures implementations, e.g. Move VM supports multisignature out of the box,
 //! yet it asks for signers of the current transaction.
 //! Signers should sign hash `(blake2_256)` generated from data contains encoded: `call`, `valid_since`, `valid_thru`, `caller`, `nonce`.
 #![cfg_attr(not(feature = "std"), no_std)]
@@ -102,8 +102,8 @@ pub mod pallet {
             // Caller.
             T::AccountId,
             // Hash of call data.
-            Vec<u8>
-        )
+            Vec<u8>,
+        ),
     }
 
     // Errors inform users that something went wrong.
@@ -117,7 +117,15 @@ pub mod pallet {
 
         // Can't verify signature.
         SignatureVerificationError,
+
+        // Can't execute call.
+        ExecutionFailed,
     }
+
+    /// TODO: we need ensure_members analogue.
+    /// https://github.com/paritytech/substrate/blob/master/frame/collective/src/lib.rs
+    /// E.g. we should check if code exists and running in process.
+    /// Otherwise groupsign can't be used.
 
     #[pallet::call]
     impl<T: Config> Pallet<T> {
@@ -157,7 +165,10 @@ pub mod pallet {
             call_preimage.extend(caller.encode());
             call_preimage.extend(nonce.encode());
 
-            let hash = blake2_256(&call_preimage.as_ref());
+            // We collect check that signers didn't changed.
+            call_preimage.extend(signers.encode());
+
+            let hash = blake2_256(call_preimage.as_ref());
 
             // Verify signature.
             let verified = Iterator::zip(signatures.into_iter(), signers.clone().into_iter())
@@ -167,9 +178,10 @@ pub mod pallet {
 
             // Do dispatch call.
             let origin = Origin::new(signers.clone());
-            let _ = signed_call.dispatch(T::MyOrigin::from(origin).into()); // result
+            let result = signed_call.dispatch(T::MyOrigin::from(origin).into()); // result
 
-            // TODO: work with weight here.
+            // TODO: add result weight here.
+            // Similar to multisig pallet
             // Ok(get_result_weight(result)
             // .map(|actual_weight| {
             //	T::WeightInfo::as_multi_complete(
@@ -179,10 +191,16 @@ pub mod pallet {
             //	.saturating_add(actual_weight)
             //})
             //.into())
-
-            <Pallet<T>>::deposit_event(Event::DispatchableExecuted(caller, hash.to_vec()));
-
-            Ok(())
+            match result {
+                Ok(_) => {
+                    <Pallet<T>>::deposit_event(Event::DispatchableExecuted(
+                        caller,
+                        hash.to_vec(),
+                    ));
+                    Ok(())
+                }
+                Err(_) => Err(Error::<T>::ExecutionFailed)?,
+            }
         }
     }
 }
