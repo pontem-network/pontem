@@ -3,10 +3,24 @@ use crate::tests::mock::*;
 use frame_support::assert_ok;
 
 use sp_runtime::MultiAddress::Id as MultiId;
-use orml_traits::currency::MultiCurrency;
+use orml_traits::{currency::MultiCurrency, GetByKey};
 
 fn get_unit(amount: Balance, currency_id: CurrencyId) -> Balance {
     amount * u64::pow(10, currency_id.decimals() as u32)
+}
+
+#[test]
+/// Test existential deposits.
+fn test_existential_deposits() {
+    assert_eq!(
+        ExistentialDeposits::get(&CurrencyId::PONT),
+        PONT_EXISTENTIAL_DEPOSIT,
+    );
+
+    assert_eq!(
+        ExistentialDeposits::get(&CurrencyId::KSM),
+        KSM_EXISTENTIAL_DEPOSIT,
+    );
 }
 
 #[test]
@@ -147,15 +161,10 @@ fn transfer_tokens_via_currencies() {
     let final_balance = to_transfer;
 
     RuntimeBuilder::new()
-        .set_balances(vec![(
-            Accounts::ALICE.account(),
-            CurrencyId::PONT,
-            native_balance,
-        ), (
-            Accounts::ALICE.account(),
-            CurrencyId::KSM,
-            initial_balance
-        )])
+        .set_balances(vec![
+            (Accounts::ALICE.account(), CurrencyId::PONT, native_balance),
+            (Accounts::ALICE.account(), CurrencyId::KSM, initial_balance),
+        ])
         .build()
         .execute_with(|| {
             assert_eq!(
@@ -197,7 +206,6 @@ fn transfer_tokens_via_currencies() {
         });
 }
 
-
 #[test]
 /// Test tokens transfer via tokens pallet.
 fn transfer_tokens_via_tokens() {
@@ -210,15 +218,10 @@ fn transfer_tokens_via_tokens() {
     let final_balance = to_transfer;
 
     RuntimeBuilder::new()
-        .set_balances(vec![(
-            Accounts::ALICE.account(),
-            CurrencyId::PONT,
-            native_balance,
-        ), (
-            Accounts::ALICE.account(),
-            CurrencyId::KSM,
-            initial_balance
-        )])
+        .set_balances(vec![
+            (Accounts::ALICE.account(), CurrencyId::PONT, native_balance),
+            (Accounts::ALICE.account(), CurrencyId::KSM, initial_balance),
+        ])
         .build()
         .execute_with(|| {
             assert_eq!(
