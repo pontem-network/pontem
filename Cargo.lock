@@ -7883,6 +7883,7 @@ dependencies = [
  "sp-block-builder",
  "sp-core",
  "sp-inherents",
+ "sp-io",
  "sp-mvm",
  "sp-mvm-rpc-runtime",
  "sp-offchain",

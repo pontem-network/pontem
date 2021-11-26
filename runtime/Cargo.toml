@@ -97,6 +97,7 @@ module-currencies = { path = "../pallets/currencies", default-features = false }
 xcm-emulator = { git = 'https://github.com/vitvakatu/xcm-simulator', branch = 'polkadot-v0.9.11' }
 polkadot-runtime-parachains = { default-features = false, git = 'https://github.com/paritytech/polkadot.git', branch = 'release-v0.9.11' }
 kusama-runtime = { git = 'https://github.com/paritytech/polkadot.git', branch = 'release-v0.9.11' }
+sp-io = { default-features = false, git = 'http://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.11' }
 
 [features]
 default = ['std']
