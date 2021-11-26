@@ -65,13 +65,14 @@ build:
 	cargo build --release
 
 .PHONY: assets
-assets: pallets/sp-mvm/tests/assets/stdlib pallets/sp-mvm/tests/benchmark_assets/stdlib
+assets: pallets/sp-mvm/tests/assets/stdlib pallets/sp-mvm/tests/benchmark_assets/stdlib runtime/src/tests/assets/stdlib
 
 .PHONY: clean-assets
 clean-assets:
 	rm -rf \
 		pallets/sp-mvm/tests/assets/stdlib \
-		pallets/sp-mvm/tests/benchmark_assets/stdlib
+		pallets/sp-mvm/tests/benchmark_assets/stdlib \
+		runtime/src/tests/assets/stdlib
 
 	git clean -dfX -- \
 		pallets/sp-mvm/tests
@@ -81,6 +82,9 @@ pallets/sp-mvm/tests/assets/stdlib:
 
 pallets/sp-mvm/tests/benchmark_assets/stdlib:
 	cd pallets/sp-mvm/tests/benchmark_assets; ./build_assets.sh
+
+runtime/src/tests/assets/stdlib:
+	cd runtime/src/tests/assets; ./build_assets.sh
 
 .PHONY: coverage
 coverage: assets
