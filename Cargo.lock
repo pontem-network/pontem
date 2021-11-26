@@ -7837,6 +7837,7 @@ dependencies = [
 name = "pontem-runtime"
 version = "3.0.0"
 dependencies = [
+ "assets",
  "constants",
  "cumulus-pallet-dmp-queue",
  "cumulus-pallet-parachain-system",
@@ -7854,6 +7855,7 @@ dependencies = [
  "hex-literal",
  "kusama-runtime",
  "module-currencies",
+ "mvm",
  "nimbus-primitives",
  "orml-tokens",
  "orml-traits",

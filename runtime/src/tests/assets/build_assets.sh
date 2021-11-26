@@ -10,12 +10,8 @@ pushd ./user
 dove clean
 dove build --tree
 dove build --package
-dove tx "store_system_block()"
-dove tx "store_system_timestamp()"
-dove tx "store_native_balance()"
-dove tx "store_token_balance()"
-dove tx "transfer(treasury, 5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY, 2000)"
-dove tx "transfer_token(treasury, 5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY, 2000)"
-dove tx "deposit_bank<0x1::PONT::PONT>(2000)" -o=deposit_bank_pont.mvt
-dove tx "deposit_bank<0x1::KSM::KSM>(2000)" -o=deposit_bank_ksm.mvt
+dove tx "transfer<0x1::PONT::PONT>(treasury, gkQ5K6EnLRgZkwozG8GiBAEnJyM6FxzbSaSmVhKJ2w8FcK7ih, 500000000000)" -o=transfer_pont.mvt
+dove tx "transfer<0x1::KSM::KSM>(treasury, gkQ5K6EnLRgZkwozG8GiBAEnJyM6FxzbSaSmVhKJ2w8FcK7ih, 500000000000)" -o=transfer_ksm.mvt
+dove tx "deposit_bank<0x1::PONT::PONT>(500000000000)" -o=deposit_bank_pont.mvt
+dove tx "deposit_bank<0x1::KSM::KSM>(50000000000000)" -o=deposit_bank_ksm.mvt
 popd

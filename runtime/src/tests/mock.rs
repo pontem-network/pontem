@@ -3,6 +3,23 @@ use frame_support::sp_io::TestExternalities;
 use frame_support::traits::GenesisBuild;
 use sp_core::crypto::Ss58Codec;
 use frame_support::traits::Hooks;
+use std::include_bytes;
+use move_vm::genesis::GenesisConfig;
+
+// Genesis configuration for Move VM.
+pub type ModuleName = Vec<u8>;
+pub type FunctionName = Vec<u8>;
+pub type FunctionArgs = Vec<Vec<u8>>;
+pub fn build_vm_config() -> (ModuleName, FunctionName, FunctionArgs) {
+    // We use standard arguments.
+    let genesis: GenesisConfig = Default::default();
+
+    (
+        b"Genesis".to_vec(),
+        b"initialize".to_vec(),
+        genesis.init_func_config.unwrap().args,
+    )
+}
 
 /// User accounts.
 pub enum Accounts {
@@ -103,6 +120,17 @@ impl RuntimeBuilder {
                 .into_iter()
                 .filter(|(_, currency_id, _)| *currency_id != native_currency_id)
                 .collect::<Vec<_>>(),
+        }
+        .assimilate_storage(&mut t)
+        .unwrap();
+
+        let (init_module, init_func, init_args) = build_vm_config();
+        sp_mvm::GenesisConfig::<Runtime> {
+            stdlib: include_bytes!("./assets/stdlib/artifacts/bundles/move-stdlib.pac").to_vec(),
+            init_module,
+            init_func,
+            init_args,
+            ..Default::default()
         }
         .assimilate_storage(&mut t)
         .unwrap();

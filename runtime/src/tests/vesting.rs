@@ -6,6 +6,8 @@ use sp_runtime::MultiAddress::Id as MultiId;
 #[test]
 /// Test vesting balances releases correctly.
 fn test_vesting_release() {
+    let currency_id = GetNativeCurrencyId::get();
+
     let initial_balance = to_unit(100, CurrencyId::PONT);
     let start_vesting = 10;
     let duration: u32 = 100;
@@ -15,7 +17,7 @@ fn test_vesting_release() {
     RuntimeBuilder::new()
         .set_balances(vec![(
             Accounts::ALICE.account(),
-            CurrencyId::PONT,
+            currency_id,
             initial_balance,
         )])
         .set_vesting(vec![(
@@ -108,7 +110,7 @@ fn test_vesting_via_currencies() {
     RuntimeBuilder::new()
         .set_balances(vec![(
             Accounts::ALICE.account(),
-            CurrencyId::PONT,
+            currency_id,
             initial_balance,
         )])
         .set_vesting(vec![(
