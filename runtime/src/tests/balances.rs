@@ -5,10 +5,6 @@ use frame_support::assert_ok;
 use sp_runtime::MultiAddress::Id as MultiId;
 use orml_traits::{currency::MultiCurrency, GetByKey};
 
-fn get_unit(amount: Balance, currency_id: CurrencyId) -> Balance {
-    amount * u64::pow(10, currency_id.decimals() as u32)
-}
-
 #[test]
 // Test correct native currency.
 fn test_get_native_currency() {
@@ -47,7 +43,7 @@ fn transfer_native_currency_via_balances() {
         .build()
         .execute_with(|| {
             assert_eq!(
-                Balances::free_balance(Accounts::ALICE.account(),),
+                Balances::free_balance(Accounts::ALICE.account()),
                 initial_balance
             );
 

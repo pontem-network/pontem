@@ -1,3 +1,4 @@
+/// Test parachains locations.
 use crate::tests::mock::*;
 use sp_runtime::traits::Convert;
 

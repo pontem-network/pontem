@@ -8,7 +8,6 @@ use frame_support::traits::Hooks;
 pub enum Accounts {
     ALICE,
     BOB,
-    FERDIE,
 }
 
 impl Accounts {
@@ -23,12 +22,13 @@ impl Accounts {
                 AccountId::from_ss58check("5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty")
                     .unwrap()
             }
-            Accounts::FERDIE => {
-                AccountId::from_ss58check("5CzSAHUcFWyjMtSZfPo7c1mzvEyHvrQ39uoT6SahQMEYFdFD")
-                    .unwrap()
-            }
         }
     }
+}
+
+/// Balance to currency unit (e.g. 1 PONT).
+pub fn get_unit(amount: Balance, currency_id: CurrencyId) -> Balance {
+    amount * u64::pow(10, currency_id.decimals() as u32)
 }
 
 /// Roll till next block.
