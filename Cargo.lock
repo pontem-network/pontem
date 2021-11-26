@@ -187,6 +187,13 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9b34d609dfbaf33d6889b2b7106d3ca345eacad44200913df5ba02bfd31d2ba9"
 
 [[package]]
+name = "assets"
+version = "3.0.0"
+dependencies = [
+ "once_cell",
+]
+
+[[package]]
 name = "async-attributes"
 version = "1.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -10451,6 +10458,7 @@ version = "0.3.2"
 dependencies = [
  "alt_serde",
  "anyhow",
+ "assets",
  "bcs 0.1.1",
  "bcs 0.1.3",
  "constants",

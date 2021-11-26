@@ -77,6 +77,7 @@ optional = true
 # used for tests (std) only
 pallet-vesting = { default-features = false, package = "pallet-vesting", git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.11' }
 primitives = { path = "../../primitives" }
+assets = { path = "../../assets" }
 constants = { path = "../../constants" }
 module-currencies = { path = "../currencies" }
 orml-tokens = { default-features = false, git = 'https://github.com/open-web3-stack/open-runtime-module-library', rev = '38b53d39a' }
@@ -98,7 +99,7 @@ default = [
 std = [
     "serde",
     "log/std",
-    "once_cell/std",
+    "assets/std",
     "move-vm/std",
     "move-vm-runtime/std",
     "move-core-types/std",
