@@ -1,3 +1,4 @@
+/// Test balances in Runtime.
 use crate::tests::mock::*;
 use frame_support::assert_ok;
 
