@@ -76,7 +76,18 @@ macro_rules! def_currencies {
             fn try_from(v: Vec<u8>) -> Result<Self, Self::Error> {
                 match &v[..] {
                     $($str => Ok(Self::$name),)*
-                    _ => Err(()),
+                    _ => Err(Self::Error::default()),
+                }
+            }
+        }
+
+        impl TryFrom<&'_ [u8]> for $ty_name {
+            type Error = CurrencyConversionError;
+
+            fn try_from(v: &'_ [u8]) -> Result<Self, Self::Error> {
+                match v {
+                    $($str => Ok(Self::$name),)*
+                    _ => Err(Self::Error::default()),
                 }
             }
         }
@@ -130,9 +141,17 @@ mod tests {
 
     #[test]
     /// Test try from Vec<u8>.
-    fn try_from() {
+    fn try_from_vec() {
         assert_eq!(CurrencyId::try_from(b"PONT".to_vec()), Ok(CurrencyId::PONT));
         assert_eq!(CurrencyId::try_from(b"KSM".to_vec()), Ok(CurrencyId::KSM));
         assert!(CurrencyId::try_from(b"UNKNOWN".to_vec()).is_err());
+    }
+
+    #[test]
+    /// Test try from &[u8].
+    fn try_from_slice() {
+        assert_eq!(CurrencyId::try_from(b"PONT".as_ref()), Ok(CurrencyId::PONT));
+        assert_eq!(CurrencyId::try_from(b"KSM".as_ref()), Ok(CurrencyId::KSM));
+        assert!(CurrencyId::try_from(b"UNKNOWN".as_ref()).is_err());
     }
 }
