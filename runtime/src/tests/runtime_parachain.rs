@@ -4,6 +4,10 @@ use sp_runtime::traits::Convert;
 #[test]
 fn test_currency_id_convertations() {
     RuntimeBuilder::new().build().execute_with(|| {
+        assert_eq!(RelayLocation::get(), MultiLocation::parent(),);
+
+        assert_eq!(RelayNetwork::get(), NetworkId::Kusama);
+
         assert_eq!(
             CurrencyIdConvert::convert(CurrencyId::KSM),
             Some(MultiLocation::parent())
