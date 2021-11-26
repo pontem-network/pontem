@@ -99,6 +99,40 @@ def_currencies! {
 
 impl Default for CurrencyId {
     fn default() -> Self {
+        // PONT should be default currency.
         CurrencyId::PONT
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{CurrencyId, TryFrom};
+
+    #[test]
+    /// Test default currency.
+    fn default() {
+        assert_eq!(CurrencyId::default(), CurrencyId::PONT);
+    }
+
+    #[test]
+    /// Test currencies decimals.
+    fn decimals() {
+        assert_eq!(CurrencyId::PONT.decimals(), 10);
+        assert_eq!(CurrencyId::KSM.decimals(), 12);
+    }
+
+    #[test]
+    /// Test currencies symbols.
+    fn symbols() {
+        assert_eq!(CurrencyId::PONT.symbol(), b"PONT");
+        assert_eq!(CurrencyId::KSM.symbol(), b"KSM");
+    }
+
+    #[test]
+    /// Test try from Vec<u8>.
+    fn try_from() {
+        assert_eq!(CurrencyId::try_from(b"PONT".to_vec()), Ok(CurrencyId::PONT));
+        assert_eq!(CurrencyId::try_from(b"KSM".to_vec()), Ok(CurrencyId::KSM));
+        assert!(CurrencyId::try_from(b"UNKNOWN".to_vec()).is_err());
     }
 }
