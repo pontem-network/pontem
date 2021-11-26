@@ -28,10 +28,10 @@ pub mod modules {
             Asset::new("Store", "tests/assets/user/artifacts/modules/2_Store.mv");
         pub static EVENT_PROXY: Asset = Asset::new(
             "EventProxy",
-            "tests/assets/user/artifacts/modules/49_EventProxy.mv",
+            "tests/assets/user/artifacts/modules/52_EventProxy.mv",
         );
         pub static BANK: Asset =
-            Asset::new("Bank", "tests/assets/user/artifacts/modules/48_Bank.mv");
+            Asset::new("Bank", "tests/assets/user/artifacts/modules/51_Bank.mv");
     }
 }
 

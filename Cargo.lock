@@ -1213,7 +1213,10 @@ checksum = "245097e9a4535ee1e3e3931fcfcd55a796a44c643e8596ff6566d68f09b87bbc"
 name = "constants"
 version = "3.0.0"
 dependencies = [
+ "frame-support",
  "primitives",
+ "smallvec 1.7.0",
+ "sp-runtime",
 ]
 
 [[package]]

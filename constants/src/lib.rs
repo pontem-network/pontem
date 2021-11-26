@@ -9,3 +9,6 @@ pub mod time;
 
 /// Module contains currency constants.
 pub mod currency;
+
+/// Parachains.
+pub mod parachains;

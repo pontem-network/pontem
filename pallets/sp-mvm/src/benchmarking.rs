@@ -44,7 +44,7 @@ benchmarks! {
             VMStorage::<T>::insert(module_access_core(name), module);
         }
         let caller: T::AccountId = whitelisted_caller();
-        let module = include_bytes!("../tests/benchmark_assets/artifacts/modules/52_StdImport.mv").to_vec();
+        let module = include_bytes!("../tests/benchmark_assets/artifacts/modules/56_StdImport.mv").to_vec();
     }: publish_module(RawOrigin::Signed(caller), module, 100_000_000)
     verify {
         assert!(VMStorage::<T>::contains_key(module_access("StdImport")));
@@ -232,6 +232,10 @@ pub fn stdlib() -> Vec<(&'static str, Vec<u8>)> {
             include_bytes!("../tests/benchmark_assets/stdlib/artifacts/modules/22_DualAttestation.mv").to_vec()
         ),
         (
+            "DiemId",
+            include_bytes!("../tests/benchmark_assets/stdlib/artifacts/modules/23_DiemId.mv").to_vec()
+        ),
+        (
             "DesignatedDealer",
             include_bytes!("../tests/benchmark_assets/stdlib/artifacts/modules/24_DesignatedDealer.mv").to_vec()
         ),
@@ -256,12 +260,12 @@ pub fn stdlib() -> Vec<(&'static str, Vec<u8>)> {
             include_bytes!("../tests/benchmark_assets/stdlib/artifacts/modules/29_SharedEd25519PublicKey.mv").to_vec()
         ),
         (
-            "RecoveryAddress",
-            include_bytes!("../tests/benchmark_assets/stdlib/artifacts/modules/30_RecoveryAddress.mv").to_vec()
-        ),
-        (
             "Errors",
             include_bytes!("../tests/benchmark_assets/stdlib/artifacts/modules/2_Errors.mv").to_vec()
+        ),
+        (
+            "RecoveryAddress",
+            include_bytes!("../tests/benchmark_assets/stdlib/artifacts/modules/30_RecoveryAddress.mv").to_vec()
         ),
         (
             "AccountAdministrationScripts",
@@ -300,32 +304,48 @@ pub fn stdlib() -> Vec<(&'static str, Vec<u8>)> {
             include_bytes!("../tests/benchmark_assets/stdlib/artifacts/modules/39_DiemVersion.mv").to_vec()
         ),
         (
-            "TransactionFee",
-            include_bytes!("../tests/benchmark_assets/stdlib/artifacts/modules/40_TransactionFee.mv").to_vec()
-        ),
-        (
             "CoreAddresses",
             include_bytes!("../tests/benchmark_assets/stdlib/artifacts/modules/3_CoreAddresses.mv").to_vec()
         ),
         (
+            "TransactionFee",
+            include_bytes!("../tests/benchmark_assets/stdlib/artifacts/modules/40_TransactionFee.mv").to_vec()
+        ),
+        (
+            "LKSM",
+            include_bytes!("../tests/benchmark_assets/stdlib/artifacts/modules/41_LKSM.mv").to_vec()
+        ),
+        (
+            "KUSD",
+            include_bytes!("../tests/benchmark_assets/stdlib/artifacts/modules/42_KUSD.mv").to_vec()
+        ),
+        (
+            "KSM",
+            include_bytes!("../tests/benchmark_assets/stdlib/artifacts/modules/43_KSM.mv").to_vec()
+        ),
+        (
+            "KAR",
+            include_bytes!("../tests/benchmark_assets/stdlib/artifacts/modules/44_KAR.mv").to_vec()
+        ),
+        (
             "Genesis",
-            include_bytes!("../tests/benchmark_assets/stdlib/artifacts/modules/41_Genesis.mv").to_vec()
+            include_bytes!("../tests/benchmark_assets/stdlib/artifacts/modules/45_Genesis.mv").to_vec()
         ),
         (
             "PaymentScripts",
-            include_bytes!("../tests/benchmark_assets/stdlib/artifacts/modules/42_PaymentScripts.mv").to_vec()
+            include_bytes!("../tests/benchmark_assets/stdlib/artifacts/modules/46_PaymentScripts.mv").to_vec()
         ),
         (
             "SystemAdministrationScripts",
-            include_bytes!("../tests/benchmark_assets/stdlib/artifacts/modules/43_SystemAdministrationScripts.mv").to_vec()
+            include_bytes!("../tests/benchmark_assets/stdlib/artifacts/modules/47_SystemAdministrationScripts.mv").to_vec()
         ),
         (
             "TreasuryComplianceScripts",
-            include_bytes!("../tests/benchmark_assets/stdlib/artifacts/modules/44_TreasuryComplianceScripts.mv").to_vec()
+            include_bytes!("../tests/benchmark_assets/stdlib/artifacts/modules/48_TreasuryComplianceScripts.mv").to_vec()
         ),
         (
             "ValidatorAdministrationScripts",
-            include_bytes!("../tests/benchmark_assets/stdlib/artifacts/modules/45_ValidatorAdministrationScripts.mv").to_vec()
+            include_bytes!("../tests/benchmark_assets/stdlib/artifacts/modules/49_ValidatorAdministrationScripts.mv").to_vec()
         ),
         (
             "DiemTimestamp",

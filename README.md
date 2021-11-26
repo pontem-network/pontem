@@ -275,7 +275,7 @@ The XCM implemented includes assets transferring between Parachains and Relaycha
 
 * Transfers from Relaychain to Parachain happens with `reserveTransferAssets`.
 * XCM teleport and executions are currently disabled.
-* Supports PONT and KSM tokens.
+* Supports Pontem (PONT), Kusama (KSM), Karura (KAR, KUSD, LKSM) tokens.
 
 **Dev Relaychain**
 
