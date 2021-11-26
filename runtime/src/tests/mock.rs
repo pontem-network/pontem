@@ -27,7 +27,7 @@ impl Accounts {
 }
 
 /// Balance to currency unit (e.g. 1 PONT).
-pub fn get_unit(amount: Balance, currency_id: CurrencyId) -> Balance {
+pub fn to_unit(amount: Balance, currency_id: CurrencyId) -> Balance {
     amount * u64::pow(10, currency_id.decimals() as u32)
 }
 

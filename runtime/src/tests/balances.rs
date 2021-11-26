@@ -30,7 +30,7 @@ fn test_existential_deposits() {
 fn transfer_native_currency_via_balances() {
     let currency_id = GetNativeCurrencyId::get();
 
-    let initial_balance = get_unit(100, currency_id);
+    let initial_balance = to_unit(100, currency_id);
     let to_transfer = initial_balance / 2;
     let final_balance = to_transfer;
 
@@ -95,7 +95,7 @@ fn transfer_native_currency_via_balances() {
 fn transfer_native_currency_via_currencies() {
     let currency_id = GetNativeCurrencyId::get();
 
-    let initial_balance = get_unit(100, currency_id);
+    let initial_balance = to_unit(100, currency_id);
     let to_transfer = initial_balance / 2;
     let final_balance = to_transfer;
 
@@ -157,8 +157,8 @@ fn transfer_tokens_via_currencies() {
     let native_id = GetNativeCurrencyId::get();
     let currency_id = CurrencyId::KSM;
 
-    let native_balance = get_unit(100, native_id);
-    let initial_balance = get_unit(100, currency_id);
+    let native_balance = to_unit(100, native_id);
+    let initial_balance = to_unit(100, currency_id);
     let to_transfer = initial_balance / 2;
     let final_balance = to_transfer;
 
@@ -214,8 +214,8 @@ fn transfer_tokens_via_tokens() {
     let native_id = GetNativeCurrencyId::get();
     let currency_id = CurrencyId::KSM;
 
-    let native_balance = get_unit(100, native_id);
-    let initial_balance = get_unit(100, currency_id);
+    let native_balance = to_unit(100, native_id);
+    let initial_balance = to_unit(100, currency_id);
     let to_transfer = initial_balance / 2;
     let final_balance = to_transfer;
 
