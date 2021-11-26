@@ -5,7 +5,7 @@ use common::addr::{alice_public_key, bob_public_key};
 use common::assets::transactions;
 
 use sp_mvm::Call as MvmCall;
-use frame_support::{assert_ok, dispatch::GetDispatchInfo};
+use frame_support::{assert_ok};
 use sp_runtime::codec::Encode;
 use sp_core::Pair;
 use sp_std::vec;
@@ -53,8 +53,8 @@ fn execute_multisig() {
         let bob_signature = bob_keypair.sign(&to_sign[..]);
 
         let signatures = vec![
+            AnySignature::from(bob_signature.clone()),
             AnySignature::from(alice_signature),
-            AnySignature::from(bob_signature),
         ];
 
         assert_ok!(Groupsign::groupsign_call(

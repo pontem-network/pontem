@@ -1,5 +1,6 @@
 #![allow(dead_code)]
 
+use groupsign::weights::PontemWeights;
 use sp_mvm::gas;
 use sp_core::{H256, sr25519};
 use sp_std::{convert::TryFrom, fmt::Debug};
@@ -245,6 +246,7 @@ impl groupsign::Config for Test {
     type Public = AccountId;
     type Signature = AnySignature;
     type MyOrigin = Origin;
+    type WeightInfo = PontemWeights<Self>;
 }
 
 pub type Sys = system::Pallet<Test>;

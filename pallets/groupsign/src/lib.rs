@@ -19,17 +19,14 @@ mod tests;
 
 #[cfg(feature = "runtime-benchmarks")]
 mod benchmarking;
+pub mod weights;
 
 #[frame_support::pallet]
 pub mod pallet {
 
     use sp_std::prelude::Box;
     use scale_info::TypeInfo;
-    use frame_support::{
-        dispatch::{Dispatchable, GetDispatchInfo},
-        ensure,
-        pallet_prelude::*,
-    };
+    use frame_support::{dispatch::{DispatchResultWithPostInfo, Dispatchable, GetDispatchInfo, PostDispatchInfo}, ensure, pallet_prelude::*};
     use sp_core::hashing::blake2_256;
     use frame_system::pallet_prelude::*;
     use sp_std::vec::Vec;
@@ -37,6 +34,8 @@ pub mod pallet {
         traits::{Verify, IdentifyAccount},
         verify_encoded_lazy,
     };
+
+    use crate::weights::WeightInfo;
 
     /// Configure the pallet by specifying the parameters and types on which it depends.
     #[pallet::config]
@@ -49,7 +48,7 @@ pub mod pallet {
 
         /// Call types.
         type Call: Parameter
-            + Dispatchable<Origin = Self::Origin>
+            + Dispatchable<Origin = Self::Origin, PostInfo = PostDispatchInfo>
             + GetDispatchInfo
             + From<frame_system::Call<Self>>;
 
@@ -72,6 +71,8 @@ pub mod pallet {
             + TypeInfo
             + PartialEq
             + sp_std::fmt::Debug;
+
+        type WeightInfo: WeightInfo;
     }
 
     #[pallet::origin]
@@ -110,7 +111,7 @@ pub mod pallet {
     #[pallet::error]
     pub enum Error<T> {
         // Era validator error (means valid_since, valid_thru don't pass filter).
-        EreValidationError,
+        EraValidationError,
 
         // When signatures length doesn't match signers length.
         SignaturesLengthDoesntMatch,
@@ -129,8 +130,22 @@ pub mod pallet {
 
     #[pallet::call]
     impl<T: Config> Pallet<T> {
+
         /// Do groupsign call.
-        #[pallet::weight(0)]
+
+        #[pallet::weight({
+            let dispatch_info = signed_call.get_dispatch_info();
+            (
+
+                T::WeightInfo::groupsign_call(
+                    signers.len() as u32,
+                    signed_call.using_encoded(|c| c.len() as u32)
+                ).saturating_add(dispatch_info.weight),
+
+                dispatch_info.class,
+
+            )
+        })]
         pub fn groupsign_call(
             origin: OriginFor<T>,
             signed_call: Box<<T as Config>::Call>,
@@ -138,7 +153,7 @@ pub mod pallet {
             signatures: Vec<T::Signature>,
             valid_since: T::BlockNumber,
             valid_thru: T::BlockNumber,
-        ) -> DispatchResult {
+        ) -> DispatchResultWithPostInfo {
             let caller = ensure_signed(origin)?;
 
             // Check signatures length match.
@@ -152,7 +167,7 @@ pub mod pallet {
 
             ensure!(
                 current_block >= valid_since && current_block < valid_thru,
-                Error::<T>::EreValidationError,
+                Error::<T>::EraValidationError,
             );
 
             // Get account nonce.
@@ -176,31 +191,36 @@ pub mod pallet {
 
             ensure!(verified, Error::<T>::SignatureVerificationError);
 
+            // Needed for weight function
+            let call_len = signed_call.using_encoded(|c| c.len());
+
             // Do dispatch call.
             let origin = Origin::new(signers.clone());
             let result = signed_call.dispatch(T::MyOrigin::from(origin).into()); // result
 
-            // TODO: add result weight here.
-            // Similar to multisig pallet
-            // Ok(get_result_weight(result)
-            // .map(|actual_weight| {
-            //	T::WeightInfo::as_multi_complete(
-            //		other_signatories_len as u32,
-            //		call_len as u32,
-            //	)
-            //	.saturating_add(actual_weight)
-            //})
-            //.into())
-            match result {
-                Ok(_) => {
+            let call_weight = match result {
+                Ok(post_info) => {
                     <Pallet<T>>::deposit_event(Event::DispatchableExecuted(
                         caller,
                         hash.to_vec(),
                     ));
-                    Ok(())
+                    post_info.actual_weight
                 }
-                Err(_) => Err(Error::<T>::ExecutionFailed)?,
-            }
+                Err(err) => {
+                    err.post_info.actual_weight
+                }
+            };
+
+            Ok(
+                call_weight.map(|actual_weight|
+                    T::WeightInfo::groupsign_call(
+                        signers.len() as u32,
+                        call_len as u32
+                    ).saturating_add(actual_weight)
+                ).into()
+            )
         }
+
     }
+
 }
