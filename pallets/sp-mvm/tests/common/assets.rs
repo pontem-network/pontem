@@ -1,56 +1,6 @@
 #![allow(dead_code)]
 
-use once_cell::sync::OnceCell;
-use std::path::Path;
-
-#[derive(Clone)]
-pub struct Asset {
-    name: &'static str,
-    path: &'static str,
-    bytes: OnceCell<Vec<u8>>,
-}
-
-impl Asset {
-    pub const fn new(name: &'static str, path: &'static str) -> Self {
-        Self {
-            name,
-            path,
-            bytes: OnceCell::new(),
-        }
-    }
-
-    pub fn name(&self) -> &'static str {
-        self.name
-    }
-
-    pub fn bytes(&self) -> &[u8] {
-        self.bytes
-            .get_or_init(|| {
-                let dir = std::env::var("CARGO_MANIFEST_DIR").unwrap();
-                let path = Path::new(dir.as_str()).join(self.path);
-                std::fs::read(&path)
-                    .unwrap_or_else(|_| panic!("Failed to load test asset: {:?}", path.display()))
-            })
-            .as_slice()
-    }
-}
-
-pub struct Package {
-    modules: &'static [&'static str],
-    package: Asset,
-}
-
-impl Package {
-    pub const fn new(modules: &'static [&'static str], package: Asset) -> Self {
-        Self { modules, package }
-    }
-    pub fn modules(&self) -> &'static [&'static str] {
-        self.modules
-    }
-    pub fn bytes(&self) -> &[u8] {
-        self.package.bytes()
-    }
-}
+pub use assets::*;
 
 pub static ROOT_PACKAGE: Package = Package::new(
     &["Store", "EventProxy"],

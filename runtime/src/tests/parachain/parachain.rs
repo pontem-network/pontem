@@ -1,6 +1,5 @@
-use crate::mock::*;
-use crate::mock::mock_runtime::CurrencyId as MockCurrencyId;
-use crate::*;
+use crate::tests::parachain::*;
+use crate::tests::parachain::mock_runtime::CurrencyId as MockCurrencyId;
 use orml_xtokens::Error;
 use xcm_emulator::{Junction, TestExt};
 use frame_support::traits::Currency;

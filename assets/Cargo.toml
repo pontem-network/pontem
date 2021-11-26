@@ -1,0 +1,17 @@
+[package]
+authors = ['Pontem Network']
+edition = '2018'
+homepage = 'https://pontem.network'
+license = 'Unlicense'
+name = 'assets'
+repository = 'https://github.com/pontem-network/pontem/'
+version = '3.0.0'
+
+[dependencies]
+once_cell = { default-features = false, version = "1.5.2" }
+
+[features]
+default = ['std']
+std = [
+    "once_cell/std"
+]

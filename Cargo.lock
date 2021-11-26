@@ -187,6 +187,13 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9b34d609dfbaf33d6889b2b7106d3ca345eacad44200913df5ba02bfd31d2ba9"
 
 [[package]]
+name = "assets"
+version = "3.0.0"
+dependencies = [
+ "once_cell",
+]
+
+[[package]]
 name = "async-attributes"
 version = "1.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -7817,6 +7824,7 @@ dependencies = [
 name = "pontem-runtime"
 version = "3.0.0"
 dependencies = [
+ "assets",
  "constants",
  "cumulus-pallet-dmp-queue",
  "cumulus-pallet-parachain-system",
@@ -7834,6 +7842,7 @@ dependencies = [
  "hex-literal",
  "kusama-runtime",
  "module-currencies",
+ "mvm",
  "nimbus-primitives",
  "orml-tokens",
  "orml-traits",
@@ -7870,6 +7879,7 @@ dependencies = [
  "sp-block-builder",
  "sp-core",
  "sp-inherents",
+ "sp-io",
  "sp-mvm",
  "sp-mvm-rpc-runtime",
  "sp-offchain",
@@ -10437,6 +10447,7 @@ version = "0.3.2"
 dependencies = [
  "alt_serde",
  "anyhow",
+ "assets",
  "bcs 0.1.1",
  "bcs 0.1.3",
  "constants",
