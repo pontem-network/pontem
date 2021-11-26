@@ -10,6 +10,12 @@ fn get_unit(amount: Balance, currency_id: CurrencyId) -> Balance {
 }
 
 #[test]
+// Test correct native currency.
+fn test_get_native_currency() {
+    assert_eq!(GetNativeCurrencyId::get(), CurrencyId::PONT);
+}
+
+#[test]
 /// Test existential deposits.
 fn test_existential_deposits() {
     assert_eq!(

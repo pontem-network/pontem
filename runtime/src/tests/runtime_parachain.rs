@@ -18,6 +18,22 @@ fn test_currency_id_convertations() {
                     GeneralKey(CurrencyId::PONT.symbol())
                 )
             })
-        )
+        );
+
+        assert_eq!(
+            CurrencyIdConvert::convert(MultiLocation::parent()),
+            Some(CurrencyId::KSM)
+        );
+
+        assert_eq!(
+            CurrencyIdConvert::convert(MultiLocation {
+                parents: 1,
+                interior: X2(
+                    Parachain(ParachainInfo::get().into()),
+                    GeneralKey(CurrencyId::PONT.symbol()),
+                )
+            }),
+            Some(CurrencyId::PONT),
+        );
     });
 }
