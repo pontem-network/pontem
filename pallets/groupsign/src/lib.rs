@@ -116,6 +116,9 @@ pub mod pallet {
         // When signatures length doesn't match signers length.
         SignaturesLengthDoesntMatch,
 
+        // When zero signatures provided.
+        ZeroSignatureCall,
+
         // Can't verify signature.
         SignatureVerificationError,
 
@@ -155,6 +158,12 @@ pub mod pallet {
             valid_thru: T::BlockNumber,
         ) -> DispatchResultWithPostInfo {
             let caller = ensure_signed(origin)?;
+
+            // Check signatures length match.
+            ensure!(
+                signatures.len() > 0,
+                Error::<T>::ZeroSignatureCall
+            );
 
             // Check signatures length match.
             ensure!(
