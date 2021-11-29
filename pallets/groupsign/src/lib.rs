@@ -20,6 +20,7 @@ mod tests;
 #[cfg(feature = "runtime-benchmarks")]
 mod benchmarking;
 pub mod weights;
+pub mod utils;
 
 #[frame_support::pallet]
 pub mod pallet {
@@ -27,7 +28,6 @@ pub mod pallet {
     use sp_std::prelude::Box;
     use scale_info::TypeInfo;
     use frame_support::{dispatch::{DispatchResultWithPostInfo, Dispatchable, GetDispatchInfo, PostDispatchInfo}, ensure, pallet_prelude::*};
-    use sp_core::hashing::blake2_256;
     use frame_system::pallet_prelude::*;
     use sp_std::vec::Vec;
     use sp_runtime::{
@@ -179,24 +179,11 @@ pub mod pallet {
                 Error::<T>::EraValidationError,
             );
 
-            // Get account nonce.
-            let nonce = frame_system::Pallet::<T>::account_nonce(&caller);
-
-            // Generate signature.
-            let mut call_preimage = signed_call.encode();
-            call_preimage.extend(valid_since.encode());
-            call_preimage.extend(valid_thru.encode());
-            call_preimage.extend(caller.encode());
-            call_preimage.extend(nonce.encode());
-
-            // We collect check that signers didn't changed.
-            call_preimage.extend(signers.encode());
-
-            let hash = blake2_256(call_preimage.as_ref());
+            let preimage = crate::utils::generate_preimage::<T>(&caller, &signed_call, &signers, valid_since, valid_thru);
 
             // Verify signature.
             let verified = Iterator::zip(signatures.into_iter(), signers.clone().into_iter())
-                .all(|(sig, signer)| verify_encoded_lazy(&sig, &hash, &signer));
+                .all(|(sig, signer)| verify_encoded_lazy(&sig, &preimage, &signer));
 
             ensure!(verified, Error::<T>::SignatureVerificationError);
 
@@ -211,7 +198,7 @@ pub mod pallet {
                 Ok(post_info) => {
                     <Pallet<T>>::deposit_event(Event::DispatchableExecuted(
                         caller,
-                        hash.to_vec(),
+                        preimage.to_vec(),
                     ));
                     post_info.actual_weight
                 }
