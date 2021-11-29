@@ -33,7 +33,6 @@ clippy:
 
 .PHONY: bench
 bench: assets
-	# This is just an example about how to run benchmarks for the pallet
 	mkdir -p ./target/sp-bench
 	cargo run \
 		--release \
@@ -48,6 +47,23 @@ bench: assets
 		--wasm-execution=compiled \
 		--steps=20 --repeat=10 \
 		--output=target/sp-bench
+
+.PHONY: bench-groupsign
+bench-groupsign:
+	mkdir -p ./target/gs-bench
+	cargo run \
+		--release \
+		--bin pontem \
+		--features=runtime-benchmarks -- \
+		benchmark \
+		--dev \
+		-lsp_mvm=trace \
+		--pallet=groupsign \
+		--extrinsic='*' \
+		--execution=wasm \
+		--wasm-execution=compiled \
+		--steps=20 --repeat=10 \
+		--output=target/gp-bench
 
 .PHONY: test
 test: assets
