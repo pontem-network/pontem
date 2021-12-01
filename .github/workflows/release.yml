@@ -12,7 +12,7 @@ on:
 
 jobs:
   release:
-    name: Page
+    name: page
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -54,13 +54,10 @@ jobs:
           ## TODO: EDIT ME BEFORE PUBLISH
 
           [link-main]: ${{ github.event.repository.html_url }}/actions?query=workflow%3A%22Release%22
-          [link-ext]: ${{ github.event.repository.html_url }}/actions?query=workflow%3A%22Release+Ext%22
-          [badge-main]: ${{ github.event.repository.html_url }}/workflows/Release/badge.svg?event=workflow_run (main workflow)
-          [badge-ext]: ${{ github.event.repository.html_url }}/workflows/Release%20Ext/badge.svg?event=workflow_run (ext workflow)
+          [badge-main]: ${{ github.event.repository.html_url }}/workflows/Release/badge.svg?event=workflow_call (main workflow)
 
           __Please wait build completions for:__
           - [![Build Release Tools][badge-main]][link-main]
-          - [![Build Release Ext][badge-ext]][link-ext]
 
           - - -
 
@@ -117,7 +114,7 @@ jobs:
 
   build:
     needs: release
-    name: Build
+    name: ${{ matrix.os.name }}
     runs-on: ${{ matrix.os.value }}
     strategy:
       fail-fast: false
@@ -209,7 +206,19 @@ jobs:
           asset_path: target/release/wbuild/pontem-runtime/pontem_runtime.compact.wasm
           asset_name: pontem_runtime.compact.wasm
           asset_content_type: application/wasm
+
+      - name: Upload Runtime Compressed
+        if: matrix.os.name == 'ubuntu'
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.release.outputs.upload_url }}
+          asset_path: target/release/wbuild/pontem-runtime/pontem_runtime.compact.compressed.wasm
+          asset_name: pontem_runtime.compact.compressed.wasm
+          asset_content_type: application/wasm
       # also
+      #   - pontem_runtime.compact.compressed.wasm
       # wbuild/polkadot-runtime
       #   - polkadot_runtime.compact.compressed.wasm
       #   - polkadot_runtime.compact.wasm
