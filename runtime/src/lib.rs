@@ -784,6 +784,8 @@ impl pallet_multisig::Config for Runtime {
 /// Benchmarks runned on the instance: 8GB RAM, 4 core CPU, SSD.
 /// The value `GAS_PER_SECOND` is not final, and can be changed later after tests on production.
 /// So currently max gas is `GAS_PER_SECOND * MAXIMUM_BLOCK_WEIGHT * NORMAL_DISPATCH_RATIO`.
+/// IMPORTANT: take into account you also paying gas for transaction bytes, include Move VM module/tx bytes, so really final max gas is different
+/// for each transaction because it also depends on the size of assets.
 pub const GAS_PER_SECOND: u64 = 6_500_000;
 
 /// Weight / gas ratio.
@@ -829,6 +831,9 @@ impl sp_mvm::Config for Runtime {
 
     /// Currencies (Multicurrency).
     type Currencies = Currencies;
+
+    /// Weight information.
+    type WeightInfo = ();
 }
 
 struct CheckInherents;

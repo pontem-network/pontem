@@ -211,6 +211,7 @@ impl sp_mvm::Config for Test {
     type PalletId = MVMPalletId;
     type CurrencyId = CurrencyId;
     type Currencies = Currencies;
+    type WeightInfo = ();
 }
 
 parameter_types! {

@@ -52,7 +52,7 @@ pub mod pallet {
     use gas::GasWeightMapping;
     use event::*;
     use mvm::*;
-    use weights;
+    use weights::WeightInfo;
 
     #[cfg(not(feature = "no-vm-static"))]
     mod boxed {
@@ -181,7 +181,11 @@ pub mod pallet {
         ///
         /// User can send his Move script (compiled using 'dove tx' command) for execution by Move VM.
         /// The gas limit should be provided.
-        #[pallet::weight(T::GasWeightMapping::gas_to_weight(*gas_limit))]
+        #[pallet::weight(
+            <T as Config>::WeightInfo::execute().saturating_add(
+                T::GasWeightMapping::gas_to_weight(*gas_limit)
+            )
+        )]
         pub fn execute(
             origin: OriginFor<T>,
             tx_bc: Vec<u8>,
@@ -205,7 +209,7 @@ pub mod pallet {
         /// User can publish his Move module under his address.
         /// The gas limit should be provided.
         #[pallet::weight(
-            T::WeightInfo::publish_module().saturating_add(
+            <T as Config>::WeightInfo::publish_module().saturating_add(
                 T::GasWeightMapping::gas_to_weight(*gas_limit)
             )
         )]
@@ -234,7 +238,12 @@ pub mod pallet {
         /// Deploy several modules in one transaction. Could be called by root in case needs to update Standard Library.
         /// Read more about Standard Library - https://docs.pontem.network/03.-move-vm/stdlib
         /// The gas limit should be provided.
-        #[pallet::weight(T::GasWeightMapping::gas_to_weight(*gas_limit))]
+        /// TODO: maybe we should replace it with publish_package, yet i'm currently not sure, as user anyway paying for transaction bytes.
+        #[pallet::weight(
+            <T as Config>::WeightInfo::publish_module().saturating_add(
+                T::GasWeightMapping::gas_to_weight(*gas_limit)
+            )
+        )]
         pub fn publish_package(
             origin: OriginFor<T>,
             package: Vec<u8>,
