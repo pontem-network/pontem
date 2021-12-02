@@ -29,9 +29,14 @@ benchmarks! {
 
     // Needs to be fixed in multisig. Not yet sure how, needs more deconstruction.
     where_clause { where Result<pallet_multisig::Origin<T>, <T as frame_system::Config>::Origin>: From<<T as frame_system::Config>::Origin> }
-
+    publish_module {
+        let caller: T::AccountId = whitelisted_caller();
+        let module = include_bytes!("../tests/benchmark_assets/artifacts/modules/2_Empty.mv").to_vec();
+    }: _(RawOrigin::Signed(caller), module, 100_000_000)
+    verify {
+        assert!(VMStorage::<T>::contains_key(module_access("Empty")));
+    }
     publish_empty_module {
-        let s in 0 .. 100;
         let caller: T::AccountId = whitelisted_caller();
         let module = include_bytes!("../tests/benchmark_assets/artifacts/modules/2_Empty.mv").to_vec();
     }: publish_module(RawOrigin::Signed(caller), module, 100_000_000)
@@ -39,7 +44,7 @@ benchmarks! {
         assert!(VMStorage::<T>::contains_key(module_access("Empty")));
     }
     publish_many_deps_module {
-        let s in 0 .. 100;
+        let s in 0 .. stdlib().len().try_into().unwrap();
         for (name, module) in stdlib() {
             VMStorage::<T>::insert(module_access_core(name), module);
         }
@@ -50,7 +55,6 @@ benchmarks! {
         assert!(VMStorage::<T>::contains_key(module_access("StdImport")));
     }
     publish_s_module {
-        let s in 0 .. 100;
         let caller: T::AccountId = whitelisted_caller();
         let module = include_bytes!("../tests/benchmark_assets/artifacts/modules/6_S.mv").to_vec();
     }: publish_module(RawOrigin::Signed(caller), module, 100_000_000)
@@ -58,7 +62,6 @@ benchmarks! {
         assert!(VMStorage::<T>::contains_key(module_access("S")));
     }
     publish_m_module {
-        let s in 0 .. 100;
         let caller: T::AccountId = whitelisted_caller();
         let module = include_bytes!("../tests/benchmark_assets/artifacts/modules/5_M.mv").to_vec();
     }: publish_module(RawOrigin::Signed(caller), module, 100_000_000)
@@ -66,7 +69,6 @@ benchmarks! {
         assert!(VMStorage::<T>::contains_key(module_access("M")));
     }
     publish_l_module {
-        let s in 0 .. 100;
         let caller: T::AccountId = whitelisted_caller();
         let module = include_bytes!("../tests/benchmark_assets/artifacts/modules/4_L.mv").to_vec();
     }: publish_module(RawOrigin::Signed(caller), module, 100_000_000)
@@ -74,7 +76,6 @@ benchmarks! {
         assert!(VMStorage::<T>::contains_key(module_access("L")));
     }
     execute_many_params {
-        let s in 0 .. 100;
         let caller: T::AccountId = whitelisted_caller();
         let tx = include_bytes!("../tests/benchmark_assets/artifacts/transactions/many_params.mvt").to_vec();
     }: execute(RawOrigin::Signed(caller), tx, 500_000)
@@ -82,7 +83,6 @@ benchmarks! {
         // no-op
     }
     execute_store {
-        let s in 0 .. 100;
          for (name, module) in stdlib() {
             VMStorage::<T>::insert(module_access_core(name), module);
         }
@@ -104,7 +104,6 @@ benchmarks! {
         assert!(VMStorage::<T>::contains_key(ak.as_ref()));
     }
     execute_load {
-        let s in 0 .. 100;
          for (name, module) in stdlib() {
             VMStorage::<T>::insert(module_access_core(name), module);
         }
@@ -127,7 +126,6 @@ benchmarks! {
     verify {
     }
     execute_store_event {
-        let s in 0 .. 100;
          for (name, module) in stdlib() {
             VMStorage::<T>::insert(module_access_core(name), module);
         }
@@ -137,14 +135,12 @@ benchmarks! {
     verify {
     }
     execute_vec_input {
-        let s in 0 .. 100;
         let caller: T::AccountId = whitelisted_caller();
         let tx = include_bytes!("../tests/benchmark_assets/artifacts/transactions/vector_input.mvt").to_vec();
     }: execute(RawOrigin::Signed(caller), tx, 500_000)
     verify {
     }
     execute_loop {
-        let s in 0 .. 100;
         let caller: T::AccountId = whitelisted_caller();
         let tx = include_bytes!("../tests/benchmark_assets/artifacts/transactions/lp.mvt").to_vec();
     }: execute(RawOrigin::Signed(caller), tx, 100_000_000)
