@@ -7,7 +7,7 @@ fn main() {
     rerun_if_git_head_changed();
 
     fetch(FetchConfig {
-        git_repo: "https://github.com/pontem-network/move-stdlib.git",
+        git_repo: "https://github.com/pontem-network/pont-stdlib.git",
         rev: Some("e9bd26720c06705d2e222833a496fda7c67c8e32"),
         path_to_clone: "./move/stdlib",
         build_with_dove: true,
