@@ -40,6 +40,7 @@ pub mod mvm;
 pub mod result;
 pub mod storage;
 pub mod types;
+pub mod weights;
 
 #[frame_support::pallet]
 pub mod pallet {
@@ -51,6 +52,7 @@ pub mod pallet {
     use gas::GasWeightMapping;
     use event::*;
     use mvm::*;
+    use weights;
 
     #[cfg(not(feature = "no-vm-static"))]
     mod boxed {
@@ -102,6 +104,9 @@ pub mod pallet {
 
         /// The AccountId that can perform a standard library update or deploy module under 0x address.
         type UpdaterOrigin: EnsureOrigin<Self::Origin>;
+
+        /// Describes weights for Move VM extrinsics.
+        type WeightInfo: WeightInfo;
 
         /// The treasury's pallet id, used for deriving its sovereign account ID.
         #[pallet::constant]
@@ -199,7 +204,11 @@ pub mod pallet {
         ///
         /// User can publish his Move module under his address.
         /// The gas limit should be provided.
-        #[pallet::weight(T::GasWeightMapping::gas_to_weight(*gas_limit))]
+        #[pallet::weight(
+            T::WeightInfo::publish_module().saturating_add(
+                T::GasWeightMapping::gas_to_weight(*gas_limit)
+            )
+        )]
         pub fn publish_module(
             origin: OriginFor<T>,
             module_bc: Vec<u8>,
