@@ -103,7 +103,7 @@ assets = { path = '../assets', default-features = false }
 [dependencies.move-vm]
 package = "mvm"
 git = "https://github.com/pontem-network/sp-move-vm.git"
-rev = "892b723b75cce13509332a0d81f25f3965ac7fb0"
+rev = "20798389da42cf5b17ba7c07264ae53b963d256c"
 default-features = false
 features = [ "move_stdlib" ]
 
