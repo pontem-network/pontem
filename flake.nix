@@ -25,14 +25,14 @@
           channel = "nightly";
           # date = "2021-09-13";
           # sha256 = "sha256:1f7anbyrcv4w44k2rb6939bvsq1k82bks5q1mm5fzx92k8m9518c";
-          date = "2021-08-13";
-          sha256 = "sha256:0g1j230zp38jdnkvw3a4q10cjf57avwpnixi6a477d1df0pxbl5n";
+          date = "2021-10-24";
+          sha256 = "sha256-OrzhSF+XO0pfzpfVT8EpPHeGwEmIB7va+lEeWtTjOAs=";
         };
 
         # Some strange wasm errors occur if not built with this old toolchain
         buildToolchainV = {
           channel = "nightly";
-          date = "2021-06-28";
+          date = "2021-10-24";
           sha256 = "sha256-vRBxIPRyCcLvh6egPKSHMTmxVD1E0obq71iCM0aOWZo=";
         };
 
@@ -77,6 +77,7 @@
           ]);
 
           PROTOC = "${protobuf}/bin/protoc";
+          PROTOC_INCLUDE = "${protobuf}/include";
           LLVM_CONFIG_PATH="${llvmPackagesR.llvm}/bin/llvm-config";
           LIBCLANG_PATH="${llvmPackagesR.libclang.lib}/lib";
           RUST_SRC_PATH = "${devToolchain}/lib/rustlib/src/rust/library/";
