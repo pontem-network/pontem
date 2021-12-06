@@ -6,6 +6,7 @@
 #[cfg(feature = "std")]
 include!(concat!(env!("OUT_DIR"), "/wasm_binary.rs"));
 
+use groupsign::weights::PontemWeights;
 use sp_std::prelude::*;
 use sp_core::OpaqueMetadata;
 use sp_runtime::{
@@ -775,6 +776,7 @@ impl groupsign::Config for Runtime {
     type Public = sp_runtime::MultiSigner;
     type Signature = sp_runtime::MultiSignature;
     type MyOrigin = Origin;
+    type WeightInfo = PontemWeights<Self>;
 }
 
 /// Move VM similar to Ethereum utilizing gas approach.

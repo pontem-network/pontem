@@ -7,6 +7,7 @@
 //! It's useful for some kinds of multisignatures implementations, e.g. Move VM supports multisignature out of the box,
 //! yet it asks for signers of the current transaction.
 //! Signers should sign hash `(blake2_256)` generated from data contains encoded: `call`, `valid_since`, `valid_thru`, `caller`, `nonce`.
+//!
 #![cfg_attr(not(feature = "std"), no_std)]
 
 pub use pallet::*;
@@ -21,6 +22,7 @@ mod tests;
 mod benchmarking;
 pub mod weights;
 pub mod utils;
+pub mod check_origin;
 
 #[frame_support::pallet]
 pub mod pallet {
@@ -31,7 +33,7 @@ pub mod pallet {
     use frame_system::pallet_prelude::*;
     use sp_std::vec::Vec;
     use sp_runtime::{
-        traits::{Verify, IdentifyAccount},
+        traits::{Verify, IdentifyAccount, SignedExtension},
         verify_encoded_lazy,
     };
 
