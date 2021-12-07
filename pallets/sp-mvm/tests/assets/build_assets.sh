@@ -1,6 +1,6 @@
 # Clone and rebuild stdlib
 rm -rf ./stdlib
-git clone https://github.com/pontem-network/move-stdlib.git ./stdlib
+git clone https://github.com/pontem-network/pont-stdlib.git ./stdlib
 pushd ./stdlib
 git checkout e9bd26720c06705d2e222833a496fda7c67c8e32
 dove build --package
