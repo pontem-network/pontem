@@ -73,7 +73,7 @@ macro_rules! def_currencies {
         }
 
         impl $ty_name {
-            pub fn decimals(&self) -> u8 {
+            pub const fn decimals(&self) -> u8 {
                 match self {
                     $(Self::$name => $decimals,)*
                 }
