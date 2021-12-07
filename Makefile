@@ -64,6 +64,12 @@ build:
 	export WASM_BUILD_TOOLCHAIN=`cat rust-toolchain`
 	cargo build --release
 
+.PHONY: build-bench
+build-bench: assets
+	export SKIP_WASM_BUILD=0
+	export WASM_BUILD_TOOLCHAIN=`cat rust-toolchain`
+	cargo build --release --features=runtime-benchmarks
+
 .PHONY: assets
 assets: pallets/sp-mvm/tests/assets/stdlib pallets/sp-mvm/tests/benchmark_assets/stdlib runtime/src/tests/assets/stdlib
 
