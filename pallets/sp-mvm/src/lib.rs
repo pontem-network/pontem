@@ -40,6 +40,7 @@ pub mod mvm;
 pub mod result;
 pub mod storage;
 pub mod types;
+pub mod weights;
 
 #[frame_support::pallet]
 pub mod pallet {
@@ -51,6 +52,7 @@ pub mod pallet {
     use gas::GasWeightMapping;
     use event::*;
     use mvm::*;
+    use weights::WeightInfo;
 
     #[cfg(not(feature = "no-vm-static"))]
     mod boxed {
@@ -102,6 +104,9 @@ pub mod pallet {
 
         /// The AccountId that can perform a standard library update or deploy module under 0x address.
         type UpdaterOrigin: EnsureOrigin<Self::Origin>;
+
+        /// Describes weights for Move VM extrinsics.
+        type WeightInfo: WeightInfo;
 
         /// The treasury's pallet id, used for deriving its sovereign account ID.
         #[pallet::constant]
@@ -176,7 +181,11 @@ pub mod pallet {
         ///
         /// User can send his Move script (compiled using 'dove tx' command) for execution by Move VM.
         /// The gas limit should be provided.
-        #[pallet::weight(T::GasWeightMapping::gas_to_weight(*gas_limit))]
+        #[pallet::weight(
+            <T as Config>::WeightInfo::execute().saturating_add(
+                T::GasWeightMapping::gas_to_weight(*gas_limit)
+            )
+        )]
         pub fn execute(
             origin: OriginFor<T>,
             tx_bc: Vec<u8>,
@@ -199,7 +208,11 @@ pub mod pallet {
         ///
         /// User can publish his Move module under his address.
         /// The gas limit should be provided.
-        #[pallet::weight(T::GasWeightMapping::gas_to_weight(*gas_limit))]
+        #[pallet::weight(
+            <T as Config>::WeightInfo::publish_module().saturating_add(
+                T::GasWeightMapping::gas_to_weight(*gas_limit)
+            )
+        )]
         pub fn publish_module(
             origin: OriginFor<T>,
             module_bc: Vec<u8>,
@@ -225,7 +238,12 @@ pub mod pallet {
         /// Deploy several modules in one transaction. Could be called by root in case needs to update Standard Library.
         /// Read more about Standard Library - https://docs.pontem.network/03.-move-vm/stdlib
         /// The gas limit should be provided.
-        #[pallet::weight(T::GasWeightMapping::gas_to_weight(*gas_limit))]
+        /// TODO: maybe we should replace it with publish_package, yet i'm currently not sure, as user anyway paying for transaction bytes.
+        #[pallet::weight(
+            <T as Config>::WeightInfo::publish_module().saturating_add(
+                T::GasWeightMapping::gas_to_weight(*gas_limit)
+            )
+        )]
         pub fn publish_package(
             origin: OriginFor<T>,
             package: Vec<u8>,

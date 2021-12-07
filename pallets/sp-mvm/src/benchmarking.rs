@@ -29,9 +29,23 @@ benchmarks! {
 
     // Needs to be fixed in multisig. Not yet sure how, needs more deconstruction.
     where_clause { where Result<pallet_multisig::Origin<T>, <T as frame_system::Config>::Origin>: From<<T as frame_system::Config>::Origin> }
-
+    publish_module {
+        // Just publish empty module to estimate weight.
+        let caller: T::AccountId = whitelisted_caller();
+        let module = include_bytes!("../tests/benchmark_assets/artifacts/modules/2_Empty.mv").to_vec();
+    }: _(RawOrigin::Signed(caller), module, 100_000_000)
+    verify {
+        assert!(VMStorage::<T>::contains_key(module_access("Empty")));
+    }
+    execute {
+        // Just execute empty script to estimate weight.
+        let caller: T::AccountId = whitelisted_caller();
+        let tx = include_bytes!("../tests/benchmark_assets/artifacts/transactions/empty.mvt").to_vec();
+    }: _(RawOrigin::Signed(caller), tx, 100_000_000)
+    verify {
+        // no-op
+    }
     publish_empty_module {
-        let s in 0 .. 100;
         let caller: T::AccountId = whitelisted_caller();
         let module = include_bytes!("../tests/benchmark_assets/artifacts/modules/2_Empty.mv").to_vec();
     }: publish_module(RawOrigin::Signed(caller), module, 100_000_000)
@@ -39,18 +53,16 @@ benchmarks! {
         assert!(VMStorage::<T>::contains_key(module_access("Empty")));
     }
     publish_many_deps_module {
-        let s in 0 .. 100;
         for (name, module) in stdlib() {
             VMStorage::<T>::insert(module_access_core(name), module);
         }
         let caller: T::AccountId = whitelisted_caller();
-        let module = include_bytes!("../tests/benchmark_assets/artifacts/modules/52_StdImport.mv").to_vec();
+        let module = include_bytes!("../tests/benchmark_assets/artifacts/modules/53_StdImport.mv").to_vec();
     }: publish_module(RawOrigin::Signed(caller), module, 100_000_000)
     verify {
         assert!(VMStorage::<T>::contains_key(module_access("StdImport")));
     }
     publish_s_module {
-        let s in 0 .. 100;
         let caller: T::AccountId = whitelisted_caller();
         let module = include_bytes!("../tests/benchmark_assets/artifacts/modules/6_S.mv").to_vec();
     }: publish_module(RawOrigin::Signed(caller), module, 100_000_000)
@@ -58,7 +70,6 @@ benchmarks! {
         assert!(VMStorage::<T>::contains_key(module_access("S")));
     }
     publish_m_module {
-        let s in 0 .. 100;
         let caller: T::AccountId = whitelisted_caller();
         let module = include_bytes!("../tests/benchmark_assets/artifacts/modules/5_M.mv").to_vec();
     }: publish_module(RawOrigin::Signed(caller), module, 100_000_000)
@@ -66,7 +77,6 @@ benchmarks! {
         assert!(VMStorage::<T>::contains_key(module_access("M")));
     }
     publish_l_module {
-        let s in 0 .. 100;
         let caller: T::AccountId = whitelisted_caller();
         let module = include_bytes!("../tests/benchmark_assets/artifacts/modules/4_L.mv").to_vec();
     }: publish_module(RawOrigin::Signed(caller), module, 100_000_000)
@@ -74,7 +84,6 @@ benchmarks! {
         assert!(VMStorage::<T>::contains_key(module_access("L")));
     }
     execute_many_params {
-        let s in 0 .. 100;
         let caller: T::AccountId = whitelisted_caller();
         let tx = include_bytes!("../tests/benchmark_assets/artifacts/transactions/many_params.mvt").to_vec();
     }: execute(RawOrigin::Signed(caller), tx, 500_000)
@@ -82,7 +91,6 @@ benchmarks! {
         // no-op
     }
     execute_store {
-        let s in 0 .. 100;
          for (name, module) in stdlib() {
             VMStorage::<T>::insert(module_access_core(name), module);
         }
@@ -104,7 +112,6 @@ benchmarks! {
         assert!(VMStorage::<T>::contains_key(ak.as_ref()));
     }
     execute_load {
-        let s in 0 .. 100;
          for (name, module) in stdlib() {
             VMStorage::<T>::insert(module_access_core(name), module);
         }
@@ -127,7 +134,6 @@ benchmarks! {
     verify {
     }
     execute_store_event {
-        let s in 0 .. 100;
          for (name, module) in stdlib() {
             VMStorage::<T>::insert(module_access_core(name), module);
         }
@@ -137,14 +143,12 @@ benchmarks! {
     verify {
     }
     execute_vec_input {
-        let s in 0 .. 100;
         let caller: T::AccountId = whitelisted_caller();
         let tx = include_bytes!("../tests/benchmark_assets/artifacts/transactions/vector_input.mvt").to_vec();
     }: execute(RawOrigin::Signed(caller), tx, 500_000)
     verify {
     }
     execute_loop {
-        let s in 0 .. 100;
         let caller: T::AccountId = whitelisted_caller();
         let tx = include_bytes!("../tests/benchmark_assets/artifacts/transactions/lp.mvt").to_vec();
     }: execute(RawOrigin::Signed(caller), tx, 100_000_000)
@@ -232,6 +236,10 @@ pub fn stdlib() -> Vec<(&'static str, Vec<u8>)> {
             include_bytes!("../tests/benchmark_assets/stdlib/artifacts/modules/22_DualAttestation.mv").to_vec()
         ),
         (
+            "DiemId",
+            include_bytes!("../tests/benchmark_assets/stdlib/artifacts/modules/23_DiemId.mv").to_vec()
+        ),
+        (
             "DesignatedDealer",
             include_bytes!("../tests/benchmark_assets/stdlib/artifacts/modules/24_DesignatedDealer.mv").to_vec()
         ),
@@ -256,12 +264,12 @@ pub fn stdlib() -> Vec<(&'static str, Vec<u8>)> {
             include_bytes!("../tests/benchmark_assets/stdlib/artifacts/modules/29_SharedEd25519PublicKey.mv").to_vec()
         ),
         (
-            "RecoveryAddress",
-            include_bytes!("../tests/benchmark_assets/stdlib/artifacts/modules/30_RecoveryAddress.mv").to_vec()
-        ),
-        (
             "Errors",
             include_bytes!("../tests/benchmark_assets/stdlib/artifacts/modules/2_Errors.mv").to_vec()
+        ),
+        (
+            "RecoveryAddress",
+            include_bytes!("../tests/benchmark_assets/stdlib/artifacts/modules/30_RecoveryAddress.mv").to_vec()
         ),
         (
             "AccountAdministrationScripts",
@@ -300,32 +308,36 @@ pub fn stdlib() -> Vec<(&'static str, Vec<u8>)> {
             include_bytes!("../tests/benchmark_assets/stdlib/artifacts/modules/39_DiemVersion.mv").to_vec()
         ),
         (
-            "TransactionFee",
-            include_bytes!("../tests/benchmark_assets/stdlib/artifacts/modules/40_TransactionFee.mv").to_vec()
-        ),
-        (
             "CoreAddresses",
             include_bytes!("../tests/benchmark_assets/stdlib/artifacts/modules/3_CoreAddresses.mv").to_vec()
         ),
         (
+            "TransactionFee",
+            include_bytes!("../tests/benchmark_assets/stdlib/artifacts/modules/40_TransactionFee.mv").to_vec()
+        ),
+        (
+            "KSM",
+            include_bytes!("../tests/benchmark_assets/stdlib/artifacts/modules/41_KSM.mv").to_vec()
+        ),
+        (
             "Genesis",
-            include_bytes!("../tests/benchmark_assets/stdlib/artifacts/modules/41_Genesis.mv").to_vec()
+            include_bytes!("../tests/benchmark_assets/stdlib/artifacts/modules/42_Genesis.mv").to_vec()
         ),
         (
             "PaymentScripts",
-            include_bytes!("../tests/benchmark_assets/stdlib/artifacts/modules/42_PaymentScripts.mv").to_vec()
+            include_bytes!("../tests/benchmark_assets/stdlib/artifacts/modules/43_PaymentScripts.mv").to_vec()
         ),
         (
             "SystemAdministrationScripts",
-            include_bytes!("../tests/benchmark_assets/stdlib/artifacts/modules/43_SystemAdministrationScripts.mv").to_vec()
+            include_bytes!("../tests/benchmark_assets/stdlib/artifacts/modules/44_SystemAdministrationScripts.mv").to_vec()
         ),
         (
             "TreasuryComplianceScripts",
-            include_bytes!("../tests/benchmark_assets/stdlib/artifacts/modules/44_TreasuryComplianceScripts.mv").to_vec()
+            include_bytes!("../tests/benchmark_assets/stdlib/artifacts/modules/45_TreasuryComplianceScripts.mv").to_vec()
         ),
         (
             "ValidatorAdministrationScripts",
-            include_bytes!("../tests/benchmark_assets/stdlib/artifacts/modules/45_ValidatorAdministrationScripts.mv").to_vec()
+            include_bytes!("../tests/benchmark_assets/stdlib/artifacts/modules/46_ValidatorAdministrationScripts.mv").to_vec()
         ),
         (
             "DiemTimestamp",

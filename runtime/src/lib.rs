@@ -119,12 +119,12 @@ pub fn native_version() -> NativeVersion {
     }
 }
 
-/// We assume that ~10% of the block weight is consumed by `on_initalize` handlers.
+/// We assume that ~20% of the block weight is consumed by `on_initalize` handlers.
 /// This is used to limit the maximal weight of a single extrinsic.
 const AVERAGE_ON_INITIALIZE_RATIO: Perbill = Perbill::from_percent(10);
-/// We allow `Normal` extrinsics to fill up the block up to 75%, the rest can be used
+/// We allow `Normal` extrinsics to fill up the block up to 65%, the rest can be used
 /// by  Operational  extrinsics.
-const NORMAL_DISPATCH_RATIO: Perbill = Perbill::from_percent(75);
+const NORMAL_DISPATCH_RATIO: Perbill = Perbill::from_percent(65);
 
 parameter_types! {
     pub const Version: RuntimeVersion = VERSION;
@@ -776,18 +776,26 @@ impl pallet_multisig::Config for Runtime {
     type WeightInfo = ();
 }
 
-/// By inheritance from Moonbeam and from Dfinance (based on validators statistic), we believe max 4125000 gas is currently enough for block.
-/// In the same time we use same 500ms Weight as Max Block Weight, from which 75% only are used for transactions.
-/// So our max gas is GAS_PER_SECOND * 0.500 * 0.65 => 4125000.
-pub const GAS_PER_SECOND: u64 = 11_000_000;
+/// Move VM similar to Ethereum utilizing gas approach.
+/// The gas in case of Pontem and Move VM has been done in a similar way to Moonbeam EVM approach.
+/// To get gas to weight conversion we are doing ratio: `WEIGHT_PER_GAS = WEIGHT_PER_SECOND / GAS_PER_SECOND`.
+/// To estimate `GAS_PER_SECOND` we used benchmarks we have done in Move VM.
+/// Benchmarks: https://github.com/pontem-network/sp-move-vm/blob/1.5/mvm/tests/gas_bench.rs (ignored `read_write_loop`).
+/// Benchmarks runned on the instance: 8GB RAM, 4 core CPU, SSD.
+/// The value `GAS_PER_SECOND` is not final, and can be changed later after tests on production.
+/// So currently max gas is `GAS_PER_SECOND * MAXIMUM_BLOCK_WEIGHT * NORMAL_DISPATCH_RATIO`.
+/// IMPORTANT: take into account you also paying gas for transaction bytes, include Move VM module/tx bytes, so really final max gas is different
+/// for each transaction because it also depends on the size of assets.
+pub const GAS_PER_SECOND: u64 = 6_500_000;
 
-/// Approximate ratio of the amount of Weight per Gas.
-/// u64 works for approximations because Weight is a very small unit compared to gas.
+/// Weight / gas ratio.
+/// Could be used to convert weight to gas and gas to weight.
 pub const WEIGHT_PER_GAS: u64 = WEIGHT_PER_SECOND / GAS_PER_SECOND;
 
 pub struct MoveVMGasWeightMapping;
 
-// Just use provided gas.
+/// Trait `GasWeightMapping` implementation for `MoveVMGasWeightMapping`.
+/// Converting gas to weight and weight to gas.
 impl GasWeightMapping for MoveVMGasWeightMapping {
     fn gas_to_weight(gas: u64) -> Weight {
         gas.saturating_mul(WEIGHT_PER_GAS)
@@ -823,6 +831,9 @@ impl sp_mvm::Config for Runtime {
 
     /// Currencies (Multicurrency).
     type Currencies = Currencies;
+
+    /// Weight information.
+    type WeightInfo = ();
 }
 
 struct CheckInherents;
