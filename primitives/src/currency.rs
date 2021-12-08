@@ -13,7 +13,7 @@ use scale_info::TypeInfo;
 use serde::{Deserialize, Serialize};
 
 #[derive(Default, Debug)]
-pub struct CurrencyConversionError {}
+pub struct CurrencyConversionError(Vec<u8>);
 
 #[cfg(feature = "std")]
 impl std::error::Error for CurrencyConversionError {}
@@ -21,7 +21,7 @@ impl std::error::Error for CurrencyConversionError {}
 #[cfg(feature = "std")]
 impl std::fmt::Display for CurrencyConversionError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "CurrencyConversionError is here!")
+        write!(f, "can't convert {:?} to currency", self.0)
     }
 }
 
@@ -153,16 +153,28 @@ mod tests {
     #[test]
     /// Test try from Vec<u8>.
     fn try_from_vec() {
-        assert_eq!(CurrencyId::try_from(b"PONT".to_vec()), Ok(CurrencyId::PONT));
-        assert_eq!(CurrencyId::try_from(b"KSM".to_vec()), Ok(CurrencyId::KSM));
+        assert_eq!(
+            CurrencyId::try_from(b"PONT".to_vec()).unwrap(),
+            CurrencyId::PONT
+        );
+        assert_eq!(
+            CurrencyId::try_from(b"KSM".to_vec()).unwrap(),
+            CurrencyId::KSM
+        );
         assert!(CurrencyId::try_from(b"UNKNOWN".to_vec()).is_err());
     }
 
     #[test]
     /// Test try from &[u8].
     fn try_from_slice() {
-        assert_eq!(CurrencyId::try_from(b"PONT".as_ref()), Ok(CurrencyId::PONT));
-        assert_eq!(CurrencyId::try_from(b"KSM".as_ref()), Ok(CurrencyId::KSM));
+        assert_eq!(
+            CurrencyId::try_from(b"PONT".as_ref()).unwrap(),
+            CurrencyId::PONT
+        );
+        assert_eq!(
+            CurrencyId::try_from(b"KSM".as_ref()).unwrap(),
+            CurrencyId::KSM
+        );
         assert!(CurrencyId::try_from(b"UNKNOWN".as_ref()).is_err());
     }
 }
