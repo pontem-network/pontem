@@ -12,7 +12,18 @@ use scale_info::TypeInfo;
 #[cfg(feature = "std")]
 use serde::{Deserialize, Serialize};
 
-pub type CurrencyConversionError = ();
+#[derive(Default, Debug)]
+pub struct CurrencyConversionError {}
+
+#[cfg(feature = "std")]
+impl std::error::Error for CurrencyConversionError {}
+
+#[cfg(feature = "std")]
+impl std::fmt::Display for CurrencyConversionError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "CurrencyConversionError is here!")
+    }
+}
 
 #[allow(dead_code)]
 const fn const_slice_eq(a: &[u8], b: &[u8]) -> bool {
