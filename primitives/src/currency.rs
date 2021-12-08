@@ -15,6 +15,12 @@ use serde::{Deserialize, Serialize};
 #[derive(Default, Debug)]
 pub struct CurrencyConversionError(Vec<u8>);
 
+impl CurrencyConversionError {
+    fn new(vec: Vec<u8>) -> Self {
+        CurrencyConversionError(vec)
+    }
+}
+
 #[cfg(feature = "std")]
 impl std::error::Error for CurrencyConversionError {}
 
@@ -87,7 +93,7 @@ macro_rules! def_currencies {
             fn try_from(v: Vec<u8>) -> Result<Self, Self::Error> {
                 match &v[..] {
                     $($str => Ok(Self::$name),)*
-                    _ => Err(Self::Error::default()),
+                    _ => Err(Self::Error::new(v)),
                 }
             }
         }
@@ -98,7 +104,7 @@ macro_rules! def_currencies {
             fn try_from(v: &'_ [u8]) -> Result<Self, Self::Error> {
                 match v {
                     $($str => Ok(Self::$name),)*
-                    _ => Err(Self::Error::default()),
+                    _ => Err(Self::Error::new(v.to_vec())),
                 }
             }
         }
