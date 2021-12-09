@@ -24,9 +24,8 @@ impl CurrencyConversionError {
 #[cfg(feature = "std")]
 impl std::error::Error for CurrencyConversionError {}
 
-#[cfg(feature = "std")]
-impl std::fmt::Display for CurrencyConversionError {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+impl sp_std::fmt::Display for CurrencyConversionError {
+    fn fmt(&self, f: &mut sp_std::fmt::Formatter<'_>) -> sp_std::fmt::Result {
         write!(f, "can't convert {:?} to currency", self.0)
     }
 }
