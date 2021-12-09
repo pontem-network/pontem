@@ -12,7 +12,23 @@ use scale_info::TypeInfo;
 #[cfg(feature = "std")]
 use serde::{Deserialize, Serialize};
 
-pub type CurrencyConversionError = ();
+#[derive(Default, Debug)]
+pub struct CurrencyConversionError(Vec<u8>);
+
+impl CurrencyConversionError {
+    fn new(vec: Vec<u8>) -> Self {
+        CurrencyConversionError(vec)
+    }
+}
+
+#[cfg(feature = "std")]
+impl std::error::Error for CurrencyConversionError {}
+
+impl sp_std::fmt::Display for CurrencyConversionError {
+    fn fmt(&self, f: &mut sp_std::fmt::Formatter<'_>) -> sp_std::fmt::Result {
+        write!(f, "can't convert {:?} to currency", self.0)
+    }
+}
 
 #[allow(dead_code)]
 const fn const_slice_eq(a: &[u8], b: &[u8]) -> bool {
@@ -76,7 +92,7 @@ macro_rules! def_currencies {
             fn try_from(v: Vec<u8>) -> Result<Self, Self::Error> {
                 match &v[..] {
                     $($str => Ok(Self::$name),)*
-                    _ => Err(Self::Error::default()),
+                    _ => Err(Self::Error::new(v)),
                 }
             }
         }
@@ -87,7 +103,7 @@ macro_rules! def_currencies {
             fn try_from(v: &'_ [u8]) -> Result<Self, Self::Error> {
                 match v {
                     $($str => Ok(Self::$name),)*
-                    _ => Err(Self::Error::default()),
+                    _ => Err(Self::Error::new(v.to_vec())),
                 }
             }
         }
@@ -142,16 +158,28 @@ mod tests {
     #[test]
     /// Test try from Vec<u8>.
     fn try_from_vec() {
-        assert_eq!(CurrencyId::try_from(b"PONT".to_vec()), Ok(CurrencyId::PONT));
-        assert_eq!(CurrencyId::try_from(b"KSM".to_vec()), Ok(CurrencyId::KSM));
+        assert_eq!(
+            CurrencyId::try_from(b"PONT".to_vec()).unwrap(),
+            CurrencyId::PONT
+        );
+        assert_eq!(
+            CurrencyId::try_from(b"KSM".to_vec()).unwrap(),
+            CurrencyId::KSM
+        );
         assert!(CurrencyId::try_from(b"UNKNOWN".to_vec()).is_err());
     }
 
     #[test]
     /// Test try from &[u8].
     fn try_from_slice() {
-        assert_eq!(CurrencyId::try_from(b"PONT".as_ref()), Ok(CurrencyId::PONT));
-        assert_eq!(CurrencyId::try_from(b"KSM".as_ref()), Ok(CurrencyId::KSM));
+        assert_eq!(
+            CurrencyId::try_from(b"PONT".as_ref()).unwrap(),
+            CurrencyId::PONT
+        );
+        assert_eq!(
+            CurrencyId::try_from(b"KSM".as_ref()).unwrap(),
+            CurrencyId::KSM
+        );
         assert!(CurrencyId::try_from(b"UNKNOWN".as_ref()).is_err());
     }
 }
