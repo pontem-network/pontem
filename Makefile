@@ -48,6 +48,20 @@ bench: assets
 		--steps=20 --repeat=10 \
 		--output=target/sp-bench
 
+.PHONY: run-bench-groupsign
+run-bench-groupsign:
+	mkdir -p ./target/gs-bench
+	./target/release/pontem \
+		benchmark \
+		--dev \
+		-lsp_mvm=trace \
+		--pallet=groupsign \
+		--extrinsic='*' \
+		--execution=wasm \
+		--wasm-execution=compiled \
+		--steps=20 --repeat=10 \
+		--output=target/gs-bench
+
 .PHONY: bench-groupsign
 bench-groupsign:
 	mkdir -p ./target/gs-bench
