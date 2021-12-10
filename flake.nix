@@ -69,6 +69,7 @@
         with pkgs; mkShell {
           buildInputs = [
             protobuf openssl pre-commit pkgconfig
+            cargo-expand
             llvmPackagesR.clang
             dove
             devToolchain
@@ -77,6 +78,7 @@
           ]);
 
           PROTOC = "${protobuf}/bin/protoc";
+          SKIP_WASM_BUILD = "1";
           PROTOC_INCLUDE = "${protobuf}/include";
           LLVM_CONFIG_PATH="${llvmPackagesR.llvm}/bin/llvm-config";
           LIBCLANG_PATH="${llvmPackagesR.libclang.lib}/lib";
