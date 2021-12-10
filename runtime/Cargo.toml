@@ -126,6 +126,7 @@ runtime-benchmarks = [
     'pallet-vesting/runtime-benchmarks',
     'sp-runtime/runtime-benchmarks',
     'sp-mvm/runtime-benchmarks',
+    'groupsign/runtime-benchmarks',
 ]
 std = [
     'codec/std',

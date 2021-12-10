@@ -51,6 +51,7 @@ pub mod pallet {
     use super::storage::MoveVmStorage;
     use gas::GasWeightMapping;
     use event::*;
+    use groupsign::utils::ensure_groupsign;
     use mvm::*;
     use weights::WeightInfo;
 
@@ -192,14 +193,10 @@ pub mod pallet {
             gas_limit: u64,
         ) -> DispatchResultWithPostInfo {
             // TODO: we should add ensure_groupsin
-            let origin: Result<groupsign::Origin<T>, OriginFor<T>> = origin.into();
 
-            let signers = match origin {
-                Ok(multisig) => multisig.signers().to_vec(),
-                Err(origin) => vec![ensure_signed(origin)?],
-            };
+            let signers = ensure_groupsign(origin)?;
 
-            let vm_result = Self::raw_execute_script(&signers, tx_bc, gas_limit, false)?;
+            let vm_result = Self::raw_execute_script(&signers.signers, tx_bc, gas_limit, false)?;
 
             // produce result with spended gas:
             let result = result::from_vm_result::<T>(vm_result)?;

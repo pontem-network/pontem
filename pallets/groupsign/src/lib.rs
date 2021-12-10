@@ -10,8 +10,6 @@
 //!
 #![cfg_attr(not(feature = "std"), no_std)]
 
-pub use pallet::*;
-
 #[cfg(test)]
 mod mock;
 
@@ -20,9 +18,11 @@ mod tests;
 
 #[cfg(feature = "runtime-benchmarks")]
 mod benchmarking;
+
 pub mod weights;
 pub mod utils;
-pub mod check_origin;
+
+pub use pallet::*;
 
 #[frame_support::pallet]
 pub mod pallet {
@@ -33,8 +33,9 @@ pub mod pallet {
     use frame_system::pallet_prelude::*;
     use sp_std::vec::Vec;
     use sp_runtime::{
-        traits::{Verify, IdentifyAccount, SignedExtension},
+        traits::{Verify, IdentifyAccount},
         verify_encoded_lazy,
+
     };
 
     use crate::weights::WeightInfo;
@@ -81,17 +82,8 @@ pub mod pallet {
     #[derive(PartialEq, Eq, Encode, Decode, Clone, TypeInfo)]
     #[cfg_attr(feature = "std", derive(Debug))]
     pub struct Origin<T: Config> {
-        signers: Vec<T::AccountId>,
-    }
-
-    impl<T: Config> Origin<T> {
-        pub fn new(signers: Vec<T::AccountId>) -> Self {
-            Self { signers }
-        }
-
-        pub fn signers(&self) -> &[T::AccountId] {
-            &self.signers
-        }
+        pub caller: T::AccountId,
+        pub signers: Vec<T::AccountId>
     }
 
     #[pallet::pallet]
@@ -193,7 +185,7 @@ pub mod pallet {
             let call_len = signed_call.using_encoded(|c| c.len());
 
             // Do dispatch call.
-            let origin = Origin::new(signers.clone());
+            let origin = Origin { caller: caller.clone(), signers: signers.clone() };
             let result = signed_call.dispatch(T::MyOrigin::from(origin).into()); // result
 
             let call_weight = match result {

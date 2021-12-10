@@ -1,6 +1,7 @@
 use codec::{Encode};
 use sp_io::{hashing::blake2_256};
 use sp_std::prelude::*;
+use frame_support::error::BadOrigin;
 
 #[cfg(feature = "benchmarking")]
 use frame_benchmarking;
@@ -37,6 +38,16 @@ pub(crate) fn test_sign<T: crate::Config>(range: Range<u32>, message: &[u8]) -> 
         // s.sign(message).using_encoded(|f| buf.copy_from_slice(f));
         // T::Signature::decode(&mut &buf[..]).expect("Decoded signature")
     }).collect()
+/// Ensure this origin represents a groupsign origin
+pub fn ensure_groupsign<T, OuterOrigin>(o: OuterOrigin) -> Result<crate::Origin<T>, BadOrigin>
+where
+    T: crate::Config,
+	OuterOrigin: Into<Result<crate::Origin<T>, OuterOrigin>>,
+{
+    match o.into() {
+        Ok(origin) => Ok(origin),
+        Err(_) => Err(BadOrigin)
+    }
 }
 
 pub fn generate_preimage<T: crate::Config>(

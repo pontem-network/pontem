@@ -121,8 +121,9 @@ std = [
 
 runtime-benchmarks = [
     "frame-benchmarking",
-    "frame-support/runtime-benchmarks",
+    "groupsign/runtime-benchmarks",
     "frame-system/runtime-benchmarks",
+    "frame-support/runtime-benchmarks",
     "sp-runtime/runtime-benchmarks",
     "timestamp/runtime-benchmarks",
     "balances/runtime-benchmarks",
