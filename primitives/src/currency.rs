@@ -1,6 +1,4 @@
 /// Supported currencies.
-/// TODO: would be good to replace with Acala currencies: https://github.com/AcalaNetwork/Acala/blob/master/primitives/src/currency.rs.
-/// Or implement something similar (without EVM/DEX, etc.)
 use sp_core::RuntimeDebug;
 use sp_std::convert::TryFrom;
 use sp_std::vec::Vec;
