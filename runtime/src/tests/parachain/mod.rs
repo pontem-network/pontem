@@ -74,8 +74,8 @@ pub fn mock_para_ext(para_id: u32) -> TestExternalities {
 
     pallet_balances::GenesisConfig::<Runtime> {
         balances: vec![
-            (ALICE, CurrencyId::PONT.times(2000)),
-            (BOB, CurrencyId::PONT.times(2000)),
+            (ALICE, CurrencyId::PONT * 2000),
+            (BOB, CurrencyId::PONT * 2000),
         ],
     }
     .assimilate_storage(&mut t)
@@ -119,7 +119,7 @@ pub fn para_ext(para_id: u32) -> TestExternalities {
     .unwrap();
 
     pallet_balances::GenesisConfig::<Runtime> {
-        balances: vec![(ALICE, CurrencyId::PONT.times(2000))],
+        balances: vec![(ALICE, CurrencyId::PONT * 2000)],
     }
     .assimilate_storage(&mut t)
     .unwrap();

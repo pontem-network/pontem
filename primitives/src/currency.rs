@@ -157,6 +157,22 @@ impl Millies {
     }
 }
 
+impl core::ops::Mul<Balance> for CurrencyId {
+    type Output = Balance;
+
+    fn mul(self, n: Balance) -> Self::Output {
+        self.times(n)
+    }
+}
+
+impl core::ops::Mul<Balance> for Millies {
+    type Output = Balance;
+
+    fn mul(self, n: Balance) -> Self::Output {
+        self.times(n)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::{CurrencyId, TryFrom};

@@ -88,7 +88,7 @@ pub fn development_config(id: ParaId) -> Result<ChainSpec, String> {
                 vec![(
                     get_account_id_from_seed::<sr25519::Public>("Alice"),
                     get_from_seed::<NimbusId>("Alice"),
-                    CurrencyId::PONT.times(10_000),
+                    CurrencyId::PONT * 10_000,
                 )],
                 // Nominators
                 vec![],
@@ -136,7 +136,7 @@ pub fn local_testnet_config(id: ParaId) -> Result<ChainSpec, String> {
                 vec![(
                     get_account_id_from_seed::<sr25519::Public>("Alice"),
                     get_from_seed::<NimbusId>("Alice"),
-                    CurrencyId::PONT.times(10_000),
+                    CurrencyId::PONT * 10_000,
                 )],
                 // Nominators
                 vec![],
@@ -197,7 +197,7 @@ fn testnet_genesis(
             balances: endowed_accounts
                 .iter()
                 .cloned()
-                .map(|k| (k, CurrencyId::PONT.times(100_000)))
+                .map(|k| (k, CurrencyId::PONT * 100_000))
                 .collect(),
         },
         parachain_system: Default::default(),
@@ -240,7 +240,7 @@ fn testnet_genesis(
             vesting: endowed_accounts
                 .iter()
                 .cloned()
-                .map(|k| (k, 100, 1000, CurrencyId::PONT.times(90_000))) // K - address, 100 - when vesting starts, 1000 - how much blocks for vesting, 10 * PONT - free balance.
+                .map(|k| (k, 100, 1000, CurrencyId::PONT * 90_000)) // K - address, 100 - when vesting starts, 1000 - how much blocks for vesting, 10 * PONT - free balance.
                 .collect(),
         },
         treasury: TreasuryConfig {},
@@ -255,9 +255,9 @@ pub fn pontem_inflation_config() -> InflationInfo<Balance> {
     InflationInfo {
         // How much staked PONTs we expect.
         expect: Range {
-            min: CurrencyId::PONT.times(10_000_000), // We expect to have staked at least 10M PONT coins.
-            ideal: CurrencyId::PONT.times(20_000_000), // We expect to have staked ideal 20M PONT coins.
-            max: CurrencyId::PONT.times(50_000_000), // We expect to have staked maximum 50M PONT coins.
+            min: CurrencyId::PONT * 10_000_000, // We expect to have staked at least 10M PONT coins.
+            ideal: CurrencyId::PONT * 20_000_000, // We expect to have staked ideal 20M PONT coins.
+            max: CurrencyId::PONT * 50_000_000, // We expect to have staked maximum 50M PONT coins.
         },
         annual: Range {
             min: Perbill::from_percent(4),   // We expect minimum inflation is 4%.
