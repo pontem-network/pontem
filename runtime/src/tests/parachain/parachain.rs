@@ -247,7 +247,7 @@ fn transfer_no_reserve_assets_fails() {
                 Box::new(
                     MultiAsset {
                         id: xcm_emulator::Concrete(GeneralKey("PONT".into()).into()),
-                        fun: CurrencyId::PONT.times(100).into().into(),
+                        fun: (CurrencyId::PONT.times(100) as u128).into(),
                     }
                     .into()
                 ),
@@ -282,7 +282,7 @@ fn transfer_to_self_chain_fails() {
                 Box::new(
                     MultiAsset {
                         id: (Parent, Parachain(1), GeneralKey("PONT".into())).into(),
-                        fun: CurrencyId::PONT.times(100).into().into(),
+                        fun: (CurrencyId::PONT.times(100) as u128).into(),
                     }
                     .into()
                 ),
@@ -317,7 +317,7 @@ fn transfer_to_invalid_dest_fails() {
                 Box::new(
                     MultiAsset {
                         id: (Parent, Parachain(1), GeneralKey("PONT".into())).into(),
-                        fun: CurrencyId::PONT.times(100).into().into(),
+                        fun: (CurrencyId::PONT.times(100) as u128).into(),
                     }
                     .into()
                 ),
