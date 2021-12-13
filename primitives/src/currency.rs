@@ -12,6 +12,8 @@ use scale_info::TypeInfo;
 #[cfg(feature = "std")]
 use serde::{Deserialize, Serialize};
 
+use crate::Balance;
+
 #[derive(Default, Debug)]
 pub struct CurrencyConversionError(Vec<u8>);
 
@@ -77,6 +79,14 @@ macro_rules! def_currencies {
                 match self {
                     $(Self::$name => $decimals,)*
                 }
+            }
+
+            const fn value(&self) -> Balance {
+                Balance::pow(10, self.decimals() as _)
+            }
+
+            pub const fn times(&self, n: Balance) -> Balance {
+                self.value().saturating_mul(n)
             }
 
             pub fn symbol(&self) -> Vec<u8> {
