@@ -89,6 +89,10 @@ macro_rules! def_currencies {
                 self.value().saturating_mul(n)
             }
 
+            pub const fn millies(self) -> Millies {
+                Millies(self)
+            }
+
             pub fn symbol(&self) -> Vec<u8> {
                 match self {
                     $(Self::$name => $str.to_vec(),)*
@@ -138,6 +142,18 @@ impl Default for CurrencyId {
     fn default() -> Self {
         // PONT should be default currency.
         CurrencyId::PONT
+    }
+}
+
+pub struct Millies(pub CurrencyId);
+
+impl Millies {
+    const fn value(&self) -> Balance {
+        self.0.value() / 1000
+    }
+
+    pub const fn times(&self, n: Balance) -> Balance {
+        self.value().saturating_mul(n)
     }
 }
 

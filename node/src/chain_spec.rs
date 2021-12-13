@@ -197,7 +197,7 @@ fn testnet_genesis(
             balances: endowed_accounts
                 .iter()
                 .cloned()
-                .map(|k| (k, CurrencyId::PONT.times(100_000),))
+                .map(|k| (k, CurrencyId::PONT.times(100_000)))
                 .collect(),
         },
         parachain_system: Default::default(),
@@ -240,7 +240,7 @@ fn testnet_genesis(
             vesting: endowed_accounts
                 .iter()
                 .cloned()
-                .map(|k| (k, 100, 1000, CurrencyId::PONT.times(90_000),)) // K - address, 100 - when vesting starts, 1000 - how much blocks for vesting, 10 * PONT - free balance.
+                .map(|k| (k, 100, 1000, CurrencyId::PONT.times(90_000))) // K - address, 100 - when vesting starts, 1000 - how much blocks for vesting, 10 * PONT - free balance.
                 .collect(),
         },
         treasury: TreasuryConfig {},
