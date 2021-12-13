@@ -340,10 +340,10 @@ impl pallet_timestamp::Config for Runtime {
 }
 
 parameter_types! {
-    pub const ExistentialDeposit: u64 = PONT_EXISTENTIAL_DEPOSIT;
-    pub const TransferFee: u64 = CurrencyId::PONT.millies().times(1);
-    pub const CreationFee: u64 = CurrencyId::PONT.millies().times(1);
-    pub const TransactionByteFee: u64 = CurrencyId::PONT.millies().times(1);
+    pub const ExistentialDeposit: Balance = PONT_EXISTENTIAL_DEPOSIT;
+    pub const TransferFee: Balance = CurrencyId::PONT.millies().times(1);
+    pub const CreationFee: Balance = CurrencyId::PONT.millies().times(1);
+    pub const TransactionByteFee: Balance = CurrencyId::PONT.millies().times(1);
     // 1 PONT.
     pub const MinVestedTransfer: Balance = CurrencyId::PONT.times(1);
 }
