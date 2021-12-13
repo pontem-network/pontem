@@ -8,6 +8,7 @@ use polkadot_parachain::primitives::{AccountIdConversion};
 use frame_support::{assert_noop, assert_ok};
 use orml_traits::MultiCurrency;
 use sp_runtime::AccountId32;
+use primitives::currency::CurrencyId;
 
 fn para_a_account() -> AccountId32 {
     ParaId::from(1).into_account()
@@ -90,12 +91,12 @@ fn cannot_lost_fund_on_send_failed() {
     TestNet::reset();
 
     ParaA::execute_with(|| {
-        assert_ok!(ParaATokens::deposit(CurrencyId::PONT, &ALICE, 1_000 * PONT));
+        assert_ok!(ParaATokens::deposit(CurrencyId::PONT, &ALICE, CurrencyId::PONT.times(1_000)));
         assert_noop!(
             ParaAXTokens::transfer(
                 Some(ALICE).into(),
                 CurrencyId::PONT,
-                500 * PONT,
+                CurrencyId::PONT.times(500),
                 Box::new(
                     MultiLocation::new(
                         1,
@@ -109,14 +110,14 @@ fn cannot_lost_fund_on_send_failed() {
                     )
                     .into()
                 ),
-                30 * PONT,
+                CurrencyId::PONT.times(30),
             ),
             Error::<crate::Runtime>::XcmExecutionFailed
         );
 
         assert_eq!(
             ParaATokens::free_balance(CurrencyId::PONT, &ALICE),
-            1_000 * PONT
+            CurrencyId::PONT.times(1_000)
         );
     });
 }
@@ -171,7 +172,7 @@ fn send_self_parachain_asset_to_sibling() {
         assert_ok!(ParaAXTokens::transfer(
             Some(ALICE).into(),
             CurrencyId::PONT,
-            500 * PONT,
+            CurrencyId::PONT.times(500),
             Box::new(
                 MultiLocation::new(
                     1,
@@ -194,7 +195,7 @@ fn send_self_parachain_asset_to_sibling() {
     ParaB::execute_with(|| {
         assert_eq!(
             ParaBTokens::free_balance(MockCurrencyId::PONT, &BOB),
-            500 * PONT - 4
+            CurrencyId::PONT.times(500) - 4
         );
     });
 
@@ -203,7 +204,7 @@ fn send_self_parachain_asset_to_sibling() {
         assert_ok!(ParaBXTokens::transfer(
             Some(BOB).into(),
             MockCurrencyId::PONT,
-            500 * PONT - 4,
+            CurrencyId::PONT.times(500) - 4,
             Box::new(
                 MultiLocation::new(
                     1,
@@ -224,7 +225,7 @@ fn send_self_parachain_asset_to_sibling() {
     });
 
     ParaA::execute_with(|| {
-        assert_eq!(ParaABalances::free_balance(&BOB), 500 * PONT - 8);
+        assert_eq!(ParaABalances::free_balance(&BOB), CurrencyId::PONT.times(500) - 8);
     });
 }
 
@@ -239,7 +240,7 @@ fn transfer_no_reserve_assets_fails() {
                 Box::new(
                     MultiAsset {
                         id: xcm_emulator::Concrete(GeneralKey("PONT".into()).into()),
-                        fun: (100 * PONT as u128).into(),
+                        fun: CurrencyId::PONT.times(100).into().into(),
                     }
                     .into()
                 ),
@@ -256,7 +257,7 @@ fn transfer_no_reserve_assets_fails() {
                     )
                     .into()
                 ),
-                50 * PONT,
+                CurrencyId::PONT.times(50),
             ),
             Error::<crate::Runtime>::AssetHasNoReserve
         );
@@ -274,7 +275,7 @@ fn transfer_to_self_chain_fails() {
                 Box::new(
                     MultiAsset {
                         id: (Parent, Parachain(1), GeneralKey("PONT".into())).into(),
-                        fun: (100 * PONT as u128).into(),
+                        fun: CurrencyId::PONT.times(100).into().into(),
                     }
                     .into()
                 ),
@@ -291,7 +292,7 @@ fn transfer_to_self_chain_fails() {
                     )
                     .into()
                 ),
-                50 * PONT,
+                CurrencyId::PONT.times(50),
             ),
             Error::<crate::Runtime>::NotCrossChainTransfer
         );
@@ -309,7 +310,7 @@ fn transfer_to_invalid_dest_fails() {
                 Box::new(
                     MultiAsset {
                         id: (Parent, Parachain(1), GeneralKey("PONT".into())).into(),
-                        fun: (100 * PONT as u128).into(),
+                        fun: CurrencyId::PONT.times(100).into().into(),
                     }
                     .into()
                 ),
@@ -323,7 +324,7 @@ fn transfer_to_invalid_dest_fails() {
                     )
                     .into()
                 ),
-                50 * PONT,
+                CurrencyId::PONT.times(50),
             ),
             Error::<crate::Runtime>::InvalidDest
         );

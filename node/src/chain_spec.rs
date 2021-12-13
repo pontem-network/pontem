@@ -13,7 +13,7 @@ use pontem_runtime::{
     SchedulerConfig,
 };
 use primitives::{currency::CurrencyId, AccountId, Signature, Balance};
-use constants::{SS58_PREFIX, currency::PONT};
+use constants::SS58_PREFIX;
 use serde::{Serialize, Deserialize};
 use serde_json::json;
 use std::{include_bytes, str::from_utf8};
