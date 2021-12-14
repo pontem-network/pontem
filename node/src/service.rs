@@ -89,7 +89,7 @@ pub fn new_partial(
     let telemetry_worker_handle = telemetry.as_ref().map(|(worker, _)| worker.handle());
 
     let telemetry = telemetry.map(|(worker, telemetry)| {
-        task_manager.spawn_handle().spawn("telemetry", worker.run());
+        task_manager.spawn_handle().spawn("telemetry", None, worker.run());
         telemetry
     });
 
@@ -192,7 +192,6 @@ async fn start_node_impl(
             transaction_pool: transaction_pool.clone(),
             spawn_handle: task_manager.spawn_handle(),
             import_queue: import_queue.clone(),
-            on_demand: None,
             warp_sync: None,
             block_announce_validator_builder: Some(Box::new(|_| block_announce_validator)),
         })?;
@@ -214,8 +213,6 @@ async fn start_node_impl(
     };
 
     sc_service::spawn_tasks(sc_service::SpawnTasksParams {
-        on_demand: None,
-        remote_blockchain: None,
         rpc_extensions_builder,
         client: client.clone(),
         transaction_pool: transaction_pool.clone(),
@@ -369,7 +366,6 @@ pub fn new_dev(
             transaction_pool: transaction_pool.clone(),
             spawn_handle: task_manager.spawn_handle(),
             import_queue,
-            on_demand: None,
             warp_sync: None,
             block_announce_validator_builder: None,
         })?;
@@ -430,6 +426,7 @@ pub fn new_dev(
 
         task_manager.spawn_essential_handle().spawn_blocking(
             "authorship_task",
+            None,
             run_manual_seal(ManualSealParams {
                 block_import: client.clone(),
                 env,
@@ -481,8 +478,6 @@ pub fn new_dev(
     };
 
     sc_service::spawn_tasks(sc_service::SpawnTasksParams {
-        on_demand: None,
-        remote_blockchain: None,
         rpc_extensions_builder,
         client: client.clone(),
         transaction_pool: transaction_pool.clone(),

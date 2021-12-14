@@ -189,8 +189,7 @@ fn testnet_genesis(
         tokens: TokensConfig { balances: vec![] },
         system: SystemConfig {
             // Add Wasm runtime to storage.
-            code: wasm_binary.to_vec(),
-            changes_trie_config: Default::default(),
+            code: wasm_binary.to_vec()
         },
         balances: BalancesConfig {
             // Configure endowed accounts with initial balance of 1000 PONT.
