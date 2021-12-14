@@ -39,8 +39,8 @@ pub struct Cli {
     pub sealing: Sealing,
 
     /// Id of the parachain this collator collates for.
-	#[structopt(long)]
-	pub parachain_id: Option<u32>,
+    #[structopt(long)]
+    pub parachain_id: Option<u32>,
 
     /// Whether to run node in development node (single node, no consensus)
     #[structopt(long)]
