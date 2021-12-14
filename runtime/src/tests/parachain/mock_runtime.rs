@@ -116,16 +116,6 @@ pub enum CurrencyId {
     XPONT,
 }
 
-impl CurrencyId {
-    pub fn decimals(&self) -> Option<u8> {
-        match self {
-            Self::KSM => Some(12),
-            Self::PONT => Some(10),
-            Self::XPONT => Some(10),
-        }
-    }
-}
-
 parameter_types! {
     pub const MaxLocks: u32 = 50;
     pub const MaxReserves: u32 = 50;

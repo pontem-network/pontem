@@ -1,6 +1,4 @@
 /// Supported currencies.
-/// TODO: would be good to replace with Acala currencies: https://github.com/AcalaNetwork/Acala/blob/master/primitives/src/currency.rs.
-/// Or implement something similar (without EVM/DEX, etc.)
 use sp_core::RuntimeDebug;
 use sp_std::convert::TryFrom;
 use sp_std::vec::Vec;
@@ -11,6 +9,8 @@ use scale_info::TypeInfo;
 
 #[cfg(feature = "std")]
 use serde::{Deserialize, Serialize};
+
+use crate::Balance;
 
 #[derive(Default, Debug)]
 pub struct CurrencyConversionError(Vec<u8>);
@@ -73,10 +73,22 @@ macro_rules! def_currencies {
         }
 
         impl $ty_name {
-            pub fn decimals(&self) -> u8 {
+            pub const fn decimals(&self) -> u8 {
                 match self {
                     $(Self::$name => $decimals,)*
                 }
+            }
+
+            const fn value(&self) -> Balance {
+                Balance::pow(10, self.decimals() as _)
+            }
+
+            pub const fn times(&self, n: Balance) -> Balance {
+                self.value().saturating_mul(n)
+            }
+
+            pub const fn millies(self) -> Millies {
+                Millies(self)
             }
 
             pub fn symbol(&self) -> Vec<u8> {
@@ -128,6 +140,34 @@ impl Default for CurrencyId {
     fn default() -> Self {
         // PONT should be default currency.
         CurrencyId::PONT
+    }
+}
+
+pub struct Millies(pub CurrencyId);
+
+impl Millies {
+    const fn value(&self) -> Balance {
+        self.0.value() / 1000
+    }
+
+    pub const fn times(&self, n: Balance) -> Balance {
+        self.value().saturating_mul(n)
+    }
+}
+
+impl core::ops::Mul<Balance> for CurrencyId {
+    type Output = Balance;
+
+    fn mul(self, n: Balance) -> Self::Output {
+        self.times(n)
+    }
+}
+
+impl core::ops::Mul<Balance> for Millies {
+    type Output = Balance;
+
+    fn mul(self, n: Balance) -> Self::Output {
+        self.times(n)
     }
 }
 
