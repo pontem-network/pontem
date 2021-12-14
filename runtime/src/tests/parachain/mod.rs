@@ -6,7 +6,7 @@ mod parachain;
 use sp_runtime::AccountId32;
 use frame_support::sp_io::TestExternalities;
 use frame_support::traits::GenesisBuild;
-use xcm_emulator::{decl_test_network, decl_test_parachain, decl_test_relay_chain};
+use xcm_simulator::{decl_test_network, decl_test_parachain, decl_test_relay_chain};
 use polkadot_primitives::v1::{MAX_CODE_SIZE, MAX_POV_SIZE};
 use polkadot_runtime_parachains::configuration::HostConfiguration;
 pub const ALICE: AccountId32 = AccountId32::new([0u8; 32]);
@@ -14,8 +14,9 @@ pub const BOB: AccountId32 = AccountId32::new([1u8; 32]);
 
 decl_test_parachain! {
     pub struct ParaA {
-        Runtime = Runtime,
-        Origin = Origin,
+        Runtime = crate::Runtime,
+        XcmpMessageHandler = crate::XcmpQueue,
+        DmpMessageHandler = crate::DmpQueue,
         new_ext = para_ext(1),
     }
 }
@@ -23,7 +24,8 @@ decl_test_parachain! {
 decl_test_parachain! {
     pub struct ParaB {
         Runtime = mock_runtime::Runtime,
-        Origin = mock_runtime::Origin,
+        XcmpMessageHandler = mock_runtime::XcmpQueue,
+        DmpMessageHandler = mock_runtime::DmpQueue,
         new_ext = mock_para_ext(2),
     }
 }
@@ -47,6 +49,9 @@ decl_test_network! {
 }
 
 pub type RelayBalances = pallet_balances::Pallet<kusama_runtime::Runtime>;
+pub type RelaySystem = frame_system::Pallet<kusama_runtime::Runtime>;
+
+pub type ParaASystem = frame_system::Pallet<crate::Runtime>;
 
 pub type ParaATokens = orml_tokens::Pallet<crate::Runtime>;
 pub type ParaBTokens = orml_tokens::Pallet<mock_runtime::Runtime>;

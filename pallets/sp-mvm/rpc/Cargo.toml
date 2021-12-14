@@ -2,7 +2,7 @@
 name = "sp-mvm-rpc"
 authors = [ "Pontem Network Team <https://pontem.network>" ]
 description = "RPC for Move pallet."
-edition = "2018"
+edition = "2021"
 repository = "https://github.com/pontem-network/pontem"
 version = "0.2.2"
 

@@ -1,6 +1,6 @@
 [package]
 authors = ['Pontem Network']
-edition = '2018'
+edition = '2021'
 homepage = 'https://pontem.network'
 license = 'Unlicense'
 name = 'primitives'

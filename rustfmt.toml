@@ -1,5 +1,5 @@
 max_width = 98
-edition = "2018"
+edition = "2021"
 
 # automatically replace R { x: x } with R { x }
 use_field_init_shorthand = true

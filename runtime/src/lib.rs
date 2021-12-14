@@ -880,11 +880,12 @@ impl Convert<CurrencyId, Option<MultiLocation>> for CurrencyIdConvert {
 
 impl Convert<MultiLocation, Option<CurrencyId>> for CurrencyIdConvert {
     fn convert(location: MultiLocation) -> Option<CurrencyId> {
+        eprintln!("it's location {:?}", location);
+        if location == MultiLocation::parent() {
+			return Some(CurrencyId::KSM);
+		}
+
         match location {
-            MultiLocation {
-                parents: 1,
-                interior: Junctions::Here,
-            } => Some(CurrencyId::KSM),
             MultiLocation {
                 parents: 1,
                 interior: X2(Parachain(_id), GeneralKey(key)),

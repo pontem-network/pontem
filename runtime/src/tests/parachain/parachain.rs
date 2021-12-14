@@ -1,7 +1,7 @@
 use crate::tests::parachain::*;
 use crate::tests::parachain::mock_runtime::CurrencyId as MockCurrencyId;
 use orml_xtokens::Error;
-use xcm_emulator::{Junction, TestExt};
+use xcm_simulator::{Junction, TestExt};
 use frame_support::traits::Currency;
 use cumulus_primitives_core::ParaId;
 use polkadot_parachain::primitives::{AccountIdConversion};
@@ -36,7 +36,7 @@ fn transfer_from_relay_chain() {
 
     ParaA::execute_with(|| {
         assert_eq!(
-            Tokens::free_balance(CurrencyId::KSM, &AccountId::from(BOB)),
+            ParaATokens::free_balance(CurrencyId::KSM, &AccountId::from(BOB)),
             99999999893333
         );
     });
@@ -238,7 +238,7 @@ fn transfer_no_reserve_assets_fails() {
                 Some(ALICE).into(),
                 Box::new(
                     MultiAsset {
-                        id: xcm_emulator::Concrete(GeneralKey("PONT".into()).into()),
+                        id: xcm_simulator::Concrete(GeneralKey("PONT".into()).into()),
                         fun: (100 * PONT as u128).into(),
                     }
                     .into()
