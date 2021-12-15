@@ -1,6 +1,6 @@
 [package]
 name = 'groupsign'
-version = "3.0.0"
+version = "0.0.1"
 description = "FRAME pallet template for defining custom runtime logic."
 authors = ['Substrate DevHub <https://github.com/substrate-developer-hub>']
 homepage = "https://substrate.io/"
