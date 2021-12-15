@@ -880,10 +880,9 @@ impl Convert<CurrencyId, Option<MultiLocation>> for CurrencyIdConvert {
 
 impl Convert<MultiLocation, Option<CurrencyId>> for CurrencyIdConvert {
     fn convert(location: MultiLocation) -> Option<CurrencyId> {
-        eprintln!("it's location {:?}", location);
         if location == MultiLocation::parent() {
-			return Some(CurrencyId::KSM);
-		}
+            return Some(CurrencyId::KSM);
+        }
 
         match location {
             MultiLocation {

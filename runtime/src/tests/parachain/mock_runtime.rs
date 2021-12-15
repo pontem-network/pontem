@@ -427,7 +427,7 @@ impl Convert<CurrencyId, Option<MultiLocation>> for CurrencyIdConvert {
             CurrencyId::PONT => Some(
                 (
                     Parent,
-                    Junction::Parachain(1),
+                    Junction::Parachain(2000),
                     Junction::GeneralKey(b"PONT".to_vec()),
                 )
                     .into(),
@@ -455,7 +455,7 @@ impl Convert<MultiLocation, Option<CurrencyId>> for CurrencyIdConvert {
                 parents: 1,
                 interior: X2(Parachain(id), GeneralKey(key)),
             } => {
-                if id == 1 && key == b"PONT".to_vec() {
+                if id == 2000 && key == b"PONT".to_vec() {
                     return Some(CurrencyId::PONT);
                 }
 

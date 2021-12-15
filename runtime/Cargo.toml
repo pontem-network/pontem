@@ -96,11 +96,13 @@ constants = { path = "../constants", default-features = false }
 module-currencies = { path = "../pallets/currencies", default-features = false }
 
 [dev-dependencies]
-xcm-simulator = { git = 'https://github.com/paritytech/polkadot', branch = 'release-v0.9.13' }
+xcm-emulator = { git = 'https://github.com/pontem-network/xcm-simulator', branch = 'polkadot-v0.9.13' }
 polkadot-runtime-parachains = { default-features = false, git = 'https://github.com/paritytech/polkadot.git', branch = 'release-v0.9.13' }
 kusama-runtime = { git = 'https://github.com/paritytech/polkadot.git', branch = 'release-v0.9.13' }
 sp-io = { default-features = false, git = 'http://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.13' }
 assets = { path = '../assets', default-features = false }
+env_logger = "0.9.0"
+test-log = "0.2.8"
 
 [dependencies.move-vm]
 package = "mvm"
