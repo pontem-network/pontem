@@ -8,6 +8,7 @@ use sp_runtime::{testing::Header, traits::{BlakeTwo256, IdentityLookup, Lazy, Ve
 
 type UncheckedExtrinsic = frame_system::mocking::MockUncheckedExtrinsic<Test>;
 type Block = frame_system::mocking::MockBlock<Test>;
+pub type AccountId = sp_core::sr25519::Public;
 
 // Configure a mock runtime to test the pallet.
 frame_support::construct_runtime!(
@@ -20,6 +21,7 @@ frame_support::construct_runtime!(
         Groupsign: groupsign::{Pallet, Call, Origin<T>, Event<T>},
     }
 );
+
 
 parameter_types! {
     pub const BlockHashCount: u64 = 250;
@@ -51,9 +53,21 @@ impl system::Config for Test {
     type SS58Prefix = SS58Prefix;
     type OnSetCode = ();
 }
+
+impl groupsign::Config for Test {
+    type Event = Event;
+
+	type WeightInfo = PontemWeights<Self>;
+	type MyOrigin = Origin;
+
+    type Call = Call;
+    type Public = AccountId;
+    type Signature = AnySignature;
+
+}
+
 #[derive(Eq, PartialEq, Clone, Default, Encode, Decode, TypeInfo, Debug)]
 pub struct AnySignature(sr25519::Signature);
-
 
 
 impl Verify for AnySignature {
@@ -68,20 +82,6 @@ impl From<sr25519::Signature> for AnySignature {
     fn from(s: sr25519::Signature) -> Self {
         Self(s)
     }
-}
-
-pub type AccountId = sp_core::sr25519::Public;
-
-impl groupsign::Config for Test {
-    type Event = Event;
-
-	type WeightInfo = PontemWeights<Self>;
-	type MyOrigin = Origin;
-
-    type Call = Call;
-    type Public = AccountId;
-    type Signature = AnySignature;
-
 }
 
 // Build genesis storage according to the mock runtime.
