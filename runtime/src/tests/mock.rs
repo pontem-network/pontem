@@ -140,7 +140,7 @@ impl RuntimeBuilder {
 
         <parachain_info::GenesisConfig as GenesisBuild<Runtime>>::assimilate_storage(
             &parachain_info::GenesisConfig {
-                parachain_id: self.parachain_id.unwrap_or(200).into(),
+                parachain_id: self.parachain_id.unwrap_or(constants::PARACHAIN_ID).into(),
             },
             &mut t,
         )
