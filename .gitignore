@@ -17,6 +17,7 @@
 *.log
 
 artifacts/
+/runtime/src/tests/assets/stdlib
 /node/move/stdlib/
 /pallets/sp-mvm/tests/assets/stdlib/
 /pallets/sp-mvm/tests/benchmark_assets/stdlib/

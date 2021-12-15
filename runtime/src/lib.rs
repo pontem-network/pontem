@@ -216,7 +216,7 @@ parameter_types! {
     pub const CooloffPeriod: BlockNumber = 14 * DAYS;
 
     // 100 PONT as minimum deposit.
-    pub const MinimumDeposit: Balance = 100 * PONT;
+    pub const MinimumDeposit: Balance = CurrencyId::PONT.times(100);
 
     // e.g. 100 PONT for 1 MB.
     pub const PreimageByteDeposit: Balance = 1000000;
@@ -286,7 +286,7 @@ parameter_types! {
     /// but not less than ProposalBondMinimum.
     /// This value would be slashed if proposal rejected.
     pub const ProposalBond: Permill = Permill::from_percent(5);
-    pub const ProposalBondMinimum: Balance = 100 * PONT;
+    pub const ProposalBondMinimum: Balance = CurrencyId::PONT.times(100);
     pub const MaxApprovals: u32 = 100;
 }
 
@@ -341,12 +341,12 @@ impl pallet_timestamp::Config for Runtime {
 }
 
 parameter_types! {
-    pub const ExistentialDeposit: u64 = PONT_EXISTENTIAL_DEPOSIT;
-    pub const TransferFee: u64 = 1 * MILLIUNIT;
-    pub const CreationFee: u64 = 1 * MILLIUNIT;
-    pub const TransactionByteFee: u64 = 1 * MILLIUNIT;
+    pub const ExistentialDeposit: Balance = PONT_EXISTENTIAL_DEPOSIT;
+    pub const TransferFee: Balance = CurrencyId::PONT.millies().times(1);
+    pub const CreationFee: Balance = CurrencyId::PONT.millies().times(1);
+    pub const TransactionByteFee: Balance = CurrencyId::PONT.millies().times(1);
     // 1 PONT.
-    pub const MinVestedTransfer: Balance = 1 * PONT;
+    pub const MinVestedTransfer: Balance = CurrencyId::PONT.times(1);
 }
 
 impl pallet_vesting::Config for Runtime {
@@ -460,11 +460,11 @@ parameter_types! {
     /// Default percent of inflation set aside for parachain bond every round
     pub const DefaultParachainBondReservePercent: Percent = Percent::from_percent(30);
     /// Minimum stake required to become a collator is 1_000
-    pub const MinCollatorStk: u64 = 1000 * PONT;
+    pub const MinCollatorStk: Balance = CurrencyId::PONT.times(1000);
     /// Minimum stake required to be reserved to be a candidate is 100
-    pub const MinCollatorCandidateStk: u64 = 100 * PONT;
+    pub const MinCollatorCandidateStk: Balance = CurrencyId::PONT.times(100);
     /// Minimum stake required to be reserved to be a nominator is 5
-    pub const MinNominatorStk: u64 = 1 * PONT;
+    pub const MinNominatorStk: Balance = CurrencyId::PONT.times(1);
 }
 impl parachain_staking::Config for Runtime {
     type Event = Event;
@@ -498,7 +498,7 @@ impl pallet_author_inherent::Config for Runtime {
 }
 
 parameter_types! {
-    pub const DepositAmount: Balance = 1 * PONT;
+    pub const DepositAmount: Balance = CurrencyId::PONT.times(1);
 }
 // This is a simple session key manager. It should probably either work with, or be replaced
 // entirely by pallet sessions.

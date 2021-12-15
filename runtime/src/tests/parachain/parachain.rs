@@ -1,13 +1,14 @@
 use crate::tests::parachain::*;
 use crate::tests::parachain::mock_runtime::CurrencyId as MockCurrencyId;
 use orml_xtokens::Error;
-use xcm_emulator::{Junction, TestExt, Concrete};
+use xcm_emulator::{Junction, TestExt};
 use frame_support::traits::Currency;
 use polkadot_parachain::primitives::{AccountIdConversion};
 use frame_support::{assert_noop, assert_ok};
 use orml_traits::MultiCurrency;
 use sp_runtime::AccountId32;
 use test_log::test;
+use primitives::currency::CurrencyId;
 
 fn para_a_account() -> AccountId32 {
     ParaId::from(2000).into_account()
@@ -29,7 +30,7 @@ fn transfer_from_relay_chain() {
                 .into()
                 .into()
             ),
-            Box::new((Here, 100 * dollar(CurrencyId::KSM)).into()),
+            Box::new((Here, CurrencyId::KSM.times(100) as u128).into()),
             0,
         ));
     });
@@ -47,14 +48,15 @@ fn send_relay_chain_asset_to_relay_chain() {
     TestNet::reset();
 
     Relay::execute_with(|| {
-        let _ = RelayBalances::deposit_creating(&para_a_account(), 2 * dollar(CurrencyId::KSM));
+        let _ =
+            RelayBalances::deposit_creating(&para_a_account(), CurrencyId::KSM.times(2).into());
     });
 
     ParaA::execute_with(|| {
         assert_ok!(ParaAXTokens::transfer(
             Some(Accounts::ALICE.account()).into(),
             CurrencyId::KSM,
-            dollar(CurrencyId::KSM) as _,
+            CurrencyId::KSM.times(1),
             Box::new(
                 MultiLocation::new(
                     1,
@@ -69,14 +71,14 @@ fn send_relay_chain_asset_to_relay_chain() {
         ));
         assert_eq!(
             ParaATokens::free_balance(CurrencyId::KSM, &Accounts::ALICE.account()),
-            1999 * dollar(CurrencyId::KSM) as u64
+            CurrencyId::KSM.times(1999)
         );
     });
 
     Relay::execute_with(|| {
         assert_eq!(
             RelayBalances::free_balance(&para_a_account()),
-            dollar(CurrencyId::KSM)
+            CurrencyId::KSM.times(1) as u128
         );
         assert_eq!(
             RelayBalances::free_balance(&Accounts::BOB.account()),
@@ -93,13 +95,13 @@ fn cannot_lost_fund_on_send_failed() {
         assert_ok!(ParaATokens::deposit(
             CurrencyId::PONT,
             &Accounts::ALICE.account(),
-            1_000 * PONT
+            CurrencyId::PONT * 1_000
         ));
         assert_noop!(
             ParaAXTokens::transfer(
                 Some(Accounts::ALICE.account()).into(),
                 CurrencyId::PONT,
-                500 * PONT,
+                CurrencyId::PONT * 500,
                 Box::new(
                     MultiLocation::new(
                         1,
@@ -113,14 +115,14 @@ fn cannot_lost_fund_on_send_failed() {
                     )
                     .into()
                 ),
-                30 * PONT,
+                CurrencyId::PONT * 30,
             ),
             Error::<crate::Runtime>::XcmExecutionFailed
         );
 
         assert_eq!(
             ParaATokens::free_balance(CurrencyId::PONT, &Accounts::ALICE.account()),
-            1_000 * PONT
+            CurrencyId::PONT * 1_000
         );
     });
 }
@@ -130,14 +132,15 @@ fn send_relay_chain_asset_to_sibling() {
     TestNet::reset();
 
     Relay::execute_with(|| {
-        let _ = RelayBalances::deposit_creating(&para_a_account(), 4 * dollar(CurrencyId::KSM));
+        let _ =
+            RelayBalances::deposit_creating(&para_a_account(), CurrencyId::KSM.times(4).into());
     });
 
     ParaA::execute_with(|| {
         assert_ok!(ParaAXTokens::transfer(
             Some(Accounts::ALICE.account()).into(),
             CurrencyId::KSM,
-            3 * dollar(CurrencyId::KSM) as u64,
+            CurrencyId::KSM.times(3),
             Box::new(
                 MultiLocation::new(
                     1,
@@ -155,7 +158,7 @@ fn send_relay_chain_asset_to_sibling() {
         ));
         assert_eq!(
             ParaATokens::free_balance(CurrencyId::KSM, &Accounts::ALICE.account()),
-            1997 * dollar(CurrencyId::KSM) as u64
+            CurrencyId::KSM.times(1997)
         );
     });
 
@@ -175,7 +178,7 @@ fn send_self_parachain_asset_to_sibling() {
         assert_ok!(ParaAXTokens::transfer(
             Some(Accounts::ALICE.account()).into(),
             CurrencyId::PONT,
-            500 * PONT,
+            CurrencyId::PONT * 500,
             Box::new(
                 MultiLocation::new(
                     1,
@@ -201,7 +204,7 @@ fn send_self_parachain_asset_to_sibling() {
     ParaB::execute_with(|| {
         assert_eq!(
             ParaBTokens::free_balance(MockCurrencyId::PONT, &Accounts::BOB.account()),
-            500 * PONT - 4
+            CurrencyId::PONT * 500 - 4
         );
     });
 
@@ -210,7 +213,7 @@ fn send_self_parachain_asset_to_sibling() {
         assert_ok!(ParaBXTokens::transfer(
             Some(Accounts::BOB.account()).into(),
             MockCurrencyId::PONT,
-            500 * PONT - 4,
+            CurrencyId::PONT * 500 - 4,
             Box::new(
                 MultiLocation::new(
                     1,
@@ -236,7 +239,7 @@ fn send_self_parachain_asset_to_sibling() {
     ParaA::execute_with(|| {
         assert_eq!(
             ParaABalances::free_balance(&Accounts::BOB.account()),
-            500 * PONT - 8
+            CurrencyId::PONT * 500 - 8
         );
     });
 }
@@ -251,8 +254,8 @@ fn transfer_no_reserve_assets_fails() {
                 Some(Accounts::ALICE.account()).into(),
                 Box::new(
                     MultiAsset {
-                        id: Concrete(GeneralKey("PONT".into()).into()),
-                        fun: (100 * PONT as u128).into(),
+                        id: xcm_emulator::Concrete(GeneralKey("PONT".into()).into()),
+                        fun: (CurrencyId::PONT.times(100) as u128).into(),
                     }
                     .into()
                 ),
@@ -287,7 +290,7 @@ fn transfer_to_self_chain_fails() {
                 Box::new(
                     MultiAsset {
                         id: (Parent, Parachain(2000), GeneralKey("PONT".into())).into(),
-                        fun: (100 * PONT as u128).into(),
+                        fun: (CurrencyId::PONT.times(100) as u128).into(),
                     }
                     .into()
                 ),
@@ -321,8 +324,8 @@ fn transfer_to_invalid_dest_fails() {
                 Some(Accounts::ALICE.account()).into(),
                 Box::new(
                     MultiAsset {
-                        id: (Parent, Parachain(2002), GeneralKey("PONT".into())).into(),
-                        fun: (100 * PONT as u128).into(),
+                        id: (Parent, Parachain(2000), GeneralKey("PONT".into())).into(),
+                        fun: (CurrencyId::PONT.times(100) as u128).into(),
                     }
                     .into()
                 ),
