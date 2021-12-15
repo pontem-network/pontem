@@ -2,7 +2,7 @@
 name = "sp-mvm"
 authors = ["Pontem Network Team <https://pontem.network>"]
 description = "FRAME pallet adding Move-lang support."
-edition = "2018"
+edition = "2021"
 repository = "https://github.com/pontem-network/pontem"
 version = "0.3.2"
 
@@ -29,13 +29,13 @@ package = "parity-scale-codec-derive"
 [dependencies.move-vm]
 package = "mvm"
 git = "https://github.com/pontem-network/sp-move-vm.git"
-rev = "20798389da42cf5b17ba7c07264ae53b963d256c"
+rev = "4531b7571ba0299779542e9e472a4cc3abf1c1e7"
 default-features = false
 features = [ "move_stdlib" ]
 
 [dependencies.move-core-types]
 git = "https://github.com/pontem-network/sp-move-vm.git"
-rev = "20798389da42cf5b17ba7c07264ae53b963d256c"
+rev = "4531b7571ba0299779542e9e472a4cc3abf1c1e7"
 default-features = false
 
 
@@ -45,22 +45,22 @@ serde = { version = "1.0", optional = true }
 once_cell = { default-features = false, version = "1.5.2" }
 # substrate:
 scale-info = { version = "1.0", default-features = false, features = ["derive"] }
-frame-support = { default-features = false, git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.11' }
-frame-system = { default-features = false, git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.11' }
-frame-benchmarking = { default-features = false, optional = true, git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.11' }
-sp-std = { default-features = false, git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.11' }
-sp-core = { default-features = false, git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.11' }
-timestamp = { default-features = false, package = "pallet-timestamp", git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.11' }
-balances = { default-features = false, package = "pallet-balances", git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.11' }
+frame-support = { default-features = false, git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.13' }
+frame-system = { default-features = false, git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.13' }
+frame-benchmarking = { default-features = false, optional = true, git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.13' }
+sp-std = { default-features = false, git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.13' }
+sp-core = { default-features = false, git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.13' }
+timestamp = { default-features = false, package = "pallet-timestamp", git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.13' }
+balances = { default-features = false, package = "pallet-balances", git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.13' }
 pallet-multisig = { default-features = false, path = '../multisig' }
 # logging, `sp_runtime::print`:
-sp-runtime = { default-features = false, git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.11' }
+sp-runtime = { default-features = false, git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.13' }
 
-sp-io = { default-features = false, git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.11' }
+sp-io = { default-features = false, git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.13' }
 getrandom = { version = "0.2.3", optional = true }
 
 # Orml
-orml-traits = { default-features = false, git = 'https://github.com/open-web3-stack/open-runtime-module-library', rev = '38b53d39a' }
+orml-traits = { default-features = false, git = 'https://github.com/open-web3-stack/open-runtime-module-library', rev = '88f1b4b1ac6ea0621d188dfa7e64fd2915dd81d5' }
 
 # serde is for lcs/bcs only
 # used for benchmarking (runtime, std, no-std)
@@ -69,27 +69,27 @@ serde-alt = { version = "1", default-features = false, package = "alt_serde", fe
 package = "bcs"
 default-features = false
 git = "https://github.com/pontem-network/sp-move-vm.git"
-rev = "20798389da42cf5b17ba7c07264ae53b963d256c"
+rev = "4531b7571ba0299779542e9e472a4cc3abf1c1e7"
 optional = true
 
 [dev-dependencies]
 # serde is for lcs/bcs and construct_runtime
 # used for tests (std) only
-pallet-vesting = { default-features = false, package = "pallet-vesting", git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.11' }
+pallet-vesting = { default-features = false, package = "pallet-vesting", git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.13' }
 primitives = { path = "../../primitives" }
 assets = { path = "../../assets" }
 constants = { path = "../../constants" }
 module-currencies = { path = "../currencies" }
-orml-tokens = { default-features = false, git = 'https://github.com/open-web3-stack/open-runtime-module-library', rev = '38b53d39a' }
-orml-currencies = { default-features = false, git = 'https://github.com/open-web3-stack/open-runtime-module-library', rev = '38b53d39a' }
+orml-tokens = { default-features = false, git = 'https://github.com/open-web3-stack/open-runtime-module-library', rev = '88f1b4b1ac6ea0621d188dfa7e64fd2915dd81d5' }
+orml-currencies = { default-features = false, git = 'https://github.com/open-web3-stack/open-runtime-module-library', rev = '88f1b4b1ac6ea0621d188dfa7e64fd2915dd81d5' }
 serde = { package = "serde", version = "1.0.119" }
 bcs = { package = "bcs", version = "0.1" }
-env_logger = "*"
-test-env-log = "*"
+env_logger = "0.9.0"
+test-log = "0.2.8"
 
 [dev-dependencies.move-vm-runtime]
 git = "https://github.com/pontem-network/sp-move-vm.git"
-rev = "20798389da42cf5b17ba7c07264ae53b963d256c"
+rev = "4531b7571ba0299779542e9e472a4cc3abf1c1e7"
 default-features = false
 
 [features]

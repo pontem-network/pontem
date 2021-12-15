@@ -43,6 +43,12 @@ impl Accounts {
     }
 }
 
+impl Into<[u8; 32]> for Accounts {
+    fn into(self) -> [u8; 32] {
+        self.account().into()
+    }
+}
+
 /// Balance to currency unit (e.g. 1 PONT).
 pub fn to_unit(amount: Balance, currency_id: CurrencyId) -> Balance {
     amount * u64::pow(10, currency_id.decimals() as u32)
@@ -65,6 +71,7 @@ pub fn run_to_block(till: u32) {
 pub struct RuntimeBuilder {
     balances: Vec<(AccountId, CurrencyId, Balance)>,
     vesting: Vec<(AccountId, BlockNumber, u32, Balance)>,
+    parachain_id: Option<u32>,
 }
 
 impl RuntimeBuilder {
@@ -73,6 +80,7 @@ impl RuntimeBuilder {
         Self {
             balances: vec![],
             vesting: vec![],
+            parachain_id: None,
         }
     }
 
@@ -85,6 +93,12 @@ impl RuntimeBuilder {
     /// Set vesting.
     pub fn set_vesting(mut self, vesting: Vec<(AccountId, BlockNumber, u32, Balance)>) -> Self {
         self.vesting = vesting;
+        self
+    }
+
+    /// Parachain id.
+    pub fn set_parachain_id(mut self, parachain_id: u32) -> Self {
+        self.parachain_id = Some(parachain_id);
         self
     }
 
@@ -122,6 +136,22 @@ impl RuntimeBuilder {
                 .collect::<Vec<_>>(),
         }
         .assimilate_storage(&mut t)
+        .unwrap();
+
+        <parachain_info::GenesisConfig as GenesisBuild<Runtime>>::assimilate_storage(
+            &parachain_info::GenesisConfig {
+                parachain_id: self.parachain_id.unwrap_or(200).into(),
+            },
+            &mut t,
+        )
+        .unwrap();
+
+        <pallet_xcm::GenesisConfig as GenesisBuild<Runtime>>::assimilate_storage(
+            &pallet_xcm::GenesisConfig {
+                safe_xcm_version: Some(2),
+            },
+            &mut t,
+        )
         .unwrap();
 
         let (init_module, init_func, init_args) = build_vm_config();

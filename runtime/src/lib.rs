@@ -51,7 +51,7 @@ pub use frame_support::{
     construct_runtime, parameter_types, StorageValue, match_type,
     traits::{
         KeyOwnerProofSystem, Randomness, IsInVec, Everything, Nothing, EnsureOrigin,
-        OnUnbalanced, Imbalance, Get,
+        OnUnbalanced, Imbalance, Get, EqualPrivilegeOnly,
     },
     weights::{
         Weight, IdentityFee, DispatchClass,
@@ -323,6 +323,7 @@ impl pallet_scheduler::Config for Runtime {
     type Call = Call;
     type MaximumWeight = MaximumSchedulerWeight;
     type ScheduleOrigin = EnsureRoot<AccountId>;
+    type OriginPrivilegeCmp = EqualPrivilegeOnly;
     type MaxScheduledPerBlock = MaxScheduledPerBlock;
     type WeightInfo = pallet_scheduler::weights::SubstrateWeight<Runtime>;
 }
@@ -802,7 +803,6 @@ impl GasWeightMapping for MoveVMGasWeightMapping {
     }
 
     fn weight_to_gas(weight: Weight) -> u64 {
-        use core::convert::TryFrom;
         u64::try_from(weight.wrapping_div(WEIGHT_PER_GAS)).unwrap_or(u32::MAX as u64)
     }
 }
@@ -880,11 +880,11 @@ impl Convert<CurrencyId, Option<MultiLocation>> for CurrencyIdConvert {
 
 impl Convert<MultiLocation, Option<CurrencyId>> for CurrencyIdConvert {
     fn convert(location: MultiLocation) -> Option<CurrencyId> {
+        if location == MultiLocation::parent() {
+            return Some(CurrencyId::KSM);
+        }
+
         match location {
-            MultiLocation {
-                parents: 1,
-                interior: Junctions::Here,
-            } => Some(CurrencyId::KSM),
             MultiLocation {
                 parents: 1,
                 interior: X2(Parachain(_id), GeneralKey(key)),

@@ -11,7 +11,7 @@ use common::assets::{modules, transactions};
 use common::mock::*;
 use common::addr::*;
 use common::utils::*;
-use test_env_log::test;
+use test_log::test;
 
 use orml_traits::{MultiCurrency, MultiLockableCurrency};
 
@@ -308,7 +308,7 @@ mod adapter {
     use orml_traits::MultiCurrency;
 
     use super::*;
-    use test_env_log::test;
+    use test_log::test;
 
     pub type AccountId = <Test as frame_system::Config>::AccountId;
 
