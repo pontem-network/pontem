@@ -18,6 +18,20 @@ frame-benchmarking = { git = "https://github.com/paritytech/substrate", branch =
 frame-support = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.11", default-features = false }
 frame-system = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.11", default-features = false }
 
+primitives = { default-features = false, path = "../../primitives" }
+
+orml-traits = { default-features = false, git = 'https://github.com/open-web3-stack/open-runtime-module-library', rev = '38b53d39a' }
+orml-utilities = { default-features = false, git = 'https://github.com/open-web3-stack/open-runtime-module-library', rev = '38b53d39a' }
+
+
+[dev-dependencies]
+sp-core = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.11"}
+sp-io = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.11"}
+pallet-balances = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.11" }
+orml-tokens = { git = 'https://github.com/open-web3-stack/open-runtime-module-library', rev = '38b53d39a' }
+orml-traits = { git = 'https://github.com/open-web3-stack/open-runtime-module-library', rev = '38b53d39a' }
+primitives = { path = "../../primitives" }
+
 [features]
 default = ["std"]
 std = [
