@@ -30,24 +30,6 @@ benchmarks! {
 
     where_clause { where Result<groupsign::Origin<T>, <T as frame_system::Config>::Origin>: From<<T as frame_system::Config>::Origin> }
 
-    publish_module {
-        // Just publish empty module to estimate weight.
-        let caller: T::AccountId = whitelisted_caller();
-        let module = include_bytes!("../tests/benchmark_assets/artifacts/modules/2_Empty.mv").to_vec();
-    }: _(RawOrigin::Signed(caller), module, 100_000_000)
-    verify {
-        assert!(VMStorage::<T>::contains_key(module_access("Empty")));
-    }
-
-    execute {
-        // Just execute empty script to estimate weight.
-        let caller: T::AccountId = whitelisted_caller();
-        let tx = include_bytes!("../tests/benchmark_assets/artifacts/transactions/empty.mvt").to_vec();
-    }: _(RawOrigin::Signed(caller), tx, 100_000_000)
-    verify {
-        // no-op
-    }
-
     publish_empty_module {
         let caller: T::AccountId = whitelisted_caller();
         let module = include_bytes!("../tests/benchmark_assets/artifacts/modules/2_Empty.mv").to_vec();

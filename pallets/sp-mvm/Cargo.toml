@@ -52,9 +52,9 @@ sp-std = { default-features = false, git = 'https://github.com/paritytech/substr
 sp-core = { default-features = false, git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.13' }
 timestamp = { default-features = false, package = "pallet-timestamp", git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.13' }
 balances = { default-features = false, package = "pallet-balances", git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.13' }
-pallet-multisig = { default-features = false, path = '../multisig' }
 # logging, `sp_runtime::print`:
 sp-runtime = { default-features = false, git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.13' }
+groupsign = { path = "../groupsign", default-features = false }
 
 sp-io = { default-features = false, git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.13' }
 getrandom = { version = "0.2.3", optional = true }

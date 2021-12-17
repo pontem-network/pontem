@@ -152,7 +152,6 @@ std = [
     'cumulus-primitives-core/std',
     'cumulus-primitives-timestamp/std',
     'pallet-vesting/std',
-	"pallet-multisig/std",
     'sp-api/std',
     'sp-block-builder/std',
     'sp-core/std',
