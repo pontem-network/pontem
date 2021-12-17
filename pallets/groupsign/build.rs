@@ -1,6 +1,5 @@
 use sp_core::{sr25519, Pair, blake2_256};
 use codec::{Encode};
-use frame_system;
 
 use sp_core::{H256};
 use sp_runtime::{
@@ -65,7 +64,7 @@ pub struct TestCase {
     signers: Vec<AccountId>,
 }
 
-pub fn generate_preimage(caller: &AccountId, call: &Call, signers: &Vec<AccountId>) -> [u8; 32] {
+pub fn generate_preimage(caller: &AccountId, call: &Call, signers: &[AccountId]) -> [u8; 32] {
     let mut call_preimage = call.encode();
     call_preimage.extend(<Test as frame_system::Config>::BlockNumber::min_value().encode());
     call_preimage.extend(<Test as frame_system::Config>::BlockNumber::max_value().encode());
@@ -79,10 +78,10 @@ pub fn generate_example(signature_number: u32, length: u32) -> TestCase {
     let call = Call::System(frame_system::Call::remark {
         remark: "Mow "
             .as_bytes()
-            .into_iter()
+            .iter()
             .cycle()
             .take(length as usize)
-            .map(|&a| a)
+            .copied()
             .collect(),
     });
 
@@ -122,7 +121,7 @@ pub fn main() {
                 .step_by(MAX_TEST_LENGTH_STEP)
                 .map(move |length| (signature_number, length))
         })
-        .flat_map(|s| s)
+        .flatten()
         .map(|(signature_number, length)| {
             generate_example(signature_number as u32, length as u32)
         })
