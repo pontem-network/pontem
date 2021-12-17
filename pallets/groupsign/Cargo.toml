@@ -20,8 +20,8 @@ frame-system = { git = 'https://github.com/paritytech/substrate.git', branch = '
 sp-runtime = { default-features = false, git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.11' }
 
 [dependencies]
-codec = { package = "parity-scale-codec", version = "2.3.1", default-features = false }
-scale-info = { version = "1.0", default-features = false, features = ["derive"] }
+codec = { default-features = false , package = "parity-scale-codec", version = "2.3.1" }
+scale-info = { default-features = false, version = "1.0", features = ["derive"] }
 frame-support = { default-features = false, git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.11' }
 frame-system = { default-features = false, git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.11' }
 
@@ -29,6 +29,7 @@ sp-io = { default-features = false, git = 'https://github.com/paritytech/substra
 sp-std = { default-features = false, git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.11' }
 sp-core = { default-features = false, git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.11' }
 sp-runtime = { default-features = false, git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.11' }
+getrandom = { version = "0.2.3", optional = true }
 
 frame-benchmarking = { default-features = false, optional = true, git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.11' }
 
@@ -40,17 +41,17 @@ default = ['std']
 std = [
 	'codec/std',
 	'scale-info/std',
-
 	'frame-support/std',
 	'frame-system/std',
-	'frame-benchmarking/std',
 
     "sp-io/std",
     "sp-std/std",
     "sp-core/std",
     "sp-runtime/std",
-    "sp-core/full_crypto",
 
+	'frame-benchmarking/std',
+
+    "getrandom/js",
 ]
 
 runtime-benchmarks = [
