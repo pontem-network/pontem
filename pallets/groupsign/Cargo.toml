@@ -1,13 +1,12 @@
 [package]
 name = 'groupsign'
 version = "0.0.1"
-description = "FRAME pallet template for defining custom runtime logic."
-authors = ['Substrate DevHub <https://github.com/substrate-developer-hub>']
-homepage = "https://substrate.io/"
-edition = '2018'
-license = "Apache-2.0"
+description = "FRAME pallet for signing Calls with multiple signatures."
+authors = ['Pontem Network']
+edition = '2021'
+license = "GPL-v3.0"
 publish = false
-repository = "https://github.com/substrate-developer-hub/substrate-node-template/"
+repository = "https://github.com/pontem-network/pontem"
 
 [package.metadata.docs.rs]
 targets = ["x86_64-unknown-linux-gnu"]
