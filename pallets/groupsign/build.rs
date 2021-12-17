@@ -65,19 +65,12 @@ pub struct TestCase {
     signers: Vec<AccountId>,
 }
 
-pub fn generate_preimage(
-    caller: &AccountId,
-    call: &Call,
-    signers: &Vec<AccountId>
-) -> [u8; 32] {
-
+pub fn generate_preimage(caller: &AccountId, call: &Call, signers: &Vec<AccountId>) -> [u8; 32] {
     let mut call_preimage = call.encode();
-    call_preimage.extend((0 as <Test as frame_system::Config>::BlockNumber).encode());
-    call_preimage.extend((100000 as <Test as frame_system::Config>::BlockNumber).encode());
+    call_preimage.extend(<Test as frame_system::Config>::BlockNumber::min_value().encode());
+    call_preimage.extend(<Test as frame_system::Config>::BlockNumber::max_value().encode());
     call_preimage.extend(caller.encode());
-    call_preimage.extend((0 as <Test as frame_system::Config>::BlockNumber).encode()); // Nonce = 0
-
-    // We collect check that signers didn't changed.
+    call_preimage.extend(<Test as frame_system::Config>::Index::min_value().encode());
     call_preimage.extend(signers.encode());
     blake2_256(call_preimage.as_ref())
 }
@@ -94,11 +87,13 @@ pub fn generate_example(signature_number: u32, length: u32) -> TestCase {
     });
 
     let caller = sr25519::Pair::generate().0.public();
-    let signer_pairs = (0..signature_number).map(|_| sr25519::Pair::generate().0).collect::<Vec<_>>();
+    let signer_pairs = (0..signature_number)
+        .map(|_| sr25519::Pair::generate().0)
+        .collect::<Vec<_>>();
     let preimage = generate_preimage(
         &caller,
         &call,
-        &signer_pairs.iter().map(|s| s.public()).collect::<Vec<_>>()
+        &signer_pairs.iter().map(|s| s.public()).collect::<Vec<_>>(),
     );
 
     let (signers, signatures) = signer_pairs
@@ -119,7 +114,8 @@ const MAX_TEST_LENGTH: usize = 256;
 const MAX_TEST_LENGTH_STEP: usize = 64;
 
 pub fn main() {
-    // No cartesian products in std, and I don't want to import itertools
+    println!("cargo:rerun-if-changed=build.rs");
+
     let a = (0..MAX_TEST_SIGNERS)
         .map(|signature_number| {
             (0..MAX_TEST_LENGTH)
@@ -132,7 +128,8 @@ pub fn main() {
         })
         .collect::<Vec<_>>();
 
-    let mut file = std::fs::File::create("benchmark_examples.codec").expect("Cannot create output file");
+    let mut file =
+        std::fs::File::create("benchmark_examples.codec").expect("Cannot create output file");
 
     a.encode_to(&mut file);
 }
