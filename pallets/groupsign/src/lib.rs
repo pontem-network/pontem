@@ -18,7 +18,6 @@ mod tests;
 
 #[cfg(feature = "runtime-benchmarks")]
 mod benchmarking;
-
 pub mod weights;
 pub mod utils;
 
@@ -155,7 +154,7 @@ pub mod pallet {
 
             // Check signatures length match.
             ensure!(
-                signatures.len() > 0,
+                !signatures.is_empty(),
                 Error::<T>::ZeroSignatureCall
             );
 
