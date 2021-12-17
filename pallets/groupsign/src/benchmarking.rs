@@ -6,19 +6,34 @@ use super::*;
 use crate::Pallet as Groupsign;
 use frame_benchmarking::{benchmarks, whitelisted_caller,account};
 use frame_system::{RawOrigin, };
+use codec::Decode;
 use sp_runtime::traits::Bounded;
 
 use utils::*;
 
+const BENCHMARKS: &[u8] = include_bytes!("../benchmark_examples.codec");
+
+// ==== /Mock config
+
+
+#[derive(Decode, Clone)]
+pub struct TestCase<T> where T : Config {
+    call: <T as Config>::Call,
+    caller: T::AccountId,
+    signatures: Vec<<T as Config>::Signature>,
+    signers: Vec<T::AccountId>,
+}
+
 benchmarks! {
+
     groupsign_call {
-        let s in 2 .. 100;
-        let caller: T::AccountId = whitelisted_caller();
-        let signers = test_accounts::<T>(0..s);
-        let call: <T as Config>::Call = frame_system::Call::<T>::remark { remark: b"bench_remark".to_vec() }.into();
+        // These tests are generated in build.rs. Refer to build.rs, if you want to change anything in here.
+        let tests = Vec::<TestCase<T>>::decode(&mut BENCHMARKS.clone()).expect("Failed to decode test data");
+        let s in 0 .. 120;
+
+        let TestCase { call, caller, signatures, signers } = tests.get(s as usize).unwrap().clone();
         let valid_since = <T::BlockNumber as Bounded>::min_value();
         let valid_thru = <T::BlockNumber as Bounded>::max_value();
-        let signatures = test_sign::<T>(0..s, &generate_preimage::<T>(&caller, &call, &signers, valid_since, valid_thru));
 
     }: _(RawOrigin::Signed(caller), Box::new(call), signers, signatures.into(), valid_since, valid_thru)
     verify {
