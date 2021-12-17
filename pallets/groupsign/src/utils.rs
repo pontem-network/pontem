@@ -22,7 +22,7 @@ pub fn generate_preimage<T: crate::Config>(
     valid_since: T::BlockNumber,
     valid_thru: T::BlockNumber
 ) -> [u8; 32] {
-    let nonce = frame_system::Pallet::<T>::account_nonce(&caller);
+    let nonce: <T as frame_system::Config>::Index = frame_system::Pallet::<T>::account_nonce(&caller);
 
     let mut call_preimage = call.encode();
     call_preimage.extend(valid_since.encode());
