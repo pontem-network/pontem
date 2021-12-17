@@ -1,17 +1,24 @@
 {
+  nixConfig = {
+    extra-substituters = [ "https://hydra.nixos.org" "https://nix-community.cachix.org" "https://pontem.cachix.org" ];
+    extra-trusted-keys = [
+      "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
+      "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
+      "pontem.cachix.org-1:IZOAswhIJQZin8qtaacVg1sdUmGSBbxeve+My8lcC2A="
+    ];
+  };
+
   inputs = {
     fenix.url = github:nix-community/fenix;
-    naersk.url = github:nix-community/naersk;
     utils.url = github:numtide/flake-utils;
     move-tools.url = github:pontem-network/move-tools;
 
     nixpkgs.follows = "move-tools/nixpkgs";
     # nixpkgs.url = "/home/cab/data/cab/nixpkgs";
-    naersk.follows = "move-tools/naersk";
     fenix.follows = "move-tools/fenix";
   };
 
-  outputs = flake-args@{ self, nixpkgs, utils, naersk, fenix, move-tools, ... }:
+  outputs = flake-args@{ self, nixpkgs, utils, fenix, move-tools, ... }:
     utils.lib.eachDefaultSystem (system:
       let
         pkgs = import nixpkgs { inherit system; };
@@ -32,12 +39,12 @@
         # Some strange wasm errors occur if not built with this old toolchain
         buildToolchainV = {
           channel = "nightly";
-          date = "2021-10-24";
-          sha256 = "sha256-vRBxIPRyCcLvh6egPKSHMTmxVD1E0obq71iCM0aOWZo=";
+          date = "2021-10-25";
+          sha256 = "sha256-vRBxIPRyCcLvh6egPKShMTmxVD1E0obq71iCM0aOWzs=";
         };
 
         buildComponents = [ "cargo" "llvm-tools-preview" "rust-std" "rustc" "rustc-dev" ];
-        devComponents = buildComponents ++ [ "clippy-preview" "rustfmt-preview" "rust-src" "rls-preview" "rust-analyzer-preview" ];
+        devComponents = buildComponents ++ [ "clippy-preview" "rustfmt-preview" "rust-src" "rls-preview" ];
 
         devToolchain = let
             t = fenixArch.toolchainOf devToolchainV;
@@ -58,7 +65,6 @@
               };
             in
               {
-                naersk = naersk.lib.${system}.override tch;
                 rustPlatform = pkgs.makeRustPlatform tch;
               }
           ) naersk-lib rustPlatform;
@@ -78,18 +84,11 @@
           ]);
 
           PROTOC = "${protobuf}/bin/protoc";
-          SKIP_WASM_BUILD = "1";
           PROTOC_INCLUDE = "${protobuf}/include";
           LLVM_CONFIG_PATH="${llvmPackagesR.llvm}/bin/llvm-config";
           LIBCLANG_PATH="${llvmPackagesR.libclang.lib}/lib";
           RUST_SRC_PATH = "${devToolchain}/lib/rustlib/src/rust/library/";
           ROCKSDB_LIB_DIR = "${rocksdb}/lib";
-        };
-
-        boop = builtins.fetchGit {
-          url = "https://github.com/purestake/cumulus";
-          ref = "nimbus-polkadot-v0.9.11";
-          rev = "de3a9302ba0b7c64353da769615c0b19397255dd";
         };
 
         # altPackage = with pkgs; rustPlatform.buildRustPackage {
