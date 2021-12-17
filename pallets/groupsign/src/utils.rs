@@ -29,8 +29,6 @@ pub fn generate_preimage<T: crate::Config>(
     call_preimage.extend(valid_thru.encode());
     call_preimage.extend(caller.encode());
     call_preimage.extend(nonce.encode());
-
-    // We collect check that signers didn't changed.
     call_preimage.extend(signers.encode());
     blake2_256(call_preimage.as_ref())
 }
