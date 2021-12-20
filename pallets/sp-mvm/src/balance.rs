@@ -123,7 +123,7 @@ where
                     "native balance ticker '{}' not supported",
                     PrintedTicker(ticker)
                 );
-                return None;
+                None
             }
         }
     }
@@ -238,6 +238,7 @@ pub mod boxed {
     pub type BalancesAdapter = BalancesBoxedAdapter;
 
     /// Vm storage boxed adapter for native storage
+    #[allow(clippy::type_complexity)]
     pub struct BalancesBoxedAdapter {
         pallet_id: PalletId,
         f_get: Box<dyn Fn(&AccountAddress, &[u8]) -> Option<VmBalance>>,

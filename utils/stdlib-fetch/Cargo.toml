@@ -2,7 +2,7 @@
 authors = ['Pontem Network <https://github.com/pontem-network>']
 description = 'Fetch stdlib using local git binary and dove for build.'
 license = 'Apache 2.0'
-edition = '2018'
+edition = '2021'
 name = 'stdlib-fetch'
 repository = "https://github.com/pontem-network/pontem"
 version = '1.0.0'

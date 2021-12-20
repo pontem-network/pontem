@@ -1,22 +1,21 @@
 use crate::*;
+use crate::tests::mock::{Accounts, RuntimeBuilder};
 
 mod mock_runtime;
 mod parachain;
 
-use sp_runtime::AccountId32;
 use frame_support::sp_io::TestExternalities;
 use frame_support::traits::GenesisBuild;
+use cumulus_primitives_core::ParaId;
 use xcm_emulator::{decl_test_network, decl_test_parachain, decl_test_relay_chain};
 use polkadot_primitives::v1::{MAX_CODE_SIZE, MAX_POV_SIZE};
 use polkadot_runtime_parachains::configuration::HostConfiguration;
-pub const ALICE: AccountId32 = AccountId32::new([0u8; 32]);
-pub const BOB: AccountId32 = AccountId32::new([1u8; 32]);
 
 decl_test_parachain! {
     pub struct ParaA {
-        Runtime = Runtime,
-        Origin = Origin,
-        new_ext = para_ext(1),
+        Runtime = crate::Runtime,
+        Origin = crate::Origin,
+        new_ext = para_ext(2000),
     }
 }
 
@@ -24,7 +23,7 @@ decl_test_parachain! {
     pub struct ParaB {
         Runtime = mock_runtime::Runtime,
         Origin = mock_runtime::Origin,
-        new_ext = mock_para_ext(2),
+        new_ext = mock_para_ext(2001),
     }
 }
 
@@ -40,12 +39,13 @@ decl_test_network! {
     pub struct TestNet {
         relay_chain = Relay,
         parachains = vec![
-            (1, ParaA),
-            (2, ParaB),
+            (2000, ParaA),
+            (2001, ParaB),
         ],
     }
 }
 
+pub type RelayChainPalletXcm = pallet_xcm::Pallet<kusama_runtime::Runtime>;
 pub type RelayBalances = pallet_balances::Pallet<kusama_runtime::Runtime>;
 
 pub type ParaATokens = orml_tokens::Pallet<crate::Runtime>;
@@ -66,14 +66,17 @@ pub fn mock_para_ext(para_id: u32) -> TestExternalities {
     let parachain_info_config = parachain_info::GenesisConfig {
         parachain_id: para_id.into(),
     };
-    <parachain_info::GenesisConfig as GenesisBuild<Runtime, _>>::assimilate_storage(
+    <parachain_info::GenesisConfig as frame_support::traits::GenesisBuild<Runtime>>::assimilate_storage(
         &parachain_info_config,
         &mut t,
     )
     .unwrap();
 
     pallet_balances::GenesisConfig::<Runtime> {
-        balances: vec![(ALICE, 2000 * PONT), (BOB, 2000 * PONT)],
+        balances: vec![
+            (Accounts::ALICE.account(), CurrencyId::PONT * 2000),
+            (Accounts::BOB.account(), CurrencyId::PONT * 2000),
+        ],
     }
     .assimilate_storage(&mut t)
     .unwrap();
@@ -88,7 +91,7 @@ pub fn mock_para_ext(para_id: u32) -> TestExternalities {
 
     orml_tokens::GenesisConfig::<Runtime> {
         balances: vec![(
-            ALICE,
+            Accounts::ALICE.account(),
             mock_runtime::CurrencyId::KSM,
             2000 * dollar(CurrencyId::KSM) as u64,
         )],
@@ -101,47 +104,22 @@ pub fn mock_para_ext(para_id: u32) -> TestExternalities {
     ext
 }
 
-pub fn para_ext(para_id: u32) -> TestExternalities {
-    let mut t = frame_system::GenesisConfig::default()
-        .build_storage::<Runtime>()
-        .unwrap();
-
-    let parachain_info_config = parachain_info::GenesisConfig {
-        parachain_id: para_id.into(),
-    };
-    <parachain_info::GenesisConfig as GenesisBuild<Runtime, _>>::assimilate_storage(
-        &parachain_info_config,
-        &mut t,
-    )
-    .unwrap();
-
-    pallet_balances::GenesisConfig::<Runtime> {
-        balances: vec![(ALICE, 2000 * PONT)],
-    }
-    .assimilate_storage(&mut t)
-    .unwrap();
-
-    <pallet_xcm::GenesisConfig as GenesisBuild<Runtime>>::assimilate_storage(
-        &pallet_xcm::GenesisConfig {
-            safe_xcm_version: Some(2),
-        },
-        &mut t,
-    )
-    .unwrap();
-
-    orml_tokens::GenesisConfig::<Runtime> {
-        balances: vec![(
-            ALICE,
-            CurrencyId::KSM,
-            2000 * dollar(CurrencyId::KSM) as u64,
-        )],
-    }
-    .assimilate_storage(&mut t)
-    .unwrap();
-
-    let mut ext = TestExternalities::new(t);
-    ext.execute_with(|| System::set_block_number(1));
-    ext
+pub fn para_ext(parachain_id: u32) -> TestExternalities {
+    RuntimeBuilder::new()
+        .set_balances(vec![
+            (
+                Accounts::ALICE.account(),
+                CurrencyId::PONT,
+                CurrencyId::PONT.times(2000),
+            ),
+            (
+                Accounts::ALICE.account(),
+                CurrencyId::KSM,
+                CurrencyId::KSM.times(2000),
+            ),
+        ])
+        .set_parachain_id(parachain_id)
+        .build()
 }
 
 fn default_parachains_host_configuration() -> HostConfiguration<BlockNumber> {
@@ -189,7 +167,7 @@ pub fn relay_ext() -> TestExternalities {
         .unwrap();
 
     pallet_balances::GenesisConfig::<Runtime> {
-        balances: vec![(ALICE, 2000 * dollar(CurrencyId::KSM))],
+        balances: vec![(Accounts::ALICE.account(), 2000 * dollar(CurrencyId::KSM))],
     }
     .assimilate_storage(&mut t)
     .unwrap();
@@ -200,7 +178,7 @@ pub fn relay_ext() -> TestExternalities {
     .assimilate_storage(&mut t)
     .unwrap();
 
-    <pallet_xcm::GenesisConfig as GenesisBuild<Runtime>>::assimilate_storage(
+    <pallet_xcm::GenesisConfig as frame_support::traits::GenesisBuild<Runtime>>::assimilate_storage(
         &pallet_xcm::GenesisConfig {
             safe_xcm_version: Some(2),
         },
