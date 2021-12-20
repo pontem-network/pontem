@@ -137,7 +137,8 @@ mod build_benchmarks {
 }
 
 pub fn main() {
-    #[cfg(std)] {
+    #[cfg(std)]
+    {
         use build_benchmarks::main;
         main();
     }

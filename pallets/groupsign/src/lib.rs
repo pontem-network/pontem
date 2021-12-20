@@ -18,8 +18,8 @@ mod tests;
 
 #[cfg(feature = "runtime-benchmarks")]
 mod benchmarking;
-pub mod weights;
 pub mod utils;
+pub mod weights;
 
 pub use pallet::*;
 
@@ -28,13 +28,16 @@ pub mod pallet {
 
     use sp_std::prelude::Box;
     use scale_info::TypeInfo;
-    use frame_support::{dispatch::{DispatchResultWithPostInfo, Dispatchable, GetDispatchInfo, PostDispatchInfo}, ensure, pallet_prelude::*};
+    use frame_support::{
+        dispatch::{DispatchResultWithPostInfo, Dispatchable, GetDispatchInfo, PostDispatchInfo},
+        ensure,
+        pallet_prelude::*,
+    };
     use frame_system::pallet_prelude::*;
     use sp_std::vec::Vec;
     use sp_runtime::{
         traits::{Verify, IdentifyAccount},
         verify_encoded_lazy,
-
     };
 
     use crate::weights::WeightInfo;
@@ -82,7 +85,7 @@ pub mod pallet {
     #[cfg_attr(feature = "std", derive(Debug))]
     pub struct Origin<T: Config> {
         pub caller: T::AccountId,
-        pub signers: Vec<T::AccountId>
+        pub signers: Vec<T::AccountId>,
     }
 
     #[pallet::pallet]
@@ -126,7 +129,6 @@ pub mod pallet {
 
     #[pallet::call]
     impl<T: Config> Pallet<T> {
-
         /// Do groupsign call.
 
         #[pallet::weight({
@@ -153,10 +155,7 @@ pub mod pallet {
             let caller = ensure_signed(origin)?;
 
             // Check signatures length match.
-            ensure!(
-                !signatures.is_empty(),
-                Error::<T>::ZeroSignatureCall
-            );
+            ensure!(!signatures.is_empty(), Error::<T>::ZeroSignatureCall);
 
             // Check signatures length match.
             ensure!(
@@ -172,7 +171,13 @@ pub mod pallet {
                 Error::<T>::EraValidationError,
             );
 
-            let preimage = crate::utils::generate_preimage::<T>(&caller, &signed_call, &signers, valid_since, valid_thru);
+            let preimage = crate::utils::generate_preimage::<T>(
+                &caller,
+                &signed_call,
+                &signers,
+                valid_since,
+                valid_thru,
+            );
 
             // Verify signature.
             let verified = Iterator::zip(signatures.into_iter(), signers.clone().into_iter())
@@ -184,7 +189,10 @@ pub mod pallet {
             let call_len = signed_call.using_encoded(|c| c.len());
 
             // Do dispatch call.
-            let origin = Origin { caller: caller.clone(), signers: signers.clone() };
+            let origin = Origin {
+                caller: caller.clone(),
+                signers: signers.clone(),
+            };
             let result = signed_call.dispatch(T::MyOrigin::from(origin).into()); // result
 
             let call_weight = match result {
@@ -195,21 +203,15 @@ pub mod pallet {
                     ));
                     post_info.actual_weight
                 }
-                Err(err) => {
-                    err.post_info.actual_weight
-                }
+                Err(err) => err.post_info.actual_weight,
             };
 
-            Ok(
-                call_weight.map(|actual_weight|
-                    T::WeightInfo::groupsign_call(
-                        signers.len() as u32,
-                        call_len as u32
-                    ).saturating_add(actual_weight)
-                ).into()
-            )
+            Ok(call_weight
+                .map(|actual_weight| {
+                    T::WeightInfo::groupsign_call(signers.len() as u32, call_len as u32)
+                        .saturating_add(actual_weight)
+                })
+                .into())
         }
-
     }
-
 }

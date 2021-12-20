@@ -5,8 +5,7 @@ use crate::{
     utils::generate_preimage,
 };
 use frame_support::{
-    assert_err_ignore_postinfo, assert_ok, dispatch::PostDispatchInfo,
-    weights::Pays,
+    assert_err_ignore_postinfo, assert_ok, dispatch::PostDispatchInfo, weights::Pays,
 };
 use sp_core::{sr25519};
 use sp_keystore::{SyncCryptoStore, testing::KeyStore};
@@ -203,6 +202,4 @@ fn correct_call_test() {
 }
 
 #[test]
-fn bench_groupsign() {
-
-}
+fn bench_groupsign() {}

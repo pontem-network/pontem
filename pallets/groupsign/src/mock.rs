@@ -4,7 +4,10 @@ use frame_support::parameter_types;
 use frame_system as system;
 use scale_info::TypeInfo;
 use sp_core::{H256, sr25519};
-use sp_runtime::{testing::Header, traits::{BlakeTwo256, IdentityLookup, Lazy, Verify}};
+use sp_runtime::{
+    testing::Header,
+    traits::{BlakeTwo256, IdentityLookup, Lazy, Verify},
+};
 
 type UncheckedExtrinsic = frame_system::mocking::MockUncheckedExtrinsic<Test>;
 type Block = frame_system::mocking::MockBlock<Test>;
@@ -21,7 +24,6 @@ frame_support::construct_runtime!(
         Groupsign: groupsign::{Pallet, Call, Origin<T>, Event<T>},
     }
 );
-
 
 parameter_types! {
     pub const BlockHashCount: u64 = 250;
@@ -57,18 +59,16 @@ impl system::Config for Test {
 impl groupsign::Config for Test {
     type Event = Event;
 
-	type WeightInfo = PontemWeights<Self>;
-	type MyOrigin = Origin;
+    type WeightInfo = PontemWeights<Self>;
+    type MyOrigin = Origin;
 
     type Call = Call;
     type Public = AccountId;
     type Signature = AnySignature;
-
 }
 
 #[derive(Eq, PartialEq, Clone, Default, Encode, Decode, TypeInfo, Debug)]
 pub struct AnySignature(sr25519::Signature);
-
 
 impl Verify for AnySignature {
     type Signer = sr25519::Public;

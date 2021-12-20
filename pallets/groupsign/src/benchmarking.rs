@@ -5,13 +5,16 @@ use super::*;
 #[allow(unused)]
 use crate::Pallet as Groupsign;
 use frame_benchmarking::{benchmarks};
-use frame_system::{RawOrigin, };
+use frame_system::{RawOrigin};
 use codec::Decode;
 use sp_runtime::traits::Bounded;
 use sp_std::prelude::*;
 
 #[derive(Decode, Clone)]
-pub struct TestCase<T> where T : Config {
+pub struct TestCase<T>
+where
+    T: Config,
+{
     call: <T as Config>::Call,
     caller: T::AccountId,
     signatures: Vec<<T as Config>::Signature>,
