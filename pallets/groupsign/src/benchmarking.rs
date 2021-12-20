@@ -8,6 +8,7 @@ use frame_benchmarking::{benchmarks};
 use frame_system::{RawOrigin, };
 use codec::Decode;
 use sp_runtime::traits::Bounded;
+use sp_std::prelude::*;
 
 #[derive(Decode, Clone)]
 pub struct TestCase<T> where T : Config {
@@ -34,5 +35,5 @@ benchmarks! {
         // assert_eq!(Something::<T>::get(), Some(s));
     }
 
-    // impl_benchmark_test_suite!(Groupsign, crate::mock::new_test_ext(), crate::mock::Test);
+    impl_benchmark_test_suite!(Groupsign, crate::mock::new_test_ext(), crate::mock::Test);
 }
