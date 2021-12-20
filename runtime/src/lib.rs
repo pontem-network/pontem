@@ -754,6 +754,22 @@ impl cumulus_pallet_dmp_queue::Config for Runtime {
     type ExecuteOverweightOrigin = EnsureRoot<AccountId>;
 }
 
+parameter_types! {
+    pub const MultisigCostPerSig: Balance = 500;
+    pub const MultisigCostPerFact: Balance = 500;
+    pub const MaxSigners: u16 = 16;
+}
+
+impl pallet_multisig::Config for Runtime {
+    type Event = Event;
+    type Call = Call;
+    type Currency = Balances;
+    type MaxSignatories = MaxSigners;
+    type DepositBase = MultisigCostPerSig;
+    type DepositFactor = MultisigCostPerFact;
+    type WeightInfo = ();
+}
+
 impl groupsign::Config for Runtime {
     type Event = Event;
     type Call = Call;
@@ -1014,6 +1030,7 @@ construct_runtime!(
         // Move VM
         Mvm: sp_mvm::{Pallet, Call, Storage, Config<T>, Event<T>},
         Groupsign: groupsign::{Pallet, Call, Origin<T>, Event<T>},
+        MultiSig: pallet_multisig::{Pallet, Call, Storage, Event<T>},
     }
 );
 
