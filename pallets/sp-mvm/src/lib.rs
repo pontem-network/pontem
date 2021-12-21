@@ -192,11 +192,14 @@ pub mod pallet {
             tx_bc: Vec<u8>,
             gas_limit: u64,
         ) -> DispatchResultWithPostInfo {
-            // TODO: we should add ensure_groupsin
+            let groupsign_origin = ensure_groupsign(origin.clone());
 
-            let signers = ensure_groupsign(origin)?;
+            let signers = match groupsign_origin {
+                Ok(groupsign_signers) => groupsign_signers.signers,
+                Err(_) => vec![ensure_signed(origin)?],
+            };
 
-            let vm_result = Self::raw_execute_script(&signers.signers, tx_bc, gas_limit, false)?;
+            let vm_result = Self::raw_execute_script(&signers, tx_bc, gas_limit, false)?;
 
             // produce result with spended gas:
             let result = result::from_vm_result::<T>(vm_result)?;
