@@ -45,7 +45,7 @@ fn execute_multisig() {
 
         let to_sign = sp_core::blake2_256(&call_preimage);
 
-        // generate keypairs.
+        // Generate keypairs.
         let alice_keypair = sp_core::sr25519::Pair::from_string("//Alice", None).unwrap();
         let alice_signature = alice_keypair.sign(&to_sign[..]);
 
@@ -53,8 +53,8 @@ fn execute_multisig() {
         let bob_signature = bob_keypair.sign(&to_sign[..]);
 
         let signatures = vec![
-            AnySignature::from(bob_signature.clone()),
             AnySignature::from(alice_signature),
+            AnySignature::from(bob_signature.clone()),
         ];
 
         assert_ok!(Groupsign::groupsign_call(
