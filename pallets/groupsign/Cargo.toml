@@ -1,10 +1,10 @@
 [package]
 name = 'groupsign'
 version = "0.0.1"
-description = "FRAME pallet for signing Calls with multiple signatures."
+description = "The pallet to sign and execute dispatchable call using different signers immediately"
 authors = ['Pontem Network']
 edition = '2021'
-license = "GPL-v3.0"
+license = "Apache2.0"
 publish = false
 repository = "https://github.com/pontem-network/pontem"
 
