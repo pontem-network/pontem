@@ -122,11 +122,6 @@ pub mod pallet {
         ExecutionFailed,
     }
 
-    /// TODO: we need ensure_members analogue.
-    /// https://github.com/paritytech/substrate/blob/master/frame/collective/src/lib.rs
-    /// E.g. we should check if code exists and running in process.
-    /// Otherwise groupsign can't be used.
-
     #[pallet::call]
     impl<T: Config> Pallet<T> {
         /// Do groupsign call.
