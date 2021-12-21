@@ -1257,6 +1257,7 @@ impl_runtime_apis! {
             list_benchmark!(list, extra, pallet_timestamp, Timestamp);
             list_benchmark!(list, extra, pallet_vesting, Vesting);
             list_benchmark!(list, extra, sp_mvm, Mvm);
+            list_benchmark!(list, extra, groupsign, Groupsign);
 
             let storage_info = AllPalletsWithSystem::storage_info();
 
@@ -1292,6 +1293,7 @@ impl_runtime_apis! {
             add_benchmark!(params, batches, pallet_timestamp, Timestamp);
             add_benchmark!(params, batches, pallet_vesting, Vesting);
             add_benchmark!(params, batches, sp_mvm, Mvm);
+            add_benchmark!(params, batches, groupsign, Groupsign);
 
             if batches.is_empty() { return Err("Benchmark not found for this pallet.".into()) }
             Ok(batches)
