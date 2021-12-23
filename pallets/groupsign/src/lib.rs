@@ -130,8 +130,8 @@ pub mod pallet {
         pub fn on_chain_message_check(
             origin: OriginFor<T>,
             message: Vec<u8>,
-            signers: Vec<T::AccountId>,
-            signatures: Vec<T::Signature>,
+            signers: Vec<sp_runtime::MultiSigner>,
+            signatures: Vec<sp_runtime::MultiSignature>,
         ) -> DispatchResultWithPostInfo {
             ensure_signed(origin)?;
             ensure!(
@@ -139,7 +139,7 @@ pub mod pallet {
                 Error::<T>::SignaturesLengthDoesntMatch
             );
             Iterator::zip(signatures.into_iter(), signers.clone().into_iter())
-                .all(|(sig, signer)| verify_encoded_lazy(&sig, &message, &signer));
+                .all(|(sig, signer)| verify_encoded_lazy(&sig, &message, &signer.into_account()));
             Ok(Some(0u64).into())
         }
 
