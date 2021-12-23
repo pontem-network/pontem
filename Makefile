@@ -94,6 +94,10 @@ build:
 	export WASM_BUILD_TOOLCHAIN=`cat rust-toolchain`
 	cargo build --release
 
+.PHONY: clean
+clean:
+	cargo clean
+  
 .PHONY: build-bench
 build-bench: assets
 	export SKIP_WASM_BUILD=0
