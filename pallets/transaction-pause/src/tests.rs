@@ -5,7 +5,6 @@ use frame_support::{assert_noop, assert_ok};
 use mock::{Event, *};
 use sp_runtime::traits::BadOrigin;
 
-
 const BALANCE_TRANSFER: &<Runtime as frame_system::Config>::Call =
     &mock::Call::Balances(pallet_balances::Call::transfer {
         dest: ALICE,
