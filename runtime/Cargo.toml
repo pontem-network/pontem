@@ -94,6 +94,7 @@ primitives = { path = "../primitives", default-features = false }
 constants = { path = "../constants", default-features = false }
 module-currencies = { path = "../pallets/currencies", default-features = false }
 groupsign = { path = "../pallets/groupsign", default-features = false }
+transaction-pause = { path = "../pallets/transaction-pause", default-features = false }
 
 [dev-dependencies]
 xcm-emulator = { git = 'https://github.com/pontem-network/xcm-simulator', branch = 'polkadot-v0.9.13' }
@@ -180,4 +181,5 @@ std = [
     'pallet-author-mapping/std',
     'sp-mvm-rpc-runtime/std',
     'groupsign/std',
+    'transaction-pause/std'
 ]

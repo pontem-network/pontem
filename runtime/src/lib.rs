@@ -51,7 +51,7 @@ pub use frame_support::{
     construct_runtime, parameter_types, StorageValue, match_type,
     traits::{
         KeyOwnerProofSystem, Randomness, IsInVec, Everything, Nothing, EnsureOrigin,
-        OnUnbalanced, Imbalance, Get, EqualPrivilegeOnly,
+        OnUnbalanced, Imbalance, Get, Contains, EqualPrivilegeOnly,
     },
     weights::{
         Weight, IdentityFee, DispatchClass,
@@ -76,6 +76,9 @@ use constants::{SS58_PREFIX, currency::*, time::*};
 use primitives::{*, currency::CurrencyId, Index};
 
 use module_currencies::BasicCurrencyAdapter;
+
+///Import the Transaction pause pallet.
+pub use transaction_pause;
 
 #[cfg(test)]
 mod tests;
@@ -983,6 +986,34 @@ impl orml_xcm::Config for Runtime {
     type SovereignOrigin = EnsureRoot<AccountId>;
 }
 
+impl transaction_pause::Config for Runtime {
+    type Event = Event;
+    type UpdateOrigin = EnsureRoot<AccountId>;
+    type WeightInfo = ();
+}
+
+pub struct BaseCallFilter;
+impl Contains<Call> for BaseCallFilter {
+    fn contains(call: &Call) -> bool {
+        let is_core_call = matches!(
+            call,
+            Call::System(_) | Call::Timestamp(_) | Call::ParachainSystem(_)
+        );
+        if is_core_call {
+            // always allow core call
+            return true;
+        }
+
+        let is_paused = transaction_pause::PausedTransactionFilter::<Runtime>::contains(call);
+        if is_paused {
+            // no paused call
+            return false;
+        }
+
+        true
+    }
+}
+
 // Create the runtime by composing the FRAME pallets that were previously configured.
 construct_runtime!(
     pub enum Runtime where
@@ -1030,6 +1061,9 @@ construct_runtime!(
         Mvm: sp_mvm::{Pallet, Call, Storage, Config<T>, Event<T>},
         Groupsign: groupsign::{Pallet, Call, Origin<T>, Event<T>},
         MultiSig: pallet_multisig::{Pallet, Call, Storage, Event<T>},
+
+        // Transaction pause
+        TransactionPause: transaction_pause::{Pallet, Storage, Event<T>},
     }
 );
 
