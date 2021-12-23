@@ -10,7 +10,6 @@ use orml_traits::parameter_type_with_key;
 use primitives::{Amount, Balance, currency::CurrencyId};
 use sp_core::H256;
 use sp_runtime::{testing::Header, traits::IdentityLookup};
-use frame_support::traits::PalletInfo as OtherPalletInfo;
 
 pub type AccountId = u128;
 pub const ALICE: AccountId = 1;
