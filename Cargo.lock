@@ -2890,7 +2890,6 @@ dependencies = [
 name = "groupsign"
 version = "0.0.1"
 dependencies = [
- "frame-benchmarking",
  "frame-support",
  "frame-system",
  "getrandom 0.2.3",
