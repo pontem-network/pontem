@@ -124,8 +124,28 @@ pub mod pallet {
 
     #[pallet::call]
     impl<T: Config> Pallet<T> {
-        /// Do groupsign call.
 
+        // #[cfg(feature = "runtime-benchmarking")]
+        #[pallet::weight(0)]
+        pub fn on_chain_message_check(
+            origin: OriginFor<T>,
+            message: Vec<u8>,
+            signers: Vec<T::AccountId>,
+            signatures: Vec<T::Signature>,
+        ) -> DispatchResultWithPostInfo {
+            ensure_signed(origin)?;
+            ensure!(
+                signatures.len() == signers.len(),
+                Error::<T>::SignaturesLengthDoesntMatch
+            );
+            Iterator::zip(signatures.into_iter(), signers.clone().into_iter())
+                .all(|(sig, signer)| verify_encoded_lazy(&sig, &message, &signer));
+            Ok(Some(0u64).into())
+        }
+
+        /// Do groupsign call.
+        /// This performs runtime authorship verification of given signatures, and performs call with `crate::Origin`
+        /// if authorship was verified successfully. See `crate::Error` for errors that may occur during this call.
         #[pallet::weight({
             let dispatch_info = signed_call.get_dispatch_info();
             (

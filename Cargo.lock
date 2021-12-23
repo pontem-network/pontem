@@ -2904,6 +2904,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "groupsign-canned-benchmarks"
+version = "0.0.1"
+dependencies = [
+ "parity-scale-codec",
+ "scale-info",
+ "sp-core 4.0.0-dev (git+http://github.com/paritytech/substrate.git?branch=polkadot-v0.9.13)",
+ "sp-runtime",
+]
+
+[[package]]
 name = "h2"
 version = "0.3.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
