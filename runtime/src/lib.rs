@@ -216,7 +216,7 @@ parameter_types! {
     pub const CooloffPeriod: BlockNumber = 14 * DAYS;
 
     // 100 PONT as minimum deposit.
-    pub const MinimumDeposit: Balance = CurrencyId::PONT.times(100);
+    pub const MinimumDeposit: Balance = CurrencyId::NATIVE.times(100);
 
     // e.g. 100 PONT for 1 MB.
     pub const PreimageByteDeposit: Balance = 1000000;
@@ -286,7 +286,7 @@ parameter_types! {
     /// but not less than ProposalBondMinimum.
     /// This value would be slashed if proposal rejected.
     pub const ProposalBond: Permill = Permill::from_percent(5);
-    pub const ProposalBondMinimum: Balance = CurrencyId::PONT.times(100);
+    pub const ProposalBondMinimum: Balance = CurrencyId::NATIVE.times(100);
     pub const MaxApprovals: u32 = 100;
 }
 
@@ -342,11 +342,11 @@ impl pallet_timestamp::Config for Runtime {
 
 parameter_types! {
     pub const ExistentialDeposit: Balance = PONT_EXISTENTIAL_DEPOSIT;
-    pub const TransferFee: Balance = CurrencyId::PONT.millies().times(1);
-    pub const CreationFee: Balance = CurrencyId::PONT.millies().times(1);
-    pub const TransactionByteFee: Balance = CurrencyId::PONT.millies().times(1);
+    pub const TransferFee: Balance = CurrencyId::NATIVE.millies().times(1);
+    pub const CreationFee: Balance = CurrencyId::NATIVE.millies().times(1);
+    pub const TransactionByteFee: Balance = CurrencyId::NATIVE.millies().times(1);
     // 1 PONT.
-    pub const MinVestedTransfer: Balance = CurrencyId::PONT.times(1);
+    pub const MinVestedTransfer: Balance = CurrencyId::NATIVE.times(1);
 }
 
 impl pallet_vesting::Config for Runtime {
@@ -460,11 +460,11 @@ parameter_types! {
     /// Default percent of inflation set aside for parachain bond every round
     pub const DefaultParachainBondReservePercent: Percent = Percent::from_percent(30);
     /// Minimum stake required to become a collator is 1_000
-    pub const MinCollatorStk: Balance = CurrencyId::PONT.times(1000);
+    pub const MinCollatorStk: Balance = CurrencyId::NATIVE.times(1000);
     /// Minimum stake required to be reserved to be a candidate is 100
-    pub const MinCollatorCandidateStk: Balance = CurrencyId::PONT.times(100);
+    pub const MinCollatorCandidateStk: Balance = CurrencyId::NATIVE.times(100);
     /// Minimum stake required to be reserved to be a nominator is 5
-    pub const MinNominatorStk: Balance = CurrencyId::PONT.times(1);
+    pub const MinNominatorStk: Balance = CurrencyId::NATIVE.times(1);
 }
 impl parachain_staking::Config for Runtime {
     type Event = Event;
@@ -498,7 +498,7 @@ impl pallet_author_inherent::Config for Runtime {
 }
 
 parameter_types! {
-    pub const DepositAmount: Balance = CurrencyId::PONT.times(1);
+    pub const DepositAmount: Balance = CurrencyId::NATIVE.times(1);
 }
 // This is a simple session key manager. It should probably either work with, or be replaced
 // entirely by pallet sessions.
@@ -642,7 +642,7 @@ impl WeightTrader for SimpleWeightTrader {
             _ => None,
         };
         let required = match currency_id {
-            Some(CurrencyId::PONT) => asset_id
+            Some(CurrencyId::NATIVE) => asset_id
                 .clone()
                 .into_multiasset(Fungibility::Fungible(weight as u128 / PONT_PER_WEIGHT)),
             Some(CurrencyId::KSM) => {
@@ -672,7 +672,7 @@ impl WeightTrader for SimpleWeightTrader {
 
     fn refund_weight(&mut self, weight: Weight) -> Option<MultiAsset> {
         let amount = match CurrencyIdConvert::convert(self.0.clone()) {
-            Some(CurrencyId::PONT) => weight as u128 / PONT_PER_WEIGHT,
+            Some(CurrencyId::NATIVE) => weight as u128 / PONT_PER_WEIGHT,
             Some(CurrencyId::KSM) => {
                 use frame_support::weights::WeightToFeePolynomial;
                 let fee = kusama::KusamaWeightToFee::calc(&weight);
@@ -866,11 +866,11 @@ impl Convert<CurrencyId, Option<MultiLocation>> for CurrencyIdConvert {
     fn convert(id: CurrencyId) -> Option<MultiLocation> {
         match id {
             CurrencyId::KSM => Some(MultiLocation::parent()),
-            CurrencyId::PONT => Some(
+            CurrencyId::NATIVE => Some(
                 (
                     Parent,
                     Junction::Parachain(ParachainInfo::get().into()),
-                    Junction::GeneralKey(CurrencyId::PONT.symbol()),
+                    Junction::GeneralKey(CurrencyId::NATIVE.symbol()),
                 )
                     .into(),
             ),
@@ -888,7 +888,7 @@ impl Convert<MultiLocation, Option<CurrencyId>> for CurrencyIdConvert {
             MultiLocation {
                 parents: 1,
                 interior: X2(Parachain(_id), GeneralKey(key)),
-            } if key.to_vec() == CurrencyId::PONT.symbol() => Some(CurrencyId::PONT),
+            } if key.to_vec() == CurrencyId::NATIVE.symbol() => Some(CurrencyId::NATIVE),
             _ => None,
         }
     }
@@ -911,7 +911,7 @@ impl Convert<MultiAsset, Option<CurrencyId>> for CurrencyIdConvert {
 parameter_type_with_key! {
     pub ExistentialDeposits: |currency_id: CurrencyId| -> Balance {
         match currency_id {
-            CurrencyId::PONT => PONT_EXISTENTIAL_DEPOSIT,
+            CurrencyId::NATIVE => PONT_EXISTENTIAL_DEPOSIT,
             CurrencyId::KSM  => KSM_EXISTENTIAL_DEPOSIT
         }
     };
@@ -934,7 +934,7 @@ impl orml_unknown_tokens::Config for Runtime {
 }
 
 parameter_types! {
-    pub const GetNativeCurrencyId: CurrencyId = CurrencyId::PONT;
+    pub const GetNativeCurrencyId: CurrencyId = CurrencyId::NATIVE;
 }
 
 impl module_currencies::Config for Runtime {

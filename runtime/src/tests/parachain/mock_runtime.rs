@@ -111,7 +111,7 @@ pub enum CurrencyId {
     // Relaychain's currency.
     KSM,
     // Pontem native currency.
-    PONT,
+    NATIVE,
     // Our native currency.
     XPONT,
 }
@@ -223,7 +223,7 @@ pub type Barrier = (
     // ^^^ Parent & its unit plurality gets free execution
 );
 
-const PONT_PER_WEIGHT: u128 = 1_000_000;
+const NATIVE_PER_WEIGHT: u128 = 1_000_000;
 
 /// Code copied from Kusama runtime. We're not using it as a dependency because of weird linkage
 /// errors
@@ -275,10 +275,10 @@ impl WeightTrader for SimpleWeightTrader {
         let required = match currency_id {
             Some(CurrencyId::XPONT) => asset_id
                 .clone()
-                .into_multiasset(Fungibility::Fungible(weight as u128 / PONT_PER_WEIGHT)),
-            Some(CurrencyId::PONT) => asset_id
+                .into_multiasset(Fungibility::Fungible(weight as u128 / NATIVE_PER_WEIGHT)),
+            Some(CurrencyId::NATIVE) => asset_id
                 .clone()
-                .into_multiasset(Fungibility::Fungible(weight as u128 / PONT_PER_WEIGHT)),
+                .into_multiasset(Fungibility::Fungible(weight as u128 / NATIVE_PER_WEIGHT)),
             Some(CurrencyId::KSM) => {
                 use frame_support::weights::WeightToFeePolynomial;
                 let fee = kusama::KusamaWeightToFee::calc(&weight);
@@ -306,8 +306,8 @@ impl WeightTrader for SimpleWeightTrader {
 
     fn refund_weight(&mut self, weight: Weight) -> Option<MultiAsset> {
         let amount = match CurrencyIdConvert::convert(self.0.clone()) {
-            Some(CurrencyId::XPONT) => weight as u128 / PONT_PER_WEIGHT,
-            Some(CurrencyId::PONT) => weight as u128 / PONT_PER_WEIGHT,
+            Some(CurrencyId::XPONT) => weight as u128 / NATIVE_PER_WEIGHT,
+            Some(CurrencyId::NATIVE) => weight as u128 / NATIVE_PER_WEIGHT,
             Some(CurrencyId::KSM) => {
                 use frame_support::weights::WeightToFeePolynomial;
                 let fee = kusama::KusamaWeightToFee::calc(&weight);
@@ -414,7 +414,7 @@ impl Convert<CurrencyId, Option<MultiLocation>> for CurrencyIdConvert {
     fn convert(id: CurrencyId) -> Option<MultiLocation> {
         match id {
             CurrencyId::KSM => Some(MultiLocation::parent()),
-            CurrencyId::PONT => Some(
+            CurrencyId::NATIVE => Some(
                 (
                     Parent,
                     Junction::Parachain(2000),
@@ -446,7 +446,7 @@ impl Convert<MultiLocation, Option<CurrencyId>> for CurrencyIdConvert {
                 interior: X2(Parachain(id), GeneralKey(key)),
             } => {
                 if id == 2000 && key == b"PONT".to_vec() {
-                    return Some(CurrencyId::PONT);
+                    return Some(CurrencyId::NATIVE);
                 }
 
                 if key == b"XPONT".to_vec() {

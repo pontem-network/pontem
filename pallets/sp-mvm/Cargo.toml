@@ -139,3 +139,10 @@ no-vm-static = []
 # Note: frame-support `try-runtime` feature is released after v3.
 # Uncomment the following line when `frame-support` version > `3.0.0`.
 # try-runtime = ['frame-support/try-runtime']
+
+# special native currency
+nox = [
+    "primitives/nox",
+    "module-currencies/nox",
+    "constants/nox",
+]

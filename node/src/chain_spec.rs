@@ -88,7 +88,7 @@ pub fn development_config(id: ParaId) -> Result<ChainSpec, String> {
                 vec![(
                     get_account_id_from_seed::<sr25519::Public>("Alice"),
                     get_from_seed::<NimbusId>("Alice"),
-                    CurrencyId::PONT * 10_000,
+                    CurrencyId::NATIVE * 10_000,
                 )],
                 // Nominators
                 vec![],
@@ -136,7 +136,7 @@ pub fn local_testnet_config(id: ParaId) -> Result<ChainSpec, String> {
                 vec![(
                     get_account_id_from_seed::<sr25519::Public>("Alice"),
                     get_from_seed::<NimbusId>("Alice"),
-                    CurrencyId::PONT * 10_000,
+                    CurrencyId::NATIVE * 10_000,
                 )],
                 // Nominators
                 vec![],
@@ -192,11 +192,11 @@ fn testnet_genesis(
             code: wasm_binary.to_vec(),
         },
         balances: BalancesConfig {
-            // Configure endowed accounts with initial balance of 1000 PONT.
+            // Configure endowed accounts with initial balance of 1000 NATIVE coins.
             balances: endowed_accounts
                 .iter()
                 .cloned()
-                .map(|k| (k, CurrencyId::PONT * 100_000))
+                .map(|k| (k, CurrencyId::NATIVE * 100_000))
                 .collect(),
         },
         parachain_system: Default::default(),
@@ -235,11 +235,12 @@ fn testnet_genesis(
             ..Default::default()
         },
         vesting: VestingConfig {
-            // Move 10 PONT under vesting for each account since block 100 and till block 1000.
+            // Move 10 NATIVEs under vesting for each account since block 100 and till block 1000.
             vesting: endowed_accounts
                 .iter()
                 .cloned()
-                .map(|k| (k, 100, 1000, CurrencyId::PONT * 90_000)) // K - address, 100 - when vesting starts, 1000 - how much blocks for vesting, 10 * PONT - free balance.
+                // K - address, 100 - when vesting starts, 1000 - how much blocks for vesting, 10 * NATIVE - free balance.
+                .map(|k| (k, 100, 1000, CurrencyId::NATIVE * 90_000))
                 .collect(),
         },
         treasury: TreasuryConfig {},
@@ -250,13 +251,13 @@ fn testnet_genesis(
 
 // Pontem inflation.
 pub fn pontem_inflation_config() -> InflationInfo<Balance> {
-    // Let's say we have 100M PONT coins.
+    // Let's say we have 100M NATIVE coins.
     InflationInfo {
-        // How much staked PONTs we expect.
+        // How much staked NATIVEs we expect.
         expect: Range {
-            min: CurrencyId::PONT * 10_000_000, // We expect to have staked at least 10M PONT coins.
-            ideal: CurrencyId::PONT * 20_000_000, // We expect to have staked ideal 20M PONT coins.
-            max: CurrencyId::PONT * 50_000_000, // We expect to have staked maximum 50M PONT coins.
+            min: CurrencyId::NATIVE * 10_000_000, // We expect to have staked at least 10M NATIVE coins.
+            ideal: CurrencyId::NATIVE * 20_000_000, // We expect to have staked ideal 20M NATIVE coins.
+            max: CurrencyId::NATIVE * 50_000_000, // We expect to have staked maximum 50M NATIVE coins.
         },
         annual: Range {
             min: Perbill::from_percent(4),   // We expect minimum inflation is 4%.

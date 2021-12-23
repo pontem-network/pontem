@@ -181,3 +181,12 @@ std = [
     'pallet-author-mapping/std',
     'sp-mvm-rpc-runtime/std',
 ]
+
+# special native currency
+nox = [
+    "sp-mvm/nox",
+    "sp-mvm-rpc-runtime/nox",
+    "primitives/nox",
+    "module-currencies/nox",
+    "constants/nox",
+]

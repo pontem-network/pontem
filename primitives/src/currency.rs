@@ -59,7 +59,7 @@ macro_rules! def_currencies {
         $vis:vis enum $ty_name:ident {
             $(
                 $(#[$attr:meta])*
-                $name:ident($str:literal, $decimals:expr)
+                $name:ident($str:expr, $decimals:expr)
             ),*
             $(,)?
         }
@@ -120,26 +120,44 @@ macro_rules! def_currencies {
             }
         }
 
-        $(static_assert!(const_slice_eq(stringify!($name).as_bytes(), $str));)*
+        // $(static_assert!(const_slice_eq(stringify!($name).as_bytes(), $str));)*
     };
 }
+
+// This macro needs to return a constant literal.
+#[rustfmt::skip]
+#[cfg(not(feature = "nox"))]
+macro_rules! native { () => { b"PONT" }; }
+#[rustfmt::skip]
+#[cfg(feature = "nox")]
+macro_rules! native { () => { b"NOX" }; }
+
+pub const NATIVE_SYM: &'static [u8] = native!();
+#[cfg(feature = "std")]
+pub const NATIVE_SYM_S: &'static str = unsafe { std::str::from_utf8_unchecked(NATIVE_SYM) };
 
 def_currencies! {
     /// Currencies id.
     #[derive(Encode, Decode, Eq, PartialEq, Copy, Clone, RuntimeDebug, PartialOrd, Ord, TypeInfo)]
     #[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
     pub enum CurrencyId {
+        /// Our native currency.
+        NATIVE(native!(), 10),
         /// Relaychain's currency.
         KSM(b"KSM", 12),
-        /// Our native currency.
-        PONT(b"PONT", 10),
     }
 }
 
 impl Default for CurrencyId {
     fn default() -> Self {
-        // PONT should be default currency.
-        CurrencyId::PONT
+        CurrencyId::native()
+    }
+}
+
+impl CurrencyId {
+    // Create a new CurrencyId with native currency.
+    pub const fn native() -> Self {
+        CurrencyId::NATIVE
     }
 }
 
@@ -173,35 +191,67 @@ impl core::ops::Mul<Balance> for Millies {
 
 #[cfg(test)]
 mod tests {
-    use super::{CurrencyId, TryFrom};
+    use super::{CurrencyId, NATIVE_SYM, TryFrom};
+
+    #[test]
+    /// Test native currency symbol.
+    fn native() {
+        assert_eq!(CurrencyId::default(), CurrencyId::native());
+        assert_eq!(native!().to_vec(), CurrencyId::native().symbol());
+
+        #[rustfmt::skip]
+        assert_eq!(
+            {
+                #[cfg(feature = "nox")] { b"NOX" }
+                #[cfg(not(feature = "nox"))] { b"PONT" }
+            },
+            native!()
+        );
+    }
 
     #[test]
     /// Test default currency.
     fn default() {
-        assert_eq!(CurrencyId::default(), CurrencyId::PONT);
+        assert_eq!(CurrencyId::default(), CurrencyId::NATIVE);
     }
 
     #[test]
     /// Test currencies decimals.
     fn decimals() {
-        assert_eq!(CurrencyId::PONT.decimals(), 10);
+        assert_eq!(CurrencyId::NATIVE.decimals(), 10);
         assert_eq!(CurrencyId::KSM.decimals(), 12);
     }
 
     #[test]
     /// Test currencies symbols.
     fn symbols() {
-        assert_eq!(CurrencyId::PONT.symbol(), b"PONT");
+        assert_eq!(CurrencyId::NATIVE.symbol(), NATIVE_SYM);
         assert_eq!(CurrencyId::KSM.symbol(), b"KSM");
+    }
+
+    #[test]
+    #[cfg_attr(feature = "nox", ignore)]
+    /// Test try-from Vec<u8> for native (pont).
+    fn try_from_vec_native_nox() {
+        assert_eq!(
+            CurrencyId::try_from(NATIVE_SYM).unwrap(),
+            CurrencyId::NATIVE
+        );
+    }
+
+    #[test]
+    #[cfg_attr(not(feature = "nox"), ignore)]
+    /// Test try from Vec<u8> for native (nox).
+    fn try_from_vec_native_nox() {
+        assert_eq!(
+            CurrencyId::try_from(b"NOX".to_vec()).unwrap(),
+            CurrencyId::NATIVE
+        );
     }
 
     #[test]
     /// Test try from Vec<u8>.
     fn try_from_vec() {
-        assert_eq!(
-            CurrencyId::try_from(b"PONT".to_vec()).unwrap(),
-            CurrencyId::PONT
-        );
         assert_eq!(
             CurrencyId::try_from(b"KSM".to_vec()).unwrap(),
             CurrencyId::KSM
@@ -213,8 +263,8 @@ mod tests {
     /// Test try from &[u8].
     fn try_from_slice() {
         assert_eq!(
-            CurrencyId::try_from(b"PONT".as_ref()).unwrap(),
-            CurrencyId::PONT
+            CurrencyId::try_from(NATIVE_SYM).unwrap(),
+            CurrencyId::NATIVE
         );
         assert_eq!(
             CurrencyId::try_from(b"KSM".as_ref()).unwrap(),

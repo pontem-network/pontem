@@ -27,3 +27,8 @@ std = [
 	"sp-api/std",
 	"frame-support/std",
 ]
+
+# special native currency
+nox = [
+  "sp-mvm/nox",
+]

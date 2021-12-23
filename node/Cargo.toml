@@ -115,8 +115,17 @@ default-features = false
 features = [ "move_stdlib" ]
 
 [features]
-default = [
+default = [ "nox",
   'polkadot-service/westend-native',
   'polkadot-cli/westend-native',
 ]
 runtime-benchmarks = ['pontem-runtime/runtime-benchmarks', 'polkadot-service/runtime-benchmarks']
+
+# special native currency
+nox = [
+  "primitives/nox",
+  "pontem-runtime/nox",
+  "constants/nox",
+  "sp-mvm-rpc/nox",
+  "sp-mvm-rpc-runtime/nox",
+]

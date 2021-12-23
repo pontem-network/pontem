@@ -46,3 +46,6 @@ std = [
 	"primitives/std",
 ]
 try-runtime = ["frame-support/try-runtime"]
+
+# special native currency
+nox = [ "primitives/nox" ]

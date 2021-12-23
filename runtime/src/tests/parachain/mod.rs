@@ -74,8 +74,8 @@ pub fn mock_para_ext(para_id: u32) -> TestExternalities {
 
     pallet_balances::GenesisConfig::<Runtime> {
         balances: vec![
-            (Accounts::ALICE.account(), CurrencyId::PONT * 2000),
-            (Accounts::BOB.account(), CurrencyId::PONT * 2000),
+            (Accounts::ALICE.account(), CurrencyId::NATIVE * 2000),
+            (Accounts::BOB.account(), CurrencyId::NATIVE * 2000),
         ],
     }
     .assimilate_storage(&mut t)
@@ -109,8 +109,8 @@ pub fn para_ext(parachain_id: u32) -> TestExternalities {
         .set_balances(vec![
             (
                 Accounts::ALICE.account(),
-                CurrencyId::PONT,
-                CurrencyId::PONT.times(2000),
+                CurrencyId::NATIVE,
+                CurrencyId::NATIVE.times(2000),
             ),
             (
                 Accounts::ALICE.account(),
