@@ -5,8 +5,10 @@ use common::addr::{alice_public_key, bob_public_key};
 use common::assets::transactions;
 
 use sp_mvm::Call as MvmCall;
-use frame_support::{assert_ok, dispatch::GetDispatchInfo};
+use frame_support::{assert_ok};
 use sp_runtime::codec::Encode;
+use sp_core::Pair;
+use sp_std::vec;
 
 const GAS_LIMIT: u64 = 1_000_000;
 
@@ -16,53 +18,52 @@ fn execute_multisig() {
         let alice_key = alice_public_key();
         let bob_key = bob_public_key();
 
-        roll_next_block(); // we need it to emit events
+        roll_next_block();
 
-        let now = || Multisig::timepoint();
-
+        // Generate transaction call.
         let bytecode = transactions::MULTISIG_TEST.bytes().to_vec();
         let call = Call::Mvm(MvmCall::execute {
             tx_bc: bytecode,
             gas_limit: GAS_LIMIT,
         });
-        let weight = call.get_dispatch_info().weight;
-        let call = call.encode();
-        let call_hash = sp_core::blake2_256(&call);
 
-        assert_ok!(Multisig::as_multi(
+        let since: u64 = 0;
+        let till: u64 = 100;
+        let nonce: u64 = 0;
+
+        // Generate info to sign.
+
+        // Call groupsign.
+        let signers = vec![alice_key, bob_key];
+
+        let mut call_preimage = call.encode();
+        call_preimage.extend(since.encode());
+        call_preimage.extend(till.encode());
+        call_preimage.extend(alice_key.encode());
+        call_preimage.extend(nonce.encode());
+        call_preimage.extend(signers.encode());
+
+        let to_sign = sp_core::blake2_256(&call_preimage);
+
+        // Generate keypairs.
+        let alice_keypair = sp_core::sr25519::Pair::from_string("//Alice", None).unwrap();
+        let alice_signature = alice_keypair.sign(&to_sign[..]);
+
+        let bob_keypair = sp_core::sr25519::Pair::from_string("//Bob", None).unwrap();
+        let bob_signature = bob_keypair.sign(&to_sign[..]);
+
+        let signatures = vec![
+            AnySignature::from(alice_signature),
+            AnySignature::from(bob_signature.clone()),
+        ];
+
+        assert_ok!(Groupsign::groupsign_call(
             Origin::signed(alice_key),
-            2,
-            vec![bob_key],
-            None,
-            call.clone(),
-            false,
-            0
+            Box::new(call.clone()),
+            signers,
+            signatures,
+            since,
+            till,
         ));
-        assert_ok!(Multisig::as_multi(
-            Origin::signed(bob_key),
-            2,
-            vec![alice_key],
-            Some(now()),
-            call,
-            false,
-            weight
-        ));
-
-        let mut sorted_signers = vec![alice_key, bob_key];
-        sorted_signers.sort();
-        let multisig_id = Multisig::multi_account_id(&sorted_signers, 2);
-        let expected: Event = pallet_multisig::Event::MultisigExecuted(
-            bob_key,
-            now(),
-            multisig_id,
-            call_hash,
-            Ok(()),
-        )
-        .into();
-
-        assert!(Sys::events()
-            .iter()
-            .find(|event| event.event == expected)
-            .is_some());
     });
 }

@@ -51,6 +51,7 @@ pub mod pallet {
     use super::storage::MoveVmStorage;
     use gas::GasWeightMapping;
     use event::*;
+    use groupsign::utils::ensure_groupsign;
     use mvm::*;
     use weights::WeightInfo;
 
@@ -94,7 +95,7 @@ pub mod pallet {
     /// Configure the pallet by specifying the parameters and types on which it depends.
     #[pallet::config]
     pub trait Config:
-        frame_system::Config + timestamp::Config + balances::Config + pallet_multisig::Config
+        frame_system::Config + timestamp::Config + balances::Config + groupsign::Config
     {
         /// Because this pallet emits events, it depends on the runtime's definition of an event.
         type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
@@ -175,7 +176,7 @@ pub mod pallet {
     #[pallet::call]
     impl<T: Config> Pallet<T>
     where
-        OriginFor<T>: Into<Result<pallet_multisig::Origin<T>, OriginFor<T>>>,
+        OriginFor<T>: Into<Result<groupsign::Origin<T>, OriginFor<T>>>,
     {
         /// Execute Move script.
         ///
@@ -191,10 +192,11 @@ pub mod pallet {
             tx_bc: Vec<u8>,
             gas_limit: u64,
         ) -> DispatchResultWithPostInfo {
-            let origin: Result<pallet_multisig::Origin<T>, OriginFor<T>> = origin.into();
-            let signers = match origin {
-                Ok(multisig) => multisig.signers().to_vec(),
-                Err(origin) => vec![ensure_signed(origin)?],
+            let groupsign_origin = ensure_groupsign(origin.clone());
+
+            let signers = match groupsign_origin {
+                Ok(groupsign_signers) => groupsign_signers.signers,
+                Err(_) => vec![ensure_signed(origin)?],
             };
 
             let vm_result = Self::raw_execute_script(&signers, tx_bc, gas_limit, false)?;

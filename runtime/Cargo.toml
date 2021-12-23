@@ -54,7 +54,7 @@ sp-session = { default-features = false, git = 'http://github.com/paritytech/sub
 sp-std = { default-features = false, git = 'http://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.13' }
 sp-transaction-pool = { default-features = false, git = 'http://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.13' }
 sp-version = { default-features = false, git = 'http://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.13' }
-
+pallet-multisig = { default-features = false, git = 'http://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.13' }
 pallet-xcm = { default-features = false, git = 'https://github.com/paritytech/polkadot.git', branch = 'release-v0.9.13' }
 xcm = { default-features = false, git = 'https://github.com/paritytech/polkadot.git', branch = 'release-v0.9.13' }
 xcm-builder = { default-features = false, git = 'https://github.com/paritytech/polkadot.git', branch = 'release-v0.9.13' }
@@ -87,13 +87,13 @@ orml-unknown-tokens = { default-features = false, git = 'https://github.com/open
 
 # local dependencies
 sp-mvm = { path = '../pallets/sp-mvm', default-features = false }
-pallet-multisig = { default-features = false, path = '../pallets/multisig' }
 sp-mvm-rpc-runtime = { path = '../pallets/sp-mvm/rpc/runtime', default-features = false }
 parachain-staking = { path = '../pallets/parachain-staking', default-features = false }
 pallet-author-mapping = { path = "../pallets/author-mapping", default-features = false }
 primitives = { path = "../primitives", default-features = false }
 constants = { path = "../constants", default-features = false }
 module-currencies = { path = "../pallets/currencies", default-features = false }
+groupsign = { path = "../pallets/groupsign", default-features = false }
 transaction-pause = { path = "../pallets/transaction-pause", default-features = false }
 
 [dev-dependencies]
@@ -108,7 +108,7 @@ test-log = "0.2.8"
 [dependencies.move-vm]
 package = "mvm"
 git = "https://github.com/pontem-network/sp-move-vm.git"
-rev = "4531b7571ba0299779542e9e472a4cc3abf1c1e7"
+rev = "4b021cee4debfe69bf152bbc6b5e35159dacd827"
 default-features = false
 features = [ "move_stdlib" ]
 
@@ -142,6 +142,7 @@ std = [
     'pallet-treasury/std',
     'pallet-democracy/std',
     'pallet-scheduler/std',
+    'pallet-multisig/std',
     'pallet-transaction-payment/std',
     'pallet-transaction-payment-rpc-runtime-api/std',
     'parachain-info/std',
@@ -152,7 +153,6 @@ std = [
     'cumulus-primitives-core/std',
     'cumulus-primitives-timestamp/std',
     'pallet-vesting/std',
-	"pallet-multisig/std",
     'sp-api/std',
     'sp-block-builder/std',
     'sp-core/std',
@@ -181,5 +181,6 @@ std = [
     'constants/std',
     'pallet-author-mapping/std',
     'sp-mvm-rpc-runtime/std',
+    'groupsign/std',
     'transaction-pause/std'
 ]

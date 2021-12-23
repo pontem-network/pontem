@@ -764,20 +764,21 @@ parameter_types! {
 
 impl pallet_multisig::Config for Runtime {
     type Event = Event;
-
     type Call = Call;
-
-    type MyOrigin = Origin;
-
     type Currency = Balances;
-
     type MaxSignatories = MaxSigners;
-
     type DepositBase = MultisigCostPerSig;
-
     type DepositFactor = MultisigCostPerFact;
-
     type WeightInfo = ();
+}
+
+impl groupsign::Config for Runtime {
+    type Event = Event;
+    type Call = Call;
+    type Public = sp_runtime::MultiSigner;
+    type Signature = sp_runtime::MultiSignature;
+    type MyOrigin = Origin;
+    type WeightInfo = groupsign::weights::PontemWeights<Self>;
 }
 
 /// Move VM similar to Ethereum utilizing gas approach.
@@ -1058,11 +1059,11 @@ construct_runtime!(
 
         // Move VM
         Mvm: sp_mvm::{Pallet, Call, Storage, Config<T>, Event<T>},
-        MultiSig: pallet_multisig::{Pallet, Call, Origin<T>, Storage, Event<T>},
+        Groupsign: groupsign::{Pallet, Call, Origin<T>, Event<T>},
+        MultiSig: pallet_multisig::{Pallet, Call, Storage, Event<T>},
 
         // Transaction pause
         TransactionPause: transaction_pause::{Pallet, Storage, Event<T>},
-
     }
 );
 

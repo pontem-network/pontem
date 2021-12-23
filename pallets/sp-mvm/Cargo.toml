@@ -29,13 +29,13 @@ package = "parity-scale-codec-derive"
 [dependencies.move-vm]
 package = "mvm"
 git = "https://github.com/pontem-network/sp-move-vm.git"
-rev = "4531b7571ba0299779542e9e472a4cc3abf1c1e7"
+rev = "4b021cee4debfe69bf152bbc6b5e35159dacd827"
 default-features = false
 features = [ "move_stdlib" ]
 
 [dependencies.move-core-types]
 git = "https://github.com/pontem-network/sp-move-vm.git"
-rev = "4531b7571ba0299779542e9e472a4cc3abf1c1e7"
+rev = "4b021cee4debfe69bf152bbc6b5e35159dacd827"
 default-features = false
 
 
@@ -52,9 +52,9 @@ sp-std = { default-features = false, git = 'https://github.com/paritytech/substr
 sp-core = { default-features = false, git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.13' }
 timestamp = { default-features = false, package = "pallet-timestamp", git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.13' }
 balances = { default-features = false, package = "pallet-balances", git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.13' }
-pallet-multisig = { default-features = false, path = '../multisig' }
 # logging, `sp_runtime::print`:
 sp-runtime = { default-features = false, git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.13' }
+groupsign = { path = "../groupsign", default-features = false }
 
 sp-io = { default-features = false, git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.13' }
 getrandom = { version = "0.2.3", optional = true }
@@ -69,7 +69,7 @@ serde-alt = { version = "1", default-features = false, package = "alt_serde", fe
 package = "bcs"
 default-features = false
 git = "https://github.com/pontem-network/sp-move-vm.git"
-rev = "4531b7571ba0299779542e9e472a4cc3abf1c1e7"
+rev = "4b021cee4debfe69bf152bbc6b5e35159dacd827"
 optional = true
 
 [dev-dependencies]
@@ -89,7 +89,7 @@ test-log = "0.2.8"
 
 [dev-dependencies.move-vm-runtime]
 git = "https://github.com/pontem-network/sp-move-vm.git"
-rev = "4531b7571ba0299779542e9e472a4cc3abf1c1e7"
+rev = "4b021cee4debfe69bf152bbc6b5e35159dacd827"
 default-features = false
 
 [features]
@@ -108,7 +108,7 @@ std = [
     "sp-core/std",
     "sp-runtime/std",
     "parity-scale-codec/std",
-    "pallet-multisig/std",
+    "groupsign/std",
     "frame-support/std",
     "frame-system/std",
     "frame-benchmarking/std",
@@ -121,8 +121,8 @@ std = [
 
 runtime-benchmarks = [
     "frame-benchmarking",
-    "frame-support/runtime-benchmarks",
     "frame-system/runtime-benchmarks",
+    "frame-support/runtime-benchmarks",
     "sp-runtime/runtime-benchmarks",
     "timestamp/runtime-benchmarks",
     "balances/runtime-benchmarks",
