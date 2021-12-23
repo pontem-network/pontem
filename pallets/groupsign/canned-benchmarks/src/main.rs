@@ -55,7 +55,7 @@ pub fn generate_example(signature_number: u32, length: u32) -> TestCase {
 }
 
 const MAX_TEST_SIGNERS: usize = 24;
-const MAX_TEST_LENGTH: usize = 256;
+const MAX_TEST_LENGTH: usize = 1024;
 const MAX_TEST_LENGTH_STEP: usize = 32;
 
 pub fn main() {
