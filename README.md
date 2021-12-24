@@ -170,7 +170,7 @@ Add new Nimbus key:
 
 ```sh
 # Use "//Bob" for URI.
-./target/release/pontem key insert --keystore-path ~/.pontem/keystore-2 --key-type nmbs
+./target/release/pontem key insert --keystore-path ~/.pontem/keystore-2 --key-type nmbs --scheme sr25519
 ```
 
 Get your public key:
