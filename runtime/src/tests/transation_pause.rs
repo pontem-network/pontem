@@ -1,10 +1,9 @@
 /// Test balances in Runtime.
 use crate::tests::mock::*;
-use frame_support::{assert_ok, assert_err};
+use frame_support::{assert_ok, assert_err, dispatch::DispatchError};
 
-use sp_runtime::MultiAddress::Id as MultiId;
-use orml_traits::{currency::MultiCurrency, GetByKey};
-use transaction_pause::PausedTransactionFilter;
+use sp_runtime::{MultiAddress::Id as MultiId, traits::Dispatchable};
+use orml_traits::currency::MultiCurrency;
 
 #[test]
 /// Test transfer native currency using Balances pallet.
@@ -22,34 +21,51 @@ fn transaction_pause_balance() {
         )])
         .build()
         .execute_with(|| {
+            let call = <Runtime as frame_system::Config>::Call::Balances(
+                pallet_balances::Call::transfer {
+                    dest: MultiId(Accounts::BOB.account()),
+                    value: to_transfer,
+                },
+            );
+
+            assert!(<Runtime as frame_system::Config>::BaseCallFilter::contains(
+                &call
+            ));
+
             assert_ok!(TransactionPause::pause_transaction(
                 Origin::root(),
-                b"balances".to_vec(),
+                b"Balances".to_vec(),
                 b"transfer".to_vec()
             ));
-            assert_ok!(Balances::transfer(
-                Origin::signed(Accounts::ALICE.account()),
-                MultiId(Accounts::BOB.account()),
-                to_transfer
-            ),);
+
+            assert!(!<Runtime as frame_system::Config>::BaseCallFilter::contains(&call));
+
+            assert_err!(
+                call.clone()
+                    .dispatch(Origin::signed(Accounts::ALICE.account())),
+                DispatchError::Module {
+                    index: 0,
+                    error: 5,
+                    message: Some("CallFiltered")
+                },
+            );
+
             assert_eq!(
                 Currencies::free_balance(currency_id, &Accounts::ALICE.account()),
-                to_transfer
+                initial_balance
             );
+
             assert_ok!(TransactionPause::unpause_transaction(
                 Origin::root(),
-                b"balances".to_vec(),
+                b"Balances".to_vec(),
                 b"transfer".to_vec()
             ));
-            assert_ok!(Balances::transfer(
-                Origin::signed(Accounts::ALICE.account()),
-                MultiId(Accounts::BOB.account()),
-                to_transfer,
-            ));
+
+            assert_ok!(call.dispatch(Origin::signed(Accounts::ALICE.account())));
+
             assert_eq!(
                 Currencies::free_balance(currency_id, &Accounts::ALICE.account()),
-                0
+                initial_balance - to_transfer
             );
-            System::events().iter().for_each(|ev| eprintln!("{:?}", ev));
         });
 }
