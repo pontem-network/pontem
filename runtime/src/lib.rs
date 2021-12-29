@@ -998,6 +998,8 @@ impl Contains<Call> for BaseCallFilter {
         }
 
         let is_paused = transaction_pause::PausedTransactionFilter::<Runtime>::contains(call);
+        eprintln!("Base call:{:?} is paused: {:?}", call, is_paused);
+
         if is_paused {
             // no paused call
             return false;
