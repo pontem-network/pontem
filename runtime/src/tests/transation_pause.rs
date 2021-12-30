@@ -109,5 +109,14 @@ fn transaction_pause_bad_origin() {
             ),
             BadOrigin
         );
+
+        assert_noop!(
+            TransactionPause::unpause_transaction(
+                Origin::signed(Accounts::BOB.account()),
+                b"Balances".to_vec(),
+                b"transfer".to_vec()
+            ),
+            BadOrigin
+        );
     });
 }
