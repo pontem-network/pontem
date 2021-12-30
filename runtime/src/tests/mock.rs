@@ -64,6 +64,7 @@ pub fn run_to_block(till: u32) {
         Timestamp::set_timestamp(System::block_number() as u64 * 12000);
         Scheduler::on_initialize(System::block_number());
         ParachainStaking::on_initialize(System::block_number());
+        TransactionPause::on_initialize(System::block_number());
     }
 }
 
