@@ -8,14 +8,14 @@ use orml_traits::{currency::MultiCurrency, GetByKey};
 #[test]
 // Test correct native currency.
 fn test_get_native_currency() {
-    assert_eq!(GetNativeCurrencyId::get(), CurrencyId::PONT);
+    assert_eq!(GetNativeCurrencyId::get(), CurrencyId::NATIVE);
 }
 
 #[test]
 /// Test existential deposits.
 fn test_existential_deposits() {
     assert_eq!(
-        ExistentialDeposits::get(&CurrencyId::PONT),
+        ExistentialDeposits::get(&CurrencyId::NATIVE),
         PONT_EXISTENTIAL_DEPOSIT,
     );
 
@@ -37,7 +37,7 @@ fn transfer_native_currency_via_balances() {
     RuntimeBuilder::new()
         .set_balances(vec![(
             Accounts::ALICE.account(),
-            CurrencyId::PONT,
+            CurrencyId::NATIVE,
             initial_balance,
         )])
         .build()
@@ -102,7 +102,7 @@ fn transfer_native_currency_via_currencies() {
     RuntimeBuilder::new()
         .set_balances(vec![(
             Accounts::ALICE.account(),
-            CurrencyId::PONT,
+            CurrencyId::NATIVE,
             initial_balance,
         )])
         .build()
@@ -164,7 +164,7 @@ fn transfer_tokens_via_currencies() {
 
     RuntimeBuilder::new()
         .set_balances(vec![
-            (Accounts::ALICE.account(), CurrencyId::PONT, native_balance),
+            (Accounts::ALICE.account(), CurrencyId::NATIVE, native_balance),
             (Accounts::ALICE.account(), CurrencyId::KSM, initial_balance),
         ])
         .build()
@@ -221,7 +221,7 @@ fn transfer_tokens_via_tokens() {
 
     RuntimeBuilder::new()
         .set_balances(vec![
-            (Accounts::ALICE.account(), CurrencyId::PONT, native_balance),
+            (Accounts::ALICE.account(), CurrencyId::NATIVE, native_balance),
             (Accounts::ALICE.account(), CurrencyId::KSM, initial_balance),
         ])
         .build()

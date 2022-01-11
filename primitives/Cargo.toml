@@ -16,7 +16,8 @@ sp-core = { default-features = false, git = 'http://github.com/paritytech/substr
 sp-runtime = { default-features = false, git = 'http://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.13' }
 
 [features]
-default = ['std']
+default = ["std"]
+pont = []
 std = [
     "serde",
 	"codec/std",

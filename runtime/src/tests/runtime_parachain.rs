@@ -15,12 +15,12 @@ fn test_currency_id_convertations() {
         );
 
         assert_eq!(
-            CurrencyIdConvert::convert(CurrencyId::PONT),
+            CurrencyIdConvert::convert(CurrencyId::NATIVE),
             Some(MultiLocation {
                 parents: 1,
                 interior: X2(
                     Parachain(ParachainInfo::get().into()),
-                    GeneralKey(CurrencyId::PONT.symbol())
+                    GeneralKey(CurrencyId::NATIVE.symbol())
                 )
             })
         );
@@ -35,10 +35,10 @@ fn test_currency_id_convertations() {
                 parents: 1,
                 interior: X2(
                     Parachain(ParachainInfo::get().into()),
-                    GeneralKey(CurrencyId::PONT.symbol()),
+                    GeneralKey(CurrencyId::NATIVE.symbol()),
                 )
             }),
-            Some(CurrencyId::PONT),
+            Some(CurrencyId::NATIVE),
         );
     });
 }

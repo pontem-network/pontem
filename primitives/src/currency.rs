@@ -30,36 +30,13 @@ impl sp_std::fmt::Display for CurrencyConversionError {
     }
 }
 
-#[allow(dead_code)]
-const fn const_slice_eq(a: &[u8], b: &[u8]) -> bool {
-    let len = a.len();
-    if b.len() != len {
-        return false;
-    }
-    let mut i = 0;
-    while i < len {
-        if a[i] != b[i] {
-            return false;
-        }
-        i += 1;
-    }
-    true
-}
-
-macro_rules! static_assert {
-    ($cond:expr) => {
-        #[deny(const_err)]
-        const _: [(); 1] = [(); $cond as usize];
-    };
-}
-
 macro_rules! def_currencies {
     (
         $(#[$ty_attr:meta])*
         $vis:vis enum $ty_name:ident {
             $(
                 $(#[$attr:meta])*
-                $name:ident($str:literal, $decimals:expr)
+                $name:ident($str:expr, $decimals:expr)
             ),*
             $(,)?
         }
@@ -119,27 +96,43 @@ macro_rules! def_currencies {
                 }
             }
         }
-
-        $(static_assert!(const_slice_eq(stringify!($name).as_bytes(), $str));)*
     };
 }
+
+// This macro needs to return a constant literal.
+#[rustfmt::skip]
+#[cfg(feature = "pont")]
+macro_rules! native { () => { b"PONT" }; }
+#[rustfmt::skip]
+#[cfg(not(feature = "pont"))]
+macro_rules! native { () => { b"NOX" }; }
+
+pub const NATIVE_SYM: &'static [u8] = native!();
+#[cfg(feature = "std")]
+pub const NATIVE_SYM_S: &'static str = unsafe { std::str::from_utf8_unchecked(NATIVE_SYM) };
 
 def_currencies! {
     /// Currencies id.
     #[derive(Encode, Decode, Eq, PartialEq, Copy, Clone, RuntimeDebug, PartialOrd, Ord, TypeInfo)]
     #[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
     pub enum CurrencyId {
+        /// Our native currency.
+        NATIVE(native!(), 10),
         /// Relaychain's currency.
         KSM(b"KSM", 12),
-        /// Our native currency.
-        PONT(b"PONT", 10),
     }
 }
 
 impl Default for CurrencyId {
     fn default() -> Self {
-        // PONT should be default currency.
-        CurrencyId::PONT
+        CurrencyId::native()
+    }
+}
+
+impl CurrencyId {
+    // Create a new CurrencyId with native currency.
+    pub const fn native() -> Self {
+        CurrencyId::NATIVE
     }
 }
 
@@ -178,20 +171,20 @@ mod tests {
     #[test]
     /// Test default currency.
     fn default() {
-        assert_eq!(CurrencyId::default(), CurrencyId::PONT);
+        assert_eq!(CurrencyId::default(), CurrencyId::NATIVE);
     }
 
     #[test]
     /// Test currencies decimals.
     fn decimals() {
-        assert_eq!(CurrencyId::PONT.decimals(), 10);
+        assert_eq!(CurrencyId::NATIVE.decimals(), 10);
         assert_eq!(CurrencyId::KSM.decimals(), 12);
     }
 
     #[test]
     /// Test currencies symbols.
     fn symbols() {
-        assert_eq!(CurrencyId::PONT.symbol(), b"PONT");
+        assert_eq!(CurrencyId::NATIVE.symbol(), b"PONT");
         assert_eq!(CurrencyId::KSM.symbol(), b"KSM");
     }
 
@@ -199,8 +192,8 @@ mod tests {
     /// Test try from Vec<u8>.
     fn try_from_vec() {
         assert_eq!(
-            CurrencyId::try_from(b"PONT".to_vec()).unwrap(),
-            CurrencyId::PONT
+            CurrencyId::try_from(b"NOX".to_vec()).unwrap(),
+            CurrencyId::NATIVE
         );
         assert_eq!(
             CurrencyId::try_from(b"KSM".to_vec()).unwrap(),
@@ -213,8 +206,8 @@ mod tests {
     /// Test try from &[u8].
     fn try_from_slice() {
         assert_eq!(
-            CurrencyId::try_from(b"PONT".as_ref()).unwrap(),
-            CurrencyId::PONT
+            CurrencyId::try_from(b"NOX".as_ref()).unwrap(),
+            CurrencyId::NATIVE
         );
         assert_eq!(
             CurrencyId::try_from(b"KSM".as_ref()).unwrap(),

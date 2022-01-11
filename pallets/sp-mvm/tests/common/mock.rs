@@ -207,7 +207,7 @@ impl orml_tokens::Config for Test {
 }
 
 parameter_types! {
-    pub const GetNativeCurrencyId: CurrencyId = CurrencyId::PONT;
+    pub const GetNativeCurrencyId: CurrencyId = CurrencyId::NATIVE;
 }
 impl module_currencies::Config for Test {
     type Event = Event;
