@@ -8,7 +8,7 @@ use frame_support::{assert_noop, assert_ok};
 use orml_traits::MultiCurrency;
 use sp_runtime::AccountId32;
 use test_log::test;
-use primitives::currency::CurrencyId;
+use primitives::currency::{CurrencyId, NATIVE_SYM};
 
 fn para_a_account() -> AccountId32 {
     ParaId::from(2000).into_account()
@@ -254,7 +254,7 @@ fn transfer_no_reserve_assets_fails() {
                 Some(Accounts::ALICE.account()).into(),
                 Box::new(
                     MultiAsset {
-                        id: xcm_emulator::Concrete(GeneralKey("PONT".into()).into()),
+                        id: xcm_emulator::Concrete(GeneralKey(NATIVE_SYM.to_vec()).into()),
                         fun: (CurrencyId::NATIVE.times(100) as u128).into(),
                     }
                     .into()
@@ -289,7 +289,7 @@ fn transfer_to_self_chain_fails() {
                 Some(Accounts::ALICE.account()).into(),
                 Box::new(
                     MultiAsset {
-                        id: (Parent, Parachain(2000), GeneralKey("PONT".into())).into(),
+                        id: (Parent, Parachain(2000), GeneralKey(NATIVE_SYM.to_vec())).into(),
                         fun: (CurrencyId::NATIVE.times(100) as u128).into(),
                     }
                     .into()
@@ -324,7 +324,7 @@ fn transfer_to_invalid_dest_fails() {
                 Some(Accounts::ALICE.account()).into(),
                 Box::new(
                     MultiAsset {
-                        id: (Parent, Parachain(2000), GeneralKey("PONT".into())).into(),
+                        id: (Parent, Parachain(2000), GeneralKey(NATIVE_SYM.to_vec())).into(),
                         fun: (CurrencyId::NATIVE.times(100) as u128).into(),
                     }
                     .into()

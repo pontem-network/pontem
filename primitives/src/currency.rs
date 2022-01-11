@@ -166,7 +166,7 @@ impl core::ops::Mul<Balance> for Millies {
 
 #[cfg(test)]
 mod tests {
-    use super::{CurrencyId, TryFrom};
+    use super::{NATIVE_SYM, CurrencyId, TryFrom};
 
     #[test]
     /// Test default currency.
@@ -184,7 +184,7 @@ mod tests {
     #[test]
     /// Test currencies symbols.
     fn symbols() {
-        assert_eq!(CurrencyId::NATIVE.symbol(), b"PONT");
+        assert_eq!(CurrencyId::NATIVE.symbol(), NATIVE_SYM);
         assert_eq!(CurrencyId::KSM.symbol(), b"KSM");
     }
 

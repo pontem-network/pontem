@@ -37,6 +37,7 @@ pub use pallet_timestamp::Call as TimestampCall;
 pub use pallet_balances::Call as BalancesCall;
 pub use sp_runtime::{Permill, Percent, Perbill, MultiAddress};
 pub use pallet_vesting::Call as VestingCall;
+use primitives::currency::NATIVE_SYM;
 
 pub use frame_support::{
     construct_runtime, parameter_types, StorageValue, match_type,
@@ -418,7 +419,7 @@ impl Convert<CurrencyId, Option<MultiLocation>> for CurrencyIdConvert {
                 (
                     Parent,
                     Junction::Parachain(2000),
-                    Junction::GeneralKey(b"PONT".to_vec()),
+                    Junction::GeneralKey(NATIVE_SYM.to_vec()),
                 )
                     .into(),
             ),
@@ -445,7 +446,7 @@ impl Convert<MultiLocation, Option<CurrencyId>> for CurrencyIdConvert {
                 parents: 1,
                 interior: X2(Parachain(id), GeneralKey(key)),
             } => {
-                if id == 2000 && key == b"PONT".to_vec() {
+                if id == 2000 && key == NATIVE_SYM.to_vec() {
                     return Some(CurrencyId::NATIVE);
                 }
 
