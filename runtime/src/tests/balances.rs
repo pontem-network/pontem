@@ -164,7 +164,11 @@ fn transfer_tokens_via_currencies() {
 
     RuntimeBuilder::new()
         .set_balances(vec![
-            (Accounts::ALICE.account(), CurrencyId::NATIVE, native_balance),
+            (
+                Accounts::ALICE.account(),
+                CurrencyId::NATIVE,
+                native_balance,
+            ),
             (Accounts::ALICE.account(), CurrencyId::KSM, initial_balance),
         ])
         .build()
@@ -221,7 +225,11 @@ fn transfer_tokens_via_tokens() {
 
     RuntimeBuilder::new()
         .set_balances(vec![
-            (Accounts::ALICE.account(), CurrencyId::NATIVE, native_balance),
+            (
+                Accounts::ALICE.account(),
+                CurrencyId::NATIVE,
+                native_balance,
+            ),
             (Accounts::ALICE.account(), CurrencyId::KSM, initial_balance),
         ])
         .build()
