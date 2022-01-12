@@ -811,7 +811,7 @@ impl GasWeightMapping for MoveVMGasWeightMapping {
 
 parameter_types! {
     /// VM pallet address (used to reserve funds during VM native operations).
-    pub const MVMPalletId: PalletId = PalletId(*b" nox/mvm");
+    pub const MVMPalletId: PalletId = PalletId(*b"_nox/mvm");
 }
 
 /// Configure the Move-pallet in pallets/sp-mvm.
