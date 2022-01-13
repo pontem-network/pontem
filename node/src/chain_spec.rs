@@ -185,6 +185,12 @@ fn testnet_genesis(
 ) -> GenesisConfig {
     let (init_module, init_func, init_args) = build_vm_config();
 
+    let move_stdlib =
+        include_bytes!("../move/move-stdlib/build/MoveStdlib/bundles/MoveStdlib.pac").to_vec();
+    let pont_stdlib =
+        include_bytes!("../move/pont-stdlib/build/PontStdlib/bundles/PontStdlib.pac").to_vec();
+    let stdlib = [move_stdlib, pont_stdlib].concat();
+
     GenesisConfig {
         tokens: TokensConfig { balances: vec![] },
         system: SystemConfig {
@@ -228,7 +234,7 @@ fn testnet_genesis(
                 .collect(),
         },
         mvm: MvmConfig {
-            stdlib: include_bytes!("../move/stdlib/artifacts/bundles/move-stdlib.pac").to_vec(),
+            stdlib,
             init_module,
             init_func,
             init_args,

@@ -407,6 +407,7 @@ pub mod pallet {
                 } else {
                     signers
                 };
+
                 if transaction.signers_count() as usize != signers.len() {
                     error!(
                         "Transaction signers num isn't eq signers: {} != {}",
@@ -971,6 +972,16 @@ pub mod pallet {
         SecondaryKeysAddressesCountMismatch,
         // List of signers contain duplicates
         SignersContainDuplicates,
+        // Invalid sequence nonce
+        SequenceNonceInvalid,
+        // Invalid phantom type param position
+        InvalidPhantomTypeParamPosition,
+        // Documentation_missing
+        VecUpdateExistsMutableBorrowError,
+        // Documentation_missing
+        VecBorrowElementExistsMutableBorrowError,
+        // Found duplicate of native function
+        DuplicateNativeFunction,
     }
 }
 
