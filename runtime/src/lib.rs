@@ -775,7 +775,8 @@ impl groupsign::Config for Runtime {
     type Public = sp_runtime::MultiSigner;
     type Signature = sp_runtime::MultiSignature;
     type MyOrigin = Origin;
-    type WeightInfo = groupsign::weights::PontemWeights<Self>;
+    type WeightInfo = groupsign::weights::SubstrateWeight<Self>;
+    type IdentifyCryptoAlgorithm = groupsign::utils::IdentSr25519;
 }
 
 /// Move VM similar to Ethereum utilizing gas approach.

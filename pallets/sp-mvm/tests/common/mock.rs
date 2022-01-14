@@ -247,6 +247,7 @@ impl groupsign::Config for Test {
     type Signature = AnySignature;
     type MyOrigin = Origin;
     type WeightInfo = PontemWeights<Self>;
+
 }
 
 pub type Sys = system::Pallet<Test>;

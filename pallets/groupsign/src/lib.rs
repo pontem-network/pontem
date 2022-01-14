@@ -9,7 +9,6 @@
 //! Signers should sign hash `(blake2_256)` generated from data contains encoded: `call`, `valid_since`, `valid_thru`, `caller`, `nonce`.
 //!
 #![cfg_attr(not(feature = "std"), no_std)]
-
 #[cfg(test)]
 mod mock;
 
@@ -40,7 +39,7 @@ pub mod pallet {
         verify_encoded_lazy,
     };
 
-    use crate::weights::WeightInfo;
+    use crate::{weights::WeightInfo, utils::IdentifyCryptoAlgorithm};
 
     /// Configure the pallet by specifying the parameters and types on which it depends.
     #[pallet::config]
@@ -78,6 +77,9 @@ pub mod pallet {
             + sp_std::fmt::Debug;
 
         type WeightInfo: WeightInfo;
+
+        /// Used to determine correct account crypto for precise weight estimations
+        type IdentifyCryptoAlgorithm: IdentifyCryptoAlgorithm<Self>;
     }
 
     #[pallet::origin]
@@ -130,16 +132,16 @@ pub mod pallet {
         pub fn on_chain_message_check(
             origin: OriginFor<T>,
             message: Vec<u8>,
-            signers: Vec<sp_runtime::MultiSigner>,
+            signers: Vec<sp_runtime::AccountId32>,
             signatures: Vec<sp_runtime::MultiSignature>,
         ) -> DispatchResultWithPostInfo {
             ensure_signed(origin)?;
-            ensure!(
-                signatures.len() == signers.len(),
-                Error::<T>::SignaturesLengthDoesntMatch
-            );
+            // ensure!(
+            //     signatures.len() == signers.len(),
+            //     Error::<T>::SignaturesLengthDoesntMatch
+            // );
             Iterator::zip(signatures.into_iter(), signers.clone().into_iter())
-                .all(|(sig, signer)| verify_encoded_lazy(&sig, &message, &signer.into_account()));
+                .all(|(sig, signer)| verify_encoded_lazy(&sig, &message, &signer));
             Ok(Some(0u64).into())
         }
 
@@ -150,10 +152,7 @@ pub mod pallet {
             let dispatch_info = signed_call.get_dispatch_info();
             (
 
-                T::WeightInfo::groupsign_call(
-                    signers.len() as u32,
-                    signed_call.using_encoded(|c| c.len() as u32)
-                ).saturating_add(dispatch_info.weight),
+                0,
 
                 dispatch_info.class,
 
@@ -223,8 +222,8 @@ pub mod pallet {
 
             Ok(call_weight
                 .map(|actual_weight| {
-                    T::WeightInfo::groupsign_call(signers.len() as u32, call_len as u32)
-                        .saturating_add(actual_weight)
+
+                    0
                 })
                 .into())
         }
