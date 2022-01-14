@@ -220,17 +220,38 @@ pub mod pallet {
             module_bc: Vec<u8>,
             gas_limit: u64,
         ) -> DispatchResultWithPostInfo {
-            let who = ensure_signed(origin)?;
-            debug!("executing `publish` with signed {:?}", who);
+            // Allows to update Standard Library if root.
+            let sender = match T::UpdaterOrigin::ensure_origin(origin.clone()) {
+                Ok(_) => {
+                    debug!("executing `publish module` with root");
+                    CORE_CODE_ADDRESS
+                }
+                Err(_) => {
+                    let signer = ensure_signed(origin)?;
+                    debug!("executing `publish module` with signed {:?}", signer);
+                    addr::account_to_account_address(&signer)
+                }
+            };
+            debug!("executing `publish` with signed {:?}", sender);
 
             // Publish module.
-            let vm_result = Self::raw_publish_module(&who, module_bc, gas_limit, false)?;
+            let vm = Self::get_vm()?;
+            let gas = Self::get_move_gas_limit(gas_limit)?;
+
+            let tx = {
+                let sender = addr::account_to_bytes(&sender);
+                debug!("converted sender: {:?}", sender);
+                ModuleTx::new(module_bc, AccountAddress::new(sender))
+            };
+
+            let vm_result = vm.publish_module(gas, tx, false);
 
             // produce result with spended gas:
             let result = result::from_vm_result::<T>(vm_result)?;
 
             // Emit an event:
-            Self::deposit_event(Event::ModulePublished(who));
+            let sender = addr::address_to_account(&sender).unwrap();
+            Self::deposit_event(Event::ModulePublished(sender));
 
             Ok(result)
         }

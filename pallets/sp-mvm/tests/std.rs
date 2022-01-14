@@ -14,6 +14,14 @@ use common::utils;
 /// publish modules personally as root
 fn publish_module() {
     new_test_ext().execute_with(|| {
+        utils::publish_module_as_root_unchecked(&modules::root::EVENT_PROXY, None).unwrap();
+    });
+}
+
+#[test]
+/// publish modules personally as root
+fn publish_module_as_root() {
+    new_test_ext().execute_with(|| {
         let root = root_ps_acc();
         utils::publish_module(root, &modules::root::EVENT_PROXY, None).unwrap();
     });

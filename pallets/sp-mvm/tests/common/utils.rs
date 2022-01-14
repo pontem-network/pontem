@@ -40,6 +40,12 @@ pub fn publish_module_unchecked(
     Mvm::publish_module(Origin::signed(signer), module.bytes().to_vec(), gas_limit)
 }
 
+/// Publish module as root __without__ storage check
+pub fn publish_module_as_root_unchecked(module: &Asset, gas_limit: Option<u64>) -> PsResult {
+    let gas_limit = gas_limit.unwrap_or(DEFAULT_GAS_LIMIT);
+    Mvm::publish_module(Origin::root(), module.bytes().to_vec(), gas_limit)
+}
+
 /// Publish package.
 ///
 /// Publish package __with__ storage check
