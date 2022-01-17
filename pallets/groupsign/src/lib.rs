@@ -150,12 +150,10 @@ pub mod pallet {
         /// if authorship was verified successfully. See `crate::Error` for errors that may occur during this call.
         #[pallet::weight({
             let dispatch_info = signed_call.get_dispatch_info();
+            let call_len = signed_call.using_encoded(|c| c.len());
             (
-
-                0,
-
+                crate::utils::calculate_weights::<T>(&signers, call_len as u32).saturating_add(dispatch_info.weight),
                 dispatch_info.class,
-
             )
         })]
         pub fn groupsign_call(
@@ -222,8 +220,8 @@ pub mod pallet {
 
             Ok(call_weight
                 .map(|actual_weight| {
-
-                    0
+                    crate::utils::calculate_weights::<T>(&signers, call_len as u32)
+                        .saturating_add(actual_weight)
                 })
                 .into())
         }

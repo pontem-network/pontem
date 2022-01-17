@@ -1,8 +1,9 @@
+
+#![allow(unused_imports)]
+#![allow(dead_code)]
+
 /// Make changes in canned-benchmarks/benchlib.rs first, and then copy them over to groupsign/src/benchmarking/benchlib.rs
 /// Anything contained there should be no-crypto compatible.
-///
-
-
 #[cfg(feature = "runtime-benchmarks")]
 use sp_std::prelude::*;
 #[cfg(feature = "runtime-benchmarks")]
@@ -60,7 +61,6 @@ impl CannedBenchmarks {
     }
 }
 
-#[allow(dead_code)]
 pub fn generate_test_preimage<AccountId: Encode>(
     call: &Vec<u8>,
     signers: &[AccountId],
@@ -83,7 +83,6 @@ pub fn make_message(len: u32) -> Vec<u8> {
 }
 
 /// Returns reproducible part of a benchmark
-#[allow(dead_code)]
 pub fn get_benchmarking_sequence() -> Vec<TestInfo> {
     let mut sequence: Vec<TestInfo> = vec![];
     for sr in 0..MAX_TEST_SIGNERS+1 {
@@ -98,7 +97,6 @@ pub fn get_benchmarking_sequence() -> Vec<TestInfo> {
 pub const MAX_TEST_SIGNERS: u32 = 8;
 pub const MAX_TEST_LENGTH: u32 = 1024*10 + 1;
 pub const MAX_TEST_LENGTH_STEP: usize = 1024 * 2;
-
 /// Upper bound for length benchmarking range
 pub const LEN_STEPS: u32 = MAX_TEST_LENGTH / MAX_TEST_LENGTH_STEP as u32 + 1;
 /// Upper bound for signatures benchmarking range

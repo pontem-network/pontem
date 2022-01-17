@@ -2,7 +2,9 @@ use codec::{Encode};
 use sp_io::{hashing::blake2_256};
 use sp_std::prelude::*;
 use frame_support::{error::BadOrigin, dispatch::Weight};
-use sp_runtime::{traits::Saturating, MultiSigner};
+use sp_runtime::{MultiSigner};
+#[allow(unused_imports)]
+use sp_runtime::{traits::Saturating};
 
 use crate::weights::WeightInfo;
 
@@ -51,9 +53,9 @@ pub struct IdentSr25519();
 pub struct IdentEd25519();
 pub struct IdentEcdsa();
 
-impl <T> IdentifyCryptoAlgorithm<T> for IdentSr25519 where T: crate::Config  {fn get_crypto_algo(identify: T::AccountId) -> CryptoType  {CryptoType::Sr25519}}
-impl <T> IdentifyCryptoAlgorithm<T> for IdentEd25519 where T: crate::Config  {fn get_crypto_algo(identify: T::AccountId) -> CryptoType  {CryptoType::Ed25519}}
-impl <T> IdentifyCryptoAlgorithm<T> for IdentEcdsa where T: crate::Config {fn get_crypto_algo(identify: T::AccountId) -> CryptoType  {CryptoType::EcDSA}}
+impl <T> IdentifyCryptoAlgorithm<T> for IdentSr25519 where T: crate::Config  {fn get_crypto_algo(_: T::AccountId) -> CryptoType  {CryptoType::Sr25519}}
+impl <T> IdentifyCryptoAlgorithm<T> for IdentEd25519 where T: crate::Config  {fn get_crypto_algo(_: T::AccountId) -> CryptoType  {CryptoType::Ed25519}}
+impl <T> IdentifyCryptoAlgorithm<T> for IdentEcdsa where T: crate::Config {fn get_crypto_algo(_: T::AccountId) -> CryptoType  {CryptoType::EcDSA}}
 
 pub struct MultiSignerIdentifier();
 impl <T> IdentifyCryptoAlgorithm<T> for MultiSignerIdentifier where T: crate::Config<AccountId = MultiSigner> {
@@ -77,5 +79,6 @@ pub fn calculate_weights<T: crate::Config>(signers: &Vec<T::AccountId>, length: 
             }
         });
 
-    T::WeightInfo::on_chain_message_check_sr25519(sr, length)
+    // STOPSHIP: divisor needs to be taken from [crate::benchmarking::benchlib::MAX_TEST_LENGTH_STEP]
+    T::WeightInfo::on_chain_message_check(sr, ed, ec, length / (1024 * 2))
 }

@@ -1,13 +1,10 @@
 //! Benchmarking setup for groupsign
 
 use super::*;
-mod benchlib;
+pub mod benchlib;
 use benchlib::*;
 
-#[allow(unused)]
-use crate::Pallet as Groupsign;
 use frame_benchmarking::{benchmarks};
-use sp_runtime::{MultiSignature, AccountId32};
 use codec::Decode;
 use frame_system::RawOrigin;
 use sp_std::prelude::*;
