@@ -270,8 +270,14 @@ pub fn new_test_ext() -> sp_io::TestExternalities {
 
     let vm_config = build_vm_config();
 
+    let move_stdlib =
+        include_bytes!("../assets/move-stdlib/build/MoveStdlib/bundles/MoveStdlib.pac").to_vec();
+    let pont_framework =
+        include_bytes!("../assets/pont-stdlib/build/PontStdlib/bundles/PontStdlib.pac").to_vec();
+
     sp_mvm::GenesisConfig::<Test> {
-        stdlib: include_bytes!("../assets/stdlib/artifacts/bundles/move-stdlib.pac").to_vec(),
+        move_stdlib,
+        pont_framework,
         init_module: vm_config.0.clone(),
         init_func: vm_config.1.clone(),
         init_args: vm_config.2.clone(),

@@ -8,8 +8,9 @@ use move_core_types::language_storage::ModuleId;
 use move_core_types::language_storage::StructTag;
 use move_core_types::language_storage::TypeTag;
 use move_vm::io::state::State;
-use move_vm_runtime::data_cache::MoveStorage;
 use move_vm::types::ModulePackage;
+use move_core_types::resolver::ModuleResolver;
+use move_core_types::resolver::ResourceResolver;
 
 use sp_mvm::storage::MoveVmStorage;
 
@@ -83,6 +84,7 @@ pub fn check_storage_module<Bc: AsRef<[u8]>>(
         .get_module(&module_id)
         .expect("VM state read storage")
         .expect(&format!("Module '{}' should exist", module_id));
+    eprintln!("Name is: {}", name);
     assert_eq!(bc.as_ref(), &stored);
 }
 

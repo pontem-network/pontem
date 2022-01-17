@@ -289,8 +289,10 @@ pub mod pallet {
     #[pallet::genesis_config]
     pub struct GenesisConfig<T: Config> {
         pub _phantom: std::marker::PhantomData<T>,
-        /// Standard library bytes.
-        pub stdlib: Vec<u8>,
+        /// Move Standard library bytes.
+        pub move_stdlib: Vec<u8>,
+        /// Pontem Framework library bytes.
+        pub pont_framework: Vec<u8>,
         /// Module name for genesis init.
         pub init_module: Vec<u8>,
         // Init function name.
@@ -305,7 +307,8 @@ pub mod pallet {
         fn default() -> Self {
             GenesisConfig {
                 _phantom: Default::default(),
-                stdlib: vec![],
+                move_stdlib: vec![],
+                pont_framework: vec![],
                 init_module: vec![],
                 init_func: vec![],
                 init_args: vec![],
@@ -317,11 +320,16 @@ pub mod pallet {
     #[pallet::genesis_build]
     impl<T: Config> GenesisBuild<T> for GenesisConfig<T> {
         fn build(&self) {
-            let package =
-                ModulePackage::try_from(&self.stdlib[..]).expect("Failed to parse stdlib");
+            let mut stdlib_package = ModulePackage::try_from(&self.move_stdlib[..])
+                .expect("Failed to parse move stdlib");
+
+            let pont_framework_package = ModulePackage::try_from(&self.pont_framework[..])
+                .expect("Failed to parse pont framework lib");
+
+            stdlib_package.join(pont_framework_package);
 
             let genesis_config = move_vm::genesis::build_genesis_config(
-                package.into_tx(CORE_CODE_ADDRESS),
+                stdlib_package.into_tx(CORE_CODE_ADDRESS),
                 Some(move_vm::genesis::InitFuncConfig {
                     module: self.init_module.clone(),
                     func: self.init_func.clone(),
