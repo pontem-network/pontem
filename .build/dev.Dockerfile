@@ -16,7 +16,7 @@ RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | bash -s -- -y
 #     dove -V
 
 # add dove
-ARG DOVE_VERSION=1.3.3
+ARG DOVE_VERSION=1.5.1
 RUN curl -sL --fail -o "/usr/local/bin/dove" "https://github.com/pontem-network/move-tools/releases/download/${DOVE_VERSION}/dove-${DOVE_VERSION}-linux-x86_64" && \
 	chmod +x /usr/local/bin/dove && \
     dove -V

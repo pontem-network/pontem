@@ -3,7 +3,7 @@ name = "assets"
 version = "0.0.1"
 authors = []
 dialect = "Pont"
-dove_version = ">=1.3.3"
+dove_version = ">=1.5.1"
 
 [addresses]
 RuntimeTests = "gkNW9pAcCHxZrnoVkhLkEQtsLsW5NWTC75cdAdxAMs9LNYCYg"# ERROR: Move.toml not found
