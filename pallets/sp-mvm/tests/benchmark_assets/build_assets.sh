@@ -1,13 +1,21 @@
-# Clone and rebuild stdlib
-rm -rf ./stdlib
-git clone https://github.com/pontem-network/pont-stdlib.git ./stdlib
-pushd ./stdlib
-git checkout e9bd26720c06705d2e222833a496fda7c67c8e32
-dove build
+# Clone move-stdlib
+rm -rf ./move-stdlib
+git clone https://github.com/pontem-network/move-stdlib ./move-stdlib
+pushd ./move-stdlib
+git checkout 79ed97fc1f98fefab16fbb54988bdc7defb09578
+dove build --package
+popd
+
+# Clone pont-stdlib
+rm -rf ./pont-stdlib
+git clone https://github.com/pontem-network/pont-stdlib.git ./pont-stdlib
+pushd ./pont-stdlib
+git checkout aa3dcdd5ed62b8912e0f95108ca1451162d385ac
+dove build --package
 popd
 
 dove clean
-dove build --tree
+dove build
 dove tx "empty()"
 dove tx "lp()"
 dove tx "many_params(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10)"

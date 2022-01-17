@@ -1,12 +1,12 @@
 script {
-    use 0x1::DiemAccount;
-    use {{sender}}::Bank;
+    use PontemFramework::PontAccount;
+    use RuntimeTests::Bank;
 
-    fun deposit_bank<Token: key + store>(sender: signer, amount: u64) {
-        // Withdraw PONT tokens from sender account.
-        let tokens = DiemAccount::pnt_withdraw<Token>(&sender, amount);
+    fun deposit_bank<TokenType>(sender: signer, amount: u64) {
+        // Withdraw TokenType tokens from sender account.
+        let tokens = PontAccount::withdraw<TokenType>(&sender, amount);
 
-        Bank::deposit(&sender, tokens);        
+        Bank::deposit(&sender, tokens);
     }
 }
  

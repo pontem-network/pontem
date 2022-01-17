@@ -105,14 +105,20 @@ build-bench: assets
 	cargo build --release --features=runtime-benchmarks
 
 .PHONY: assets
-assets: pallets/sp-mvm/tests/assets/stdlib pallets/sp-mvm/tests/benchmark_assets/stdlib runtime/src/tests/assets/stdlib
+assets: pallets/sp-mvm/tests/assets/stdlib \
+		runtime/src/tests/assets/stdlib
+#		pallets/sp-mvm/tests/benchmark_assets/stdlib
 
 .PHONY: clean-assets
 clean-assets:
 	rm -rf \
-		pallets/sp-mvm/tests/assets/stdlib \
-		pallets/sp-mvm/tests/benchmark_assets/stdlib \
-		runtime/src/tests/assets/stdlib
+		pallets/sp-mvm/tests/assets/pont-stdlib \
+		pallets/sp-mvm/tests/assets/move-stdlib \
+		pallets/sp-mvm/tests/benchmark_assets/pont-stdlib \
+		pallets/sp-mvm/tests/benchmark_assets/move-stdlib \
+		pallets/sp-mvm/tests/benchmark_assets/build \
+		runtime/src/tests/assets/pont-stdlib \
+		runtime/src/test/assets/move-stdlib \
 
 	git clean -dfX -- \
 		pallets/sp-mvm/tests
