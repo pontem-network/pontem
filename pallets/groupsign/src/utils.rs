@@ -2,7 +2,7 @@ use codec::{Encode};
 use sp_io::{hashing::blake2_256};
 use sp_std::prelude::*;
 use frame_support::{error::BadOrigin, dispatch::Weight};
-use sp_runtime::{MultiSigner};
+use sp_runtime::{MultiSignature, MultiSigner};
 #[allow(unused_imports)]
 use sp_runtime::{traits::Saturating};
 
@@ -66,6 +66,22 @@ impl <T> IdentifyCryptoAlgorithm<T> for MultiSignerIdentifier where T: crate::Co
             MultiSigner::Ecdsa(_) => CryptoType::EcDSA,
         }
     }
+}
+
+pub fn calculate_weights_multisignature<T: crate::Config>(signers: &Vec<MultiSignature>, length: u32) -> Weight {
+    let (sr, ed, ec) = signers.iter()
+        .fold(
+        (0,0,0),
+        |(sr, ed, ec), account| {
+            match account {
+                MultiSignature::Sr25519(_) => (sr + 1, ed, ec),
+                MultiSignature::Ed25519(_) => (sr, ed + 1, ec),
+                MultiSignature::Ecdsa(_) => (sr, ed, ec + 1),
+            }
+        });
+
+    // STOPSHIP: divisor needs to be taken from [crate::benchmarking::benchlib::MAX_TEST_LENGTH_STEP]
+    T::WeightInfo::on_chain_message_check(sr, ed, ec, length / (1024 * 2))
 }
 
 pub fn calculate_weights<T: crate::Config>(signers: &Vec<T::AccountId>, length: u32) -> Weight {

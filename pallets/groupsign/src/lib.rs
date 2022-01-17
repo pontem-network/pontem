@@ -128,13 +128,17 @@ pub mod pallet {
     impl<T: Config> Pallet<T> {
 
         // #[cfg(feature = "runtime-benchmarking")]
-        #[pallet::weight(0)]
+        #[pallet::weight(
+            {
+                crate::utils::calculate_weights_multisignature::<T>(&signatures, message.len() as u32)
+            }
+        )]
         pub fn on_chain_message_check(
             origin: OriginFor<T>,
             message: Vec<u8>,
             signers: Vec<sp_runtime::AccountId32>,
             signatures: Vec<sp_runtime::MultiSignature>,
-        ) -> DispatchResultWithPostInfo {
+        ) -> DispatchResult {
             ensure_signed(origin)?;
             // ensure!(
             //     signatures.len() == signers.len(),
@@ -142,7 +146,7 @@ pub mod pallet {
             // );
             Iterator::zip(signatures.into_iter(), signers.clone().into_iter())
                 .all(|(sig, signer)| verify_encoded_lazy(&sig, &message, &signer));
-            Ok(Some(0u64).into())
+            Ok(())
         }
 
         /// Do groupsign call.
