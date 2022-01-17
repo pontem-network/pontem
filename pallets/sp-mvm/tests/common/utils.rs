@@ -84,7 +84,6 @@ pub fn check_storage_module<Bc: AsRef<[u8]>>(
         .get_module(&module_id)
         .expect("VM state read storage")
         .expect(&format!("Module '{}' should exist", module_id));
-    eprintln!("Name is: {}", name);
     assert_eq!(bc.as_ref(), &stored);
 }
 

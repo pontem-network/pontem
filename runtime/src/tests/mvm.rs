@@ -5,27 +5,29 @@ use orml_traits::currency::MultiCurrency;
 
 pub mod modules {
     use assets::Asset;
-    pub static BANK: Asset =
-        Asset::new("Bank", "src/tests/assets/user/artifacts/modules/47_Bank.mv");
+    pub static BANK: Asset = Asset::new(
+        "Bank",
+        "src/tests/assets/user/build/assets/bytecode_modules/Bank.mv",
+    );
 }
 
 pub mod transactions {
     use assets::Asset;
     pub static TRANSFER_PONT: Asset = Asset::new(
         "transfer",
-        "src/tests/assets/user/artifacts/transactions/transfer_pont.mvt",
+        "src/tests/assets/user/build/assets/transaction/transfer_pont.mvt",
     );
     pub static TRANSFER_KSM: Asset = Asset::new(
         "transfer",
-        "src/tests/assets/user/artifacts/transactions/transfer_ksm.mvt",
+        "src/tests/assets/user/build/assets/transaction/transfer_ksm.mvt",
     );
     pub static DEPOSIT_BANK_PONT: Asset = Asset::new(
         "deposit_bank_pont",
-        "src/tests/assets/user/artifacts/transactions/deposit_bank_pont.mvt",
+        "src/tests/assets/user/build/assets/transaction/deposit_bank_pont.mvt",
     );
     pub static DEPOSIT_BANK_KSM: Asset = Asset::new(
         "deposit_bank_ksm",
-        "src/tests/assets/user/artifacts/transactions/deposit_bank_ksm.mvt",
+        "src/tests/assets/user/build/assets/transaction/deposit_bank_ksm.mvt",
     );
 }
 

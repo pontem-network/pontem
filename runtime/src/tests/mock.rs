@@ -155,9 +155,17 @@ impl RuntimeBuilder {
         )
         .unwrap();
 
+        let move_stdlib =
+            include_bytes!("./assets/move-stdlib/build/MoveStdlib/bundles/MoveStdlib.pac")
+                .to_vec();
+        let pont_framework =
+            include_bytes!("./assets/pont-stdlib/build/PontStdlib/bundles/PontStdlib.pac")
+                .to_vec();
+
         let (init_module, init_func, init_args) = build_vm_config();
         sp_mvm::GenesisConfig::<Runtime> {
-            stdlib: include_bytes!("./assets/stdlib/artifacts/bundles/move-stdlib.pac").to_vec(),
+            move_stdlib,
+            pont_framework,
             init_module,
             init_func,
             init_args,
