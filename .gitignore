@@ -18,8 +18,10 @@
 
 artifacts/
 /runtime/src/tests/assets/stdlib
-/node/move/stdlib/
-/pallets/sp-mvm/tests/assets/stdlib/
+/node/move/move-stdlib/
+/node/move/pont-stdlib/
+/pallets/sp-mvm/tests/assets/move-stdlib/
+/pallets/sp-mvm/tests/assets/pont-stdlib/
 /pallets/sp-mvm/tests/benchmark_assets/stdlib/
 
 .direnv
