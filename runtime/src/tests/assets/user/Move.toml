@@ -6,7 +6,7 @@ dialect = "Pont"
 dove_version = ">=1.5.1"
 
 [addresses]
-RuntimeTests = "gkNW9pAcCHxZrnoVkhLkEQtsLsW5NWTC75cdAdxAMs9LNYCYg"# ERROR: Move.toml not found
+RuntimeTests = "gkNW9pAcCHxZrnoVkhLkEQtsLsW5NWTC75cdAdxAMs9LNYCYg"
 Std = "0x1"
 PontemFramework = "0x1"
 Alice = "gkQ5K6EnLRgZkwozG8GiBAEnJyM6FxzbSaSmVhKJ2w8FcK7ih"
