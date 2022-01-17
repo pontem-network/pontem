@@ -32,12 +32,8 @@ clippy:
 	cargo clippy -p=sp-mvm --target=wasm32-unknown-unknown --no-default-features
 
 .PHONY: bench
-bench: assets
-	mkdir -p ./target/sp-bench
-	cargo run \
-		--release \
-		--bin pontem \
-		--features=runtime-benchmarks -- \
+bench: target/bench-bin
+	./target/bench-bin \
 		benchmark \
 		--dev \
 		-lsp_mvm=trace \
@@ -46,15 +42,13 @@ bench: assets
 		--execution=wasm \
 		--wasm-execution=compiled \
 		--steps=20 --repeat=10 \
-		--output=target/sp-bench
+		--output=target
 
-.PHONY: run-bench-groupsign
-run-bench-groupsign:
-	mkdir -p ./target/gs-bench
-	./target/release/pontem \
+.PHONY: Run groupsign benchmarks
+run-bench-groupsign: target/bench-bin
+	./target/bench-bin \
 		benchmark \
 		--dev \
-		-lsp_mvm=trace \
 		--pallet=groupsign \
 		--extrinsic='*' \
 		--execution=wasm \
@@ -62,22 +56,21 @@ run-bench-groupsign:
 		--steps=20 --repeat=10 \
 		--output=target/gs-bench
 
-.PHONY: bench-groupsign
-bench-groupsign:
-	mkdir -p ./target/gs-bench
-	cargo run \
+.PHONY: Build a benchmarking binary
+target/bench-bin: assets
+	# Checking whether benchlib is up to date
+	diff -e pallets/groupsign/src/benchmarking/benchlib.rs pallets/groupsign/canned-benchmarks/src/benchlib.rs || { \
+		echo " !!!!!!! BENCHLIB.RS IS NOT SYNCHRONIZED"; \
+		echo " !!!!!!! run this and push to repo:"; \
+		echo cp pallets/groupsign/canned-benchmarks/src/benchlib.rs pallets/groupsign/src/benchmarking/benchlib.rs; \
+		exit 1; \
+	}
+	
+	cargo build \
 		--release \
 		--bin pontem \
-		--features=runtime-benchmarks -- \
-		benchmark \
-		--dev \
-		-lsp_mvm=trace \
-		--pallet=groupsign \
-		--extrinsic='*' \
-		--execution=wasm \
-		--wasm-execution=compiled \
-		--steps=20 --repeat=10 \
-		--output=target/gp-bench
+		--features=runtime-benchmarks
+	install target/release/libsp_mvm.rlib ./target/bench-bin
 
 .PHONY: test
 test: assets
