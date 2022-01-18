@@ -8,9 +8,9 @@ use sp_runtime::{
 };
 use pontem_runtime::{
     GenesisConfig, SudoConfig, SystemConfig, BalancesConfig, WASM_BINARY, ParachainInfoConfig,
-    VestingConfig, MvmConfig, ParachainStakingConfig, InflationInfo, Range, AuthorFilterConfig,
-    AuthorMappingConfig, TreasuryConfig, TokensConfig, DemocracyConfig, PolkadotXcmConfig,
-    SchedulerConfig,
+    VestingConfig, MvmConfig, TransactionPauseConfig, ParachainStakingConfig, InflationInfo,
+    Range, AuthorFilterConfig, AuthorMappingConfig, TreasuryConfig, TokensConfig,
+    DemocracyConfig, PolkadotXcmConfig, SchedulerConfig,
 };
 use primitives::{currency::CurrencyId, AccountId, Signature, Balance};
 use constants::SS58_PREFIX;
@@ -99,6 +99,7 @@ pub fn development_config(id: ParaId) -> Result<ChainSpec, String> {
                     get_account_id_from_seed::<sr25519::Public>("Alice//stash"),
                     get_account_id_from_seed::<sr25519::Public>("Bob//stash"),
                 ],
+                vec![],
                 id,
             )
         },
@@ -155,6 +156,7 @@ pub fn local_testnet_config(id: ParaId) -> Result<ChainSpec, String> {
                     get_account_id_from_seed::<sr25519::Public>("Eve//stash"),
                     get_account_id_from_seed::<sr25519::Public>("Ferdie//stash"),
                 ],
+                vec![],
                 id,
             )
         },
@@ -181,6 +183,7 @@ fn testnet_genesis(
     candidates: Vec<(AccountId, NimbusId, Balance)>,
     nominations: Vec<(AccountId, AccountId, Balance)>,
     endowed_accounts: Vec<AccountId>,
+    paused: Vec<(Vec<u8>, Vec<u8>)>,
     id: ParaId,
 ) -> GenesisConfig {
     let (init_module, init_func, init_args) = build_vm_config();
@@ -238,6 +241,10 @@ fn testnet_genesis(
             init_module,
             init_func,
             init_args,
+            ..Default::default()
+        },
+        transaction_pause: TransactionPauseConfig {
+            paused,
             ..Default::default()
         },
         vesting: VestingConfig {
