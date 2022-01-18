@@ -72,25 +72,7 @@ pub mod module {
             function_name: Vec<u8>,
         ) -> DispatchResult {
             T::UpdateOrigin::ensure_origin(origin)?;
-
-            // not allowed to pause calls of this pallet to ensure safe
-            let pallet_name_string =
-                sp_std::str::from_utf8(&pallet_name).map_err(|_| Error::<T>::InvalidCharacter)?;
-            ensure!(
-                pallet_name_string != <Self as PalletInfoAccess>::name(),
-                Error::<T>::CannotPause
-            );
-
-            PausedTransactions::<T>::mutate_exists(
-                (pallet_name.clone(), function_name.clone()),
-                |maybe_paused| {
-                    if maybe_paused.is_none() {
-                        *maybe_paused = Some(());
-                        Self::deposit_event(Event::TransactionPaused(pallet_name, function_name));
-                    }
-                },
-            );
-            Ok(())
+            Self::_pause_transaction(pallet_name, function_name)
         }
 
         #[pallet::weight(T::WeightInfo::unpause_transaction())]
@@ -105,6 +87,65 @@ pub mod module {
                 Self::deposit_event(Event::TransactionUnpaused(pallet_name, function_name));
             };
             Ok(())
+        }
+    }
+
+    impl<T: Config> Pallet<T> {
+        pub fn _pause_transaction(
+            pallet_name: Vec<u8>,
+            function_name: Vec<u8>,
+        ) -> DispatchResult {
+            // not allowed to pause calls of this pallet to ensure safe
+            let pallet_name_string =
+                sp_std::str::from_utf8(&pallet_name).map_err(|_| Error::<T>::InvalidCharacter)?;
+
+            ensure!(
+                pallet_name_string != <Self as PalletInfoAccess>::name(),
+                Error::<T>::CannotPause
+            );
+
+            PausedTransactions::<T>::mutate_exists(
+                (pallet_name.clone(), function_name.clone()),
+                |maybe_paused| {
+                    if maybe_paused.is_none() {
+                        *maybe_paused = Some(());
+                        Self::deposit_event(Event::TransactionPaused(pallet_name, function_name));
+                    }
+                },
+            );
+
+            Ok(())
+        }
+    }
+
+    /// Genesis configuration.
+    ///
+    /// Allows to configure pause extrinsics in genesis block.
+    #[pallet::genesis_config]
+    pub struct GenesisConfig<T: Config> {
+        pub _phantom: std::marker::PhantomData<T>,
+        // The vector contains pallet name and function name.
+        pub paused: Vec<(Vec<u8>, Vec<u8>)>,
+    }
+
+    #[cfg(feature = "std")]
+    impl<T: Config> Default for GenesisConfig<T> {
+        fn default() -> Self {
+            GenesisConfig {
+                _phantom: Default::default(),
+                paused: vec![],
+            }
+        }
+    }
+
+    /// Initialize paused extrinsics in genesis block.
+    #[pallet::genesis_build]
+    impl<T: Config> GenesisBuild<T> for GenesisConfig<T> {
+        fn build(&self) {
+            for (pallet_name, function_name) in &self.paused {
+                Pallet::<T>::_pause_transaction(pallet_name.to_vec(), function_name.to_vec())
+                    .expect("can't register paused extrinsic in genesis");
+            }
         }
     }
 }
