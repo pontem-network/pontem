@@ -72,6 +72,7 @@ pub fn run_to_block(till: u32) {
 pub struct RuntimeBuilder {
     balances: Vec<(AccountId, CurrencyId, Balance)>,
     vesting: Vec<(AccountId, BlockNumber, u32, Balance)>,
+    paused: Vec<(Vec<u8>, Vec<u8>)>,
     parachain_id: Option<u32>,
 }
 
@@ -81,6 +82,7 @@ impl RuntimeBuilder {
         Self {
             balances: vec![],
             vesting: vec![],
+            paused: vec![],
             parachain_id: None,
         }
     }
@@ -94,6 +96,12 @@ impl RuntimeBuilder {
     /// Set vesting.
     pub fn set_vesting(mut self, vesting: Vec<(AccountId, BlockNumber, u32, Balance)>) -> Self {
         self.vesting = vesting;
+        self
+    }
+
+    /// Set paused transactions.
+    pub fn set_paused(mut self, paused: Vec<(Vec<u8>, Vec<u8>)>) -> Self {
+        self.paused = paused;
         self
     }
 
@@ -135,6 +143,13 @@ impl RuntimeBuilder {
                 .into_iter()
                 .filter(|(_, currency_id, _)| *currency_id != native_currency_id)
                 .collect::<Vec<_>>(),
+        }
+        .assimilate_storage(&mut t)
+        .unwrap();
+
+        transaction_pause::GenesisConfig::<Runtime> {
+            paused: self.paused,
+            ..Default::default()
         }
         .assimilate_storage(&mut t)
         .unwrap();
