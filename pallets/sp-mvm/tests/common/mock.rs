@@ -73,6 +73,7 @@ frame_support::construct_runtime!(
         Currencies: module_currencies::{Pallet, Call, Storage, Event<T>},
         Mvm: sp_mvm::{Pallet, Call, Config<T>, Storage, Event<T>},
         Groupsign: groupsign::{Pallet, Call, Origin<T>, Event<T>},
+        Sudo: sudo::{Pallet, Call, Config<T>, Storage, Event<T>},
     }
 );
 
@@ -317,4 +318,11 @@ pub fn last_event() -> Event {
 
 pub fn have_no_events() -> bool {
     Sys::events().is_empty()
+}
+
+// ----------------- //
+// Implement the sudo module's `Config` on the Test runtime.
+impl sudo::Config for Test {
+    type Event = Event;
+    type Call = Call;
 }

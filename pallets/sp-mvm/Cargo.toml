@@ -65,6 +65,9 @@ orml-traits = { default-features = false, git = 'https://github.com/open-web3-st
 # serde is for lcs/bcs only
 # used for benchmarking (runtime, std, no-std)
 serde-alt = { version = "1", default-features = false, package = "alt_serde", features = ["derive", "alloc"], optional = true }
+
+sudo = { default-features = false, package = "pallet-sudo", git = 'http://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.13' }
+
 [dependencies.bcs-alt]
 package = "bcs"
 default-features = false
@@ -117,6 +120,8 @@ std = [
     "balances/std",
     "orml-traits/std",
     "pallet-vesting/std",
+    "pallet-vesting/std",
+    "sudo/std",
 ]
 
 runtime-benchmarks = [

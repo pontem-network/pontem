@@ -95,7 +95,11 @@ pub mod pallet {
     /// Configure the pallet by specifying the parameters and types on which it depends.
     #[pallet::config]
     pub trait Config:
-        frame_system::Config + timestamp::Config + balances::Config + groupsign::Config
+        frame_system::Config
+        + timestamp::Config
+        + balances::Config
+        + groupsign::Config
+        + sudo::Config
     {
         /// Because this pallet emits events, it depends on the runtime's definition of an event.
         type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
@@ -221,15 +225,15 @@ pub mod pallet {
             gas_limit: u64,
         ) -> DispatchResultWithPostInfo {
             // Allows to update Standard Library if root.
-            let sender = match T::UpdaterOrigin::ensure_origin(origin.clone()) {
+            let (sender, signer) = match T::UpdaterOrigin::ensure_origin(origin.clone()) {
                 Ok(_) => {
                     debug!("executing `publish module` with root");
-                    CORE_CODE_ADDRESS
+                    (CORE_CODE_ADDRESS, sudo::Pallet::<T>::key())
                 }
                 Err(_) => {
                     let signer = ensure_signed(origin)?;
                     debug!("executing `publish module` with signed {:?}", signer);
-                    addr::account_to_account_address(&signer)
+                    (addr::account_to_account_address(&signer), signer)
                 }
             };
             debug!("executing `publish` with signed {:?}", sender);
@@ -250,8 +254,7 @@ pub mod pallet {
             let result = result::from_vm_result::<T>(vm_result)?;
 
             // Emit an event:
-            let sender = addr::address_to_account(&sender).unwrap();
-            Self::deposit_event(Event::ModulePublished(sender));
+            Self::deposit_event(Event::ModulePublished(signer));
 
             Ok(result)
         }

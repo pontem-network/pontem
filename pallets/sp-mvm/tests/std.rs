@@ -11,8 +11,8 @@ use common::addr::*;
 use common::utils;
 
 #[test]
-/// publish modules personally as root
-fn publish_module() {
+/// publish modules personally as root unchecked
+fn publish_module_as_root_unchecked() {
     new_test_ext().execute_with(|| {
         utils::publish_module_as_root_unchecked(&modules::root::EVENT_PROXY, None).unwrap();
     });
