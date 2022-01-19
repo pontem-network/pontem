@@ -2,22 +2,22 @@
 rm -rf ./move-stdlib
 git clone https://github.com/pontem-network/move-stdlib ./move-stdlib
 pushd ./move-stdlib
-git checkout 79ed97fc1f98fefab16fbb54988bdc7defb09578
-dove build --package
+git checkout ccd25dfc85c812f56b4a7120bce793edd5f19064
+dove build -b
 popd
 
 # Clone pont-stdlib
 rm -rf ./pont-stdlib
 git clone https://github.com/pontem-network/pont-stdlib.git ./pont-stdlib
 pushd ./pont-stdlib
-git checkout aa3dcdd5ed62b8912e0f95108ca1451162d385ac
-dove build --package
+git checkout 0702cdf5d696bc50b366e04de1b59ccc3d904032
+dove build -b
 popd
 
 pushd ./user
 dove clean
 dove build
-dove build --package
+dove build -b
 dove tx "store_u64(42)"
 dove tx "emit_event(42)"
 dove tx "store_system_block()"
@@ -35,5 +35,5 @@ popd
 pushd ./root
 dove clean
 dove build
-dove build --package
+dove build -b
 pushd

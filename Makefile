@@ -118,7 +118,7 @@ clean-assets:
 		pallets/sp-mvm/tests/benchmark_assets/move-stdlib \
 		pallets/sp-mvm/tests/benchmark_assets/build \
 		runtime/src/tests/assets/pont-stdlib \
-		runtime/src/test/assets/move-stdlib \
+		runtime/src/tests/assets/move-stdlib \
 
 	git clean -dfX -- \
 		pallets/sp-mvm/tests
