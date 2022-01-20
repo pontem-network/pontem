@@ -44,11 +44,11 @@ fn set_default_ss58_version() {
 
 fn load_spec(
     id: &str,
-    para_id: ParaId,
 ) -> std::result::Result<Box<dyn sc_service::ChainSpec>, String> {
     Ok(match id {
-        "dev" => Box::new(chain_spec::development_config(para_id)?),
-        "" | "local" => Box::new(chain_spec::local_testnet_config(para_id)?),
+        "dev" => Box::new(chain_spec::development_config()?),
+        "" | "local" => Box::new(chain_spec::local_testnet_config()?),
+        "nox" => Box::new(chain_spec::nox_config()?),
         path => Box::new(chain_spec::ChainSpec::from_json_file(
             std::path::PathBuf::from(path),
         )?),
@@ -83,7 +83,6 @@ impl SubstrateCli for Cli {
     fn load_spec(&self, id: &str) -> std::result::Result<Box<dyn sc_service::ChainSpec>, String> {
         load_spec(
             id,
-            self.parachain_id.unwrap_or(constants::PARACHAIN_ID).into(),
         )
     }
 
@@ -213,10 +212,6 @@ pub fn run() -> sc_cli::Result<()> {
 
             let block: Block = generate_genesis_block(&load_spec(
                 &params.chain.clone().unwrap_or_default(),
-                params
-                    .parachain_id
-                    .unwrap_or(constants::PARACHAIN_ID)
-                    .into(),
             )?)?;
             let raw_header = block.header().encode();
             let output_buf = if params.raw {
