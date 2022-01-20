@@ -5,7 +5,7 @@ Pontem parachain node with [Move VM pallet](/pallets/sp-mvm/) on board.
 * [Pontem docs](https://docs.pontem.network) - if you want to learn about Pontem network.
 * [Validator docs](https://docs.pontem.network/03.-staking/collator) - if you want to launch a validator node.
 * [Bootstrap](https://github.com/pontem-network/bootstrap) - if you want to up node quickly (not for development).
- 
+
 ## Local Relaychain & Parachain Launch
 
 Current version built with Nimbus consensus and Parachain Staking implementation.
@@ -268,6 +268,28 @@ Use `--sealing` argument to select sealing mode:
 ## Documentation
 
 See [Move VM Pallet documentation](https://docs.pontem.network/02.-getting-started/getting_started).
+
+## Benchmarking
+
+Everything, except groupsign is regular.
+```
+make bench
+```
+
+For groupsign you need first to generate serialized benchmarking signatures. That is done by running
+```
+cargo run -p groupsign-canned-benchmarks
+```
+We've chose that approach to be more versatile in terms of signature algorithms.
+Not many signing algorithms are implemented for `no_std` environment, and by generating those in
+`std`, we can use every single implementation Substrate has.
+
+If you want to change settings for benchmarking generation, go to this [file](pallets/groupsign/canned-benchmarks/src/benchlib.rs) and change any parameters you see fit. Don't forget to run the tests, and to copy that file to pallets/groupsign/src/benchmarking/benchlib.rs.
+
+Then you can run the following command to start the benchmarking process
+```
+make run-bench-groupsign
+```
 
 ### XCM
 
