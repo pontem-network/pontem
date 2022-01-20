@@ -133,9 +133,9 @@ Add Nimbus key:
 Launch parachain node as collator:
 
 ```sh
-./target/release/pontem export-genesis-state --parachain-id 2000 > genesis-state
+./target/release/pontem export-genesis-state --chain=local 2000 > genesis-state
 ./target/release/pontem export-genesis-wasm > genesis-wasm
-./target/release/pontem --collator --tmp --keystore-path ~/.pontem/keystore-1 --parachain-id 2000 --port 40335 --ws-port 9946 -- --execution wasm --chain ../polkadot/rococo-local-cfde.json --port 30335
+./target/release/pontem --collator --tmp --keystore-path ~/.pontem/keystore-1 --chain=local --port 40335 --ws-port 9946 -- --execution wasm --chain ../polkadot/rococo-local-cfde.json --port 30335
 ```
 
 Register the parachain:
@@ -219,7 +219,7 @@ Now time to launch your node.
 /target/release/pontem --collator \
      --tmp \
     --keystore-path ~/.pontem/keystore-2  \
-    --parachain-id 2000 \
+    --chain=local \
     --port 40338 \
     --ws-port 9947 \
     --bootnodes <bootnode> \
@@ -238,7 +238,7 @@ cat 9946.log | grep 40335 # Something like: /ip4/127.0.0.1/tcp/40335/p2p/12D3Koo
 /target/release/pontem --collator \
     --tmp \
     --keystore-path ~/.pontem/keystore-2  \
-    --parachain-id 2000 \
+    --chain=local \
     --port 40338 \
     --ws-port 9947 \
     --bootnodes <bootnode> \
