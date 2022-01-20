@@ -1,6 +1,6 @@
 use cumulus_primitives_core::ParaId;
 use sc_service::ChainType;
-use sp_core::{sr25519, Pair, Public};
+use sp_core::{sr25519, Pair, Public, crypto::Ss58Codec};
 use sc_chain_spec::{ChainSpecExtension, ChainSpecGroup};
 use sp_runtime::{
     traits::{IdentifyAccount, Verify},
@@ -12,7 +12,7 @@ use pontem_runtime::{
     Range, AuthorFilterConfig, AuthorMappingConfig, TreasuryConfig, TokensConfig,
     DemocracyConfig, PolkadotXcmConfig, SchedulerConfig,
 };
-use primitives::{currency::CurrencyId, AccountId, Signature, Balance};
+use primitives::{currency::CurrencyId, AccountId, Signature, Balance, BlockNumber};
 use constants::SS58_PREFIX;
 use serde::{Serialize, Deserialize};
 use serde_json::json;
@@ -58,6 +58,11 @@ where
     AccountPublic::from(get_from_seed::<TPublic>(seed)).into_account()
 }
 
+/// Generate an account ID from address.
+pub fn get_account_id_from_address(addr: &str) -> AccountId {
+    AccountId::from_ss58check(addr).unwrap()
+}
+
 fn properties() -> Option<sc_chain_spec::Properties> {
     let currency = CurrencyId::default();
 
@@ -73,7 +78,7 @@ fn properties() -> Option<sc_chain_spec::Properties> {
 /// Local development config.
 pub fn development_config() -> Result<ChainSpec, String> {
     let wasm_binary = WASM_BINARY.ok_or_else(|| "Development wasm not available".to_string())?;
-    let parachain_id: ParaId = 2000;
+    let parachain_id = ParaId::from(2000);
 
     Ok(ChainSpec::from_genesis(
         // Name
@@ -96,15 +101,30 @@ pub fn development_config() -> Result<ChainSpec, String> {
                 vec![],
                 // Pre-funded accounts
                 vec![
-                    (get_account_id_from_seed::<sr25519::Public>("Alice"), CurrencyId::PONT * 100_000),
-                    (get_account_id_from_seed::<sr25519::Public>("Bob"), CurrencyId::PONT * 100_000),
-                    (get_account_id_from_seed::<sr25519::Public>("Alice//stash"), CurrencyId::PONT * 100_000),
-                    (get_account_id_from_seed::<sr25519::Public>("Bob//stash"), CurrencyId::PONT * 100_000),
+                    (
+                        get_account_id_from_seed::<sr25519::Public>("Alice"),
+                        CurrencyId::PONT * 100_000,
+                    ),
+                    (
+                        get_account_id_from_seed::<sr25519::Public>("Bob"),
+                        CurrencyId::PONT * 100_000,
+                    ),
+                    (
+                        get_account_id_from_seed::<sr25519::Public>("Alice//stash"),
+                        CurrencyId::PONT * 100_000,
+                    ),
+                    (
+                        get_account_id_from_seed::<sr25519::Public>("Bob//stash"),
+                        CurrencyId::PONT * 100_000,
+                    ),
                 ],
                 // Vesting
-                vec![
-                    (get_account_id_from_seed::<sr25519::Public>("Bob"), 1000, 150, CurrencyId::PONT * 50_000),
-                ],
+                vec![(
+                    get_account_id_from_seed::<sr25519::Public>("Bob"),
+                    1000,
+                    150,
+                    CurrencyId::PONT * 50_000,
+                )],
                 // Paused extrinsics
                 vec![],
                 // Parachain id
@@ -130,7 +150,7 @@ pub fn development_config() -> Result<ChainSpec, String> {
 /// Local testnet configuration.
 pub fn local_testnet_config() -> Result<ChainSpec, String> {
     let wasm_binary = WASM_BINARY.ok_or_else(|| "Testnet wasm not available".to_string())?;
-    let parachain_id: ParaId = 2000;
+    let parachain_id = ParaId::from(2000);
 
     Ok(ChainSpec::from_genesis(
         // Name
@@ -153,17 +173,45 @@ pub fn local_testnet_config() -> Result<ChainSpec, String> {
                 vec![],
                 // Pre-funded accounts
                 vec![
-                    (get_account_id_from_seed::<sr25519::Public>("Alice"), CurrencyId::PONT * 100_000),
-                    (get_account_id_from_seed::<sr25519::Public>("Bob"), CurrencyId::PONT * 100_000),
-                    (get_account_id_from_seed::<sr25519::Public>("Charlie"), CurrencyId::PONT * 100_000),
-                    (get_account_id_from_seed::<sr25519::Public>("Dave"), CurrencyId::PONT * 100_000),
-                    (get_account_id_from_seed::<sr25519::Public>("Eve"), CurrencyId::PONT * 100_000),
-                    (get_account_id_from_seed::<sr25519::Public>("Ferdie"), CurrencyId::PONT * 100_000),
+                    (
+                        get_account_id_from_seed::<sr25519::Public>("Alice"),
+                        CurrencyId::PONT * 100_000,
+                    ),
+                    (
+                        get_account_id_from_seed::<sr25519::Public>("Bob"),
+                        CurrencyId::PONT * 100_000,
+                    ),
+                    (
+                        get_account_id_from_seed::<sr25519::Public>("Charlie"),
+                        CurrencyId::PONT * 100_000,
+                    ),
+                    (
+                        get_account_id_from_seed::<sr25519::Public>("Dave"),
+                        CurrencyId::PONT * 100_000,
+                    ),
+                    (
+                        get_account_id_from_seed::<sr25519::Public>("Eve"),
+                        CurrencyId::PONT * 100_000,
+                    ),
+                    (
+                        get_account_id_from_seed::<sr25519::Public>("Ferdie"),
+                        CurrencyId::PONT * 100_000,
+                    ),
                 ],
                 // Vesting accounts
                 vec![
-                    (get_account_id_from_seed::<sr25519::Public>("Bob"), 1000, 150, CurrencyId::PONT * 50_000),
-                    (get_account_id_from_seed::<sr25519::Public>("Charlie"), 1000, 150, CurrencyId::PONT * 50_000),
+                    (
+                        get_account_id_from_seed::<sr25519::Public>("Bob"),
+                        1000,
+                        150,
+                        CurrencyId::PONT * 50_000,
+                    ),
+                    (
+                        get_account_id_from_seed::<sr25519::Public>("Charlie"),
+                        1000,
+                        150,
+                        CurrencyId::PONT * 50_000,
+                    ),
                 ],
                 // Paused extrinsics
                 vec![],
@@ -176,7 +224,7 @@ pub fn local_testnet_config() -> Result<ChainSpec, String> {
         // Telemetry
         None,
         // Protocol ID
-        None,
+        Some("pontem_testnet"),
         // Properties
         properties(),
         // Extensions
@@ -188,10 +236,10 @@ pub fn local_testnet_config() -> Result<ChainSpec, String> {
 }
 
 /// NOX (Kusama) config.
-/// TODO: it's still missing bootnodes.
+/// TODO: it's still missing bootnodes, accounts, etc.
 pub fn nox_config() -> Result<ChainSpec, String> {
     let wasm_binary = WASM_BINARY.ok_or_else(|| "Live wasm not available".to_string())?;
-    let parachain_id = constants::PARACHAIN_ID;
+    let parachain_id = ParaId::from(constants::PARACHAIN_ID);
 
     Ok(ChainSpec::from_genesis(
         // Name
@@ -203,7 +251,7 @@ pub fn nox_config() -> Result<ChainSpec, String> {
             genesis(
                 wasm_binary,
                 // Sudo account
-                get_account_id_from_seed::<sr25519::Public>("Alice"),
+                get_account_id_from_address("gkPQdcMrECsnUbVnCqTUuTaS9o72LM179rmRu3hzkC5zovUgB"),
                 // Candidates
                 vec![],
                 // Nominators
@@ -223,7 +271,7 @@ pub fn nox_config() -> Result<ChainSpec, String> {
         // Telemetry
         None,
         // Protocol ID
-        None,
+        Some("nox_mainnet"),
         // Properties
         properties(),
         // Extensions
@@ -240,7 +288,7 @@ fn genesis(
     root_key: AccountId,
     candidates: Vec<(AccountId, NimbusId, Balance)>,
     nominations: Vec<(AccountId, AccountId, Balance)>,
-    balances: Vec<AccountId, Balance>,
+    balances: Vec<(AccountId, Balance)>,
     vesting: Vec<(AccountId, BlockNumber, BlockNumber, Balance)>,
     paused: Vec<(Vec<u8>, Vec<u8>)>,
     id: ParaId,
@@ -302,9 +350,7 @@ fn genesis(
             paused,
             ..Default::default()
         },
-        vesting: VestingConfig {
-            vesting,
-        },
+        vesting: VestingConfig { vesting },
         treasury: TreasuryConfig {},
         democracy: DemocracyConfig::default(),
         scheduler: SchedulerConfig {},
