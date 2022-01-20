@@ -70,7 +70,7 @@ target/bench-bin: assets
 		--release \
 		--bin pontem \
 		--features=runtime-benchmarks
-	install target/release/libsp_mvm.rlib ./target/bench-bin
+	install target/release/pontem ./target/bench-bin
 
 .PHONY: test
 test: assets
