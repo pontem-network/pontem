@@ -1,7 +1,3 @@
-
-#![allow(unused_imports)]
-#![allow(dead_code)]
-
 /// Make changes in canned-benchmarks/benchlib.rs first, and then copy them over to groupsign/src/benchmarking/benchlib.rs
 /// Anything contained there should be no-crypto compatible.
 #[cfg(feature = "runtime-benchmarks")]
@@ -11,8 +7,11 @@ use sp_io::{hashing::blake2_256};
 #[cfg(not(feature = "runtime-benchmarks"))]
 use sp_core::{blake2_256};
 
-use sp_runtime::{AccountId32, MultiSignature, verify_encoded_lazy, MultiSigner, traits::IdentifyAccount};
+use sp_runtime::{AccountId32, MultiSignature};
 use codec::{Encode, Decode};
+
+#[cfg(test)]
+use sp_runtime::{verify_encoded_lazy, MultiSigner, traits::IdentifyAccount};
 
 
 #[derive(Encode, Decode, Clone, Copy)]
@@ -48,6 +47,7 @@ impl CannedBenchmarks {
     /// Since we can't just give `benchmarking` module a list of tests, we map one back and forth.
     /// This one converts parameters provided by benchmarking process, and gets associated test back.
     ///
+    #[allow(dead_code)]
     pub fn get_by_parameters(&self, sr: u32, ed: u32, ec: u32, len: u32) -> (Vec<u8>, Vec<AccountId32>, Vec<MultiSignature>) {
         let index = get_index_from_parameters(sr, ed, ec, len);
         let test: &TestCase = &self.test_cases[index as usize];
@@ -98,12 +98,15 @@ pub const MAX_TEST_SIGNERS: u32 = 8;
 pub const MAX_TEST_LENGTH: u32 = 1024*10 + 1;
 pub const MAX_TEST_LENGTH_STEP: usize = 1024 * 2;
 /// Upper bound for length benchmarking range
+#[allow(dead_code)]
 pub const LEN_STEPS: u32 = MAX_TEST_LENGTH / MAX_TEST_LENGTH_STEP as u32 + 1;
 /// Upper bound for signatures benchmarking range
+#[allow(dead_code)]
 pub const SIG_STEPS: u32 = MAX_TEST_SIGNERS + 1;
 
 /// Converts benchmarking parameters back to index.
 /// Length in this context -- real length divied by MAX_TEST_LENGTH_STEP
+#[allow(dead_code)]
 pub fn get_index_from_parameters(sr: u32, ed: u32, ec: u32, len: u32) -> usize {
     (
         sr * (SIG_STEPS * SIG_STEPS * LEN_STEPS)
