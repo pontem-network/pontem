@@ -235,7 +235,7 @@ pub mod pallet {
             Ok(result)
         }
 
-        /// Publish module package (could be generated using 'dove build --package'), e.g.: several modules in one transaction.
+        /// Publish module package (could be generated using 'dove build -b'), e.g.: several modules in one transaction.
         ///
         /// Deploy several modules in one transaction. Could be called by root in case needs to update Standard Library.
         /// Read more about Standard Library - https://docs.pontem.network/03.-move-vm/stdlib
