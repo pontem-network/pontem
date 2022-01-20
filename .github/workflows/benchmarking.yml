@@ -42,6 +42,15 @@ jobs:
           components: rustfmt
           override: false
 
+      - name: Install wasm Rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: ${{ steps.rust.outputs.version }}
+          profile: minimal
+          target: wasm32-unknown-unknown
+          override: false
+
+
       - name: Cache
         uses: actions/cache@v2
         with:
