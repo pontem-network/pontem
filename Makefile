@@ -86,12 +86,10 @@ test: assets
 
 .PHONY: run
 run:
-	export WASM_BUILD_TOOLCHAIN=$(cat rust-toolchain)
 	cargo run --release -- --dev --tmp -lsp_mvm=trace
 
 .PHONY: build
 build:
-	export WASM_BUILD_TOOLCHAIN=`cat rust-toolchain`
 	cargo build --release
 
 .PHONY: clean
@@ -101,7 +99,6 @@ clean:
 .PHONY: build-bench
 build-bench: assets
 	export SKIP_WASM_BUILD=0
-	export WASM_BUILD_TOOLCHAIN=`cat rust-toolchain`
 	cargo build --release --features=runtime-benchmarks
 
 .PHONY: assets
