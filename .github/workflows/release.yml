@@ -148,19 +148,12 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - id: rust # MSRV
-        name: Read required Rust version
-        run: |
-          echo "WASM_BUILD_TOOLCHAIN=$(cat rust-toolchain)" >> $GITHUB_ENV
-          echo ::set-output name=version::$(cat rust-toolchain)
-
       - name: Install Rust toolchain
         uses: actions-rs/toolchain@v1
         with:
-          toolchain: ${{ steps.rust.outputs.version }}
           profile: minimal
           target: wasm32-unknown-unknown
-          override: false
+          override: true
 
       - name: Restore Rust cache
         uses: Swatinem/rust-cache@v1
@@ -173,7 +166,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build
-        run: cargo +${{ steps.rust.outputs.version }} build --release
+        run: cargo build --release
 
       - name: Upload Node
         uses: actions/upload-release-asset@v1
