@@ -12,15 +12,15 @@ use common::utils;
 
 #[test]
 /// publish modules personally as root unchecked
-fn publish_module_as_root_unchecked() {
+fn publish_module_as_root() {
     new_test_ext().execute_with(|| {
-        utils::publish_module_as_root_unchecked(&modules::root::EVENT_PROXY, None).unwrap();
+        utils::publish_module_as_root(&modules::root::EVENT_PROXY, None).unwrap();
     });
 }
 
 #[test]
-/// publish modules personally as root
-fn publish_module_as_root() {
+/// publish modules personally as root (ps)
+fn publish_module_as_root_ps() {
     new_test_ext().execute_with(|| {
         let root = root_ps_acc();
         utils::publish_module(root, &modules::root::EVENT_PROXY, None).unwrap();
@@ -63,13 +63,23 @@ fn execute_script() {
 }
 
 #[test]
-/// publish package as root
-fn publish_package_as_root() {
+/// publish package as root (ps)
+fn publish_package_as_root_ps() {
     new_test_ext().execute_with(|| {
         let package = &ROOT_PACKAGE;
         let root = root_ps_acc();
 
         utils::publish_package(root, package, None).unwrap();
+    });
+}
+
+/// publish package as root.
+#[test]
+fn publish_package_as_root() {
+    new_test_ext().execute_with(|| {
+        let package = &ROOT_PACKAGE;
+
+        utils::publish_package_as_root(package, None).unwrap();
     });
 }
 
