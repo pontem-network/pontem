@@ -1,4 +1,4 @@
 [toolchain]
 channel = "nightly-2021-11-07"
-progile = "complete"
+profile = "complete"
 targets = [ "wasm32-unknown-unknown"]
