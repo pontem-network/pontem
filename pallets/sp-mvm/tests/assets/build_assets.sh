@@ -25,6 +25,7 @@ dove tx "store_system_timestamp()"
 dove tx "inf_loop()"
 dove tx "store_native_balance()"
 dove tx "store_token_balance()"
+dove tx "as_root(dr)"
 dove tx "transfer<0x1::PONT::PONT>(Alice, 2000)" -o=transfer.mvt
 dove tx "transfer<0x1::KSM::KSM>(Alice, 2000)" -o=transfer_token.mvt
 dove tx "multisig_test()"

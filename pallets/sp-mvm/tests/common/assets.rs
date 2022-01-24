@@ -91,4 +91,8 @@ pub mod transactions {
         "deposit_bank_ksm",
         "tests/assets/user/build/assets/transaction/deposit_bank_ksm.mvt",
     );
+    pub static AS_ROOT: Asset = Asset::new(
+        "as_root",
+        "tests/assets/user/build/assets/transaction/as_root.mvt",
+    );
 }

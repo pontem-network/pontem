@@ -164,7 +164,7 @@ fn transfer_vested_balance_fails() {
                 ),
                 DispatchError::Module {
                     index: 67,
-                    error: 153,
+                    error: 154,
                     message: Some("Aborted")
                 },
             );

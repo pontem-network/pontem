@@ -62,6 +62,7 @@ pub fn publish_package_unchecked(
     Mvm::publish_package(Origin::signed(signer), package.bytes().to_vec(), gas_limit)
 }
 
+/// Execute transaction script.
 pub fn execute_tx(origin: AccountId, tx: &Asset, gas_limit: Option<u64>) -> PsResult {
     let gas_limit = gas_limit.unwrap_or(DEFAULT_GAS_LIMIT);
     // get bytecode:
