@@ -10,7 +10,7 @@ members = [
 [profile.release]
 panic = 'unwind'
 rpath = false
-debug = true
+# debug = true
 # incremental = true
 # opt size:
 # lto = "thin"

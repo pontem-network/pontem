@@ -10629,7 +10629,6 @@ dependencies = [
  "orml-tokens",
  "orml-traits",
  "pallet-balances",
- "pallet-sudo",
  "pallet-timestamp",
  "pallet-vesting",
  "parity-scale-codec",

@@ -237,16 +237,7 @@ pub mod pallet {
             debug!("executing `publish` with signed {:?}", sender);
 
             // Publish module.
-            let vm = Self::get_vm()?;
-            let gas = Self::get_move_gas_limit(gas_limit)?;
-
-            let tx = {
-                let sender = addr::account_to_bytes(&sender);
-                debug!("converted sender: {:?}", sender);
-                ModuleTx::new(module_bc, AccountAddress::new(sender))
-            };
-
-            let vm_result = vm.publish_module(gas, tx, false);
+            let vm_result = Self::raw_publish_module(&signer, module_bc, gas_limit, false)?;
 
             // produce result with spended gas:
             let result = result::from_vm_result::<T>(vm_result)?;
