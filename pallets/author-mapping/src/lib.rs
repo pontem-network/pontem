@@ -28,6 +28,11 @@ use frame_support::pallet;
 
 pub use pallet::*;
 
+use nimbus_primitives::{
+	AccountLookup, CanAuthor, EventHandler, NimbusId, SlotBeacon, INHERENT_IDENTIFIER,
+	NIMBUS_ENGINE_ID,
+};
+
 pub mod weights;
 use weights::WeightInfo;
 #[cfg(any(test, feature = "runtime-benchmarks"))]
@@ -272,11 +277,18 @@ pub mod pallet {
         }
     }
 
-    impl<T: Config> AccountLookup<T::AuthorId, T::AccountId> for Pallet<T> {
-        fn lookup_account(author: &T::AuthorId) -> Option<T::AccountId> {
-            Self::account_id_of(author)
+    impl<T: Config> AccountLookup<T::AccountId> for Pallet<T> {
+        fn lookup_account(author: &T::NimbusId) -> Option<T::AccountId> {
+            Some(author)
         }
     }
+    /*
+        impl<T: Config> AccountLookup<T::AuthorId, T::AccountId> for Pallet<T> {
+            fn lookup_account(author: &T::AuthorId) -> Option<T::AccountId> {
+                Self::account_id_of(author)
+            }
+        }
+    */
 
     impl<T: Config> Pallet<T> {
         /// A helper function to lookup the account id associated with the given author id. This is
