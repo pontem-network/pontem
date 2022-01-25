@@ -116,7 +116,7 @@ impl orml_tokens::Config for Runtime {
     type DustRemovalWhitelist = Nothing;
 }
 
-pub const NATIVE_CURRENCY_ID: CurrencyId = CurrencyId::PONT;
+pub const NATIVE_CURRENCY_ID: CurrencyId = CurrencyId::NATIVE;
 pub const X_TOKEN_ID: CurrencyId = CurrencyId::TEST;
 pub const DOT: CurrencyId = CurrencyId::KSM;
 

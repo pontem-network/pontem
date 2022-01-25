@@ -10,7 +10,7 @@ RootTests = "0x1"
 
 [dependencies.PontStdlib]
 git = "https://github.com/pontem-network/pont-stdlib.git"
-rev = "d92b21e558e059a64808fe44eee98d91c194105b"
+rev = "1f094231de16cad54f2303093a7f866474bccd12"
 
 [dependencies.MoveStdlib]
 git = "https://github.com/pontem-network/move-stdlib.git"
