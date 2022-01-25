@@ -3,7 +3,7 @@ name = "assets"
 version = "0.0.1"
 authors = []
 dialect = "Pont"
-dove_version = ">=1.5.1"
+dove_version = ">=1.5.5"
 
 [addresses]
 RuntimeTests = "gkNW9pAcCHxZrnoVkhLkEQtsLsW5NWTC75cdAdxAMs9LNYCYg"
@@ -12,8 +12,8 @@ Bob = "gkNW9pAcCHxZrnoVkhLkEQtsLsW5NWTC75cdAdxAMs9LNYCYg"
 
 [dependencies.PontStdlib]
 git = "https://github.com/pontem-network/pont-stdlib.git"
-rev = "0702cdf5d696bc50b366e04de1b59ccc3d904032"
+rev = "d92b21e558e059a64808fe44eee98d91c194105b"
 
 [dependencies.MoveStdlib]
 git = "https://github.com/pontem-network/move-stdlib.git"
-rev = "ccd25dfc85c812f56b4a7120bce793edd5f19064"
+rev = "12c5488729b8377b90f247537459f16ef1383d43"

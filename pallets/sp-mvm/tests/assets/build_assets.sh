@@ -2,7 +2,7 @@
 rm -rf ./move-stdlib
 git clone https://github.com/pontem-network/move-stdlib ./move-stdlib
 pushd ./move-stdlib
-git checkout ccd25dfc85c812f56b4a7120bce793edd5f19064
+git checkout 12c5488729b8377b90f247537459f16ef1383d43
 dove build -b
 popd
 
@@ -10,7 +10,7 @@ popd
 rm -rf ./pont-stdlib
 git clone https://github.com/pontem-network/pont-stdlib.git ./pont-stdlib
 pushd ./pont-stdlib
-git checkout 0702cdf5d696bc50b366e04de1b59ccc3d904032
+git checkout d92b21e558e059a64808fe44eee98d91c194105b
 dove build -b
 popd
 
@@ -25,6 +25,7 @@ dove tx "store_system_timestamp()"
 dove tx "inf_loop()"
 dove tx "store_native_balance()"
 dove tx "store_token_balance()"
+dove tx "as_root(dr)"
 dove tx "transfer<0x1::PONT::PONT>(Alice, 2000)" -o=transfer.mvt
 dove tx "transfer<0x1::KSM::KSM>(Alice, 2000)" -o=transfer_token.mvt
 dove tx "multisig_test()"

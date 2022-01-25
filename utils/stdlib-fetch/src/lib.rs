@@ -47,7 +47,7 @@ pub fn fetch(config: FetchConfig) -> Result<()> {
     }
 
     if config.build_with_dove {
-        run(config.path_to_clone, "dove", &["build", "-p"])?;
+        run(config.path_to_clone, "dove", &["build", "-b"])?;
     }
 
     Ok(())

@@ -406,6 +406,12 @@ pub mod pallet {
             let transaction = Transaction::try_from(&tx_bc[..])
                 .map_err(|_| Error::<T>::TransactionValidationError)?;
 
+            // TODO: we should cover it correctly later by utilizing EnsureOrigin, etc.
+            ensure!(
+                !transaction.has_root_signer(),
+                Error::<T>::TransactionIsNotAllowedError
+            );
+
             let vm = Self::get_vm()?;
             let gas = Self::get_move_gas_limit(gas_limit)?;
 
@@ -603,6 +609,8 @@ pub mod pallet {
         TransactionValidationError,
         /// Transaction signers num isn't eq signers
         TransactionSignersNumError,
+        /// Transaction is not allowed.
+        TransactionIsNotAllowedError,
 
         /// Unknown validation status
         UnknownValidationStatus,

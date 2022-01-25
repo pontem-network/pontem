@@ -6,7 +6,7 @@ use common::mock::*;
 use common::addr::*;
 use common::utils;
 
-const OUT_OF_GAS_ERROR_CODE: u8 = 148;
+const OUT_OF_GAS_ERROR_CODE: u8 = 149;
 const MINIMAL_GAS_LIMIT: u64 = 1;
 
 /// Check status == out of gas
