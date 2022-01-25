@@ -342,7 +342,7 @@ impl pallet_timestamp::Config for Runtime {
 }
 
 parameter_types! {
-    pub const ExistentialDeposit: Balance = PONT_EXISTENTIAL_DEPOSIT;
+    pub const ExistentialDeposit: Balance = NOX_EXISTENTIAL_DEPOSIT;
     pub const TransferFee: Balance = CurrencyId::NATIVE.millies().times(1);
     pub const CreationFee: Balance = CurrencyId::NATIVE.millies().times(1);
     pub const TransactionByteFee: Balance = CurrencyId::NATIVE.millies().times(1);
@@ -913,7 +913,8 @@ impl Convert<MultiAsset, Option<CurrencyId>> for CurrencyIdConvert {
 parameter_type_with_key! {
     pub ExistentialDeposits: |currency_id: CurrencyId| -> Balance {
         match currency_id {
-            CurrencyId::NATIVE => PONT_EXISTENTIAL_DEPOSIT,
+            // TODO: had to use NATIVE instead.
+            CurrencyId::NOX => NOX_EXISTENTIAL_DEPOSIT,
             CurrencyId::KSM  => KSM_EXISTENTIAL_DEPOSIT
         }
     };

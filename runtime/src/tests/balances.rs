@@ -16,7 +16,7 @@ fn test_get_native_currency() {
 fn test_existential_deposits() {
     assert_eq!(
         ExistentialDeposits::get(&CurrencyId::NATIVE),
-        PONT_EXISTENTIAL_DEPOSIT,
+        NOX_EXISTENTIAL_DEPOSIT,
     );
 
     assert_eq!(

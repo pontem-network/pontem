@@ -46,13 +46,6 @@ const fn const_slice_eq(a: &[u8], b: &[u8]) -> bool {
     true
 }
 
-macro_rules! static_assert {
-    ($cond:expr) => {
-        #[deny(const_err)]
-        const _: [(); 1] = [(); $cond as usize];
-    };
-}
-
 macro_rules! def_currencies {
     (
         $(#[$ty_attr:meta])*
@@ -138,9 +131,9 @@ def_currencies! {
     #[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
     pub enum CurrencyId {
         /// Our native currency.
-        NOX("NOX", 10),
+        NOX(b"NOX", 10),
         /// Relaychain's currency.
-        KSM("KSM", 12),
+        KSM(b"KSM", 12),
     }
 }
 
