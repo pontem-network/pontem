@@ -30,6 +30,29 @@ impl sp_std::fmt::Display for CurrencyConversionError {
     }
 }
 
+#[allow(dead_code)]
+const fn const_slice_eq(a: &[u8], b: &[u8]) -> bool {
+    let len = a.len();
+    if b.len() != len {
+        return false;
+    }
+    let mut i = 0;
+    while i < len {
+        if a[i] != b[i] {
+            return false;
+        }
+        i += 1;
+    }
+    true
+}
+
+macro_rules! static_assert {
+    ($cond:expr) => {
+        #[deny(const_err)]
+        const _: [(); 1] = [(); $cond as usize];
+    };
+}
+
 macro_rules! def_currencies {
     (
         $(#[$ty_attr:meta])*
@@ -96,28 +119,39 @@ macro_rules! def_currencies {
                 }
             }
         }
+
+        // $(static_assert!(const_slice_eq(stringify!($name).as_bytes(), $str));)*
     };
 }
 
-// This macro needs to return a constant literal.
-#[rustfmt::skip]
-#[cfg(feature = "pont")]
-macro_rules! native { () => { b"PONT" }; }
-#[rustfmt::skip]
 #[cfg(not(feature = "pont"))]
-macro_rules! native { () => { b"NOX" }; }
-
-pub const NATIVE_SYM: &'static [u8] = native!();
+pub const NATIVE_SYM: &'static [u8] = b"NOX";
+#[cfg(feature = "pont")]
+pub const NATIVE_SYM: &'static [u8] = b"PONT";
 #[cfg(feature = "std")]
 pub const NATIVE_SYM_S: &'static str = unsafe { std::str::from_utf8_unchecked(NATIVE_SYM) };
 
+#[cfg(not(feature = "pont"))]
 def_currencies! {
     /// Currencies id.
     #[derive(Encode, Decode, Eq, PartialEq, Copy, Clone, RuntimeDebug, PartialOrd, Ord, TypeInfo)]
     #[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
     pub enum CurrencyId {
         /// Our native currency.
-        NATIVE(native!(), 10),
+        NOX("NOX", 10),
+        /// Relaychain's currency.
+        KSM("KSM", 12),
+    }
+}
+
+#[cfg(feature = "pont")]
+def_currencies! {
+    /// Currencies id.
+    #[derive(Encode, Decode, Eq, PartialEq, Copy, Clone, RuntimeDebug, PartialOrd, Ord, TypeInfo)]
+    #[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
+    pub enum CurrencyId {
+        /// Our native currency.
+        PONT(b"PONT", 10),
         /// Relaychain's currency.
         KSM(b"KSM", 12),
     }
@@ -130,9 +164,18 @@ impl Default for CurrencyId {
 }
 
 impl CurrencyId {
+    pub const NATIVE: CurrencyId = CurrencyId::NOX;
+
     // Create a new CurrencyId with native currency.
     pub const fn native() -> Self {
-        CurrencyId::NATIVE
+        #[cfg(not(feature = "pont"))]
+        {
+            CurrencyId::NOX
+        }
+        #[cfg(feature = "pont")]
+        {
+            CurrencyId::PONT
+        }
     }
 }
 
