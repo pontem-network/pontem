@@ -1062,7 +1062,7 @@ construct_runtime!(
         MultiSig: pallet_multisig::{Pallet, Call, Storage, Event<T>},
 
         // Transaction pause
-        TransactionPause: transaction_pause::{Pallet, Call, Storage, Event<T>},
+        TransactionPause: transaction_pause::{Pallet, Call, Storage, Event<T>, Config<T>},
     }
 );
 

@@ -8,8 +8,9 @@ use move_core_types::language_storage::ModuleId;
 use move_core_types::language_storage::StructTag;
 use move_core_types::language_storage::TypeTag;
 use move_vm::io::state::State;
-use move_vm_runtime::data_cache::MoveStorage;
 use move_vm::types::ModulePackage;
+use move_core_types::resolver::ModuleResolver;
+use move_core_types::resolver::ResourceResolver;
 
 use sp_mvm::storage::MoveVmStorage;
 
@@ -61,6 +62,7 @@ pub fn publish_package_unchecked(
     Mvm::publish_package(Origin::signed(signer), package.bytes().to_vec(), gas_limit)
 }
 
+/// Execute transaction script.
 pub fn execute_tx(origin: AccountId, tx: &Asset, gas_limit: Option<u64>) -> PsResult {
     let gas_limit = gas_limit.unwrap_or(DEFAULT_GAS_LIMIT);
     // get bytecode:

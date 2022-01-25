@@ -1,6 +1,6 @@
 use cumulus_primitives_core::ParaId;
 use sc_service::ChainType;
-use sp_core::{sr25519, Pair, Public};
+use sp_core::{sr25519, Pair, Public, crypto::Ss58Codec};
 use sc_chain_spec::{ChainSpecExtension, ChainSpecGroup};
 use sp_runtime::{
     traits::{IdentifyAccount, Verify},
@@ -8,11 +8,11 @@ use sp_runtime::{
 };
 use pontem_runtime::{
     GenesisConfig, SudoConfig, SystemConfig, BalancesConfig, WASM_BINARY, ParachainInfoConfig,
-    VestingConfig, MvmConfig, ParachainStakingConfig, InflationInfo, Range, AuthorFilterConfig,
-    AuthorMappingConfig, TreasuryConfig, TokensConfig, DemocracyConfig, PolkadotXcmConfig,
-    SchedulerConfig,
+    VestingConfig, MvmConfig, TransactionPauseConfig, ParachainStakingConfig, InflationInfo,
+    Range, AuthorFilterConfig, AuthorMappingConfig, TreasuryConfig, TokensConfig,
+    DemocracyConfig, PolkadotXcmConfig, SchedulerConfig,
 };
-use primitives::{currency::CurrencyId, AccountId, Signature, Balance};
+use primitives::{currency::CurrencyId, AccountId, Signature, Balance, BlockNumber};
 use constants::SS58_PREFIX;
 use serde::{Serialize, Deserialize};
 use serde_json::json;
@@ -58,6 +58,11 @@ where
     AccountPublic::from(get_from_seed::<TPublic>(seed)).into_account()
 }
 
+/// Generate an account ID from address.
+pub fn get_account_id_from_address(addr: &str) -> AccountId {
+    AccountId::from_ss58check(addr).unwrap()
+}
+
 fn properties() -> Option<sc_chain_spec::Properties> {
     let currency = CurrencyId::default();
 
@@ -70,17 +75,19 @@ fn properties() -> Option<sc_chain_spec::Properties> {
     .cloned()
 }
 
-pub fn development_config(id: ParaId) -> Result<ChainSpec, String> {
+/// Local development config.
+pub fn development_config() -> Result<ChainSpec, String> {
     let wasm_binary = WASM_BINARY.ok_or_else(|| "Development wasm not available".to_string())?;
+    let parachain_id = ParaId::from(2000);
 
     Ok(ChainSpec::from_genesis(
         // Name
-        "Development",
+        "Pontem Development",
         // ID
-        "dev",
+        "pontem_dev",
         ChainType::Local,
         move || {
-            testnet_genesis(
+            genesis(
                 wasm_binary,
                 // Sudo account
                 get_account_id_from_seed::<sr25519::Public>("Alice"),
@@ -94,12 +101,34 @@ pub fn development_config(id: ParaId) -> Result<ChainSpec, String> {
                 vec![],
                 // Pre-funded accounts
                 vec![
-                    get_account_id_from_seed::<sr25519::Public>("Alice"),
-                    get_account_id_from_seed::<sr25519::Public>("Bob"),
-                    get_account_id_from_seed::<sr25519::Public>("Alice//stash"),
-                    get_account_id_from_seed::<sr25519::Public>("Bob//stash"),
+                    (
+                        get_account_id_from_seed::<sr25519::Public>("Alice"),
+                        CurrencyId::NATIVE * 100_000,
+                    ),
+                    (
+                        get_account_id_from_seed::<sr25519::Public>("Bob"),
+                        CurrencyId::NATIVE * 100_000,
+                    ),
+                    (
+                        get_account_id_from_seed::<sr25519::Public>("Alice//stash"),
+                        CurrencyId::NATIVE * 100_000,
+                    ),
+                    (
+                        get_account_id_from_seed::<sr25519::Public>("Bob//stash"),
+                        CurrencyId::NATIVE * 100_000,
+                    ),
                 ],
-                id,
+                // Vesting
+                vec![(
+                    get_account_id_from_seed::<sr25519::Public>("Bob"),
+                    1000,
+                    150,
+                    CurrencyId::NATIVE * 50_000,
+                )],
+                // Paused extrinsics
+                vec![],
+                // Parachain id
+                parachain_id,
             )
         },
         // Bootnodes
@@ -112,23 +141,25 @@ pub fn development_config(id: ParaId) -> Result<ChainSpec, String> {
         properties(),
         // Extensions
         Extensions {
-            relay_chain: "westend-local".into(),
-            para_id: id.into(),
+            relay_chain: "dev-service".into(),
+            para_id: parachain_id.into(),
         },
     ))
 }
 
-pub fn local_testnet_config(id: ParaId) -> Result<ChainSpec, String> {
-    let wasm_binary = WASM_BINARY.ok_or_else(|| "Development wasm not available".to_string())?;
+/// Local testnet configuration.
+pub fn local_testnet_config() -> Result<ChainSpec, String> {
+    let wasm_binary = WASM_BINARY.ok_or_else(|| "Testnet wasm not available".to_string())?;
+    let parachain_id = ParaId::from(2000);
 
     Ok(ChainSpec::from_genesis(
         // Name
-        "Local Testnet",
+        "Pontem Testnet",
         // ID
-        "local_testnet",
+        "pontem_testnet",
         ChainType::Local,
         move || {
-            testnet_genesis(
+            genesis(
                 wasm_binary,
                 // Sudo account
                 get_account_id_from_seed::<sr25519::Public>("Alice"),
@@ -142,20 +173,50 @@ pub fn local_testnet_config(id: ParaId) -> Result<ChainSpec, String> {
                 vec![],
                 // Pre-funded accounts
                 vec![
-                    get_account_id_from_seed::<sr25519::Public>("Alice"),
-                    get_account_id_from_seed::<sr25519::Public>("Bob"),
-                    get_account_id_from_seed::<sr25519::Public>("Charlie"),
-                    get_account_id_from_seed::<sr25519::Public>("Dave"),
-                    get_account_id_from_seed::<sr25519::Public>("Eve"),
-                    get_account_id_from_seed::<sr25519::Public>("Ferdie"),
-                    get_account_id_from_seed::<sr25519::Public>("Alice//stash"),
-                    get_account_id_from_seed::<sr25519::Public>("Bob//stash"),
-                    get_account_id_from_seed::<sr25519::Public>("Charlie//stash"),
-                    get_account_id_from_seed::<sr25519::Public>("Dave//stash"),
-                    get_account_id_from_seed::<sr25519::Public>("Eve//stash"),
-                    get_account_id_from_seed::<sr25519::Public>("Ferdie//stash"),
+                    (
+                        get_account_id_from_seed::<sr25519::Public>("Alice"),
+                        CurrencyId::NATIVE * 100_000,
+                    ),
+                    (
+                        get_account_id_from_seed::<sr25519::Public>("Bob"),
+                        CurrencyId::NATIVE * 100_000,
+                    ),
+                    (
+                        get_account_id_from_seed::<sr25519::Public>("Charlie"),
+                        CurrencyId::NATIVE * 100_000,
+                    ),
+                    (
+                        get_account_id_from_seed::<sr25519::Public>("Dave"),
+                        CurrencyId::NATIVE * 100_000,
+                    ),
+                    (
+                        get_account_id_from_seed::<sr25519::Public>("Eve"),
+                        CurrencyId::NATIVE * 100_000,
+                    ),
+                    (
+                        get_account_id_from_seed::<sr25519::Public>("Ferdie"),
+                        CurrencyId::NATIVE * 100_000,
+                    ),
                 ],
-                id,
+                // Vesting accounts
+                vec![
+                    (
+                        get_account_id_from_seed::<sr25519::Public>("Bob"),
+                        1000,
+                        150,
+                        CurrencyId::NATIVE * 50_000,
+                    ),
+                    (
+                        get_account_id_from_seed::<sr25519::Public>("Charlie"),
+                        1000,
+                        150,
+                        CurrencyId::NATIVE * 50_000,
+                    ),
+                ],
+                // Paused extrinsics
+                vec![],
+                // Parachain ID
+                parachain_id,
             )
         },
         // Bootnodes
@@ -163,27 +224,81 @@ pub fn local_testnet_config(id: ParaId) -> Result<ChainSpec, String> {
         // Telemetry
         None,
         // Protocol ID
-        None,
+        Some("pontem_testnet"),
         // Properties
         properties(),
         // Extensions
         Extensions {
             relay_chain: "westend-local".into(),
-            para_id: id.into(),
+            para_id: parachain_id.into(),
+        },
+    ))
+}
+
+/// NOX (Kusama) config.
+/// TODO: it's still missing bootnodes, accounts, etc.
+pub fn nox_config() -> Result<ChainSpec, String> {
+    let wasm_binary = WASM_BINARY.ok_or_else(|| "Live wasm not available".to_string())?;
+    let parachain_id = ParaId::from(constants::PARACHAIN_ID);
+
+    Ok(ChainSpec::from_genesis(
+        // Name
+        "Nox Mainnet",
+        // ID
+        "nox_mainnet",
+        ChainType::Live,
+        move || {
+            genesis(
+                wasm_binary,
+                // Sudo account
+                get_account_id_from_address("gkPQdcMrECsnUbVnCqTUuTaS9o72LM179rmRu3hzkC5zovUgB"),
+                // Candidates
+                vec![],
+                // Nominators
+                vec![],
+                // Pre-funded accounts
+                vec![],
+                // Vesting accounts
+                vec![],
+                // Paused extrinsics
+                vec![],
+                // Parachain ID
+                parachain_id,
+            )
+        },
+        // Bootnodes
+        vec![],
+        // Telemetry
+        None,
+        // Protocol ID
+        Some("nox_mainnet"),
+        // Properties
+        properties(),
+        // Extensions
+        Extensions {
+            relay_chain: "kusama".into(),
+            para_id: parachain_id.into(),
         },
     ))
 }
 
 /// Configure initial storage state for FRAME modules.
-fn testnet_genesis(
+fn genesis(
     wasm_binary: &[u8],
     root_key: AccountId,
     candidates: Vec<(AccountId, NimbusId, Balance)>,
     nominations: Vec<(AccountId, AccountId, Balance)>,
-    endowed_accounts: Vec<AccountId>,
+    balances: Vec<(AccountId, Balance)>,
+    vesting: Vec<(AccountId, BlockNumber, BlockNumber, Balance)>,
+    paused: Vec<(Vec<u8>, Vec<u8>)>,
     id: ParaId,
 ) -> GenesisConfig {
     let (init_module, init_func, init_args) = build_vm_config();
+
+    let move_stdlib =
+        include_bytes!("../move/move-stdlib/build/MoveStdlib/bundles/MoveStdlib.pac").to_vec();
+    let pont_framework =
+        include_bytes!("../move/pont-stdlib/build/PontStdlib/bundles/PontStdlib.pac").to_vec();
 
     GenesisConfig {
         tokens: TokensConfig { balances: vec![] },
@@ -192,12 +307,8 @@ fn testnet_genesis(
             code: wasm_binary.to_vec(),
         },
         balances: BalancesConfig {
-            // Configure endowed accounts with initial balance of 1000 PONT.
-            balances: endowed_accounts
-                .iter()
-                .cloned()
-                .map(|k| (k, CurrencyId::NATIVE * 100_000))
-                .collect(),
+            // Configure endowed accounts with initial balance of 1000 tokens.
+            balances,
         },
         parachain_system: Default::default(),
         polkadot_xcm: PolkadotXcmConfig {
@@ -228,20 +339,18 @@ fn testnet_genesis(
                 .collect(),
         },
         mvm: MvmConfig {
-            stdlib: include_bytes!("../move/stdlib/artifacts/bundles/move-stdlib.pac").to_vec(),
+            move_stdlib,
+            pont_framework,
             init_module,
             init_func,
             init_args,
             ..Default::default()
         },
-        vesting: VestingConfig {
-            // Move 10 PONT under vesting for each account since block 100 and till block 1000.
-            vesting: endowed_accounts
-                .iter()
-                .cloned()
-                .map(|k| (k, 100, 1000, CurrencyId::NATIVE * 90_000)) // K - address, 100 - when vesting starts, 1000 - how much blocks for vesting, 10 * PONT - free balance.
-                .collect(),
+        transaction_pause: TransactionPauseConfig {
+            paused,
+            ..Default::default()
         },
+        vesting: VestingConfig { vesting },
         treasury: TreasuryConfig {},
         democracy: DemocracyConfig::default(),
         scheduler: SchedulerConfig {},
@@ -250,13 +359,13 @@ fn testnet_genesis(
 
 // Pontem inflation.
 pub fn pontem_inflation_config() -> InflationInfo<Balance> {
-    // Let's say we have 100M PONT coins.
+    // Let's say we have 100M total supply coins.
     InflationInfo {
-        // How much staked PONTs we expect.
+        // How much staked coins we expect.
         expect: Range {
-            min: CurrencyId::NATIVE * 10_000_000, // We expect to have staked at least 10M PONT coins.
-            ideal: CurrencyId::NATIVE * 20_000_000, // We expect to have staked ideal 20M PONT coins.
-            max: CurrencyId::NATIVE * 50_000_000, // We expect to have staked maximum 50M PONT coins.
+            min: CurrencyId::NATIVE * 10_000_000, // We expect to have staked at least 10M coins.
+            ideal: CurrencyId::NATIVE * 20_000_000, // We expect to have staked ideal 20M coins.
+            max: CurrencyId::NATIVE * 50_000_000, // We expect to have staked maximum 50M coins.
         },
         annual: Range {
             min: Perbill::from_percent(4),   // We expect minimum inflation is 4%.

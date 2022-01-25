@@ -108,7 +108,7 @@ test-log = "0.2.8"
 [dependencies.move-vm]
 package = "mvm"
 git = "https://github.com/pontem-network/sp-move-vm.git"
-rev = "4b021cee4debfe69bf152bbc6b5e35159dacd827"
+rev = "7bf0921ea4c61a2e6d86c1bbfc9c1a2d6fbac051"
 default-features = false
 features = [ "move_stdlib" ]
 

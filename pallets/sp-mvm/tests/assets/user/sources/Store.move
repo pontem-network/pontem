@@ -1,5 +1,4 @@
-address {{sender}} {
-module Store {
+module UserTests::Store {
     struct U64 has key { val: u64 }
 
     struct U128 has key { val: u128 }
@@ -27,5 +26,4 @@ module Store {
         let vec = VectorU8 { val: val };
         move_to<VectorU8>(account, vec);
     }
-}
 }

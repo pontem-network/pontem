@@ -1,0 +1,22 @@
+[package]
+name = "benchmark_assets"
+version = "0.0.1"
+authors = []
+dialect = "Pont"
+dove_version = ">=1.5.5"
+
+[addresses]
+BenchmarksAccount = "0xd861ea1ebf4800d4b89f4ff787ad79ee96d9a708c85b57da7eb8f9ddeda61291"
+Benchmarks = "0x1"
+Std = "0x1"
+PontemFramework = "0x1"
+Alice = "gkQ5K6EnLRgZkwozG8GiBAEnJyM6FxzbSaSmVhKJ2w8FcK7ih"
+Bob = "gkNW9pAcCHxZrnoVkhLkEQtsLsW5NWTC75cdAdxAMs9LNYCYg"
+
+[dependencies.PontStdlib]
+git = "https://github.com/pontem-network/pont-stdlib.git"
+rev = "d92b21e558e059a64808fe44eee98d91c194105b"
+
+[dependencies.MoveStdlib]
+git = "https://github.com/pontem-network/move-stdlib.git"
+rev = "12c5488729b8377b90f247537459f16ef1383d43"

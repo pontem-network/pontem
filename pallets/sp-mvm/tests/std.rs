@@ -3,6 +3,8 @@ use move_core_types::identifier::Identifier;
 use move_core_types::language_storage::StructTag;
 use move_core_types::language_storage::TypeTag;
 use sp_mvm::Event;
+use frame_support::assert_err_ignore_postinfo;
+use frame_support::dispatch::DispatchError;
 
 mod common;
 use common::assets::{modules, transactions, ROOT_PACKAGE, USER_PACKAGE};
@@ -51,6 +53,25 @@ fn execute_script() {
 
         // iterate through array of `EventRecord`s
         assert!(Sys::events().iter().any(|rec| { rec.event == expected }))
+    });
+}
+
+#[test]
+/// Check the pallet doesn't allow scripts contains root signers.
+fn execute_script_as_root() {
+    new_test_ext().execute_with(|| {
+        let origin = origin_ps_acc();
+
+        let result = utils::execute_tx(origin, &transactions::AS_ROOT, None);
+
+        assert_err_ignore_postinfo!(
+            result,
+            DispatchError::Module {
+                index: 6,
+                error: 6,
+                message: Some("TransactionIsNotAllowedError")
+            }
+        );
     });
 }
 
