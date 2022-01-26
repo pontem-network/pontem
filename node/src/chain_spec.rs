@@ -75,6 +75,70 @@ fn properties() -> Option<sc_chain_spec::Properties> {
     .cloned()
 }
 
+/// The list of paused extrinsics (mostly used for Nox mainnet).
+fn paused_extrinsics() -> Vec<(Vec<u8>, Vec<u8>)> {
+    vec![
+        (
+            "Balances",
+            vec!["transfer", "transfer_all", "transfer_keep_alive"],
+        ),
+        ("Currencies", vec!["transfer", "transfer_native_currency"]),
+        (
+            "Vesting",
+            vec!["merge_schedules", "vest", "vest_other", "vested_transfer"],
+        ),
+        (
+            "Xtokens",
+            vec![
+                "transfer",
+                "transfer_multiasset",
+                "transfer_multiasset_with_fee",
+                "transfer_with_fee",
+            ],
+        ),
+        (
+            "PolkadotXcm",
+            vec![
+                "execute",
+                "limited_reserve_transfer_assets",
+                "limited_teleport_assets",
+                "reserve_transfer_assets",
+                "send",
+                "teleport_assets",
+            ],
+        ),
+        ("ParachainStaking", vec!["join_candidates", "nominate"]),
+        ("Treasury", vec!["propose_spend"]),
+        ("Mvm", vec!["execute", "publish_module", "publish_package"]),
+        (
+            "MultiSig",
+            vec![
+                "approve_as_multi",
+                "as_multi",
+                "as_multi_threshold_1",
+                "cancel_as_multi",
+            ],
+        ),
+        ("Groupsign", vec!["groupsign_call"]),
+        (
+            "Democracy",
+            vec!["propose", "note_preimage", "note_imminent_preimage"],
+        ),
+        (
+            "AuthorMapping",
+            vec!["add_association", "clear_association", "update_association"],
+        ),
+    ]
+    .iter()
+    .flat_map(|i| {
+        let pallet_name = i.0.as_bytes().to_vec();
+        i.1.iter()
+            .map(|ex_name| (pallet_name.clone(), ex_name.as_bytes().to_vec()))
+            .collect::<Vec<(Vec<u8>, Vec<u8>)>>()
+    })
+    .collect()
+}
+
 /// Local development config.
 pub fn development_config() -> Result<ChainSpec, String> {
     let wasm_binary = WASM_BINARY.ok_or_else(|| "Development wasm not available".to_string())?;
@@ -235,6 +299,52 @@ pub fn local_testnet_config() -> Result<ChainSpec, String> {
     ))
 }
 
+/// Rococo configuration.
+pub fn rococo_config() -> Result<ChainSpec, String> {
+    let wasm_binary = WASM_BINARY.ok_or_else(|| "Live wasm not available".to_string())?;
+    let parachain_id = ParaId::from(2018);
+
+    Ok(ChainSpec::from_genesis(
+        // Name
+        "Nox Rococo",
+        // ID
+        "nox_rococo",
+        ChainType::Live,
+        move || {
+            genesis(
+                wasm_binary,
+                // Sudo account
+                get_account_id_from_address("gkPQdcMrECsnUbVnCqTUuTaS9o72LM179rmRu3hzkC5zovUgB"),
+                // Candidates
+                vec![],
+                // Nominators
+                vec![],
+                // Pre-funded accounts
+                vec![],
+                // Vesting accounts
+                vec![],
+                // Paused extrinsics
+                paused_extrinsics(),
+                // Parachain ID
+                parachain_id,
+            )
+        },
+        // Bootnodes
+        vec![],
+        // Telemetry
+        None,
+        // Protocol ID
+        Some("nox_rococo"),
+        // Properties
+        properties(),
+        // Extensions
+        Extensions {
+            relay_chain: "rococo".into(),
+            para_id: parachain_id.into(),
+        },
+    ))
+}
+
 /// NOX (Kusama) config.
 /// TODO: it's still missing bootnodes, accounts, etc.
 pub fn nox_config() -> Result<ChainSpec, String> {
@@ -261,7 +371,7 @@ pub fn nox_config() -> Result<ChainSpec, String> {
                 // Vesting accounts
                 vec![],
                 // Paused extrinsics
-                vec![],
+                paused_extrinsics(),
                 // Parachain ID
                 parachain_id,
             )
