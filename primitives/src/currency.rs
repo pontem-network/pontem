@@ -46,13 +46,20 @@ const fn const_slice_eq(a: &[u8], b: &[u8]) -> bool {
     true
 }
 
+macro_rules! static_assert {
+    ($cond:expr) => {
+        #[deny(const_err)]
+        const _: [(); 1] = [(); $cond as usize];
+    };
+}
+
 macro_rules! def_currencies {
     (
         $(#[$ty_attr:meta])*
         $vis:vis enum $ty_name:ident {
             $(
                 $(#[$attr:meta])*
-                $name:ident($str:expr, $decimals:expr)
+                $name:ident($str:literal, $decimals:expr)
             ),*
             $(,)?
         }
@@ -113,16 +120,39 @@ macro_rules! def_currencies {
             }
         }
 
-        // $(static_assert!(const_slice_eq(stringify!($name).as_bytes(), $str));)*
+        /// This PartialEq impl needed to compare enum constructor-pattern with in-enum constant. E.g.:
+        /// ```
+        /// use primitives::currency::CurrencyId;
+        /// let ref currency_id = CurrencyId::KSM;
+        /// match currency_id {
+        ///     &CurrencyId::NATIVE => {},
+        ///     CurrencyId::KSM  => {}
+        /// }
+        /// ```
+        /// Anyway it can be omitted with de-reference (imp-copy) the instance:
+        /// ```
+        /// use primitives::currency::CurrencyId;
+        /// let ref currency_id = CurrencyId::KSM;
+        /// match *currency_id {
+        ///     CurrencyId::NATIVE => {},
+        ///     CurrencyId::KSM  => {}
+        /// }
+        /// ```
+        impl core::cmp::PartialEq<$ty_name> for &'_ $ty_name {
+            fn eq(&self, other: &$ty_name) -> bool {
+                &other == *self
+            }
+        }
+
+        $(static_assert!(const_slice_eq(stringify!($name).as_bytes(), $str));)*
     };
 }
 
-#[cfg(not(feature = "pont"))]
-pub const NATIVE_SYM: &'static [u8] = b"NOX";
-#[cfg(feature = "pont")]
-pub const NATIVE_SYM: &'static [u8] = b"PONT";
-#[cfg(feature = "std")]
-pub const NATIVE_SYM_S: &'static str = unsafe { std::str::from_utf8_unchecked(NATIVE_SYM) };
+#[rustfmt::skip]
+pub const NATIVE_SYM: &'static [u8] = {
+    #[cfg(not(feature = "pont"))] { b"NOX" }
+    #[cfg(feature = "pont")] { b"PONT" }
+};
 
 #[cfg(not(feature = "pont"))]
 def_currencies! {
@@ -220,15 +250,16 @@ mod tests {
     #[test]
     /// Test currencies symbols.
     fn symbols() {
-        assert_eq!(CurrencyId::NATIVE.symbol(), NATIVE_SYM);
         assert_eq!(CurrencyId::KSM.symbol(), b"KSM");
+        assert_eq!(CurrencyId::NATIVE.symbol(), CurrencyId::native().symbol());
+        assert_eq!(CurrencyId::NATIVE.symbol(), NATIVE_SYM);
     }
 
     #[test]
     /// Test try from Vec<u8>.
     fn try_from_vec() {
         assert_eq!(
-            CurrencyId::try_from(b"NOX".to_vec()).unwrap(),
+            CurrencyId::try_from(NATIVE_SYM.to_vec()).unwrap(),
             CurrencyId::NATIVE
         );
         assert_eq!(
@@ -242,7 +273,7 @@ mod tests {
     /// Test try from &[u8].
     fn try_from_slice() {
         assert_eq!(
-            CurrencyId::try_from(b"NOX".as_ref()).unwrap(),
+            CurrencyId::try_from(NATIVE_SYM.as_ref()).unwrap(),
             CurrencyId::NATIVE
         );
         assert_eq!(
