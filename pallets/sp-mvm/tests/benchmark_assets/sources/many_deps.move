@@ -2,7 +2,7 @@ module BenchmarksAccount::StdImport {
     use PontemFramework::PontBlock;
     use Std::Event;
     use Std::FixedPoint32::FixedPoint32;
-    use PontemFramework::PONT::PONT;
+    use PontemFramework::NOX::NOX;
     use Std::Signer;
     use PontemFramework::PontTimestamp;
     use Std::Vector;
@@ -13,10 +13,10 @@ module BenchmarksAccount::StdImport {
         t: PontAccount,
         b: PontBlock::BlockMetadata,
         f: FixedPoint32,
-        p: PONT,
+        p: NOX,
         tm: PontTimestamp::CurrentTimeMicroseconds,
         u8_vec: vector<u8>,
-        al: Token::MintCapability<PONT>,
+        al: Token::MintCapability<NOX>,
     }
 
     struct R {}

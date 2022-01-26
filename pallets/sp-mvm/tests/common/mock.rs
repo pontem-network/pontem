@@ -207,7 +207,7 @@ impl orml_tokens::Config for Test {
 }
 
 parameter_types! {
-    pub const GetNativeCurrencyId: CurrencyId = CurrencyId::PONT;
+    pub const GetNativeCurrencyId: CurrencyId = CurrencyId::NATIVE;
 }
 impl module_currencies::Config for Test {
     type Event = Event;
@@ -222,7 +222,7 @@ impl module_currencies::Config for Test {
 
 // ----------------- //
 parameter_types! {
-    pub const MVMPalletId: PalletId = PalletId(*b"pont/mvm");
+    pub const MVMPalletId: PalletId = PalletId(*b"_nox/mvm");
 }
 impl sp_mvm::Config for Test {
     type Event = Event;

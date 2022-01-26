@@ -316,7 +316,7 @@ mod adapter {
         new_test_ext().execute_with(|| {
             let origin = origin_ps_acc();
             let account = to_move_addr(origin.clone());
-            let currency = CurrencyId::PONT;
+            let currency = CurrencyId::NATIVE;
             let expected = balances::Pallet::<Test>::free_balance(&origin);
 
             let value = adapter.get_balance(&account, currency.symbol().as_ref());
@@ -351,7 +351,7 @@ mod adapter {
             let origin = origin_ps_acc();
             let account = to_move_addr(origin.clone());
             let initial_balance = balances::Pallet::<Test>::free_balance(&origin);
-            let currency = CurrencyId::PONT;
+            let currency = CurrencyId::NATIVE;
 
             let expected_balance = initial_balance / 2;
 
@@ -393,7 +393,7 @@ mod adapter {
             let account = to_move_addr(origin.clone());
             let pallet_account = sp_mvm::Pallet::<Test>::get_account_id();
             let initial_balance = balances::Pallet::<Test>::free_balance(&origin);
-            let currency = CurrencyId::PONT;
+            let currency = CurrencyId::NATIVE;
 
             let _ = balances::Pallet::<Test>::deposit_creating(&pallet_account, initial_balance);
 

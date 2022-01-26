@@ -10,7 +10,7 @@ popd
 rm -rf ./pont-stdlib
 git clone https://github.com/pontem-network/pont-stdlib.git ./pont-stdlib
 pushd ./pont-stdlib
-git checkout d92b21e558e059a64808fe44eee98d91c194105b
+git checkout 1f094231de16cad54f2303093a7f866474bccd12
 dove build -b
 popd
 

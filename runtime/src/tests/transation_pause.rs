@@ -19,7 +19,7 @@ fn transaction_pause_balance() {
     RuntimeBuilder::new()
         .set_balances(vec![(
             Accounts::ALICE.account(),
-            CurrencyId::PONT,
+            CurrencyId::NATIVE,
             initial_balance,
         )])
         .build()
@@ -132,7 +132,7 @@ fn transaction_pause_genesis() {
     RuntimeBuilder::new()
         .set_balances(vec![(
             Accounts::ALICE.account(),
-            CurrencyId::PONT,
+            CurrencyId::NATIVE,
             initial_balance,
         )])
         .set_paused(vec![

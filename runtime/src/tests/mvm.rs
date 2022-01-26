@@ -45,7 +45,7 @@ fn transfer_balance_to_bank() {
     RuntimeBuilder::new()
         .set_balances(vec![(
             Accounts::BOB.account(),
-            CurrencyId::PONT,
+            CurrencyId::NATIVE,
             initial_balance,
         )])
         .build()
@@ -133,12 +133,12 @@ fn transfer_vested_balance_fails() {
     let currency_id = GetNativeCurrencyId::get();
 
     const GAS_LIMIT: u64 = 1_000_000;
-    let initial_balance = to_unit(100, CurrencyId::PONT);
+    let initial_balance = to_unit(100, CurrencyId::NATIVE);
     let start_vesting = 10;
     let duration: u32 = 100;
 
     // We reduce free balance till 40 PONT, so sending 50 PONT should return error.
-    let free_balance = to_unit(40, CurrencyId::PONT);
+    let free_balance = to_unit(40, CurrencyId::NATIVE);
 
     RuntimeBuilder::new()
         .set_balances(vec![(

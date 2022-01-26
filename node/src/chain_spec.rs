@@ -75,6 +75,70 @@ fn properties() -> Option<sc_chain_spec::Properties> {
     .cloned()
 }
 
+/// The list of paused extrinsics (mostly used for Nox mainnet).
+fn paused_extrinsics() -> Vec<(Vec<u8>, Vec<u8>)> {
+    vec![
+        (
+            "Balances",
+            vec!["transfer", "transfer_all", "transfer_keep_alive"],
+        ),
+        ("Currencies", vec!["transfer", "transfer_native_currency"]),
+        (
+            "Vesting",
+            vec!["merge_schedules", "vest", "vest_other", "vested_transfer"],
+        ),
+        (
+            "Xtokens",
+            vec![
+                "transfer",
+                "transfer_multiasset",
+                "transfer_multiasset_with_fee",
+                "transfer_with_fee",
+            ],
+        ),
+        (
+            "PolkadotXcm",
+            vec![
+                "execute",
+                "limited_reserve_transfer_assets",
+                "limited_teleport_assets",
+                "reserve_transfer_assets",
+                "send",
+                "teleport_assets",
+            ],
+        ),
+        ("ParachainStaking", vec!["join_candidates", "nominate"]),
+        ("Treasury", vec!["propose_spend"]),
+        ("Mvm", vec!["execute", "publish_module", "publish_package"]),
+        (
+            "MultiSig",
+            vec![
+                "approve_as_multi",
+                "as_multi",
+                "as_multi_threshold_1",
+                "cancel_as_multi",
+            ],
+        ),
+        ("Groupsign", vec!["groupsign_call"]),
+        (
+            "Democracy",
+            vec!["propose", "note_preimage", "note_imminent_preimage"],
+        ),
+        (
+            "AuthorMapping",
+            vec!["add_association", "clear_association", "update_association"],
+        ),
+    ]
+    .iter()
+    .flat_map(|i| {
+        let pallet_name = i.0.as_bytes().to_vec();
+        i.1.iter()
+            .map(|ex_name| (pallet_name.clone(), ex_name.as_bytes().to_vec()))
+            .collect::<Vec<(Vec<u8>, Vec<u8>)>>()
+    })
+    .collect()
+}
+
 /// Local development config.
 pub fn development_config() -> Result<ChainSpec, String> {
     let wasm_binary = WASM_BINARY.ok_or_else(|| "Development wasm not available".to_string())?;
@@ -95,7 +159,7 @@ pub fn development_config() -> Result<ChainSpec, String> {
                 vec![(
                     get_account_id_from_seed::<sr25519::Public>("Alice"),
                     get_from_seed::<NimbusId>("Alice"),
-                    CurrencyId::PONT * 10_000,
+                    CurrencyId::NATIVE * 10_000,
                 )],
                 // Nominators
                 vec![],
@@ -103,19 +167,19 @@ pub fn development_config() -> Result<ChainSpec, String> {
                 vec![
                     (
                         get_account_id_from_seed::<sr25519::Public>("Alice"),
-                        CurrencyId::PONT * 100_000,
+                        CurrencyId::NATIVE * 100_000,
                     ),
                     (
                         get_account_id_from_seed::<sr25519::Public>("Bob"),
-                        CurrencyId::PONT * 100_000,
+                        CurrencyId::NATIVE * 100_000,
                     ),
                     (
                         get_account_id_from_seed::<sr25519::Public>("Alice//stash"),
-                        CurrencyId::PONT * 100_000,
+                        CurrencyId::NATIVE * 100_000,
                     ),
                     (
                         get_account_id_from_seed::<sr25519::Public>("Bob//stash"),
-                        CurrencyId::PONT * 100_000,
+                        CurrencyId::NATIVE * 100_000,
                     ),
                 ],
                 // Vesting
@@ -123,7 +187,7 @@ pub fn development_config() -> Result<ChainSpec, String> {
                     get_account_id_from_seed::<sr25519::Public>("Bob"),
                     1000,
                     150,
-                    CurrencyId::PONT * 50_000,
+                    CurrencyId::NATIVE * 50_000,
                 )],
                 // Paused extrinsics
                 vec![],
@@ -167,7 +231,7 @@ pub fn local_testnet_config() -> Result<ChainSpec, String> {
                 vec![(
                     get_account_id_from_seed::<sr25519::Public>("Alice"),
                     get_from_seed::<NimbusId>("Alice"),
-                    CurrencyId::PONT * 10_000,
+                    CurrencyId::NATIVE * 10_000,
                 )],
                 // Nominators
                 vec![],
@@ -175,27 +239,27 @@ pub fn local_testnet_config() -> Result<ChainSpec, String> {
                 vec![
                     (
                         get_account_id_from_seed::<sr25519::Public>("Alice"),
-                        CurrencyId::PONT * 100_000,
+                        CurrencyId::NATIVE * 100_000,
                     ),
                     (
                         get_account_id_from_seed::<sr25519::Public>("Bob"),
-                        CurrencyId::PONT * 100_000,
+                        CurrencyId::NATIVE * 100_000,
                     ),
                     (
                         get_account_id_from_seed::<sr25519::Public>("Charlie"),
-                        CurrencyId::PONT * 100_000,
+                        CurrencyId::NATIVE * 100_000,
                     ),
                     (
                         get_account_id_from_seed::<sr25519::Public>("Dave"),
-                        CurrencyId::PONT * 100_000,
+                        CurrencyId::NATIVE * 100_000,
                     ),
                     (
                         get_account_id_from_seed::<sr25519::Public>("Eve"),
-                        CurrencyId::PONT * 100_000,
+                        CurrencyId::NATIVE * 100_000,
                     ),
                     (
                         get_account_id_from_seed::<sr25519::Public>("Ferdie"),
-                        CurrencyId::PONT * 100_000,
+                        CurrencyId::NATIVE * 100_000,
                     ),
                 ],
                 // Vesting accounts
@@ -204,13 +268,13 @@ pub fn local_testnet_config() -> Result<ChainSpec, String> {
                         get_account_id_from_seed::<sr25519::Public>("Bob"),
                         1000,
                         150,
-                        CurrencyId::PONT * 50_000,
+                        CurrencyId::NATIVE * 50_000,
                     ),
                     (
                         get_account_id_from_seed::<sr25519::Public>("Charlie"),
                         1000,
                         150,
-                        CurrencyId::PONT * 50_000,
+                        CurrencyId::NATIVE * 50_000,
                     ),
                 ],
                 // Paused extrinsics
@@ -230,6 +294,52 @@ pub fn local_testnet_config() -> Result<ChainSpec, String> {
         // Extensions
         Extensions {
             relay_chain: "westend-local".into(),
+            para_id: parachain_id.into(),
+        },
+    ))
+}
+
+/// Rococo configuration.
+pub fn rococo_config() -> Result<ChainSpec, String> {
+    let wasm_binary = WASM_BINARY.ok_or_else(|| "Live wasm not available".to_string())?;
+    let parachain_id = ParaId::from(2018);
+
+    Ok(ChainSpec::from_genesis(
+        // Name
+        "Nox Rococo",
+        // ID
+        "nox_rococo",
+        ChainType::Live,
+        move || {
+            genesis(
+                wasm_binary,
+                // Sudo account
+                get_account_id_from_address("gkPQdcMrECsnUbVnCqTUuTaS9o72LM179rmRu3hzkC5zovUgB"),
+                // Candidates
+                vec![],
+                // Nominators
+                vec![],
+                // Pre-funded accounts
+                vec![],
+                // Vesting accounts
+                vec![],
+                // Paused extrinsics
+                paused_extrinsics(),
+                // Parachain ID
+                parachain_id,
+            )
+        },
+        // Bootnodes
+        vec![],
+        // Telemetry
+        None,
+        // Protocol ID
+        Some("nox_rococo"),
+        // Properties
+        properties(),
+        // Extensions
+        Extensions {
+            relay_chain: "rococo".into(),
             para_id: parachain_id.into(),
         },
     ))
@@ -261,7 +371,7 @@ pub fn nox_config() -> Result<ChainSpec, String> {
                 // Vesting accounts
                 vec![],
                 // Paused extrinsics
-                vec![],
+                paused_extrinsics(),
                 // Parachain ID
                 parachain_id,
             )
@@ -307,7 +417,7 @@ fn genesis(
             code: wasm_binary.to_vec(),
         },
         balances: BalancesConfig {
-            // Configure endowed accounts with initial balance of 1000 PONT.
+            // Configure endowed accounts with initial balance of 1000 tokens.
             balances,
         },
         parachain_system: Default::default(),
@@ -359,13 +469,13 @@ fn genesis(
 
 // Pontem inflation.
 pub fn pontem_inflation_config() -> InflationInfo<Balance> {
-    // Let's say we have 100M PONT coins.
+    // Let's say we have 100M total supply coins.
     InflationInfo {
-        // How much staked PONTs we expect.
+        // How much staked coins we expect.
         expect: Range {
-            min: CurrencyId::PONT * 10_000_000, // We expect to have staked at least 10M PONT coins.
-            ideal: CurrencyId::PONT * 20_000_000, // We expect to have staked ideal 20M PONT coins.
-            max: CurrencyId::PONT * 50_000_000, // We expect to have staked maximum 50M PONT coins.
+            min: CurrencyId::NATIVE * 10_000_000, // We expect to have staked at least 10M coins.
+            ideal: CurrencyId::NATIVE * 20_000_000, // We expect to have staked ideal 20M coins.
+            max: CurrencyId::NATIVE * 50_000_000, // We expect to have staked maximum 50M coins.
         },
         annual: Range {
             min: Perbill::from_percent(4),   // We expect minimum inflation is 4%.

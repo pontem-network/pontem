@@ -16,7 +16,7 @@ fn main() {
 
     fetch(FetchConfig {
         git_repo: "https://github.com/pontem-network/pont-stdlib.git",
-        rev: Some("d92b21e558e059a64808fe44eee98d91c194105b"),
+        rev: Some("1f094231de16cad54f2303093a7f866474bccd12"),
         path_to_clone: "./move/pont-stdlib",
         build_with_dove: true,
     })
