@@ -40,7 +40,7 @@
 	"parachains": [
 		{
 			"bin": "./target/release/pontem",
-			"id": "1002",
+			"chain": "local",
 			"nodes": [
 				{
 					"wsPort": 9946,

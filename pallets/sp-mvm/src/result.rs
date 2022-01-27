@@ -353,6 +353,17 @@ impl<T: Config> From<StatusCode> for Error<T> {
                 Self::SecondaryKeysAddressesCountMismatch
             }
             StatusCode::SIGNERS_CONTAIN_DUPLICATES => Self::SignersContainDuplicates,
+            StatusCode::SEQUENCE_NONCE_INVALID => Self::SequenceNonceInvalid,
+            StatusCode::INVALID_PHANTOM_TYPE_PARAM_POSITION => {
+                Self::InvalidPhantomTypeParamPosition
+            }
+            StatusCode::VEC_UPDATE_EXISTS_MUTABLE_BORROW_ERROR => {
+                Self::VecUpdateExistsMutableBorrowError
+            }
+            StatusCode::VEC_BORROW_ELEMENT_EXISTS_MUTABLE_BORROW_ERROR => {
+                Self::VecBorrowElementExistsMutableBorrowError
+            }
+            StatusCode::DUPLICATE_NATIVE_FUNCTION => Self::DuplicateNativeFunction,
         }
     }
 }

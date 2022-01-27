@@ -8,7 +8,7 @@ use frame_support::{assert_noop, assert_ok};
 use orml_traits::MultiCurrency;
 use sp_runtime::AccountId32;
 use test_log::test;
-use primitives::currency::CurrencyId;
+use primitives::currency::{CurrencyId, NATIVE_SYM};
 
 fn para_a_account() -> AccountId32 {
     ParaId::from(2000).into_account()
@@ -93,15 +93,15 @@ fn cannot_lost_fund_on_send_failed() {
 
     ParaA::execute_with(|| {
         assert_ok!(ParaATokens::deposit(
-            CurrencyId::PONT,
+            CurrencyId::NATIVE,
             &Accounts::ALICE.account(),
-            CurrencyId::PONT * 1_000
+            CurrencyId::NATIVE * 1_000
         ));
         assert_noop!(
             ParaAXTokens::transfer(
                 Some(Accounts::ALICE.account()).into(),
-                CurrencyId::PONT,
-                CurrencyId::PONT * 500,
+                CurrencyId::NATIVE,
+                CurrencyId::NATIVE * 500,
                 Box::new(
                     MultiLocation::new(
                         1,
@@ -115,14 +115,14 @@ fn cannot_lost_fund_on_send_failed() {
                     )
                     .into()
                 ),
-                CurrencyId::PONT * 30,
+                CurrencyId::NATIVE * 30,
             ),
             Error::<crate::Runtime>::XcmExecutionFailed
         );
 
         assert_eq!(
-            ParaATokens::free_balance(CurrencyId::PONT, &Accounts::ALICE.account()),
-            CurrencyId::PONT * 1_000
+            ParaATokens::free_balance(CurrencyId::NATIVE, &Accounts::ALICE.account()),
+            CurrencyId::NATIVE * 1_000
         );
     });
 }
@@ -177,8 +177,8 @@ fn send_self_parachain_asset_to_sibling() {
     ParaA::execute_with(|| {
         assert_ok!(ParaAXTokens::transfer(
             Some(Accounts::ALICE.account()).into(),
-            CurrencyId::PONT,
-            CurrencyId::PONT * 500,
+            CurrencyId::NATIVE,
+            CurrencyId::NATIVE * 500,
             Box::new(
                 MultiLocation::new(
                     1,
@@ -203,8 +203,8 @@ fn send_self_parachain_asset_to_sibling() {
 
     ParaB::execute_with(|| {
         assert_eq!(
-            ParaBTokens::free_balance(MockCurrencyId::PONT, &Accounts::BOB.account()),
-            CurrencyId::PONT * 500 - 4
+            ParaBTokens::free_balance(MockCurrencyId::NATIVE, &Accounts::BOB.account()),
+            CurrencyId::NATIVE * 500 - 4
         );
     });
 
@@ -212,8 +212,8 @@ fn send_self_parachain_asset_to_sibling() {
     ParaB::execute_with(|| {
         assert_ok!(ParaBXTokens::transfer(
             Some(Accounts::BOB.account()).into(),
-            MockCurrencyId::PONT,
-            CurrencyId::PONT * 500 - 4,
+            MockCurrencyId::NATIVE,
+            CurrencyId::NATIVE * 500 - 4,
             Box::new(
                 MultiLocation::new(
                     1,
@@ -231,7 +231,7 @@ fn send_self_parachain_asset_to_sibling() {
         ));
 
         assert_eq!(
-            ParaBTokens::free_balance(MockCurrencyId::PONT, &Accounts::BOB.account()),
+            ParaBTokens::free_balance(MockCurrencyId::NATIVE, &Accounts::BOB.account()),
             0
         );
     });
@@ -239,7 +239,7 @@ fn send_self_parachain_asset_to_sibling() {
     ParaA::execute_with(|| {
         assert_eq!(
             ParaABalances::free_balance(&Accounts::BOB.account()),
-            CurrencyId::PONT * 500 - 8
+            CurrencyId::NATIVE * 500 - 8
         );
     });
 }
@@ -254,8 +254,8 @@ fn transfer_no_reserve_assets_fails() {
                 Some(Accounts::ALICE.account()).into(),
                 Box::new(
                     MultiAsset {
-                        id: xcm_emulator::Concrete(GeneralKey("PONT".into()).into()),
-                        fun: (CurrencyId::PONT.times(100) as u128).into(),
+                        id: xcm_emulator::Concrete(GeneralKey(NATIVE_SYM.to_vec()).into()),
+                        fun: (CurrencyId::NATIVE.times(100) as u128).into(),
                     }
                     .into()
                 ),
@@ -289,8 +289,8 @@ fn transfer_to_self_chain_fails() {
                 Some(Accounts::ALICE.account()).into(),
                 Box::new(
                     MultiAsset {
-                        id: (Parent, Parachain(2000), GeneralKey("PONT".into())).into(),
-                        fun: (CurrencyId::PONT.times(100) as u128).into(),
+                        id: (Parent, Parachain(2000), GeneralKey(NATIVE_SYM.to_vec())).into(),
+                        fun: (CurrencyId::NATIVE.times(100) as u128).into(),
                     }
                     .into()
                 ),
@@ -324,8 +324,8 @@ fn transfer_to_invalid_dest_fails() {
                 Some(Accounts::ALICE.account()).into(),
                 Box::new(
                     MultiAsset {
-                        id: (Parent, Parachain(2000), GeneralKey("PONT".into())).into(),
-                        fun: (CurrencyId::PONT.times(100) as u128).into(),
+                        id: (Parent, Parachain(2000), GeneralKey(NATIVE_SYM.to_vec())).into(),
+                        fun: (CurrencyId::NATIVE.times(100) as u128).into(),
                     }
                     .into()
                 ),

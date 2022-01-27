@@ -19,7 +19,7 @@ fn transaction_pause_balance() {
     RuntimeBuilder::new()
         .set_balances(vec![(
             Accounts::ALICE.account(),
-            CurrencyId::PONT,
+            CurrencyId::NATIVE,
             initial_balance,
         )])
         .build()
@@ -119,4 +119,94 @@ fn transaction_pause_bad_origin() {
             BadOrigin
         );
     });
+}
+
+#[test]
+/// Test if we can pause extrinsics via genesis.
+fn transaction_pause_genesis() {
+    let currency_id = GetNativeCurrencyId::get();
+
+    let initial_balance = to_unit(100, currency_id);
+    let to_transfer = initial_balance / 2;
+
+    RuntimeBuilder::new()
+        .set_balances(vec![(
+            Accounts::ALICE.account(),
+            CurrencyId::NATIVE,
+            initial_balance,
+        )])
+        .set_paused(vec![
+            (b"Balances".to_vec(), b"transfer".to_vec()),
+            (b"Mvm".to_vec(), b"execute".to_vec()),
+        ])
+        .build()
+        .execute_with(|| {
+            let mvm_call = <Runtime as frame_system::Config>::Call::Mvm(sp_mvm::Call::execute {
+                tx_bc: vec![],
+                gas_limit: 100_000,
+            });
+
+            assert!(!<Runtime as frame_system::Config>::BaseCallFilter::contains(&mvm_call));
+
+            assert_err!(
+                mvm_call
+                    .clone()
+                    .dispatch(Origin::signed(Accounts::ALICE.account())),
+                DispatchError::Module {
+                    index: 0,
+                    error: 5,
+                    message: Some("CallFiltered")
+                },
+            );
+
+            let call = <Runtime as frame_system::Config>::Call::Balances(
+                pallet_balances::Call::transfer {
+                    dest: MultiId(Accounts::BOB.account()),
+                    value: to_transfer,
+                },
+            );
+
+            assert!(!<Runtime as frame_system::Config>::BaseCallFilter::contains(&call));
+
+            assert_err!(
+                call.clone()
+                    .dispatch(Origin::signed(Accounts::ALICE.account())),
+                DispatchError::Module {
+                    index: 0,
+                    error: 5,
+                    message: Some("CallFiltered")
+                },
+            );
+
+            assert_eq!(
+                Currencies::free_balance(currency_id, &Accounts::ALICE.account()),
+                initial_balance
+            );
+
+            assert_ok!(TransactionPause::unpause_transaction(
+                Origin::root(),
+                b"Balances".to_vec(),
+                b"transfer".to_vec()
+            ));
+
+            assert_ok!(call.dispatch(Origin::signed(Accounts::ALICE.account())));
+
+            assert_eq!(
+                Currencies::free_balance(currency_id, &Accounts::ALICE.account()),
+                initial_balance - to_transfer
+            );
+            let events = System::events();
+            let mut events_iter = events.iter();
+            assert_eq!(
+                events_iter.next().unwrap(),
+                &EventRecord {
+                    phase: Phase::Initialization,
+                    event: Event::TransactionPause(PauseEvent::TransactionUnpaused(
+                        b"Balances".to_vec(),
+                        b"transfer".to_vec()
+                    )),
+                    topics: [].to_vec()
+                }
+            );
+        });
 }

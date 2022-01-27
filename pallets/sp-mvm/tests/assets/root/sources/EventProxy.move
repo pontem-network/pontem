@@ -1,6 +1,5 @@
-address {{sender}} {
-module EventProxy {
-    use 0x01::Event;
+module RootTests::EventProxy {
+    use Std::Event;
 
     struct U64 has store, drop, copy { val: u64 }
 
@@ -12,5 +11,4 @@ module EventProxy {
         );
         Event::destroy_handle(event_handle);
     }
-}
 }

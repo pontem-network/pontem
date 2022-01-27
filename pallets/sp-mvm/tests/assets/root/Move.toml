@@ -1,0 +1,17 @@
+[package]
+name = "assets"
+version = "0.0.1"
+authors = []
+dialect = "Pont"
+dove_version = ">=1.5.5"
+
+[addresses]
+RootTests = "0x1"
+
+[dependencies.PontStdlib]
+git = "https://github.com/pontem-network/pont-stdlib.git"
+rev = "release-v1.0.0"
+
+[dependencies.MoveStdlib]
+git = "https://github.com/pontem-network/move-stdlib.git"
+rev = "release-v1.0.0"
