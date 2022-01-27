@@ -221,20 +221,8 @@ pub mod pallet {
             gas_limit: u64,
         ) -> DispatchResultWithPostInfo {
             // Allows to update Standard Library if root.
-            let (sender, signer) = match T::UpdateOrigin::ensure_origin(origin.clone()) {
-                Ok(_) => {
-                    debug!("executing `publish module` with root");
-                    let signer = addr::address_to_account(&CORE_CODE_ADDRESS)
-                        .map_err(|_| Error::<T>::AccountAddressConversionError)?;
-                    (CORE_CODE_ADDRESS, signer)
-                }
-                Err(_) => {
-                    let signer = ensure_signed(origin)?;
-                    debug!("executing `publish module` with signed {:?}", signer);
-                    (addr::account_to_account_address(&signer), signer)
-                }
-            };
-            debug!("executing `publish` with signed {:?}", sender);
+            let (sender, signer) = Self::ensure_and_convert(origin.clone())?;
+            debug!("executing `publish module` with signed {:?}", sender);
 
             // Publish module.
             let vm_result = Self::raw_publish_module(&signer, module_bc, gas_limit, false)?;
@@ -265,19 +253,8 @@ pub mod pallet {
             gas_limit: u64,
         ) -> DispatchResultWithPostInfo {
             // Allows to update Standard Library if root.
-            let (sender, signer) = match T::UpdateOrigin::ensure_origin(origin.clone()) {
-                Ok(_) => {
-                    debug!("executing `publish package` with root");
-                    let signer = addr::address_to_account(&CORE_CODE_ADDRESS)
-                        .map_err(|_| Error::<T>::AccountAddressConversionError)?;
-                    (CORE_CODE_ADDRESS, signer)
-                }
-                Err(_) => {
-                    let signer = ensure_signed(origin)?;
-                    debug!("executing `publish package` with signed {:?}", signer);
-                    (addr::account_to_account_address(&signer), signer)
-                }
-            };
+            let (sender, signer) = Self::ensure_and_convert(origin.clone())?;
+            debug!("executing `publish package` with signed {:?}", sender);
 
             let vm = Self::get_vm()?;
             let gas = Self::get_move_gas_limit(gas_limit)?;
@@ -465,6 +442,24 @@ pub mod pallet {
             debug!("execution result: {:?}", res);
 
             Ok(res)
+        }
+
+        pub fn ensure_and_convert(
+            origin: OriginFor<T>,
+        ) -> Result<(AccountAddress, T::AccountId), Error<T>> {
+            // Allows to update Standard Library if root.
+            match T::UpdateOrigin::ensure_origin(origin.clone()) {
+                Ok(_) => {
+                    let signer = addr::address_to_account(&CORE_CODE_ADDRESS)
+                        .map_err(|_| Error::<T>::AccountAddressConversionError)?;
+                    Ok((CORE_CODE_ADDRESS, signer))
+                }
+                Err(_) => {
+                    let signer =
+                        ensure_signed(origin).map_err(|_| Error::<T>::InvalidSignature)?;
+                    Ok((addr::account_to_account_address(&signer), signer))
+                }
+            }
         }
 
         /// Publish Move module script with provided account, module bytecode, gas limit, and dry run configuration.
