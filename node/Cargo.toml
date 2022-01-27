@@ -105,7 +105,7 @@ constants = { path = '../constants' }
 #
 # ** Don't enable relay chains you don't need, as this is a **very** heavy build for no reason**
 # More info: https://github.com/paritytech/polkadot/pull/3189
-polkadot-cli = { git = 'http://github.com/paritytech/polkadot.git', branch = 'release-v0.9.13', features = ["rococo-native"] }
+polkadot-cli = { git = 'http://github.com/paritytech/polkadot.git', branch = 'release-v0.9.13', features = ["westend-native"] }
 
 [dependencies.move-vm]
 package = "mvm"

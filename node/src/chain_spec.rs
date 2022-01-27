@@ -1,5 +1,5 @@
 use cumulus_primitives_core::ParaId;
-use sc_service::ChainType;
+use sc_service::{ChainType, config::MultiaddrWithPeerId};
 use sp_core::{sr25519, Pair, Public, crypto::Ss58Codec};
 use sc_chain_spec::{ChainSpecExtension, ChainSpecGroup};
 use sp_runtime::{
@@ -68,6 +68,7 @@ pub fn get_account_id_from_address(addr: &str) -> AccountId {
     AccountId::from_ss58check(addr).unwrap()
 }
 
+/// The network properties.
 fn properties() -> Option<sc_chain_spec::Properties> {
     let currency = CurrencyId::default();
 
@@ -78,6 +79,16 @@ fn properties() -> Option<sc_chain_spec::Properties> {
     })
     .as_object()
     .cloned()
+}
+
+/// Bootnodes.
+fn bootnodes() -> Vec<MultiaddrWithPeerId> {
+    vec![
+        "/dns/p2p.ams-1.para.prod.pontem.network/tcp/20331/p2p/12D3KooWSpcN6dDJXFQfLn9w4mviBiqF4YJBtGxz6TRm9RFLcgX9",
+        "/dns/p2p.ams-2.para.prod.pontem.network/tcp/20331/p2p/12D3KooWSU6TXJJcgEjPwmPpPsQdECxbRdoHGcxczbcpKUDkgtoX",
+        "/dns/p2p.ams-3.para.prod.pontem.network/tcp/20331/p2p/12D3KooWBGrHhbdcAZJKzNfd3DvdeYyBLyAEEQQKicetMmWLNY5P",
+        "/dns/p2p.ams-4.para.prod.pontem.network/tcp/20331/p2p/12D3KooWQ5mu9nE7YMhQZEEUTmjHdAX35kEvb2rXQPB2XX6M4YTW",
+    ].iter().map(|node| node.parse().unwrap()).collect::<Vec<MultiaddrWithPeerId>>()
 }
 
 /// The list of paused extrinsics (mostly used for Nox mainnet).
@@ -304,16 +315,16 @@ pub fn local_testnet_config() -> Result<ChainSpec, String> {
     ))
 }
 
-/// Rococo configuration.
-pub fn rococo_config() -> Result<ChainSpec, String> {
+/// Westend configuration.
+pub fn westend_config() -> Result<ChainSpec, String> {
     let wasm_binary = WASM_BINARY.ok_or_else(|| "Live wasm not available".to_string())?;
-    let parachain_id = ParaId::from(2018);
+    let parachain_id = ParaId::from(2101);
 
     Ok(ChainSpec::from_genesis(
         // Name
-        "Nox Rococo",
+        "Nox Westend",
         // ID
-        "nox_rococo",
+        "nox_westend",
         ChainType::Live,
         move || {
             genesis(
@@ -420,16 +431,16 @@ pub fn rococo_config() -> Result<ChainSpec, String> {
             )
         },
         // Bootnodes
-        vec![],
+        bootnodes(),
         // Telemetry
         None,
         // Protocol ID
-        Some("nox_rococo"),
+        Some("nox_westend"),
         // Properties
         properties(),
         // Extensions
         Extensions {
-            relay_chain: "rococo".into(),
+            relay_chain: "westend".into(),
             para_id: parachain_id.into(),
         },
     ))

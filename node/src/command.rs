@@ -47,7 +47,7 @@ fn load_spec(id: &str) -> std::result::Result<Box<dyn sc_service::ChainSpec>, St
         "dev" => Box::new(chain_spec::development_config()?),
         "" | "local" => Box::new(chain_spec::local_testnet_config()?),
         "nox" => Box::new(chain_spec::nox_config()?),
-        "rococo" => Box::new(chain_spec::rococo_config()?),
+        "westend" => Box::new(chain_spec::westend_config()?),
         path => Box::new(chain_spec::ChainSpec::from_json_file(
             std::path::PathBuf::from(path),
         )?),
