@@ -48,6 +48,11 @@ pub fn get_from_seed<TPublic: Public>(seed: &str) -> <TPublic::Pair as Pair>::Pu
         .public()
 }
 
+// Get a public key from address.
+pub fn get_public_from_address<TPublic: Public>(addr: &str) -> TPublic {
+    TPublic::from_ss58check(addr).unwrap()
+}
+
 type AccountPublic = <Signature as Verify>::Signer;
 
 /// Generate an account ID from seed.
@@ -316,11 +321,96 @@ pub fn rococo_config() -> Result<ChainSpec, String> {
                 // Sudo account
                 get_account_id_from_address("gkPQdcMrECsnUbVnCqTUuTaS9o72LM179rmRu3hzkC5zovUgB"),
                 // Candidates
-                vec![],
+                vec![
+                    // Node 1.
+                    (
+                        get_account_id_from_address(
+                            "gkLsuHAWUiJL8tCrSYMKJjBBNyyZF2TFSs1tcTcsyHpD6x7Lr",
+                        ),
+                        get_public_from_address::<NimbusId>(
+                            "gkLsuHAWUiJL8tCrSYMKJjBBNyyZF2TFSs1tcTcsyHpD6x7Lr",
+                        ),
+                        CurrencyId::NATIVE * 100_000,
+                    ),
+                    // Node 2.
+                    (
+                        get_account_id_from_address(
+                            "gkPp7Scc7zPvdPfA7YHWxsxtrzLPEW4AodGRZz9U6vqd5LFtf",
+                        ),
+                        get_public_from_address::<NimbusId>(
+                            "gkPp7Scc7zPvdPfA7YHWxsxtrzLPEW4AodGRZz9U6vqd5LFtf",
+                        ),
+                        CurrencyId::NATIVE * 100_000,
+                    ),
+                    // Node 3.
+                    (
+                        get_account_id_from_address(
+                            "gkLkCGJohbgtNfXi9TkyxscHEodLvPzVUZ28MfCybvU6vN4Xn",
+                        ),
+                        get_public_from_address::<NimbusId>(
+                            "gkLkCGJohbgtNfXi9TkyxscHEodLvPzVUZ28MfCybvU6vN4Xn",
+                        ),
+                        CurrencyId::NATIVE * 100_000,
+                    ),
+                    // Node 4.
+                    (
+                        get_account_id_from_address(
+                            "gkR2sZmh7tS2KgQLsByjUFHMukmGJwKgcBUshxNRAPXV5ZcZL",
+                        ),
+                        get_public_from_address::<NimbusId>(
+                            "gkR2sZmh7tS2KgQLsByjUFHMukmGJwKgcBUshxNRAPXV5ZcZL",
+                        ),
+                        CurrencyId::NATIVE * 100_000,
+                    ),
+                ],
                 // Nominators
                 vec![],
                 // Pre-funded accounts
-                vec![],
+                vec![
+                    // Nimbus nodes.
+                    (
+                        // Node 1.
+                        get_account_id_from_address(
+                            "gkLsuHAWUiJL8tCrSYMKJjBBNyyZF2TFSs1tcTcsyHpD6x7Lr",
+                        ),
+                        CurrencyId::NATIVE * 110_000,
+                    ),
+                    (
+                        // Node 2.
+                        get_account_id_from_address(
+                            "gkPp7Scc7zPvdPfA7YHWxsxtrzLPEW4AodGRZz9U6vqd5LFtf",
+                        ),
+                        CurrencyId::NATIVE * 110_000,
+                    ),
+                    (
+                        // Node 3.
+                        get_account_id_from_address(
+                            "gkLkCGJohbgtNfXi9TkyxscHEodLvPzVUZ28MfCybvU6vN4Xn",
+                        ),
+                        CurrencyId::NATIVE * 110_000,
+                    ),
+                    (
+                        // Node 4.
+                        get_account_id_from_address(
+                            "gkR2sZmh7tS2KgQLsByjUFHMukmGJwKgcBUshxNRAPXV5ZcZL",
+                        ),
+                        CurrencyId::NATIVE * 110_000,
+                    ),
+                    (
+                        // Sudo.
+                        get_account_id_from_address(
+                            "gkPQdcMrECsnUbVnCqTUuTaS9o72LM179rmRu3hzkC5zovUgB",
+                        ),
+                        CurrencyId::NATIVE * 10_000,
+                    ),
+                    (
+                        // Bank.
+                        get_account_id_from_address(
+                            "gkLdwjgcSFtoEvKbsgLuFBc2k6TgZxgrfj61CjcduCvgyKeux",
+                        ),
+                        CurrencyId::NATIVE * 200_000,
+                    ),
+                ],
                 // Vesting accounts
                 vec![],
                 // Paused extrinsics
