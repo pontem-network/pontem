@@ -227,7 +227,7 @@ parameter_types! {
 impl sp_mvm::Config for Test {
     type Event = Event;
     type GasWeightMapping = MoveVMGasWeightMapping;
-    type UpdaterOrigin = EnsureRoot<AccountId>;
+    type UpdateOrigin = EnsureRoot<AccountId>;
     type PalletId = MVMPalletId;
     type CurrencyId = CurrencyId;
     type Currencies = Currencies;

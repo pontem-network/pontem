@@ -817,7 +817,7 @@ impl sp_mvm::Config for Runtime {
     type GasWeightMapping = MoveVMGasWeightMapping;
 
     /// Only sudo can deploy modules under 0x or update standard library.
-    type UpdaterOrigin = EnsureRoot<AccountId>;
+    type UpdateOrigin = EnsureRoot<AccountId>;
 
     /// Pallet Id.
     type PalletId = MVMPalletId;
@@ -980,7 +980,7 @@ impl orml_xcm::Config for Runtime {
 
 impl transaction_pause::Config for Runtime {
     type Event = Event;
-    type UpdaterOrigin = EnsureRoot<AccountId>;
+    type UpdateOrigin = EnsureRoot<AccountId>;
     type WeightInfo = ();
 }
 

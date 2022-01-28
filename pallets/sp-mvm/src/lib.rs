@@ -104,7 +104,7 @@ pub mod pallet {
         type GasWeightMapping: gas::GasWeightMapping;
 
         /// The AccountId that can perform a standard library update or deploy module under 0x address.
-        type UpdaterOrigin: EnsureOrigin<Self::Origin>;
+        type UpdateOrigin: EnsureOrigin<Self::Origin>;
 
         /// Describes weights for Move VM extrinsics.
         type WeightInfo: WeightInfo;
@@ -449,7 +449,7 @@ pub mod pallet {
             origin: OriginFor<T>,
         ) -> Result<(AccountAddress, T::AccountId), Error<T>> {
             // Allows to update Standard Library if root.
-            match T::UpdaterOrigin::ensure_origin(origin.clone()) {
+            match T::UpdateOrigin::ensure_origin(origin.clone()) {
                 Ok(_) => {
                     let signer = addr::address_to_account(&CORE_CODE_ADDRESS)
                         .map_err(|_| Error::<T>::AccountAddressConversionError)?;
