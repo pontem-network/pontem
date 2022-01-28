@@ -84,8 +84,8 @@ fn execute_script_as_root() {
 }
 
 #[test]
-/// publish package as root
-fn publish_package_as_root() {
+/// publish package as root (ps)
+fn publish_package_as_root_ps() {
     new_test_ext().execute_with(|| {
         let package = &ROOT_PACKAGE;
         let root = root_ps_acc();
