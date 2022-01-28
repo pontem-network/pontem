@@ -823,7 +823,7 @@ impl sp_mvm::Config for Runtime {
     type GasWeightMapping = MoveVMGasWeightMapping;
 
     /// Only sudo can deploy modules under 0x or update standard library.
-    type UpdaterOrigin = EnsureRoot<AccountId>;
+    type UpdateOrigin = EnsureRoot<AccountId>;
 
     /// Pallet Id.
     type PalletId = MVMPalletId;

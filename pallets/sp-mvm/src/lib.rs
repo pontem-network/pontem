@@ -104,7 +104,7 @@ pub mod pallet {
         type GasWeightMapping: gas::GasWeightMapping;
 
         /// The AccountId that can perform a standard library update or deploy module under 0x address.
-        type UpdaterOrigin: EnsureOrigin<Self::Origin>;
+        type UpdateOrigin: EnsureOrigin<Self::Origin>;
 
         /// Describes weights for Move VM extrinsics.
         type WeightInfo: WeightInfo;
@@ -165,9 +165,9 @@ pub mod pallet {
         /// [account]
         ModulePublished(T::AccountId),
 
-        /// Event about successful move-module publishing
+        /// Event about successful move-package published
         /// [account]
-        StdModulePublished,
+        PackagePublished(T::AccountId),
     }
 
     // Dispatchable functions allows users to interact with the pallet and invoke state changes.
@@ -220,17 +220,18 @@ pub mod pallet {
             module_bc: Vec<u8>,
             gas_limit: u64,
         ) -> DispatchResultWithPostInfo {
-            let who = ensure_signed(origin)?;
-            debug!("executing `publish` with signed {:?}", who);
+            // Allows to update Standard Library if root.
+            let (sender, signer) = Self::ensure_and_convert(origin)?;
+            debug!("executing `publish module` with signed {:?}", sender);
 
             // Publish module.
-            let vm_result = Self::raw_publish_module(&who, module_bc, gas_limit, false)?;
+            let vm_result = Self::raw_publish_module(&signer, module_bc, gas_limit, false)?;
 
             // produce result with spended gas:
             let result = result::from_vm_result::<T>(vm_result)?;
 
             // Emit an event:
-            Self::deposit_event(Event::ModulePublished(who));
+            Self::deposit_event(Event::ModulePublished(signer));
 
             Ok(result)
         }
@@ -252,17 +253,8 @@ pub mod pallet {
             gas_limit: u64,
         ) -> DispatchResultWithPostInfo {
             // Allows to update Standard Library if root.
-            let sender = match T::UpdaterOrigin::ensure_origin(origin.clone()) {
-                Ok(_) => {
-                    debug!("executing `publish package` with root");
-                    CORE_CODE_ADDRESS
-                }
-                Err(_) => {
-                    let signer = ensure_signed(origin)?;
-                    debug!("executing `publish package` with signed {:?}", signer);
-                    addr::account_to_account_address(&signer)
-                }
-            };
+            let (sender, signer) = Self::ensure_and_convert(origin)?;
+            debug!("executing `publish package` with signed {:?}", sender);
 
             let vm = Self::get_vm()?;
             let gas = Self::get_move_gas_limit(gas_limit)?;
@@ -277,6 +269,9 @@ pub mod pallet {
 
             // produce result with spended gas:
             let result = result::from_vm_result::<T>(vm_result)?;
+
+            // Emit an event:
+            Self::deposit_event(Event::PackagePublished(signer));
 
             Ok(result)
         }
@@ -464,6 +459,25 @@ pub mod pallet {
             Ok(res)
         }
 
+        /// Ensures origin is root or signed and returns account id with associated  move-address.
+        pub fn ensure_and_convert(
+            origin: OriginFor<T>,
+        ) -> Result<(AccountAddress, T::AccountId), Error<T>> {
+            // Allows to update Standard Library if root.
+            match T::UpdateOrigin::ensure_origin(origin.clone()) {
+                Ok(_) => {
+                    let signer = addr::address_to_account(&CORE_CODE_ADDRESS)
+                        .map_err(|_| Error::<T>::AccountAddressConversionError)?;
+                    Ok((CORE_CODE_ADDRESS, signer))
+                }
+                Err(_) => {
+                    let signer =
+                        ensure_signed(origin).map_err(|_| Error::<T>::InvalidSignature)?;
+                    Ok((addr::account_to_account_address(&signer), signer))
+                }
+            }
+        }
+
         /// Publish Move module script with provided account, module bytecode, gas limit, and dry run configuration.
         /// In case of dry run nothing would be written to storage after execution (required mostly by RPC calls, e.g. estimate gas etc).
         pub fn raw_publish_module(
@@ -609,6 +623,8 @@ pub mod pallet {
         TransactionValidationError,
         /// Transaction signers num isn't eq signers
         TransactionSignersNumError,
+        /// AccountAddress conversion error.
+        AccountAddressConversionError,
         /// Transaction is not allowed.
         TransactionIsNotAllowedError,
 
