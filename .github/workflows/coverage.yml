@@ -27,7 +27,7 @@ jobs:
         cfg:
           - os: self-hosted
             grcov: grcov-linux-x86_64.tar.bz2
-            dove: 1.3.3
+            dove: 1.5.5
 
     env:
       SKIP_WASM_BUILD: 1

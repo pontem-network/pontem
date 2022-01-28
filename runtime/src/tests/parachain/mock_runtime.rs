@@ -37,6 +37,7 @@ pub use pallet_timestamp::Call as TimestampCall;
 pub use pallet_balances::Call as BalancesCall;
 pub use sp_runtime::{Permill, Percent, Perbill, MultiAddress};
 pub use pallet_vesting::Call as VestingCall;
+use primitives::currency::NATIVE_SYM;
 
 pub use frame_support::{
     construct_runtime, parameter_types, StorageValue, match_type,
@@ -111,7 +112,7 @@ pub enum CurrencyId {
     // Relaychain's currency.
     KSM,
     // Pontem native currency.
-    PONT,
+    NATIVE,
     // Our native currency.
     XPONT,
 }
@@ -276,7 +277,7 @@ impl WeightTrader for SimpleWeightTrader {
             Some(CurrencyId::XPONT) => asset_id
                 .clone()
                 .into_multiasset(Fungibility::Fungible(weight as u128 / PONT_PER_WEIGHT)),
-            Some(CurrencyId::PONT) => asset_id
+            Some(CurrencyId::NATIVE) => asset_id
                 .clone()
                 .into_multiasset(Fungibility::Fungible(weight as u128 / PONT_PER_WEIGHT)),
             Some(CurrencyId::KSM) => {
@@ -307,7 +308,7 @@ impl WeightTrader for SimpleWeightTrader {
     fn refund_weight(&mut self, weight: Weight) -> Option<MultiAsset> {
         let amount = match CurrencyIdConvert::convert(self.0.clone()) {
             Some(CurrencyId::XPONT) => weight as u128 / PONT_PER_WEIGHT,
-            Some(CurrencyId::PONT) => weight as u128 / PONT_PER_WEIGHT,
+            Some(CurrencyId::NATIVE) => weight as u128 / PONT_PER_WEIGHT,
             Some(CurrencyId::KSM) => {
                 use frame_support::weights::WeightToFeePolynomial;
                 let fee = kusama::KusamaWeightToFee::calc(&weight);
@@ -414,11 +415,11 @@ impl Convert<CurrencyId, Option<MultiLocation>> for CurrencyIdConvert {
     fn convert(id: CurrencyId) -> Option<MultiLocation> {
         match id {
             CurrencyId::KSM => Some(MultiLocation::parent()),
-            CurrencyId::PONT => Some(
+            CurrencyId::NATIVE => Some(
                 (
                     Parent,
                     Junction::Parachain(2000),
-                    Junction::GeneralKey(b"PONT".to_vec()),
+                    Junction::GeneralKey(NATIVE_SYM.to_vec()),
                 )
                     .into(),
             ),
@@ -445,8 +446,8 @@ impl Convert<MultiLocation, Option<CurrencyId>> for CurrencyIdConvert {
                 parents: 1,
                 interior: X2(Parachain(id), GeneralKey(key)),
             } => {
-                if id == 2000 && key == b"PONT".to_vec() {
-                    return Some(CurrencyId::PONT);
+                if id == 2000 && key == NATIVE_SYM.to_vec() {
+                    return Some(CurrencyId::NATIVE);
                 }
 
                 if key == b"XPONT".to_vec() {

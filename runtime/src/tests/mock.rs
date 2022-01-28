@@ -72,6 +72,7 @@ pub fn run_to_block(till: u32) {
 pub struct RuntimeBuilder {
     balances: Vec<(AccountId, CurrencyId, Balance)>,
     vesting: Vec<(AccountId, BlockNumber, u32, Balance)>,
+    paused: Vec<(Vec<u8>, Vec<u8>)>,
     parachain_id: Option<u32>,
 }
 
@@ -81,6 +82,7 @@ impl RuntimeBuilder {
         Self {
             balances: vec![],
             vesting: vec![],
+            paused: vec![],
             parachain_id: None,
         }
     }
@@ -94,6 +96,12 @@ impl RuntimeBuilder {
     /// Set vesting.
     pub fn set_vesting(mut self, vesting: Vec<(AccountId, BlockNumber, u32, Balance)>) -> Self {
         self.vesting = vesting;
+        self
+    }
+
+    /// Set paused transactions.
+    pub fn set_paused(mut self, paused: Vec<(Vec<u8>, Vec<u8>)>) -> Self {
+        self.paused = paused;
         self
     }
 
@@ -139,6 +147,13 @@ impl RuntimeBuilder {
         .assimilate_storage(&mut t)
         .unwrap();
 
+        transaction_pause::GenesisConfig::<Runtime> {
+            paused: self.paused,
+            ..Default::default()
+        }
+        .assimilate_storage(&mut t)
+        .unwrap();
+
         <parachain_info::GenesisConfig as GenesisBuild<Runtime>>::assimilate_storage(
             &parachain_info::GenesisConfig {
                 parachain_id: self.parachain_id.unwrap_or(constants::PARACHAIN_ID).into(),
@@ -155,9 +170,17 @@ impl RuntimeBuilder {
         )
         .unwrap();
 
+        let move_stdlib =
+            include_bytes!("./assets/move-stdlib/build/MoveStdlib/bundles/MoveStdlib.pac")
+                .to_vec();
+        let pont_framework =
+            include_bytes!("./assets/pont-stdlib/build/PontStdlib/bundles/PontStdlib.pac")
+                .to_vec();
+
         let (init_module, init_func, init_args) = build_vm_config();
         sp_mvm::GenesisConfig::<Runtime> {
-            stdlib: include_bytes!("./assets/stdlib/artifacts/bundles/move-stdlib.pac").to_vec(),
+            move_stdlib,
+            pont_framework,
             init_module,
             init_func,
             init_args,

@@ -1,0 +1,11 @@
+enabled = true
+section_level_start = 1
+include_private_fun = true
+include_specs = true
+specs_inlined = true
+include_impl = true
+toc_depth = 3
+collapsed_sections = true
+root_doc_templates = []
+include_dep_diagrams = false
+include_call_diagrams = false

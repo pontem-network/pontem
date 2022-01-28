@@ -5,27 +5,29 @@ use orml_traits::currency::MultiCurrency;
 
 pub mod modules {
     use assets::Asset;
-    pub static BANK: Asset =
-        Asset::new("Bank", "src/tests/assets/user/artifacts/modules/47_Bank.mv");
+    pub static BANK: Asset = Asset::new(
+        "Bank",
+        "src/tests/assets/user/build/assets/bytecode_modules/Bank.mv",
+    );
 }
 
 pub mod transactions {
     use assets::Asset;
     pub static TRANSFER_PONT: Asset = Asset::new(
         "transfer",
-        "src/tests/assets/user/artifacts/transactions/transfer_pont.mvt",
+        "src/tests/assets/user/build/assets/transaction/transfer_pont.mvt",
     );
     pub static TRANSFER_KSM: Asset = Asset::new(
         "transfer",
-        "src/tests/assets/user/artifacts/transactions/transfer_ksm.mvt",
+        "src/tests/assets/user/build/assets/transaction/transfer_ksm.mvt",
     );
     pub static DEPOSIT_BANK_PONT: Asset = Asset::new(
         "deposit_bank_pont",
-        "src/tests/assets/user/artifacts/transactions/deposit_bank_pont.mvt",
+        "src/tests/assets/user/build/assets/transaction/deposit_bank_pont.mvt",
     );
     pub static DEPOSIT_BANK_KSM: Asset = Asset::new(
         "deposit_bank_ksm",
-        "src/tests/assets/user/artifacts/transactions/deposit_bank_ksm.mvt",
+        "src/tests/assets/user/build/assets/transaction/deposit_bank_ksm.mvt",
     );
 }
 
@@ -43,7 +45,7 @@ fn transfer_balance_to_bank() {
     RuntimeBuilder::new()
         .set_balances(vec![(
             Accounts::BOB.account(),
-            CurrencyId::PONT,
+            CurrencyId::NATIVE,
             initial_balance,
         )])
         .build()
@@ -131,12 +133,12 @@ fn transfer_vested_balance_fails() {
     let currency_id = GetNativeCurrencyId::get();
 
     const GAS_LIMIT: u64 = 1_000_000;
-    let initial_balance = to_unit(100, CurrencyId::PONT);
+    let initial_balance = to_unit(100, CurrencyId::NATIVE);
     let start_vesting = 10;
     let duration: u32 = 100;
 
     // We reduce free balance till 40 PONT, so sending 50 PONT should return error.
-    let free_balance = to_unit(40, CurrencyId::PONT);
+    let free_balance = to_unit(40, CurrencyId::NATIVE);
 
     RuntimeBuilder::new()
         .set_balances(vec![(

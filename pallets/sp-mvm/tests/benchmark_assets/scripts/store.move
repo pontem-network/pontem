@@ -1,5 +1,5 @@
 script {
-    use 0x1::Store;
+    use Benchmarks::Store;
 
     fun store(sender: signer) {
         Store::store(&sender);

@@ -8,10 +8,10 @@ use sp_runtime::MultiAddress::Id as MultiId;
 fn test_vesting_release() {
     let currency_id = GetNativeCurrencyId::get();
 
-    let initial_balance = to_unit(100, CurrencyId::PONT);
+    let initial_balance = to_unit(100, CurrencyId::NATIVE);
     let start_vesting = 10;
     let duration: u32 = 100;
-    let free_balance = to_unit(50, CurrencyId::PONT);
+    let free_balance = to_unit(50, CurrencyId::NATIVE);
     let per_block = (initial_balance - free_balance) / (duration as Balance);
 
     RuntimeBuilder::new()
