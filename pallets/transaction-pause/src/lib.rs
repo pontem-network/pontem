@@ -25,7 +25,7 @@ pub mod module {
         type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
 
         /// The origin which may set filter.
-        type UpdateOrigin: EnsureOrigin<Self::Origin>;
+        type UpdaterOrigin: EnsureOrigin<Self::Origin>;
 
         /// Weight information for the extrinsics in this module.
         type WeightInfo: WeightInfo;
@@ -71,7 +71,7 @@ pub mod module {
             pallet_name: Vec<u8>,
             function_name: Vec<u8>,
         ) -> DispatchResult {
-            T::UpdateOrigin::ensure_origin(origin)?;
+            T::UpdaterOrigin::ensure_origin(origin)?;
 
             // not allowed to pause calls of this pallet to ensure safe
             let pallet_name_string =
@@ -100,7 +100,7 @@ pub mod module {
             pallet_name: Vec<u8>,
             function_name: Vec<u8>,
         ) -> DispatchResult {
-            T::UpdateOrigin::ensure_origin(origin)?;
+            T::UpdaterOrigin::ensure_origin(origin)?;
             if PausedTransactions::<T>::take((&pallet_name, &function_name)).is_some() {
                 Self::deposit_event(Event::TransactionUnpaused(pallet_name, function_name));
             };
