@@ -118,7 +118,6 @@ std = [
     "balances/std",
     "orml-traits/std",
     "pallet-vesting/std",
-    "pallet-vesting/std",
 ]
 
 runtime-benchmarks = [
