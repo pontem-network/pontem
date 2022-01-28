@@ -65,6 +65,7 @@ orml-traits = { default-features = false, git = 'https://github.com/open-web3-st
 # serde is for lcs/bcs only
 # used for benchmarking (runtime, std, no-std)
 serde-alt = { version = "1", default-features = false, package = "alt_serde", features = ["derive", "alloc"], optional = true }
+
 [dependencies.bcs-alt]
 package = "bcs"
 default-features = false

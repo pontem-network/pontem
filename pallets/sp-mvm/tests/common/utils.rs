@@ -9,6 +9,7 @@ use move_core_types::language_storage::StructTag;
 use move_core_types::language_storage::TypeTag;
 use move_vm::io::state::State;
 use move_vm::types::ModulePackage;
+use move_core_types::language_storage::CORE_CODE_ADDRESS;
 use move_core_types::resolver::ModuleResolver;
 use move_core_types::resolver::ResourceResolver;
 
@@ -41,6 +42,21 @@ pub fn publish_module_unchecked(
     Mvm::publish_module(Origin::signed(signer), module.bytes().to_vec(), gas_limit)
 }
 
+/// Publish module as root __without__ storage check
+pub fn publish_module_as_root_unchecked(module: &Asset, gas_limit: Option<u64>) -> PsResult {
+    let gas_limit = gas_limit.unwrap_or(DEFAULT_GAS_LIMIT);
+    Mvm::publish_module(Origin::root(), module.bytes().to_vec(), gas_limit)
+}
+
+/// Publish module as root __with__ storage check
+pub fn publish_module_as_root(module: &Asset, gas_limit: Option<u64>) -> PsResult {
+    let bytecode = module.bytes().to_vec();
+    let name = module.name();
+    let result = publish_module_as_root_unchecked(module, gas_limit)?;
+    check_storage_module(CORE_CODE_ADDRESS, bytecode, name);
+    Ok(result)
+}
+
 /// Publish package.
 ///
 /// Publish package __with__ storage check
@@ -52,7 +68,22 @@ pub fn publish_package(signer: AccountId, package: &Package, gas_limit: Option<u
     Ok(result)
 }
 
-/// Publish module __without__ storage check
+/// Publish package as root __with__ storage check.
+pub fn publish_package_as_root(package: &Package, gas_limit: Option<u64>) -> PsResult {
+    let bytecode = package.bytes().to_vec();
+    let names = package.modules();
+    let result = publish_package_unchecked_as_root(package, gas_limit)?;
+    check_storage_package(CORE_CODE_ADDRESS, bytecode, names);
+    Ok(result)
+}
+
+/// Publish package as root __without__ storage checks.
+pub fn publish_package_unchecked_as_root(package: &Package, gas_limit: Option<u64>) -> PsResult {
+    let gas_limit = gas_limit.unwrap_or(DEFAULT_GAS_LIMIT);
+    Mvm::publish_package(Origin::root(), package.bytes().to_vec(), gas_limit)
+}
+
+/// Publish package __without__ storage check
 pub fn publish_package_unchecked(
     signer: AccountId,
     package: &Package,
