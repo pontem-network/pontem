@@ -76,7 +76,7 @@ fn execute_script_as_root() {
             result,
             DispatchError::Module {
                 index: 6,
-                error: 6,
+                error: 7,
                 message: Some("TransactionIsNotAllowedError")
             }
         );
