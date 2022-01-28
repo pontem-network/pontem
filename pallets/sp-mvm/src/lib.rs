@@ -221,7 +221,7 @@ pub mod pallet {
             gas_limit: u64,
         ) -> DispatchResultWithPostInfo {
             // Allows to update Standard Library if root.
-            let (sender, signer) = Self::ensure_and_convert(origin.clone())?;
+            let (sender, signer) = Self::ensure_and_convert(origin)?;
             debug!("executing `publish module` with signed {:?}", sender);
 
             // Publish module.
@@ -253,7 +253,7 @@ pub mod pallet {
             gas_limit: u64,
         ) -> DispatchResultWithPostInfo {
             // Allows to update Standard Library if root.
-            let (sender, signer) = Self::ensure_and_convert(origin.clone())?;
+            let (sender, signer) = Self::ensure_and_convert(origin)?;
             debug!("executing `publish package` with signed {:?}", sender);
 
             let vm = Self::get_vm()?;
