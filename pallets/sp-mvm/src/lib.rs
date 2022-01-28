@@ -444,6 +444,7 @@ pub mod pallet {
             Ok(res)
         }
 
+        /// Ensures origin is root or signed and returns account id with associated  move-address.
         pub fn ensure_and_convert(
             origin: OriginFor<T>,
         ) -> Result<(AccountAddress, T::AccountId), Error<T>> {
