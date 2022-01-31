@@ -81,14 +81,30 @@ fn properties() -> Option<sc_chain_spec::Properties> {
     .cloned()
 }
 
-/// Bootnodes.
-fn bootnodes() -> Vec<MultiaddrWithPeerId> {
-    vec![
-        "/dns/p2p.ams-1.para.prod.pontem.network/tcp/20331/p2p/12D3KooWSpcN6dDJXFQfLn9w4mviBiqF4YJBtGxz6TRm9RFLcgX9",
-        "/dns/p2p.ams-2.para.prod.pontem.network/tcp/20331/p2p/12D3KooWSU6TXJJcgEjPwmPpPsQdECxbRdoHGcxczbcpKUDkgtoX",
-        "/dns/p2p.ams-3.para.prod.pontem.network/tcp/20331/p2p/12D3KooWBGrHhbdcAZJKzNfd3DvdeYyBLyAEEQQKicetMmWLNY5P",
-        "/dns/p2p.ams-4.para.prod.pontem.network/tcp/20331/p2p/12D3KooWQ5mu9nE7YMhQZEEUTmjHdAX35kEvb2rXQPB2XX6M4YTW",
-    ].iter().map(|node| node.parse().unwrap()).collect::<Vec<MultiaddrWithPeerId>>()
+/// Convert nodes.
+fn convert_nodes(nodes: &[&str]) -> Vec<MultiaddrWithPeerId> {
+    nodes
+        .iter()
+        .map(|node| node.parse().unwrap())
+        .collect::<Vec<MultiaddrWithPeerId>>()
+}
+
+/// Westend bootnodes.
+fn westend_bootnodes() -> Vec<MultiaddrWithPeerId> {
+    convert_nodes(
+        &[
+            "/dns/p2p.ams-1.para.prod.pontem.network/tcp/20331/p2p/12D3KooWSpcN6dDJXFQfLn9w4mviBiqF4YJBtGxz6TRm9RFLcgX9",
+            "/dns/p2p.ams-2.para.prod.pontem.network/tcp/20331/p2p/12D3KooWSU6TXJJcgEjPwmPpPsQdECxbRdoHGcxczbcpKUDkgtoX",
+            "/dns/p2p.ams-3.para.prod.pontem.network/tcp/20331/p2p/12D3KooWBGrHhbdcAZJKzNfd3DvdeYyBLyAEEQQKicetMmWLNY5P",
+            "/dns/p2p.ams-4.para.prod.pontem.network/tcp/20331/p2p/12D3KooWQ5mu9nE7YMhQZEEUTmjHdAX35kEvb2rXQPB2XX6M4YTW",
+        ]
+    )
+}
+
+/// Nox bootnodes.
+fn nox_bootnodes() -> Vec<MultiaddrWithPeerId> {
+    // TODO: get nox bootnodes with convert_nodes.
+    vec![]
 }
 
 /// The list of paused extrinsics (mostly used for Nox mainnet).
@@ -431,7 +447,7 @@ pub fn westend_config() -> Result<ChainSpec, String> {
             )
         },
         // Bootnodes
-        bootnodes(),
+        westend_bootnodes(),
         // Telemetry
         None,
         // Protocol ID
@@ -447,7 +463,7 @@ pub fn westend_config() -> Result<ChainSpec, String> {
 }
 
 /// NOX (Kusama) config.
-/// TODO: it's still missing bootnodes, accounts, etc.
+/// TODO: vesting balances, user accounts initial balances, nox bootnodes.
 pub fn nox_config() -> Result<ChainSpec, String> {
     let wasm_binary = WASM_BINARY.ok_or_else(|| "Live wasm not available".to_string())?;
     let parachain_id = ParaId::from(constants::PARACHAIN_ID);
@@ -464,11 +480,208 @@ pub fn nox_config() -> Result<ChainSpec, String> {
                 // Sudo account
                 get_account_id_from_address("gkPQdcMrECsnUbVnCqTUuTaS9o72LM179rmRu3hzkC5zovUgB"),
                 // Candidates
-                vec![],
+                vec![
+                    // Node 1.
+                    (
+                        get_account_id_from_address(
+                            "gkPie4Vc57KSTDNmG7vyZRCHuuFbnx7m64AqrSgcG8hejuemS",
+                        ),
+                        get_public_from_address::<NimbusId>(
+                            "gkPie4Vc57KSTDNmG7vyZRCHuuFbnx7m64AqrSgcG8hejuemS",
+                        ),
+                        CurrencyId::NATIVE * 100_000,
+                    ),
+                    // Node 2.
+                    (
+                        get_account_id_from_address(
+                            "gkQMs9aemyMsFJWBBes95pkLD5dQ6Vture2PwEPBWJ8y4ubuR",
+                        ),
+                        get_public_from_address::<NimbusId>(
+                            "gkQMs9aemyMsFJWBBes95pkLD5dQ6Vture2PwEPBWJ8y4ubuR",
+                        ),
+                        CurrencyId::NATIVE * 100_000,
+                    ),
+                    // Node 3.
+                    (
+                        get_account_id_from_address(
+                            "gkMeEtHVsBL7MSrdQCJnbEvwZ3XGPAeH3ojL72WTDPL46EpET",
+                        ),
+                        get_public_from_address::<NimbusId>(
+                            "gkMeEtHVsBL7MSrdQCJnbEvwZ3XGPAeH3ojL72WTDPL46EpET",
+                        ),
+                        CurrencyId::NATIVE * 100_000,
+                    ),
+                    // Node 4.
+                    (
+                        get_account_id_from_address(
+                            "gkLCjGZNEmLKoMrACf3Av8VNS8WzRi3cwKxAScYfxBXZpUpi1",
+                        ),
+                        get_public_from_address::<NimbusId>(
+                            "gkLCjGZNEmLKoMrACf3Av8VNS8WzRi3cwKxAScYfxBXZpUpi1",
+                        ),
+                        CurrencyId::NATIVE * 100_000,
+                    ),
+                    // Node 5.
+                    (
+                        get_account_id_from_address(
+                            "gkQ3Hcy3Lk954hV2NtY8MGxP3MtVemSepEGChhuKk7UuHLALB",
+                        ),
+                        get_public_from_address::<NimbusId>(
+                            "gkQ3Hcy3Lk954hV2NtY8MGxP3MtVemSepEGChhuKk7UuHLALB",
+                        ),
+                        CurrencyId::NATIVE * 100_000,
+                    ),
+                    // Node 6.
+                    (
+                        get_account_id_from_address(
+                            "gkQfFjHhMitdXnJXU3SLy2Fmc2F2fW4n2BbZPzu2UVvKGaFc8",
+                        ),
+                        get_public_from_address::<NimbusId>(
+                            "gkQfFjHhMitdXnJXU3SLy2Fmc2F2fW4n2BbZPzu2UVvKGaFc8",
+                        ),
+                        CurrencyId::NATIVE * 100_000,
+                    ),
+                    // Node 7.
+                    (
+                        get_account_id_from_address(
+                            "gkL1f4fX4PAhFLpMrfVy8BXB3dfArbYvkZxQ8hpujKqwmU5sK",
+                        ),
+                        get_public_from_address::<NimbusId>(
+                            "gkL1f4fX4PAhFLpMrfVy8BXB3dfArbYvkZxQ8hpujKqwmU5sK",
+                        ),
+                        CurrencyId::NATIVE * 100_000,
+                    ),
+                    // Node 8.
+                    (
+                        get_account_id_from_address(
+                            "gkN1FFFwf3YuSE283f52mjnTQthri5goZkaXhGUmsjkRxJKrN",
+                        ),
+                        get_public_from_address::<NimbusId>(
+                            "gkN1FFFwf3YuSE283f52mjnTQthri5goZkaXhGUmsjkRxJKrN",
+                        ),
+                        CurrencyId::NATIVE * 100_000,
+                    ),
+                    // Node 9.
+                    (
+                        get_account_id_from_address(
+                            "gkQUtpCMfemhhXCB2Mk9TEamDfjbC2GVEzSzCusMKkreooGzq",
+                        ),
+                        get_public_from_address::<NimbusId>(
+                            "gkQUtpCMfemhhXCB2Mk9TEamDfjbC2GVEzSzCusMKkreooGzq",
+                        ),
+                        CurrencyId::NATIVE * 100_000,
+                    ),
+                    // Node 10.
+                    (
+                        get_account_id_from_address(
+                            "gkLX45RaBmFm1uJzskr6WktGiWRgENpqQMYTDLZfrahv177yH",
+                        ),
+                        get_public_from_address::<NimbusId>(
+                            "gkLX45RaBmFm1uJzskr6WktGiWRgENpqQMYTDLZfrahv177yH",
+                        ),
+                        CurrencyId::NATIVE * 100_000,
+                    ),
+                    // Node 11.
+                    (
+                        get_account_id_from_address(
+                            "gkQb84kxpjeytTCJ12DPxf2Fi8nmsZWqJLTRv8U78RE7fGMY5",
+                        ),
+                        get_public_from_address::<NimbusId>(
+                            "gkQb84kxpjeytTCJ12DPxf2Fi8nmsZWqJLTRv8U78RE7fGMY5",
+                        ),
+                        CurrencyId::NATIVE * 100_000,
+                    ),
+                ],
                 // Nominators
                 vec![],
                 // Pre-funded accounts
-                vec![],
+                vec![
+                    // Nimbus nodes.
+                    (
+                        // Node 1.
+                        get_account_id_from_address(
+                            "gkPie4Vc57KSTDNmG7vyZRCHuuFbnx7m64AqrSgcG8hejuemS",
+                        ),
+                        CurrencyId::NATIVE * 110_000,
+                    ),
+                    (
+                        // Node 2.
+                        get_account_id_from_address(
+                            "gkQMs9aemyMsFJWBBes95pkLD5dQ6Vture2PwEPBWJ8y4ubuR",
+                        ),
+                        CurrencyId::NATIVE * 110_000,
+                    ),
+                    (
+                        // Node 3.
+                        get_account_id_from_address(
+                            "gkMeEtHVsBL7MSrdQCJnbEvwZ3XGPAeH3ojL72WTDPL46EpET",
+                        ),
+                        CurrencyId::NATIVE * 110_000,
+                    ),
+                    (
+                        // Node 4.
+                        get_account_id_from_address(
+                            "gkLCjGZNEmLKoMrACf3Av8VNS8WzRi3cwKxAScYfxBXZpUpi1",
+                        ),
+                        CurrencyId::NATIVE * 110_000,
+                    ),
+                    (
+                        // Node 5.
+                        get_account_id_from_address(
+                            "gkQ3Hcy3Lk954hV2NtY8MGxP3MtVemSepEGChhuKk7UuHLALB",
+                        ),
+                        CurrencyId::NATIVE * 110_000,
+                    ),
+                    (
+                        //Node 6.
+                        get_account_id_from_address(
+                            "gkQfFjHhMitdXnJXU3SLy2Fmc2F2fW4n2BbZPzu2UVvKGaFc8",
+                        ),
+                        CurrencyId::NATIVE * 110_000,
+                    ),
+                    (
+                        // Node 7.
+                        get_account_id_from_address(
+                            "gkL1f4fX4PAhFLpMrfVy8BXB3dfArbYvkZxQ8hpujKqwmU5sK",
+                        ),
+                        CurrencyId::NATIVE * 110_000,
+                    ),
+                    (
+                        // Node 8.
+                        get_account_id_from_address(
+                            "gkN1FFFwf3YuSE283f52mjnTQthri5goZkaXhGUmsjkRxJKrN",
+                        ),
+                        CurrencyId::NATIVE * 110_000,
+                    ),
+                    (
+                        // Node 9.
+                        get_account_id_from_address(
+                            "gkQUtpCMfemhhXCB2Mk9TEamDfjbC2GVEzSzCusMKkreooGzq",
+                        ),
+                        CurrencyId::NATIVE * 110_000,
+                    ),
+                    (
+                        // Node 10.
+                        get_account_id_from_address(
+                            "gkLX45RaBmFm1uJzskr6WktGiWRgENpqQMYTDLZfrahv177yH",
+                        ),
+                        CurrencyId::NATIVE * 110_000,
+                    ),
+                    (
+                        // Node 11.
+                        get_account_id_from_address(
+                            "gkQb84kxpjeytTCJ12DPxf2Fi8nmsZWqJLTRv8U78RE7fGMY5",
+                        ),
+                        CurrencyId::NATIVE * 110_000,
+                    ),
+                    (
+                        // Sudo.
+                        get_account_id_from_address(
+                            "gkPQdcMrECsnUbVnCqTUuTaS9o72LM179rmRu3hzkC5zovUgB",
+                        ),
+                        CurrencyId::NATIVE * 10_000,
+                    ),
+                ],
                 // Vesting accounts
                 vec![],
                 // Paused extrinsics
@@ -478,7 +691,7 @@ pub fn nox_config() -> Result<ChainSpec, String> {
             )
         },
         // Bootnodes
-        vec![],
+        nox_bootnodes(),
         // Telemetry
         None,
         // Protocol ID
