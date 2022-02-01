@@ -103,8 +103,21 @@ fn westend_bootnodes() -> Vec<MultiaddrWithPeerId> {
 
 /// Nox bootnodes.
 fn nox_bootnodes() -> Vec<MultiaddrWithPeerId> {
-    // TODO: get nox bootnodes with convert_nodes.
-    vec![]
+    convert_nodes(
+        &[
+            "/dns/p2p.ams-1.para.prod.pontem.network/tcp/30331/p2p/12D3KooWK87KJJu86GUWAJFcuDJFrVe2ej5ov2jsjKpkAcEJiJb4",
+            "/dns/p2p.ams-2.para.prod.pontem.network/tcp/30331/p2p/12D3KooWHXC2RtmyPqyQWnFtgWrJZP79hQ61sMtPrQgakU7jEEDK",
+            "/dns/p2p.ams-3.para.prod.pontem.network/tcp/30331/p2p/12D3KooWPsgduwqGacCxj98BxSa9J26MRaB29owd98YHGLt6eQfM",
+            "/dns/p2p.ams-4.para.prod.pontem.network/tcp/30331/p2p/12D3KooWPJzRPmysDdkzTch2pwgY2xA8fAM76om5mtyNxjeZexoF",
+            "/dns/p2p.fra-1.para.prod.pontem.network/tcp/30331/p2p/12D3KooWL19HLdRNwcvJrZUehsaiFDHQuFzEmQyQcgb2NCjx2e2P",
+            "/dns/p2p.fra-2.para.prod.pontem.network/tcp/30331/p2p/12D3KooWC7NRg4Kn4cPRuKTWMCwjtLinkMJf9WEDLngj6fCFrXWY",
+            "/dns/p2p.fra-3.para.prod.pontem.network/tcp/30331/p2p/12D3KooWG2DK2LsuWAW8f253GXNtkSKwzqpKxVhUwKJ8HpSw2jJd",
+            "/dns/p2p.fra-4.para.prod.pontem.network/tcp/30331/p2p/12D3KooWKjeHv7VjaKKyymwbYTnDEFbHsJXfNeFHy7BdptYY2ZPG",
+            "/dns/p2p.lon-1.para.prod.pontem.network/tcp/30331/p2p/12D3KooWMqgzU4cJz6UHMgDEv3DcNGy9sbnpsxGsfiABgsadpLme",
+            "/dns/p2p.lon-2.para.prod.pontem.network/tcp/30331/p2p/12D3KooWDucRm5hTfNToLMn8z433Ew9FEE3BpggjPtZL6TCDEHsH",
+            "/dns/p2p.sgp-1.para.prod.pontem.network/tcp/30331/p2p/12D3KooWMQdavA82jJKkwntcW5hNHFNjKQgePCg4APdxc6A9HYuj",
+        ]
+    )
 }
 
 /// The list of paused extrinsics (mostly used for Nox mainnet).
@@ -463,7 +476,7 @@ pub fn westend_config() -> Result<ChainSpec, String> {
 }
 
 /// NOX (Kusama) config.
-/// TODO: vesting balances, user accounts initial balances, nox bootnodes.
+/// TODO: vesting balances, user accounts initial balances.
 pub fn nox_config() -> Result<ChainSpec, String> {
     let wasm_binary = WASM_BINARY.ok_or_else(|| "Live wasm not available".to_string())?;
     let parachain_id = ParaId::from(constants::PARACHAIN_ID);
