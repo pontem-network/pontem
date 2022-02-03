@@ -152,33 +152,3 @@ where
         bcs::from_bytes(&blob).expect(&format!("Resource '{}' should exists", tt_str));
     assert_eq!(expected, stored);
 }
-
-/// Returns TypeTag 0x1::PONT::T
-pub fn get_type_tag_pont_coin() -> StructTag {
-    StructTag {
-        address: ROOT_ADDR,
-        module: Identifier::new("PONT").unwrap(),
-        name: Identifier::new("PONT").unwrap(),
-        type_params: vec![],
-    }
-}
-
-/// Returns TypeTag Pontem::T<0x1::PONT::T>
-pub fn get_type_tag_pont_res() -> StructTag {
-    StructTag {
-        address: ROOT_ADDR,
-        module: Identifier::new("Diem").unwrap(),
-        name: Identifier::new("Diem").unwrap(),
-        type_params: vec![TypeTag::Struct(get_type_tag_pont_coin())],
-    }
-}
-
-/// Returns TypeTag 0x1::Account::Balance<0x1::PONT::T>
-pub fn get_type_tag_balance_pont() -> StructTag {
-    StructTag {
-        address: ROOT_ADDR,
-        module: Identifier::new("DiemAccount").unwrap(),
-        name: Identifier::new("Balance").unwrap(),
-        type_params: vec![TypeTag::Struct(get_type_tag_pont_coin())],
-    }
-}
