@@ -32,8 +32,7 @@ fn publish_module_as_origin() {
 /// publish modules as root
 fn publish_module_as_root() {
     new_test_ext().execute_with(|| {
-        let root = root_ps_acc();
-        utils::publish_module(root, &modules::root::EVENT_PROXY, None).unwrap();
+        utils::publish_module_as_root(&modules::root::EVENT_PROXY, None).unwrap();
     });
 }
 
@@ -53,9 +52,8 @@ fn publish_package_as_origin() {
 fn publish_package_as_root() {
     new_test_ext().execute_with(|| {
         let package = &ROOT_PACKAGE;
-        let root = root_ps_acc();
 
-        utils::publish_package(root, package, None).unwrap();
+        utils::publish_package_as_root(package, None).unwrap();
     });
 }
 

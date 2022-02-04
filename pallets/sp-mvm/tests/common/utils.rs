@@ -33,6 +33,17 @@ pub fn publish_module(signer: AccountId, module: &Asset, gas_limit: Option<u64>)
     Ok(result)
 }
 
+/// Publish module as root __with__ storage check
+pub fn publish_module_as_root(module: &Asset, gas_limit: Option<u64>) -> PsResult {
+    let result = Mvm::publish_module(
+        Origin::root(),
+        module.bytes().to_vec(),
+        gas_limit.unwrap_or(DEFAULT_GAS_LIMIT),
+    )?;
+    check_storage_module(CORE_CODE_ADDRESS, module.bytes().to_vec(), module.name());
+    Ok(result)
+}
+
 /// Publish package.
 ///
 /// Publish package __with__ storage check
@@ -44,6 +55,21 @@ pub fn publish_package(signer: AccountId, package: &Package, gas_limit: Option<u
     )?;
     check_storage_package(
         to_move_addr(signer),
+        package.bytes().to_vec(),
+        package.modules(),
+    );
+    Ok(result)
+}
+
+/// Publish package as root __with__ storage check.
+pub fn publish_package_as_root(package: &Package, gas_limit: Option<u64>) -> PsResult {
+    let result = Mvm::publish_package(
+        Origin::root(),
+        package.bytes().to_vec(),
+        gas_limit.unwrap_or(DEFAULT_GAS_LIMIT),
+    )?;
+    check_storage_package(
+        CORE_CODE_ADDRESS,
         package.bytes().to_vec(),
         package.modules(),
     );
