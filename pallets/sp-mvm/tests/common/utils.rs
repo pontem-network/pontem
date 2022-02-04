@@ -49,36 +49,32 @@ pub fn publish_module_as_root(module: &Asset, gas_limit: Option<u64>) -> PsResul
 ///
 /// Publish package __with__ storage check
 pub fn publish_package(signer: AccountId, package: &Package, gas_limit: Option<u64>) -> PsResult {
-    let bytecode = package.bytes().to_vec();
-    let names = package.modules();
-    let result = publish_package_unchecked(signer, package, gas_limit)?;
-    check_storage_package(to_move_addr(signer), bytecode, names);
+    let result = Mvm::publish_package(
+        Origin::signed(signer),
+        package.bytes().to_vec(),
+        gas_limit.unwrap_or(DEFAULT_GAS_LIMIT),
+    )?;
+    check_storage_package(
+        to_move_addr(signer),
+        package.bytes().to_vec(),
+        package.modules(),
+    );
     Ok(result)
 }
 
 /// Publish package as root __with__ storage check.
 pub fn publish_package_as_root(package: &Package, gas_limit: Option<u64>) -> PsResult {
-    let bytecode = package.bytes().to_vec();
-    let names = package.modules();
-    let result = publish_package_unchecked_as_root(package, gas_limit)?;
-    check_storage_package(CORE_CODE_ADDRESS, bytecode, names);
+    let result = Mvm::publish_package(
+        Origin::root(),
+        package.bytes().to_vec(),
+        gas_limit.unwrap_or(DEFAULT_GAS_LIMIT),
+    )?;
+    check_storage_package(
+        CORE_CODE_ADDRESS,
+        package.bytes().to_vec(),
+        package.modules(),
+    );
     Ok(result)
-}
-
-/// Publish package as root __without__ storage checks.
-pub fn publish_package_unchecked_as_root(package: &Package, gas_limit: Option<u64>) -> PsResult {
-    let gas_limit = gas_limit.unwrap_or(DEFAULT_GAS_LIMIT);
-    Mvm::publish_package(Origin::root(), package.bytes().to_vec(), gas_limit)
-}
-
-/// Publish package __without__ storage check
-pub fn publish_package_unchecked(
-    signer: AccountId,
-    package: &Package,
-    gas_limit: Option<u64>,
-) -> PsResult {
-    let gas_limit = gas_limit.unwrap_or(DEFAULT_GAS_LIMIT);
-    Mvm::publish_package(Origin::signed(signer), package.bytes().to_vec(), gas_limit)
 }
 
 /// Execute transaction script.
