@@ -13,23 +13,6 @@ use common::addr::*;
 use common::utils;
 
 #[test]
-/// publish modules personally as root unchecked
-fn publish_module_as_root() {
-    new_test_ext().execute_with(|| {
-        utils::publish_module_as_root(&modules::root::EVENT_PROXY, None).unwrap();
-    });
-}
-
-#[test]
-/// publish modules personally as root (ps)
-fn publish_module_as_root_ps() {
-    new_test_ext().execute_with(|| {
-        let root = root_ps_acc();
-        utils::publish_module(root, &modules::root::EVENT_PROXY, None).unwrap();
-    });
-}
-
-#[test]
 fn execute_script() {
     new_test_ext().execute_with(|| {
         let origin = origin_ps_acc();
@@ -84,6 +67,50 @@ fn execute_script_as_root() {
 }
 
 #[test]
+/// publish modules personally as origin
+fn publish_module_as_origin() {
+    new_test_ext().execute_with(|| {
+        let origin = origin_ps_acc();
+        assert_err_ignore_postinfo!(
+            utils::publish_module(origin, &modules::root::EVENT_PROXY, None),
+            DispatchError::Module {
+                index: 6,
+                error: 89,
+                message: Some("ModuleAddressDoesNotMatchSender")
+            }
+        );
+    });
+}
+
+#[test]
+/// publish modules personally as root (ps)
+fn publish_module_as_root_ps() {
+    new_test_ext().execute_with(|| {
+        let root = root_ps_acc();
+        utils::publish_module(root, &modules::root::EVENT_PROXY, None).unwrap();
+    });
+}
+
+#[test]
+/// publish modules personally as root unchecked
+fn publish_module_as_root() {
+    new_test_ext().execute_with(|| {
+        utils::publish_module_as_root(&modules::root::EVENT_PROXY, None).unwrap();
+    });
+}
+
+#[test]
+/// publish package as origin
+fn publish_package_as_origin() {
+    new_test_ext().execute_with(|| {
+        let package = &USER_PACKAGE;
+        let origin = origin_ps_acc();
+
+        utils::publish_package(origin, package, None).unwrap();
+    });
+}
+
+#[test]
 /// publish package as root (ps)
 fn publish_package_as_root_ps() {
     new_test_ext().execute_with(|| {
@@ -101,17 +128,6 @@ fn publish_package_as_root() {
         let package = &ROOT_PACKAGE;
 
         utils::publish_package_as_root(package, None).unwrap();
-    });
-}
-
-#[test]
-/// publish package as origin
-fn publish_package_as_origin() {
-    new_test_ext().execute_with(|| {
-        let package = &USER_PACKAGE;
-        let origin = origin_ps_acc();
-
-        utils::publish_package(origin, package, None).unwrap();
     });
 }
 

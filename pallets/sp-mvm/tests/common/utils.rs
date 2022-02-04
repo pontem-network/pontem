@@ -6,7 +6,6 @@ use move_core_types::account_address::AccountAddress;
 use move_core_types::identifier::Identifier;
 use move_core_types::language_storage::ModuleId;
 use move_core_types::language_storage::StructTag;
-use move_core_types::language_storage::TypeTag;
 use move_vm::io::state::State;
 use move_vm::types::ModulePackage;
 use move_core_types::language_storage::CORE_CODE_ADDRESS;
