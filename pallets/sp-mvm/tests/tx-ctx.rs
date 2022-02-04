@@ -29,7 +29,7 @@ fn check_stored_value(expected: u64) {
 #[test]
 fn execute_store_block() {
     new_test_ext().execute_with(|| {
-        let origin = origin_ps_acc();
+        let origin = bob_public_key();
 
         publish_module(origin, &modules::user::STORE, None).unwrap();
 
@@ -45,7 +45,7 @@ fn execute_store_block() {
 #[test]
 fn execute_store_time() {
     new_test_ext().execute_with(|| {
-        let origin = origin_ps_acc();
+        let origin = bob_public_key();
 
         publish_module(origin, &modules::user::STORE, None).unwrap();
 

@@ -62,7 +62,7 @@ where
 #[test]
 fn execute_get_balance() {
     new_test_ext().execute_with(|| {
-        let account = origin_ps_acc();
+        let account = bob_public_key();
 
         // publish user module:
         publish_module(account, &modules::user::STORE, None).unwrap();
@@ -83,7 +83,7 @@ fn execute_get_balance() {
 #[test]
 fn execute_get_token_balance() {
     new_test_ext().execute_with(|| {
-        let account = origin_ps_acc();
+        let account = bob_public_key();
         let to_deposit = INITIAL_BALANCE;
         let currency = CurrencyId::KSM;
 
@@ -111,7 +111,7 @@ fn execute_get_token_balance() {
 #[test]
 fn execute_transfer() {
     new_test_ext().execute_with(|| {
-        let bob = origin_ps_acc();
+        let bob = bob_public_key();
         let alice_account = alice_public_key();
         let to_transfer = 2000;
 
@@ -141,7 +141,7 @@ fn execute_transfer() {
 #[test]
 fn execute_token_transfer() {
     new_test_ext().execute_with(|| {
-        let bob = origin_ps_acc();
+        let bob = bob_public_key();
         let alice_account = alice_public_key();
         let currency = CurrencyId::KSM;
         let to_deposit = INITIAL_BALANCE;
@@ -177,7 +177,7 @@ fn execute_token_transfer() {
 #[test]
 fn transfer_vested_fails() {
     new_test_ext().execute_with(|| {
-        let bob = origin_ps_acc();
+        let bob = bob_public_key();
 
         let bob_init_balance = balances::Pallet::<Test>::free_balance(&bob);
 
@@ -210,7 +210,7 @@ fn transfer_vested_fails() {
 #[test]
 fn transfer_token_vested_fails() {
     new_test_ext().execute_with(|| {
-        let bob = origin_ps_acc();
+        let bob = bob_public_key();
         let currency = CurrencyId::KSM;
 
         let bob_init_balance = orml_tokens::Pallet::<Test>::free_balance(currency, &bob);
@@ -244,7 +244,7 @@ fn transfer_token_vested_fails() {
 #[test]
 fn check_total_supply() {
     new_test_ext().execute_with(|| {
-        let bob = origin_ps_acc();
+        let bob = bob_public_key();
         let to_transfer = 2000;
 
         let total_issuance = balances::Pallet::<Test>::total_issuance();
@@ -271,7 +271,7 @@ fn check_total_supply() {
 #[test]
 fn check_token_total_supply() {
     new_test_ext().execute_with(|| {
-        let bob = origin_ps_acc();
+        let bob = bob_public_key();
         let to_transfer = 2000;
         let currency = CurrencyId::KSM;
 
@@ -314,7 +314,7 @@ mod adapter {
 
     fn test_get_balance_with<T: BalanceAccess>(adapter: &T) {
         new_test_ext().execute_with(|| {
-            let origin = origin_ps_acc();
+            let origin = bob_public_key();
             let account = to_move_addr(origin.clone());
             let currency = CurrencyId::NATIVE;
             let expected = balances::Pallet::<Test>::free_balance(&origin);
@@ -329,7 +329,7 @@ mod adapter {
 
     fn test_get_token_balance_with<T: BalanceAccess>(adapter: &T) {
         new_test_ext().execute_with(|| {
-            let origin = origin_ps_acc();
+            let origin = bob_public_key();
             let account = to_move_addr(origin.clone());
             let to_deposit = 5000;
             let currency = CurrencyId::KSM;
@@ -348,7 +348,7 @@ mod adapter {
 
     fn test_sub_with<T: BalanceAccess>(adapter: &T) {
         new_test_ext().execute_with(|| {
-            let origin = origin_ps_acc();
+            let origin = bob_public_key();
             let account = to_move_addr(origin.clone());
             let initial_balance = balances::Pallet::<Test>::free_balance(&origin);
             let currency = CurrencyId::NATIVE;
@@ -365,7 +365,7 @@ mod adapter {
 
     fn test_token_sub_with<T: BalanceAccess>(adapter: &T) {
         new_test_ext().execute_with(|| {
-            let origin = origin_ps_acc();
+            let origin = bob_public_key();
             let account = to_move_addr(origin.clone());
             let to_deposit = 5000;
             let currency = CurrencyId::KSM;
@@ -389,7 +389,7 @@ mod adapter {
 
     fn test_add_with<T: BalanceAccess>(adapter: &T) {
         new_test_ext().execute_with(|| {
-            let origin = origin_ps_acc();
+            let origin = bob_public_key();
             let account = to_move_addr(origin.clone());
             let pallet_account = sp_mvm::Pallet::<Test>::get_account_id();
             let initial_balance = balances::Pallet::<Test>::free_balance(&origin);
@@ -408,7 +408,7 @@ mod adapter {
 
     fn test_token_add_with<T: BalanceAccess>(adapter: &T) {
         new_test_ext().execute_with(|| {
-            let origin = origin_ps_acc();
+            let origin = bob_public_key();
             let account = to_move_addr(origin.clone());
             let pallet_account = sp_mvm::Pallet::<Test>::get_account_id();
             let to_deposit = 5000;

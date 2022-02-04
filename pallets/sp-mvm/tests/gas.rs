@@ -22,10 +22,8 @@ fn check_out_of_gas(error: DispatchError) {
 #[test]
 fn publish_module_gas_limit() {
     new_test_ext().execute_with(|| {
-        let root = root_ps_acc();
-
         let res =
-            utils::publish_module(root, &modules::user::EVENT_PROXY, Some(MINIMAL_GAS_LIMIT));
+            utils::publish_module_as_root(&modules::user::EVENT_PROXY, Some(MINIMAL_GAS_LIMIT));
 
         let error = res.unwrap_err().error;
         check_out_of_gas(error);
@@ -35,7 +33,7 @@ fn publish_module_gas_limit() {
 #[test]
 fn publish_gas_limit() {
     new_test_ext().execute_with(|| {
-        let origin = origin_ps_acc();
+        let origin = bob_public_key();
 
         let res = utils::publish_module(origin, &modules::user::STORE, Some(MINIMAL_GAS_LIMIT));
 
@@ -49,7 +47,7 @@ fn execute_gas_limit() {
     new_test_ext().execute_with(|| {
         const GAS_LIMIT: u64 = 500_000;
 
-        let origin = origin_ps_acc();
+        let origin = bob_public_key();
 
         let res = common::utils::execute_tx(origin, &transactions::INF_LOOP, Some(GAS_LIMIT));
 

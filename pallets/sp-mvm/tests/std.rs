@@ -16,7 +16,7 @@ use common::utils;
 /// publish modules personally as origin
 fn publish_module_as_origin() {
     new_test_ext().execute_with(|| {
-        let origin = origin_ps_acc();
+        let origin = bob_public_key();
         assert_err_ignore_postinfo!(
             utils::publish_module(origin, &modules::root::EVENT_PROXY, None),
             DispatchError::Module {
@@ -41,7 +41,7 @@ fn publish_module_as_root() {
 fn publish_package_as_origin() {
     new_test_ext().execute_with(|| {
         let package = &USER_PACKAGE;
-        let origin = origin_ps_acc();
+        let origin = bob_public_key();
 
         utils::publish_package(origin, package, None).unwrap();
     });
@@ -60,7 +60,7 @@ fn publish_package_as_root() {
 #[test]
 fn execute_script() {
     new_test_ext().execute_with(|| {
-        let origin = origin_ps_acc();
+        let origin = bob_public_key();
 
         utils::publish_module(origin, &modules::user::EVENT_PROXY, None).unwrap();
 
@@ -96,7 +96,7 @@ fn execute_script() {
 /// Check the pallet doesn't allow scripts contains root signers.
 fn execute_script_as_root() {
     new_test_ext().execute_with(|| {
-        let origin = origin_ps_acc();
+        let origin = bob_public_key();
 
         let result = utils::execute_tx(origin, &transactions::AS_ROOT, None);
 

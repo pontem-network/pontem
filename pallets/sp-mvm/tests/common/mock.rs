@@ -24,8 +24,7 @@ use scale_info::TypeInfo;
 pub use primitives::currency::CurrencyId;
 use module_currencies::BasicCurrencyAdapter;
 
-use super::addr::origin_ps_acc;
-use super::addr::root_ps_acc;
+use super::addr::bob_public_key;
 use super::addr::alice_public_key;
 use super::vm_config::build as build_vm_config;
 
@@ -260,8 +259,7 @@ pub fn new_test_ext() -> sp_io::TestExternalities {
         .expect("Frame system builds valid default genesis config");
     balances::GenesisConfig::<Test> {
         balances: vec![
-            (root_ps_acc(), INITIAL_BALANCE),
-            (origin_ps_acc(), INITIAL_BALANCE),
+            (bob_public_key(), INITIAL_BALANCE),
             (alice_public_key(), INITIAL_BALANCE),
         ],
     }

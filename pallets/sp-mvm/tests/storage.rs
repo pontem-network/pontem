@@ -11,7 +11,7 @@ use common::utils;
 #[test]
 fn publish_module() {
     new_test_ext().execute_with(|| {
-        let origin = origin_ps_acc();
+        let origin = bob_public_key();
         utils::publish_module(origin, &modules::user::STORE, None).unwrap();
     });
 }
@@ -19,7 +19,7 @@ fn publish_module() {
 #[test]
 fn execute_script() {
     new_test_ext().execute_with(|| {
-        let origin = origin_ps_acc();
+        let origin = bob_public_key();
 
         utils::publish_module(origin, &modules::user::STORE, None).unwrap();
 
