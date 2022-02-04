@@ -25,36 +25,33 @@ const DEFAULT_GAS_LIMIT: u64 = 1_000_000;
 
 /// Publish module __with__ storage check
 pub fn publish_module(signer: AccountId, module: &Asset, gas_limit: Option<u64>) -> PsResult {
-    let bytecode = module.bytes().to_vec();
-    let name = module.name();
-    let result = publish_module_unchecked(signer, module, gas_limit)?;
-    check_storage_module(to_move_addr(signer), bytecode, name);
+    let gas_limit = gas_limit.unwrap_or(DEFAULT_GAS_LIMIT);
+    let result = publish_module_unchecked(Some(Origin::signed(signer)), module, gas_limit)?;
+    check_storage_module(to_move_addr(signer), module.bytes().to_vec(), module.name());
     Ok(result)
-}
-
-/// Publish module __without__ storage check
-pub fn publish_module_unchecked(
-    signer: AccountId,
-    module: &Asset,
-    gas_limit: Option<u64>,
-) -> PsResult {
-    let gas_limit = gas_limit.unwrap_or(DEFAULT_GAS_LIMIT);
-    Mvm::publish_module(Origin::signed(signer), module.bytes().to_vec(), gas_limit)
-}
-
-/// Publish module as root __without__ storage check
-pub fn publish_module_as_root_unchecked(module: &Asset, gas_limit: Option<u64>) -> PsResult {
-    let gas_limit = gas_limit.unwrap_or(DEFAULT_GAS_LIMIT);
-    Mvm::publish_module(Origin::root(), module.bytes().to_vec(), gas_limit)
 }
 
 /// Publish module as root __with__ storage check
 pub fn publish_module_as_root(module: &Asset, gas_limit: Option<u64>) -> PsResult {
-    let bytecode = module.bytes().to_vec();
-    let name = module.name();
-    let result = publish_module_as_root_unchecked(module, gas_limit)?;
-    check_storage_module(CORE_CODE_ADDRESS, bytecode, name);
+    let gas_limit = gas_limit.unwrap_or(DEFAULT_GAS_LIMIT);
+    let result = publish_module_unchecked(None, module, gas_limit)?;
+    check_storage_module(CORE_CODE_ADDRESS, module.bytes().to_vec(), module.name());
     Ok(result)
+}
+//-    Mvm::publish_module(Origin::signed(signer), module.bytes().to_vec(), gas_limit)
+//-    Mvm::publish_module(Origin::root(), module.bytes().to_vec(), gas_limit)
+
+/// Publish module __without__ storage check
+pub fn publish_module_unchecked(
+    signer: Option<Origin>,
+    module: &Asset,
+    gas_limit: u64,
+) -> PsResult {
+    Mvm::publish_module(
+        signer.unwrap_or(Origin::root()),
+        module.bytes().to_vec(),
+        gas_limit,
+    )
 }
 
 /// Publish package.
