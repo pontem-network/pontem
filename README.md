@@ -55,7 +55,7 @@ Add Nimbus key:
 
 ```sh
 # Use "//Alice" for URI.
-./target/release/pontem key insert --keystore-path ~/.pontem/keystore-1 --key-type nmbs
+./target/release/pontem key insert --keystore-path ~/.pontem/keystore-1 --key-type nmbs --scheme sr25519
 ```
 
 ```sh
@@ -127,7 +127,7 @@ Add Nimbus key:
 
 ```sh
 # Use "//Alice" for URI.
-./target/release/pontem key insert --keystore-path ~/.pontem/keystore-1 --key-type nmbs
+./target/release/pontem key insert --keystore-path ~/.pontem/keystore-1 --key-type nmbs --scheme sr25519
 ```
 
 Launch parachain node as collator:
