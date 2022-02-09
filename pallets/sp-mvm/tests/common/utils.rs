@@ -104,6 +104,17 @@ pub fn execute_tx(origin: AccountId, tx: &Asset, gas_limit: Option<u64>) -> PsRe
     result
 }
 
+/// Execute transaction script by Root.
+pub fn execute_tx_by_root(tx: &Asset, gas_limit: Option<u64>) -> PsResult {
+    let gas_limit = gas_limit.unwrap_or(DEFAULT_GAS_LIMIT);
+    // get bytecode:
+    let bc = tx.bytes().to_vec();
+    // execute VM tx:
+    let result = Mvm::execute(Origin::root(), bc, gas_limit);
+    eprintln!("execute tx result: {:?}", result);
+    result
+}
+
 pub fn check_storage_module<Bc: AsRef<[u8]>>(
     account_address: AccountAddress,
     bc: Bc,

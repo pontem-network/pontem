@@ -31,6 +31,8 @@ dove tx "transfer<0x1::KSM::KSM>(Alice, 2000)" -o=transfer_token.mvt
 dove tx "multisig_test()"
 dove tx "deposit_bank<0x1::NOX::NOX>(2000)" -o=deposit_bank_pont.mvt
 dove tx "deposit_bank<0x1::KSM::KSM>(2000)" -o=deposit_bank_ksm.mvt
+dove tx "signer_one()" -o=signer_user.mvt
+dove tx "signer_one(root)" -o=signer_root.mvt
 popd
 
 pushd ./root

@@ -95,4 +95,12 @@ pub mod transactions {
         "as_root",
         "tests/assets/user/build/assets/transaction/as_root.mvt",
     );
+    pub static ONE_SIGNER_USER: Asset = Asset::new(
+        "signer_user",
+        "tests/assets/user/build/assets/transaction/signer_user.mvt",
+    );
+    pub static ONE_SIGNER_ROOT: Asset = Asset::new(
+        "signer_root",
+        "tests/assets/user/build/assets/transaction/signer_root.mvt",
+    );
 }

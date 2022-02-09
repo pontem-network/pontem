@@ -57,3 +57,66 @@ fn execute_store_time() {
         check_stored_value(EXPECTED * TIME_BLOCK_MULTIPLIER);
     });
 }
+
+#[test]
+/// Test execution of transaction.
+/// Transaction __does not__ requires a root/sudo.
+/// The Call signied by __ordinar signer__.
+fn execute_with_one_signer() {
+    new_test_ext().execute_with(|| {
+        let origin = origin_ps_acc();
+        execute_tx(origin, &transactions::ONE_SIGNER_USER, None)
+            .expect("tx without root requirement called by ordinar signer")
+    });
+}
+
+#[test]
+/// Test execution of transaction.
+/// Transaction __requires__ a root/sudo signature.
+/// The Call signied by __sudo__.
+fn execute_with_one_signer_with_root_by_root() {
+    new_test_ext()
+        .execute_with(|| execute_tx_by_root(&transactions::ONE_SIGNER_ROOT, None))
+        .expect("tx with root requirement called by root origin");
+}
+
+#[test]
+#[should_panic(expected = "TransactionIsNotAllowedError")]
+/// Test execution of transaction.
+/// Transaction __does not__ requires a root/sudo.
+/// The Call signied by __sudo__.
+fn execute_with_one_signer_by_root() {
+    let error = new_test_ext()
+        .execute_with(|| execute_tx_by_root(&transactions::ONE_SIGNER_USER, None))
+        .expect_err("tx without root requirement called by root signer should fail")
+        .error;
+    unwrap_move_err_in_dispatch_err(&error);
+}
+
+#[test]
+#[should_panic(expected = "TransactionIsNotAllowedError")]
+/// Test execution of transaction.
+/// Transaction __requires__ a root/sudo signature.
+/// The Call signied by __ordinar signer__, not sudo/root.
+fn execute_with_one_signer_with_root() {
+    let error = new_test_ext()
+        .execute_with(|| {
+            let origin = origin_ps_acc();
+            execute_tx(origin, &transactions::ONE_SIGNER_ROOT, None)
+        })
+        .expect_err("tx with root requirement called by ordinar signer should fail")
+        .error;
+    unwrap_move_err_in_dispatch_err(&error);
+}
+
+/// Panics with inner message of the passed error.
+/// If message does not exist, just panics with debug render of entire error.
+fn unwrap_move_err_in_dispatch_err(err: &sp_runtime::DispatchError) -> ! {
+    match err {
+        sp_runtime::DispatchError::Module {
+            message: Some(message),
+            ..
+        } => panic!("{}", message),
+        _ => panic!("{:?}", err),
+    }
+}
