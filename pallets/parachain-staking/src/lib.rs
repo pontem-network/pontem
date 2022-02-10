@@ -79,9 +79,10 @@ pub mod pallet {
 
     /// Pallet for parachain staking
     #[pallet::pallet]
+    #[pallet::without_storage_info]
     pub struct Pallet<T>(PhantomData<T>);
 
-    #[derive(Default, Clone, Encode, Decode, RuntimeDebug, TypeInfo)]
+    #[derive(Clone, Encode, Decode, RuntimeDebug, TypeInfo)]
     pub struct Bond<AccountId, Balance> {
         pub owner: AccountId,
         pub amount: Balance,
@@ -133,7 +134,7 @@ pub mod pallet {
         }
     }
 
-    #[derive(Default, Encode, Decode, RuntimeDebug, TypeInfo)]
+    #[derive(Encode, Decode, RuntimeDebug, TypeInfo)]
     /// Snapshot of collator state at the start of the round for which they are selected
     pub struct CollatorSnapshot<AccountId, Balance> {
         pub bond: Balance,
@@ -642,16 +643,8 @@ pub mod pallet {
         /// Percent of inflation set aside for parachain bond account
         pub percent: Percent,
     }
-    impl<A: Default> Default for ParachainBondConfig<A> {
-        fn default() -> ParachainBondConfig<A> {
-            ParachainBondConfig {
-                account: A::default(),
-                percent: Percent::zero(),
-            }
-        }
-    }
 
-    #[derive(Encode, Decode, RuntimeDebug, Default, TypeInfo)]
+    #[derive(Encode, Decode, RuntimeDebug, TypeInfo)]
     /// Store and process all delayed exits by collators and nominators
     pub struct ExitQ<AccountId> {
         /// Candidate exit set
@@ -662,6 +655,14 @@ pub mod pallet {
         pub candidate_schedule: Vec<(AccountId, RoundIndex)>,
         /// [Nominator, Some(ValidatorId) || None => All Nominations, Round To Exit]
         pub nominator_schedule: Vec<(AccountId, Option<AccountId>, RoundIndex)>,
+    }
+
+    impl<A> Default for ExitQ<A> {
+        fn default() -> ExitQ<A> {
+            ExitQ {
+                ..Default::default()
+            }
+        }
     }
 
     impl<A: Ord + Clone> ExitQ<A> {
@@ -1088,7 +1089,7 @@ pub mod pallet {
             // Set parachain bond config to default config
             <ParachainBondInfo<T>>::put(ParachainBondConfig {
                 // must be set soon; if not => due inflation will be sent to collators/nominators
-                account: T::AccountId::default(),
+                account: T::AccountId::new([0; 32]),
                 percent: T::DefaultParachainBondReservePercent::get(),
             });
             // Set total selected candidates to minimum config
@@ -1169,9 +1170,11 @@ pub mod pallet {
                 account: old,
                 percent,
             } = <ParachainBondInfo<T>>::get();
-            ensure!(old != new, Error::<T>::NoWritingSameValue);
+            if let Some(old_account) = old {
+                ensure!(old_account != new, Error::<T>::NoWritingSameValue);
+            }
             <ParachainBondInfo<T>>::put(ParachainBondConfig {
-                account: new.clone(),
+                account: Some(new),
                 percent,
             });
             Self::deposit_event(Event::ParachainBondAccountSet(old, new));

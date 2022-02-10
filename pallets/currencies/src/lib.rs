@@ -22,7 +22,7 @@
 #![allow(clippy::unused_unit)]
 #![allow(clippy::upper_case_acronyms)]
 
-use codec::{Codec, FullCodec};
+use codec::{Codec, FullCodec, MaxEncodedLen};
 use frame_support::{
     pallet_prelude::*,
     traits::{
@@ -83,7 +83,8 @@ pub mod module {
             + Copy
             + MaybeSerializeDeserialize
             + Debug
-            + scale_info::TypeInfo;
+            + scale_info::TypeInfo
+            + MaxEncodedLen;
         type MultiCurrency: TransferAll<Self::AccountId>
             + MultiCurrencyExtended<Self::AccountId, CurrencyId = Self::CurrencyId>
             + MultiLockableCurrency<Self::AccountId, CurrencyId = Self::CurrencyId>
@@ -859,7 +860,8 @@ where
         + Copy
         + MaybeSerializeDeserialize
         + Debug
-        + Default,
+        + Default
+        + MaxEncodedLen,
     Currency: PalletCurrency<AccountId>,
     T: Config,
 {

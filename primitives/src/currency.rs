@@ -4,7 +4,7 @@ use sp_std::convert::TryFrom;
 use sp_std::vec::Vec;
 use sp_std::cmp::PartialEq;
 use sp_std::default::Default;
-use codec::{Decode, Encode};
+use codec::{Decode, Encode, MaxEncodedLen};
 use scale_info::TypeInfo;
 
 #[cfg(feature = "std")]
@@ -157,7 +157,7 @@ pub const NATIVE_SYM: &'static [u8] = {
 #[cfg(not(feature = "pont"))]
 def_currencies! {
     /// Currencies id.
-    #[derive(Encode, Decode, Eq, PartialEq, Copy, Clone, RuntimeDebug, PartialOrd, Ord, TypeInfo)]
+    #[derive(Encode, Decode, Eq, PartialEq, Copy, Clone, RuntimeDebug, PartialOrd, Ord, TypeInfo, MaxEncodedLen)]
     #[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
     pub enum CurrencyId {
         /// Our native currency.
