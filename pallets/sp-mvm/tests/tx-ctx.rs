@@ -28,32 +28,44 @@ fn check_stored_value(expected: u64) {
 
 #[test]
 fn execute_store_block() {
-    new_test_ext().execute_with(|| {
-        let origin = bob_public_key();
+    RuntimeBuilder::new()
+        .set_balances(vec![
+            (bob_public_key(), CurrencyId::NATIVE, INITIAL_BALANCE),
+            (alice_public_key(), CurrencyId::NATIVE, INITIAL_BALANCE),
+        ])
+        .build()
+        .execute_with(|| {
+            let origin = bob_public_key();
 
-        publish_module(origin, &modules::user::STORE, None).unwrap();
+            publish_module(origin, &modules::user::STORE, None).unwrap();
 
-        const EXPECTED: u64 = 3;
-        for _ in 0..EXPECTED {
-            roll_next_block();
-        }
-        execute_tx(origin, &transactions::STORE_SYSTEM_BLOCK, None).unwrap();
-        check_stored_value(EXPECTED);
-    });
+            const EXPECTED: u64 = 3;
+            for _ in 0..EXPECTED {
+                roll_next_block();
+            }
+            execute_tx(origin, &transactions::STORE_SYSTEM_BLOCK, None).unwrap();
+            check_stored_value(EXPECTED);
+        });
 }
 
 #[test]
 fn execute_store_time() {
-    new_test_ext().execute_with(|| {
-        let origin = bob_public_key();
+    RuntimeBuilder::new()
+        .set_balances(vec![
+            (bob_public_key(), CurrencyId::NATIVE, INITIAL_BALANCE),
+            (alice_public_key(), CurrencyId::NATIVE, INITIAL_BALANCE),
+        ])
+        .build()
+        .execute_with(|| {
+            let origin = bob_public_key();
 
-        publish_module(origin, &modules::user::STORE, None).unwrap();
+            publish_module(origin, &modules::user::STORE, None).unwrap();
 
-        const EXPECTED: u64 = 3;
-        for _ in 0..EXPECTED {
-            roll_next_block();
-        }
-        execute_tx(origin, &transactions::STORE_SYSTEM_TIMESTAMP, None).unwrap();
-        check_stored_value(EXPECTED * TIME_BLOCK_MULTIPLIER);
-    });
+            const EXPECTED: u64 = 3;
+            for _ in 0..EXPECTED {
+                roll_next_block();
+            }
+            execute_tx(origin, &transactions::STORE_SYSTEM_TIMESTAMP, None).unwrap();
+            check_stored_value(EXPECTED * TIME_BLOCK_MULTIPLIER);
+        });
 }

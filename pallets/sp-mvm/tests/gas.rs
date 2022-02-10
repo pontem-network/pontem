@@ -21,37 +21,58 @@ fn check_out_of_gas(error: DispatchError) {
 
 #[test]
 fn publish_module_gas_limit() {
-    new_test_ext().execute_with(|| {
-        let res =
-            utils::publish_module_as_root(&modules::user::EVENT_PROXY, Some(MINIMAL_GAS_LIMIT));
+    RuntimeBuilder::new()
+        .set_balances(vec![
+            (bob_public_key(), CurrencyId::NATIVE, INITIAL_BALANCE),
+            (alice_public_key(), CurrencyId::NATIVE, INITIAL_BALANCE),
+        ])
+        .build()
+        .execute_with(|| {
+            let res = utils::publish_module_as_root(
+                &modules::user::EVENT_PROXY,
+                Some(MINIMAL_GAS_LIMIT),
+            );
 
-        let error = res.unwrap_err().error;
-        check_out_of_gas(error);
-    });
+            let error = res.unwrap_err().error;
+            check_out_of_gas(error);
+        });
 }
 
 #[test]
 fn publish_gas_limit() {
-    new_test_ext().execute_with(|| {
-        let origin = bob_public_key();
+    RuntimeBuilder::new()
+        .set_balances(vec![
+            (bob_public_key(), CurrencyId::NATIVE, INITIAL_BALANCE),
+            (alice_public_key(), CurrencyId::NATIVE, INITIAL_BALANCE),
+        ])
+        .build()
+        .execute_with(|| {
+            let origin = bob_public_key();
 
-        let res = utils::publish_module(origin, &modules::user::STORE, Some(MINIMAL_GAS_LIMIT));
+            let res =
+                utils::publish_module(origin, &modules::user::STORE, Some(MINIMAL_GAS_LIMIT));
 
-        let error = res.unwrap_err().error;
-        check_out_of_gas(error);
-    });
+            let error = res.unwrap_err().error;
+            check_out_of_gas(error);
+        });
 }
 
 #[test]
 fn execute_gas_limit() {
-    new_test_ext().execute_with(|| {
-        const GAS_LIMIT: u64 = 500_000;
+    RuntimeBuilder::new()
+        .set_balances(vec![
+            (bob_public_key(), CurrencyId::NATIVE, INITIAL_BALANCE),
+            (alice_public_key(), CurrencyId::NATIVE, INITIAL_BALANCE),
+        ])
+        .build()
+        .execute_with(|| {
+            const GAS_LIMIT: u64 = 500_000;
 
-        let origin = bob_public_key();
+            let origin = bob_public_key();
 
-        let res = common::utils::execute_tx(origin, &transactions::INF_LOOP, Some(GAS_LIMIT));
+            let res = common::utils::execute_tx(origin, &transactions::INF_LOOP, Some(GAS_LIMIT));
 
-        let error = res.unwrap_err().error;
-        check_out_of_gas(error);
-    });
+            let error = res.unwrap_err().error;
+            check_out_of_gas(error);
+        });
 }

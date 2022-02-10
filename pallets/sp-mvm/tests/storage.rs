@@ -10,32 +10,44 @@ use common::utils;
 
 #[test]
 fn publish_module() {
-    new_test_ext().execute_with(|| {
-        let origin = bob_public_key();
-        utils::publish_module(origin, &modules::user::STORE, None).unwrap();
-    });
+    RuntimeBuilder::new()
+        .set_balances(vec![
+            (bob_public_key(), CurrencyId::NATIVE, INITIAL_BALANCE),
+            (alice_public_key(), CurrencyId::NATIVE, INITIAL_BALANCE),
+        ])
+        .build()
+        .execute_with(|| {
+            let origin = bob_public_key();
+            utils::publish_module(origin, &modules::user::STORE, None).unwrap();
+        });
 }
 
 #[test]
 fn execute_script() {
-    new_test_ext().execute_with(|| {
-        let origin = bob_public_key();
+    RuntimeBuilder::new()
+        .set_balances(vec![
+            (bob_public_key(), CurrencyId::NATIVE, INITIAL_BALANCE),
+            (alice_public_key(), CurrencyId::NATIVE, INITIAL_BALANCE),
+        ])
+        .build()
+        .execute_with(|| {
+            let origin = bob_public_key();
 
-        utils::publish_module(origin, &modules::user::STORE, None).unwrap();
+            utils::publish_module(origin, &modules::user::STORE, None).unwrap();
 
-        #[derive(Deserialize, Debug, PartialEq)]
-        struct StoreU64 {
-            pub val: u64,
-        }
+            #[derive(Deserialize, Debug, PartialEq)]
+            struct StoreU64 {
+                pub val: u64,
+            }
 
-        utils::execute_tx(origin, &transactions::STORE_U64, None).unwrap();
+            utils::execute_tx(origin, &transactions::STORE_U64, None).unwrap();
 
-        let tag = StructTag {
-            address: origin_move_addr(),
-            module: Identifier::new(modules::user::STORE.name()).unwrap(),
-            name: Identifier::new("U64").unwrap(),
-            type_params: vec![],
-        };
-        utils::check_storage_res(to_move_addr(origin), tag, StoreU64 { val: 42 });
-    });
+            let tag = StructTag {
+                address: origin_move_addr(),
+                module: Identifier::new(modules::user::STORE.name()).unwrap(),
+                name: Identifier::new("U64").unwrap(),
+                type_params: vec![],
+            };
+            utils::check_storage_res(to_move_addr(origin), tag, StoreU64 { val: 42 });
+        });
 }

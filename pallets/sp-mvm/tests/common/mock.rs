@@ -24,8 +24,6 @@ use scale_info::TypeInfo;
 pub use primitives::currency::CurrencyId;
 use module_currencies::BasicCurrencyAdapter;
 
-use super::addr::bob_public_key;
-use super::addr::alice_public_key;
 use super::vm_config::build as build_vm_config;
 
 type UncheckedExtrinsic = system::mocking::MockUncheckedExtrinsic<Test>;
@@ -252,39 +250,91 @@ pub type Sys = system::Pallet<Test>;
 pub type Time = timestamp::Pallet<Test>;
 pub type MoveEvent = sp_mvm::Event<Test>;
 
-/// Build genesis storage according to the mock runtime.
-pub fn new_test_ext() -> sp_io::TestExternalities {
-    let mut sys = system::GenesisConfig::default()
-        .build_storage::<Test>()
-        .expect("Frame system builds valid default genesis config");
-    balances::GenesisConfig::<Test> {
-        balances: vec![
-            (bob_public_key(), INITIAL_BALANCE),
-            (alice_public_key(), INITIAL_BALANCE),
-        ],
+/// Runtime builder.
+pub struct RuntimeBuilder {
+    balances: Vec<(AccountId, CurrencyId, Balance)>,
+    vesting: Vec<(AccountId, BlockNumber, u32, Balance)>,
+    paused: Vec<(Vec<u8>, Vec<u8>)>,
+    parachain_id: Option<u32>,
+}
+
+impl RuntimeBuilder {
+    /// Create new Runtime builder instance.
+    pub fn new() -> Self {
+        Self {
+            balances: vec![],
+            vesting: vec![],
+            paused: vec![],
+            parachain_id: None,
+        }
     }
-    .assimilate_storage(&mut sys)
-    .expect("Pallet balances storage can't be assimilated");
 
-    let vm_config = build_vm_config();
-
-    let move_stdlib =
-        include_bytes!("../assets/move-stdlib/build/MoveStdlib/bundles/MoveStdlib.pac").to_vec();
-    let pont_framework =
-        include_bytes!("../assets/pont-stdlib/build/PontStdlib/bundles/PontStdlib.pac").to_vec();
-
-    sp_mvm::GenesisConfig::<Test> {
-        move_stdlib,
-        pont_framework,
-        init_module: vm_config.0.clone(),
-        init_func: vm_config.1.clone(),
-        init_args: vm_config.2.clone(),
-        ..Default::default()
+    /// Set balances.
+    pub fn set_balances(mut self, balances: Vec<(AccountId, CurrencyId, Balance)>) -> Self {
+        self.balances = balances;
+        self
     }
-    .assimilate_storage(&mut sys)
-    .expect("Pallet mvm storage can't be assimilated");
 
-    sys.into()
+    /// Set vesting.
+    pub fn set_vesting(mut self, vesting: Vec<(AccountId, BlockNumber, u32, Balance)>) -> Self {
+        self.vesting = vesting;
+        self
+    }
+
+    /// Set paused transactions.
+    pub fn set_paused(mut self, paused: Vec<(Vec<u8>, Vec<u8>)>) -> Self {
+        self.paused = paused;
+        self
+    }
+
+    /// Parachain id.
+    pub fn set_parachain_id(mut self, parachain_id: u32) -> Self {
+        self.parachain_id = Some(parachain_id);
+        self
+    }
+
+    /// Build genesis storage according to the mock runtime.
+    pub fn build(self) -> sp_io::TestExternalities {
+        let mut sys = system::GenesisConfig::default()
+            .build_storage::<Test>()
+            .expect("Frame system builds valid default genesis config");
+
+        let native_currency_id = GetNativeCurrencyId::get();
+
+        balances::GenesisConfig::<Test> {
+            balances: self
+                .balances
+                .clone()
+                .into_iter()
+                .filter(|(_, currency_id, _)| *currency_id == native_currency_id)
+                .map(|(account_id, _, initial_balance)| (account_id, initial_balance))
+                .collect::<Vec<_>>(),
+        }
+        .assimilate_storage(&mut sys)
+        .expect("Pallet balances storage can't be assimilated");
+
+        let vm_config = build_vm_config();
+
+        let move_stdlib =
+            include_bytes!("../assets/move-stdlib/build/MoveStdlib/bundles/MoveStdlib.pac")
+                .to_vec();
+        let pont_framework =
+            include_bytes!("../assets/pont-stdlib/build/PontStdlib/bundles/PontStdlib.pac")
+                .to_vec();
+
+        sp_mvm::GenesisConfig::<Test> {
+            move_stdlib,
+            pont_framework,
+            init_module: vm_config.0.clone(),
+            init_func: vm_config.1.clone(),
+            init_args: vm_config.2.clone(),
+            ..Default::default()
+        }
+        .assimilate_storage(&mut sys)
+        .expect("Pallet mvm storage can't be assimilated");
+
+        sys.into()
+    }
 }
 
 pub const TIME_BLOCK_MULTIPLIER: u64 = 100;
