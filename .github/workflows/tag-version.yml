@@ -17,7 +17,7 @@ jobs:
         name: try create tag
         uses: pontem-network/tag-crate-version@main
         with:
-          crate: pontem-node
+          crate: pontem
           version-to-tag: "v$1"
           token: ${{ secrets.GITHUB_TOKEN }}
 

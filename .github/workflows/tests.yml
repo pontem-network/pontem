@@ -33,19 +33,13 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - id: rust # MSRV
-        name: use required Rust version
-        run: |
-          echo "WASM_BUILD_TOOLCHAIN=$(cat rust-toolchain)" >> $GITHUB_ENV
-          echo ::set-output name=version::$(cat rust-toolchain)
-
       - name: Install Rust toolchain
-        uses: actions-rs/toolchain@v1
+        # uses: actions-rs/toolchain@v1
+        uses: zephraph/toolchain@support-toolchain-toml
         with:
-          toolchain: ${{ steps.rust.outputs.version }}
           profile: minimal
           components: rustfmt
-          override: false
+          override: true
 
       - name: Check formatting
         run: cargo fmt -- --check
@@ -66,7 +60,7 @@ jobs:
         run: make assets
 
       - name: Tests
-        run: cargo +${{ steps.rust.outputs.version }} test --all --no-fail-fast -- --nocapture --test-threads=1
+        run: cargo test --all --no-fail-fast -- --nocapture --test-threads=1
         env: { SKIP_WASM_BUILD: 1 }
 
   clippy:
@@ -89,16 +83,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - id: rust # MSRV
-        name: use required Rust version
-        run: |
-          echo "WASM_BUILD_TOOLCHAIN=$(cat rust-toolchain)" >> $GITHUB_ENV
-          echo ::set-output name=version::$(cat rust-toolchain)
-
       - name: Install Rust toolchain
-        uses: actions-rs/toolchain@v1
+        # uses: actions-rs/toolchain@v1
+        uses: zephraph/toolchain@support-toolchain-toml
         with:
-          toolchain: ${{ steps.rust.outputs.version }}
           profile: minimal
           components: clippy
           target: wasm32-unknown-unknown
@@ -115,7 +103,6 @@ jobs:
         uses: actions-rs/clippy-check@v1
         with:
           name: Clippy report
-          toolchain: ${{ steps.rust.outputs.version }}
           token: ${{ secrets.GITHUB_TOKEN }}
           args: -p=sp-mvm -p=sp-mvm-rpc -p=sp-mvm-rpc-runtime
 
@@ -141,19 +128,13 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - id: rust # MSRV
-        name: use required Rust version
-        run: |
-          echo "WASM_BUILD_TOOLCHAIN=$(cat rust-toolchain)" >> $GITHUB_ENV
-          echo ::set-output name=version::$(cat rust-toolchain)
-
       - name: Install Rust toolchain
-        uses: actions-rs/toolchain@v1
+        # uses: actions-rs/toolchain@v1
+        uses: zephraph/toolchain@support-toolchain-toml
         with:
-          toolchain: ${{ steps.rust.outputs.version }}
           profile: minimal
           target: wasm32-unknown-unknown
-          override: false
+          override: true
 
       - name: get dove
         uses: pontem-network/get-dove@main
@@ -163,7 +144,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build
-        run: cargo +${{ steps.rust.outputs.version }} build --all
+        run: cargo build --all
 
       - name: make artifact
         if: "contains(github.event.head_commit.message, 'save artifact') || contains(github.event.head_commit.message, '+artifact')"
@@ -198,19 +179,13 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - id: rust # MSRV
-        name: use required Rust version
-        run: |
-          echo "WASM_BUILD_TOOLCHAIN=$(cat rust-toolchain)" >> $GITHUB_ENV
-          echo ::set-output name=version::$(cat rust-toolchain)
-
       - name: Install Rust toolchain
-        uses: actions-rs/toolchain@v1
+        # uses: actions-rs/toolchain@v1
+        uses: zephraph/toolchain@support-toolchain-toml
         with:
-          toolchain: ${{ steps.rust.outputs.version }}
           profile: minimal
           target: wasm32-unknown-unknown
-          override: false
+          override: true
 
       - name: get dove
         uses: pontem-network/get-dove@main
@@ -220,7 +195,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build
-        run: cargo +${{ steps.rust.outputs.version }} build --features "runtime-benchmarks" --release
+        run: cargo build --features "runtime-benchmarks" --release
 
       - name: Run benchmarks
         run: |
