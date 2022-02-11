@@ -1,5 +1,5 @@
 #![allow(dead_code)]
-
+/// Utils functions to work with Move VM.
 use std::convert::TryFrom;
 use frame_support::dispatch::DispatchResultWithPostInfo as PsResult;
 use move_core_types::account_address::AccountAddress;
@@ -20,9 +20,10 @@ use super::addr::*;
 
 pub type AccountId = <Test as frame_system::Config>::AccountId;
 
+/// Default gas limit.
 const DEFAULT_GAS_LIMIT: u64 = 1_000_000;
 
-/// Publish module __with__ storage check
+/// Publish module with storage check.
 pub fn publish_module(signer: AccountId, module: &Asset, gas_limit: Option<u64>) -> PsResult {
     let result = Mvm::publish_module(
         Origin::signed(signer),
@@ -33,7 +34,7 @@ pub fn publish_module(signer: AccountId, module: &Asset, gas_limit: Option<u64>)
     Ok(result)
 }
 
-/// Publish module as root __with__ storage check
+/// Publish module as root with storage check.
 pub fn publish_module_as_root(module: &Asset, gas_limit: Option<u64>) -> PsResult {
     let result = Mvm::publish_module(
         Origin::root(),
@@ -44,9 +45,7 @@ pub fn publish_module_as_root(module: &Asset, gas_limit: Option<u64>) -> PsResul
     Ok(result)
 }
 
-/// Publish package.
-///
-/// Publish package __with__ storage check
+/// Publish package with storage check.
 pub fn publish_package(signer: AccountId, package: &Package, gas_limit: Option<u64>) -> PsResult {
     let result = Mvm::publish_package(
         Origin::signed(signer),
@@ -61,7 +60,7 @@ pub fn publish_package(signer: AccountId, package: &Package, gas_limit: Option<u
     Ok(result)
 }
 
-/// Publish package as root __with__ storage check.
+/// Publish package as root with storage check.
 pub fn publish_package_as_root(package: &Package, gas_limit: Option<u64>) -> PsResult {
     let result = Mvm::publish_package(
         Origin::root(),
@@ -87,6 +86,7 @@ pub fn execute_tx(origin: AccountId, tx: &Asset, gas_limit: Option<u64>) -> PsRe
     result
 }
 
+/// Check storage contains module.
 pub fn check_storage_module<Bc: AsRef<[u8]>>(
     account_address: AccountAddress,
     bc: Bc,
@@ -102,6 +102,7 @@ pub fn check_storage_module<Bc: AsRef<[u8]>>(
     assert_eq!(bc.as_ref(), &stored);
 }
 
+/// Check storage contains package.
 pub fn check_storage_package<Bc: AsRef<[u8]>>(
     account_address: AccountAddress,
     bytecode: Bc,
@@ -117,6 +118,7 @@ pub fn check_storage_package<Bc: AsRef<[u8]>>(
     }
 }
 
+/// Check resource value inside storage.
 pub fn check_storage_res<T>(owner: AccountAddress, ty: StructTag, expected: T)
 where
     T: for<'de> serde::Deserialize<'de>,

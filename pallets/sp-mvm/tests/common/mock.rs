@@ -1,5 +1,5 @@
 #![allow(dead_code)]
-
+/// Mock runtime.
 use groupsign::weights::PontemWeights;
 use sp_mvm::gas;
 use sp_core::{H256, sr25519};
@@ -217,7 +217,7 @@ impl module_currencies::Config for Test {
     type OnDust = ();
 }
 
-// ----------------- //
+// -------- move vm pallet --------- //
 parameter_types! {
     pub const MVMPalletId: PalletId = PalletId(*b"_nox/mvm");
 }
@@ -254,8 +254,6 @@ pub type MoveEvent = sp_mvm::Event<Test>;
 pub struct RuntimeBuilder {
     balances: Vec<(AccountId, CurrencyId, Balance)>,
     vesting: Vec<(AccountId, BlockNumber, u32, Balance)>,
-    paused: Vec<(Vec<u8>, Vec<u8>)>,
-    parachain_id: Option<u32>,
 }
 
 impl RuntimeBuilder {
@@ -264,8 +262,6 @@ impl RuntimeBuilder {
         Self {
             balances: vec![],
             vesting: vec![],
-            paused: vec![],
-            parachain_id: None,
         }
     }
 
@@ -278,18 +274,6 @@ impl RuntimeBuilder {
     /// Set vesting.
     pub fn set_vesting(mut self, vesting: Vec<(AccountId, BlockNumber, u32, Balance)>) -> Self {
         self.vesting = vesting;
-        self
-    }
-
-    /// Set paused transactions.
-    pub fn set_paused(mut self, paused: Vec<(Vec<u8>, Vec<u8>)>) -> Self {
-        self.paused = paused;
-        self
-    }
-
-    /// Parachain id.
-    pub fn set_parachain_id(mut self, parachain_id: u32) -> Self {
-        self.parachain_id = Some(parachain_id);
         self
     }
 
@@ -337,9 +321,11 @@ impl RuntimeBuilder {
     }
 }
 
+/// Timestamp multiplier.
 pub const TIME_BLOCK_MULTIPLIER: u64 = 100;
+
+/// Roll next block.
 pub fn roll_next_block() {
-    // Stake::on_finalize(Sys::block_number());
     Balances::on_finalize(Sys::block_number());
     Mvm::on_finalize(Sys::block_number());
     Sys::on_finalize(Sys::block_number());
@@ -347,7 +333,6 @@ pub fn roll_next_block() {
     Sys::on_initialize(Sys::block_number());
     Mvm::on_initialize(Sys::block_number());
     Balances::on_initialize(Sys::block_number());
-    // Stake::on_initialize(Sys::block_number());
 
     // set time with multiplier `*MULTIPLIER` by block:
     Time::set_timestamp(Sys::block_number() * TIME_BLOCK_MULTIPLIER);
@@ -355,12 +340,14 @@ pub fn roll_next_block() {
     println!("now block: {}, time: {}", Sys::block_number(), Time::get());
 }
 
+/// Roll to block N.
 pub fn roll_block_to(n: u64) {
     while Sys::block_number() < n {
         roll_next_block()
     }
 }
 
+/// Get last event.
 pub fn last_event() -> Event {
     {
         let events = Sys::events();
@@ -369,6 +356,7 @@ pub fn last_event() -> Event {
     Sys::events().pop().expect("Event expected").event
 }
 
+/// If no events recently.
 pub fn have_no_events() -> bool {
     Sys::events().is_empty()
 }

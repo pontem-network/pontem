@@ -1,3 +1,4 @@
+/// Tests related to balances and balance adapter.
 use frame_support::{
     traits::VestingSchedule, assert_ok, assert_err_ignore_postinfo, dispatch::DispatchError,
 };
@@ -10,7 +11,7 @@ mod common;
 use common::assets::{modules, transactions};
 use common::mock::*;
 use common::addr::*;
-use common::utils::*;
+use common::utils;
 use test_log::test;
 
 use orml_traits::{MultiCurrency, MultiLockableCurrency};
@@ -39,7 +40,7 @@ where
         name: Identifier::new("U128").unwrap(),
         type_params: vec![],
     };
-    check_storage_res(address, tag, expected);
+    utils::check_storage_res(address, tag, expected);
 }
 
 fn check_storage_u64<T>(address: AccountAddress, expected: T)
@@ -55,25 +56,27 @@ where
         name: Identifier::new("U64").unwrap(),
         type_params: vec![],
     };
-    check_storage_res(address, tag, expected);
+    utils::check_storage_res(address, tag, expected);
 }
-/// Get native token balance inside VM.
+
 #[test]
+/// Get native token balance inside VM.
 fn execute_get_balance() {
     RuntimeBuilder::new()
-        .set_balances(vec![
-            (bob_public_key(), CurrencyId::NATIVE, INITIAL_BALANCE),
-            (alice_public_key(), CurrencyId::NATIVE, INITIAL_BALANCE),
-        ])
+        .set_balances(vec![(
+            bob_public_key(),
+            CurrencyId::NATIVE,
+            INITIAL_BALANCE,
+        )])
         .build()
         .execute_with(|| {
             let account = bob_public_key();
 
             // publish user module:
-            publish_module(account, &modules::user::STORE, None).unwrap();
+            utils::publish_module(account, &modules::user::STORE, None).unwrap();
 
             // execute tx:
-            let result = execute_tx(account, &transactions::STORE_NATIVE_BALANCE, None);
+            let result = utils::execute_tx(account, &transactions::STORE_NATIVE_BALANCE, None);
             assert_ok!(result);
 
             // check storage:
@@ -84,8 +87,8 @@ fn execute_get_balance() {
         });
 }
 
-/// Get token balance inside VM.
 #[test]
+/// Get token balance inside VM.
 fn execute_get_token_balance() {
     RuntimeBuilder::new()
         .set_balances(vec![
@@ -104,10 +107,10 @@ fn execute_get_token_balance() {
             ));
 
             // publish user module:
-            publish_module(account, &modules::user::STORE, None).unwrap();
+            utils::publish_module(account, &modules::user::STORE, None).unwrap();
 
             // execute tx:
-            let result = execute_tx(account, &transactions::STORE_TOKEN_BALANCE, None);
+            let result = utils::execute_tx(account, &transactions::STORE_TOKEN_BALANCE, None);
             assert_ok!(result);
 
             // check storage:
@@ -118,8 +121,8 @@ fn execute_get_token_balance() {
         });
 }
 
-/// Transfer native token inside VM.
 #[test]
+/// Transfer native token inside VM.
 fn execute_transfer() {
     RuntimeBuilder::new()
         .set_balances(vec![
@@ -135,10 +138,10 @@ fn execute_transfer() {
             let bob_init_balance = balances::Pallet::<Test>::free_balance(&bob);
 
             // publish user module
-            publish_module(bob, &modules::user::STORE, None).unwrap();
+            utils::publish_module(bob, &modules::user::STORE, None).unwrap();
 
             // execute tx:
-            let result = execute_tx(bob, &transactions::TRANSFER, None);
+            let result = utils::execute_tx(bob, &transactions::TRANSFER, None);
             assert_ok!(result);
 
             // check storage balance:
@@ -154,8 +157,8 @@ fn execute_transfer() {
         });
 }
 
-/// Transfer tokens inside VM.
 #[test]
+/// Transfer tokens inside VM.
 fn execute_token_transfer() {
     RuntimeBuilder::new()
         .set_balances(vec![
@@ -177,10 +180,10 @@ fn execute_token_transfer() {
             let bob_init_balance = orml_tokens::Pallet::<Test>::free_balance(currency, &bob);
 
             // publish user module
-            publish_module(bob, &modules::user::STORE, None).unwrap();
+            utils::publish_module(bob, &modules::user::STORE, None).unwrap();
 
             // execute tx:
-            let result = execute_tx(bob, &transactions::TRANSFER_TOKEN, None);
+            let result = utils::execute_tx(bob, &transactions::TRANSFER_TOKEN, None);
             assert_ok!(result);
 
             // check storage balance:
@@ -197,8 +200,8 @@ fn execute_token_transfer() {
         });
 }
 
-/// Trying to transfer vested native balance inside VM, should fail.
 #[test]
+/// Trying to transfer vested native balance inside VM, should fail.
 fn transfer_vested_fails() {
     RuntimeBuilder::new()
         .set_balances(vec![
@@ -220,11 +223,11 @@ fn transfer_vested_fails() {
             ));
 
             // publish user module
-            publish_module(bob, &modules::user::STORE, None).unwrap();
+            utils::publish_module(bob, &modules::user::STORE, None).unwrap();
 
             // execute tx:
             // should return error.
-            let result = execute_tx(bob, &transactions::TRANSFER, None);
+            let result = utils::execute_tx(bob, &transactions::TRANSFER, None);
             assert_err_ignore_postinfo!(
                 result,
                 DispatchError::Module {
@@ -236,8 +239,8 @@ fn transfer_vested_fails() {
         });
 }
 
-/// Trying to transfer vested token balance inside VM, should fail.
 #[test]
+/// Trying to transfer vested token balance inside VM, should fail.
 fn transfer_token_vested_fails() {
     RuntimeBuilder::new()
         .set_balances(vec![
@@ -260,11 +263,11 @@ fn transfer_token_vested_fails() {
             ));
 
             // publish user module
-            publish_module(bob, &modules::user::STORE, None).unwrap();
+            utils::publish_module(bob, &modules::user::STORE, None).unwrap();
 
             // execute tx:
             // should return error.
-            let result = execute_tx(bob, &transactions::TRANSFER_TOKEN, None);
+            let result = utils::execute_tx(bob, &transactions::TRANSFER_TOKEN, None);
             assert_err_ignore_postinfo!(
                 result,
                 DispatchError::Module {
@@ -276,8 +279,8 @@ fn transfer_token_vested_fails() {
         });
 }
 
-/// Check total issuance during transfer native token to Move module.
 #[test]
+/// Check total issuance during transfer native token to Move module.
 fn check_total_supply() {
     RuntimeBuilder::new()
         .set_balances(vec![
@@ -293,10 +296,10 @@ fn check_total_supply() {
             let bob_init_balance = balances::Pallet::<Test>::free_balance(&bob);
 
             // publish bank module
-            publish_module(bob, &modules::user::BANK, None).unwrap();
+            utils::publish_module(bob, &modules::user::BANK, None).unwrap();
 
             // execute tx:
-            let result = execute_tx(bob, &transactions::DEPOSIT_BANK_PONT, None);
+            let result = utils::execute_tx(bob, &transactions::DEPOSIT_BANK_PONT, None);
             assert_ok!(result);
 
             // check bob balance after script
@@ -309,8 +312,8 @@ fn check_total_supply() {
         });
 }
 
-/// Check total issuance during transfer tokens to Move module.
 #[test]
+/// Check total issuance during transfer tokens to Move module.
 fn check_token_total_supply() {
     RuntimeBuilder::new()
         .set_balances(vec![
@@ -332,10 +335,10 @@ fn check_token_total_supply() {
             let bob_init_balance = orml_tokens::Pallet::<Test>::free_balance(currency, &bob);
 
             // publish bank module
-            publish_module(bob, &modules::user::BANK, None).unwrap();
+            utils::publish_module(bob, &modules::user::BANK, None).unwrap();
 
             // execute tx:
-            let result = execute_tx(bob, &transactions::DEPOSIT_BANK_KSM, None);
+            let result = utils::execute_tx(bob, &transactions::DEPOSIT_BANK_KSM, None);
             assert_ok!(result);
 
             // check bob balance after script
