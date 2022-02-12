@@ -7,7 +7,7 @@ description = "Maps AuthorIds to AccountIds Useful for associating consensus aut
 
 [dependencies]
 log = { version = "0.4", default-features = false }
-nimbus-primitives = { git = "https://github.com/pontem-network/nimbus", branch = "polkadot-v0.9.13", default-features = false }
+nimbus-primitives = { git = "https://github.com/pontem-network/nimbus.git", branch = "polkadot-v0.9.13", default-features = false }
 frame-support = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.13", default-features = false }
 frame-system = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.13", default-features = false }
 parity-scale-codec = { version = "2.0.0", default-features = false, features=["derive"] }
