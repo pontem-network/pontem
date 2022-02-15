@@ -28,7 +28,6 @@ use sp_std::convert::TryInto;
 use sp_std::vec::Vec;
 use nimbus_primitives::NimbusId;
 
-
 /// Migrates the AuthorMapping's storage map fro mthe insecure Twox64 hasher to the secure
 /// BlakeTwo hasher.
 pub struct TwoXToBlake<T>(PhantomData<T>);

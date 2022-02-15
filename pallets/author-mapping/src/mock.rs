@@ -42,18 +42,18 @@ pub enum TestAuthor {
     Charlie,
 }
 impl Default for TestAuthor {
-	fn default() -> TestAuthor {
-		TestAuthor::Alice
-	}
+    fn default() -> TestAuthor {
+        TestAuthor::Alice
+    }
 }
 impl Into<NimbusId> for TestAuthor {
-	fn into(self) -> NimbusId {
-		match self {
-			Self::Alice => NimbusId::from_slice(&[0u8; 32]).unwrap(),
-			Self::Bob => NimbusId::from_slice(&[1u8; 32]).unwrap(),
-			Self::Charlie => NimbusId::from_slice(&[2u8; 32]).unwrap(),
-		}
-	}
+    fn into(self) -> NimbusId {
+        match self {
+            Self::Alice => NimbusId::from_slice(&[0u8; 32]).unwrap(),
+            Self::Bob => NimbusId::from_slice(&[1u8; 32]).unwrap(),
+            Self::Charlie => NimbusId::from_slice(&[2u8; 32]).unwrap(),
+        }
+    }
 }
 pub type AccountId = u64;
 pub type Balance = u128;

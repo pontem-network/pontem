@@ -43,7 +43,19 @@ use serde::{Deserialize, Serialize};
 use scale_info::TypeInfo;
 
 // Currencies id.
-#[derive(Encode, Decode, Eq, PartialEq, Copy, Clone, RuntimeDebug, PartialOrd, Ord, TypeInfo, MaxEncodedLen)]
+#[derive(
+    Encode,
+    Decode,
+    Eq,
+    PartialEq,
+    Copy,
+    Clone,
+    RuntimeDebug,
+    PartialOrd,
+    Ord,
+    TypeInfo,
+    MaxEncodedLen,
+)]
 #[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
 pub enum CurrencyId {
     // Relaychain's currency.
@@ -88,7 +100,7 @@ impl frame_system::Config for Runtime {
     type SystemWeightInfo = ();
     type SS58Prefix = ();
     type OnSetCode = ();
-    type MaxConsumers = ConstU32<12>; 
+    type MaxConsumers = ConstU32<12>;
 }
 
 type Balance = u128;

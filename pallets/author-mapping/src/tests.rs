@@ -32,7 +32,10 @@ fn genesis_builder_works() {
             assert!(System::events().is_empty());
             assert_eq!(Balances::free_balance(&1), 900);
             assert_eq!(Balances::reserved_balance(&1), 100);
-            assert_eq!(AuthorMapping::account_id_of(&TestAuthor::Alice.into()), Some(1));
+            assert_eq!(
+                AuthorMapping::account_id_of(&TestAuthor::Alice.into()),
+                Some(1)
+            );
             assert_eq!(AuthorMapping::account_id_of(&TestAuthor::Bob.into()), None);
         })
 }
@@ -50,7 +53,10 @@ fn eligible_account_can_register() {
 
             assert_eq!(Balances::free_balance(&2), 900);
             assert_eq!(Balances::reserved_balance(&2), 100);
-            assert_eq!(AuthorMapping::account_id_of(&TestAuthor::Bob.into()), Some(2));
+            assert_eq!(
+                AuthorMapping::account_id_of(&TestAuthor::Bob.into()),
+                Some(2)
+            );
 
             assert_eq!(
                 last_event(),
@@ -71,7 +77,10 @@ fn cannot_register_without_deposit() {
             );
 
             assert_eq!(Balances::free_balance(&2), 10);
-            assert_eq!(AuthorMapping::account_id_of(&TestAuthor::Alice.into()), None);
+            assert_eq!(
+                AuthorMapping::account_id_of(&TestAuthor::Alice.into()),
+                None
+            );
         })
 }
 
@@ -89,7 +98,10 @@ fn double_registration_costs_twice_as_much() {
 
             assert_eq!(Balances::free_balance(&2), 900);
             assert_eq!(Balances::reserved_balance(&2), 100);
-            assert_eq!(AuthorMapping::account_id_of(&TestAuthor::Bob.into()), Some(2));
+            assert_eq!(
+                AuthorMapping::account_id_of(&TestAuthor::Bob.into()),
+                Some(2)
+            );
 
             assert_eq!(
                 last_event(),
@@ -104,7 +116,10 @@ fn double_registration_costs_twice_as_much() {
 
             assert_eq!(Balances::free_balance(&2), 800);
             assert_eq!(Balances::reserved_balance(&2), 200);
-            assert_eq!(AuthorMapping::account_id_of(&TestAuthor::Alice.into()), Some(2));
+            assert_eq!(
+                AuthorMapping::account_id_of(&TestAuthor::Alice.into()),
+                Some(2)
+            );
 
             assert_eq!(
                 last_event(),
@@ -112,7 +127,10 @@ fn double_registration_costs_twice_as_much() {
             );
 
             // Should still be registered as Bob as well
-            assert_eq!(AuthorMapping::account_id_of(&TestAuthor::Bob.into()), Some(2));
+            assert_eq!(
+                AuthorMapping::account_id_of(&TestAuthor::Bob.into()),
+                Some(2)
+            );
         })
 }
 
@@ -130,7 +148,10 @@ fn registered_account_can_clear() {
 
             assert_eq!(Balances::free_balance(&1), 1000);
             assert_eq!(Balances::reserved_balance(&1), 0);
-            assert_eq!(AuthorMapping::account_id_of(&TestAuthor::Alice.into()), None);
+            assert_eq!(
+                AuthorMapping::account_id_of(&TestAuthor::Alice.into()),
+                None
+            );
 
             assert_eq!(
                 last_event(),
@@ -191,7 +212,10 @@ fn registered_can_rotate() {
             ));
 
             assert_eq!(AuthorMapping::account_id_of(&TestAuthor::Bob.into()), None);
-            assert_eq!(AuthorMapping::account_id_of(&TestAuthor::Charlie.into()), Some(2));
+            assert_eq!(
+                AuthorMapping::account_id_of(&TestAuthor::Charlie.into()),
+                Some(2)
+            );
 
             // Should still only ahve paid a single security deposit
             assert_eq!(Balances::free_balance(&2), 900);
@@ -233,20 +257,20 @@ fn registered_author_cannot_be_rotated_by_non_owner() {
 
 #[test]
 fn rotating_to_the_same_author_id_leaves_registration_in_tact() {
-	ExtBuilder::default()
-		.with_balances(vec![(1, 1000)])
-		.with_mappings(vec![(TestAuthor::Alice.into(), 1)])
-		.build()
-		.execute_with(|| {
-			assert_noop!(
-				AuthorMapping::update_association(
-					Origin::signed(1),
-					TestAuthor::Alice.into(),
-					TestAuthor::Alice.into()
-				),
-				Error::<Runtime>::AlreadyAssociated
-			);
-		})
+    ExtBuilder::default()
+        .with_balances(vec![(1, 1000)])
+        .with_mappings(vec![(TestAuthor::Alice.into(), 1)])
+        .build()
+        .execute_with(|| {
+            assert_noop!(
+                AuthorMapping::update_association(
+                    Origin::signed(1),
+                    TestAuthor::Alice.into(),
+                    TestAuthor::Alice.into()
+                ),
+                Error::<Runtime>::AlreadyAssociated
+            );
+        })
 }
 
 //TODO Test ideas in case we bring back the narc extrinsic
