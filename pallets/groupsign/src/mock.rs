@@ -1,6 +1,6 @@
 use crate::{self as groupsign, weights::PontemWeights};
 use codec::{Decode, Encode};
-use frame_support::parameter_types;
+use frame_support::{parameter_types, traits::ConstU32};
 use frame_system as system;
 use scale_info::TypeInfo;
 use sp_core::{H256, sr25519};
@@ -54,6 +54,7 @@ impl system::Config for Test {
     type SystemWeightInfo = ();
     type SS58Prefix = SS58Prefix;
     type OnSetCode = ();
+    type MaxConsumers = ConstU32<12>;
 }
 
 impl groupsign::Config for Test {
@@ -67,7 +68,7 @@ impl groupsign::Config for Test {
     type Signature = AnySignature;
 }
 
-#[derive(Eq, PartialEq, Clone, Default, Encode, Decode, TypeInfo, Debug)]
+#[derive(Eq, PartialEq, Clone, Encode, Decode, TypeInfo, Debug)]
 pub struct AnySignature(sr25519::Signature);
 
 impl Verify for AnySignature {
