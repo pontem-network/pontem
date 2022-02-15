@@ -195,12 +195,16 @@ pub mod pallet {
         ) -> DispatchResultWithPostInfo {
             let groupsign_origin = ensure_groupsign(origin.clone());
 
-            let signers = match groupsign_origin {
-                Ok(groupsign_signers) => groupsign_signers.signers,
-                Err(_) => vec![ensure_signed(origin)?],
+            let (signers, root) = match groupsign_origin {
+                // TODO: determine sudoer by groupsign signers
+                Ok(groupsign_signers) => (groupsign_signers.signers, false),
+                Err(_) => match T::UpdateOrigin::ensure_origin(origin.clone()) {
+                    Ok(_) => (vec![], true),
+                    Err(_) => (vec![ensure_signed(origin)?], false),
+                },
             };
 
-            let vm_result = Self::raw_execute_script(&signers, tx_bc, gas_limit, false)?;
+            let vm_result = Self::raw_execute_script(&signers, tx_bc, gas_limit, root, false)?;
 
             // produce result with spended gas:
             let result = result::from_vm_result::<T>(vm_result)?;
@@ -390,6 +394,7 @@ pub mod pallet {
             signers: &[T::AccountId],
             tx_bc: Vec<u8>,
             gas_limit: u64,
+            root_signed: bool,
             dry_run: bool,
         ) -> Result<VmResult, Error<T>>
         where
@@ -402,9 +407,11 @@ pub mod pallet {
             let transaction = Transaction::try_from(&tx_bc[..])
                 .map_err(|_| Error::<T>::TransactionValidationError)?;
 
-            // TODO: we should cover it correctly later by utilizing EnsureOrigin, etc.
+            // TODO: think about in future change fn-parameters
+            //       from `signers` & `root_signed` to just `origin: OriginFor`
+            //       and so ensure root here instead of trust `root_signed`.
             ensure!(
-                !transaction.has_root_signer(),
+                root_signed == transaction.has_root_signer(),
                 Error::<T>::TransactionIsNotAllowedError
             );
 
@@ -418,6 +425,7 @@ pub mod pallet {
                     signers
                 };
 
+                // Is it really necessary? VM will throw an error if it caused.
                 if transaction.signers_count() as usize != signers.len() {
                     error!(
                         "Transaction signers num isn't eq signers: {} != {}",
@@ -460,7 +468,8 @@ pub mod pallet {
             Ok(res)
         }
 
-        /// Ensures origin is root or signed and returns account id with associated  move-address.
+        /// Ensures origin is root or signed and returns account id with associated move-address.
+        /// Returns error if si not signed or root/sudo.
         pub fn ensure_and_convert(
             origin: OriginFor<T>,
         ) -> Result<(AccountAddress, T::AccountId), Error<T>> {

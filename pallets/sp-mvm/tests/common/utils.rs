@@ -1,12 +1,11 @@
 #![allow(dead_code)]
-
+/// Utils functions to work with Move VM.
 use std::convert::TryFrom;
 use frame_support::dispatch::DispatchResultWithPostInfo as PsResult;
 use move_core_types::account_address::AccountAddress;
 use move_core_types::identifier::Identifier;
 use move_core_types::language_storage::ModuleId;
 use move_core_types::language_storage::StructTag;
-use move_core_types::language_storage::TypeTag;
 use move_vm::io::state::State;
 use move_vm::types::ModulePackage;
 use move_core_types::language_storage::CORE_CODE_ADDRESS;
@@ -21,76 +20,59 @@ use super::addr::*;
 
 pub type AccountId = <Test as frame_system::Config>::AccountId;
 
+/// Default gas limit.
 const DEFAULT_GAS_LIMIT: u64 = 1_000_000;
 
-/// Publish module __with__ storage check
+/// Publish module with storage check.
 pub fn publish_module(signer: AccountId, module: &Asset, gas_limit: Option<u64>) -> PsResult {
-    let bytecode = module.bytes().to_vec();
-    let name = module.name();
-    let result = publish_module_unchecked(signer, module, gas_limit)?;
-    check_storage_module(to_move_addr(signer), bytecode, name);
+    let result = Mvm::publish_module(
+        Origin::signed(signer),
+        module.bytes().to_vec(),
+        gas_limit.unwrap_or(DEFAULT_GAS_LIMIT),
+    )?;
+    check_storage_module(to_move_addr(signer), module.bytes().to_vec(), module.name());
     Ok(result)
 }
 
-/// Publish module __without__ storage check
-pub fn publish_module_unchecked(
-    signer: AccountId,
-    module: &Asset,
-    gas_limit: Option<u64>,
-) -> PsResult {
-    let gas_limit = gas_limit.unwrap_or(DEFAULT_GAS_LIMIT);
-    Mvm::publish_module(Origin::signed(signer), module.bytes().to_vec(), gas_limit)
-}
-
-/// Publish module as root __without__ storage check
-pub fn publish_module_as_root_unchecked(module: &Asset, gas_limit: Option<u64>) -> PsResult {
-    let gas_limit = gas_limit.unwrap_or(DEFAULT_GAS_LIMIT);
-    Mvm::publish_module(Origin::root(), module.bytes().to_vec(), gas_limit)
-}
-
-/// Publish module as root __with__ storage check
+/// Publish module as root with storage check.
 pub fn publish_module_as_root(module: &Asset, gas_limit: Option<u64>) -> PsResult {
-    let bytecode = module.bytes().to_vec();
-    let name = module.name();
-    let result = publish_module_as_root_unchecked(module, gas_limit)?;
-    check_storage_module(CORE_CODE_ADDRESS, bytecode, name);
+    let result = Mvm::publish_module(
+        Origin::root(),
+        module.bytes().to_vec(),
+        gas_limit.unwrap_or(DEFAULT_GAS_LIMIT),
+    )?;
+    check_storage_module(CORE_CODE_ADDRESS, module.bytes().to_vec(), module.name());
     Ok(result)
 }
 
-/// Publish package.
-///
-/// Publish package __with__ storage check
+/// Publish package with storage check.
 pub fn publish_package(signer: AccountId, package: &Package, gas_limit: Option<u64>) -> PsResult {
-    let bytecode = package.bytes().to_vec();
-    let names = package.modules();
-    let result = publish_package_unchecked(signer, package, gas_limit)?;
-    check_storage_package(to_move_addr(signer), bytecode, names);
+    let result = Mvm::publish_package(
+        Origin::signed(signer),
+        package.bytes().to_vec(),
+        gas_limit.unwrap_or(DEFAULT_GAS_LIMIT),
+    )?;
+    check_storage_package(
+        to_move_addr(signer),
+        package.bytes().to_vec(),
+        package.modules(),
+    );
     Ok(result)
 }
 
-/// Publish package as root __with__ storage check.
+/// Publish package as root with storage check.
 pub fn publish_package_as_root(package: &Package, gas_limit: Option<u64>) -> PsResult {
-    let bytecode = package.bytes().to_vec();
-    let names = package.modules();
-    let result = publish_package_unchecked_as_root(package, gas_limit)?;
-    check_storage_package(CORE_CODE_ADDRESS, bytecode, names);
+    let result = Mvm::publish_package(
+        Origin::root(),
+        package.bytes().to_vec(),
+        gas_limit.unwrap_or(DEFAULT_GAS_LIMIT),
+    )?;
+    check_storage_package(
+        CORE_CODE_ADDRESS,
+        package.bytes().to_vec(),
+        package.modules(),
+    );
     Ok(result)
-}
-
-/// Publish package as root __without__ storage checks.
-pub fn publish_package_unchecked_as_root(package: &Package, gas_limit: Option<u64>) -> PsResult {
-    let gas_limit = gas_limit.unwrap_or(DEFAULT_GAS_LIMIT);
-    Mvm::publish_package(Origin::root(), package.bytes().to_vec(), gas_limit)
-}
-
-/// Publish package __without__ storage check
-pub fn publish_package_unchecked(
-    signer: AccountId,
-    package: &Package,
-    gas_limit: Option<u64>,
-) -> PsResult {
-    let gas_limit = gas_limit.unwrap_or(DEFAULT_GAS_LIMIT);
-    Mvm::publish_package(Origin::signed(signer), package.bytes().to_vec(), gas_limit)
 }
 
 /// Execute transaction script.
@@ -104,6 +86,18 @@ pub fn execute_tx(origin: AccountId, tx: &Asset, gas_limit: Option<u64>) -> PsRe
     result
 }
 
+/// Execute transaction script by Root.
+pub fn execute_tx_by_root(tx: &Asset, gas_limit: Option<u64>) -> PsResult {
+    let gas_limit = gas_limit.unwrap_or(DEFAULT_GAS_LIMIT);
+    // get bytecode:
+    let bc = tx.bytes().to_vec();
+    // execute VM tx:
+    let result = Mvm::execute(Origin::root(), bc, gas_limit);
+    eprintln!("execute tx result: {:?}", result);
+    result
+}
+
+/// Check storage contains module.
 pub fn check_storage_module<Bc: AsRef<[u8]>>(
     account_address: AccountAddress,
     bc: Bc,
@@ -119,6 +113,7 @@ pub fn check_storage_module<Bc: AsRef<[u8]>>(
     assert_eq!(bc.as_ref(), &stored);
 }
 
+/// Check storage contains package.
 pub fn check_storage_package<Bc: AsRef<[u8]>>(
     account_address: AccountAddress,
     bytecode: Bc,
@@ -134,6 +129,7 @@ pub fn check_storage_package<Bc: AsRef<[u8]>>(
     }
 }
 
+/// Check resource value inside storage.
 pub fn check_storage_res<T>(owner: AccountAddress, ty: StructTag, expected: T)
 where
     T: for<'de> serde::Deserialize<'de>,
@@ -151,34 +147,4 @@ where
     let stored: T =
         bcs::from_bytes(&blob).expect(&format!("Resource '{}' should exists", tt_str));
     assert_eq!(expected, stored);
-}
-
-/// Returns TypeTag 0x1::PONT::T
-pub fn get_type_tag_pont_coin() -> StructTag {
-    StructTag {
-        address: ROOT_ADDR,
-        module: Identifier::new("PONT").unwrap(),
-        name: Identifier::new("PONT").unwrap(),
-        type_params: vec![],
-    }
-}
-
-/// Returns TypeTag Pontem::T<0x1::PONT::T>
-pub fn get_type_tag_pont_res() -> StructTag {
-    StructTag {
-        address: ROOT_ADDR,
-        module: Identifier::new("Diem").unwrap(),
-        name: Identifier::new("Diem").unwrap(),
-        type_params: vec![TypeTag::Struct(get_type_tag_pont_coin())],
-    }
-}
-
-/// Returns TypeTag 0x1::Account::Balance<0x1::PONT::T>
-pub fn get_type_tag_balance_pont() -> StructTag {
-    StructTag {
-        address: ROOT_ADDR,
-        module: Identifier::new("DiemAccount").unwrap(),
-        name: Identifier::new("Balance").unwrap(),
-        type_params: vec![TypeTag::Struct(get_type_tag_pont_coin())],
-    }
 }

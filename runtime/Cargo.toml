@@ -86,9 +86,9 @@ orml-xcm-support = { default-features = false, git = 'https://github.com/open-we
 orml-unknown-tokens = { default-features = false, git = 'https://github.com/open-web3-stack/open-runtime-module-library', rev = '213f743af2d6d2c94f235613d7e7ff21b093297c' }
 
 # local dependencies
-sp-mvm = { path = '../pallets/sp-mvm', default-features = false }
-sp-mvm-rpc-runtime = { path = '../pallets/sp-mvm/rpc/runtime', default-features = false }
-parachain-staking = { path = '../pallets/parachain-staking', default-features = false }
+sp-mvm = { path = "../pallets/sp-mvm", default-features = false }
+sp-mvm-rpc-runtime = { path = "../pallets/sp-mvm/rpc/runtime", default-features = false }
+parachain-staking = { path = "../pallets/parachain-staking", default-features = false }
 pallet-author-mapping = { path = "../pallets/author-mapping", default-features = false }
 primitives = { path = "../primitives", default-features = false }
 constants = { path = "../constants", default-features = false }

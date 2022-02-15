@@ -1,16 +1,19 @@
 #![allow(dead_code)]
-
+/// Assets (Move modules/scripts/packages).
 pub use assets::*;
 
+/// Package built using root account.
 pub static ROOT_PACKAGE: Package = Package::new(
     &["EventProxy", "Store"],
     Asset::new("", "tests/assets/root/build/assets/bundles/assets.pac"),
 );
+/// Package built using user account.
 pub static USER_PACKAGE: Package = Package::new(
     &["Bank", "EventProxy", "Store"],
     Asset::new("", "tests/assets/user/build/assets/bundles/assets.pac"),
 );
 
+/// Modules assets (root/user).
 pub mod modules {
     pub mod root {
         use super::super::Asset;
@@ -41,6 +44,7 @@ pub mod modules {
     }
 }
 
+/// Transaction (scripts) assets.
 pub mod transactions {
     use super::Asset;
     pub static STORE_U64: Asset = Asset::new(
@@ -94,5 +98,13 @@ pub mod transactions {
     pub static AS_ROOT: Asset = Asset::new(
         "as_root",
         "tests/assets/user/build/assets/transaction/as_root.mvt",
+    );
+    pub static ONE_SIGNER_USER: Asset = Asset::new(
+        "signer_user",
+        "tests/assets/user/build/assets/transaction/signer_user.mvt",
+    );
+    pub static ONE_SIGNER_ROOT: Asset = Asset::new(
+        "signer_root",
+        "tests/assets/user/build/assets/transaction/signer_root.mvt",
     );
 }

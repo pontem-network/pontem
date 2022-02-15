@@ -1,3 +1,4 @@
+/// Tests related to groupsign calls.
 mod common;
 
 use common::mock::*;
@@ -10,11 +11,11 @@ use sp_runtime::codec::Encode;
 use sp_core::Pair;
 use sp_std::vec;
 
-const GAS_LIMIT: u64 = 1_000_000;
-
 #[test]
-fn execute_multisig() {
-    new_test_ext().execute_with(|| {
+/// Execute script as groupsign origin (contains different signers).
+/// Should keep the same sorting for origins.
+fn execute_groupsign() {
+    RuntimeBuilder::new().build().execute_with(|| {
         let alice_key = alice_public_key();
         let bob_key = bob_public_key();
 
@@ -24,7 +25,7 @@ fn execute_multisig() {
         let bytecode = transactions::MULTISIG_TEST.bytes().to_vec();
         let call = Call::Mvm(MvmCall::execute {
             tx_bc: bytecode,
-            gas_limit: GAS_LIMIT,
+            gas_limit: 1_000_000,
         });
 
         let since: u64 = 0;
