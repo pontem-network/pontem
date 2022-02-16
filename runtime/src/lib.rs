@@ -132,7 +132,7 @@ const NORMAL_DISPATCH_RATIO: Perbill = Perbill::from_percent(65);
 parameter_types! {
     pub const Version: RuntimeVersion = VERSION;
     pub const BlockHashCount: BlockNumber = 2400;
-    /// We allow for 2 seconds of compute with a 6 second average block time.
+    /// We allow for 2 seconds of compute with a 12 second average block time.
     pub RuntimeBlockWeights: BlockWeights = BlockWeights::builder()
         .base_block(BlockExecutionWeight::get())
         .for_class(DispatchClass::all(), |weights| {

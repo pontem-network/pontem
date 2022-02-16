@@ -1661,7 +1661,7 @@ name = "cumulus-pallet-parachain-system-proc-macro"
 version = "0.1.0"
 source = "git+https://github.com/paritytech/cumulus?branch=polkadot-v0.9.16#86f76c5619c64d1300315612695ad4b4fcd0f562"
 dependencies = [
- "proc-macro-crate 1.1.0",
+ "proc-macro-crate 1.1.1",
  "proc-macro2",
  "quote",
  "syn",
@@ -2547,7 +2547,7 @@ version = "4.0.0-dev"
 source = "git+http://github.com/paritytech/substrate.git?branch=polkadot-v0.9.16#4aeb95f7f38fcd519e2628f32f79044a8fef99d5"
 dependencies = [
  "frame-support-procedural-tools-derive",
- "proc-macro-crate 1.1.0",
+ "proc-macro-crate 1.1.1",
  "proc-macro2",
  "quote",
  "syn",
@@ -3604,7 +3604,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d802063f7a3c867456955f9d2f15eb3ee0edb5ec9ec2b5526324756759221c0f"
 dependencies = [
  "log",
- "proc-macro-crate 1.1.0",
+ "proc-macro-crate 1.1.1",
  "proc-macro2",
  "quote",
  "syn",
@@ -4988,7 +4988,7 @@ version = "0.7.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "424f6e86263cd5294cbd7f1e95746b95aca0e0d66bff31e5a40d6baa87b4aa99"
 dependencies = [
- "proc-macro-crate 1.1.0",
+ "proc-macro-crate 1.1.1",
  "proc-macro-error",
  "proc-macro2",
  "quote",
@@ -6166,7 +6166,7 @@ name = "pallet-staking-reward-curve"
 version = "4.0.0-dev"
 source = "git+http://github.com/paritytech/substrate.git?branch=polkadot-v0.9.16#4aeb95f7f38fcd519e2628f32f79044a8fef99d5"
 dependencies = [
- "proc-macro-crate 1.1.0",
+ "proc-macro-crate 1.1.1",
  "proc-macro2",
  "quote",
  "syn",
@@ -6433,7 +6433,7 @@ version = "2.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1557010476e0595c9b568d16dcfb81b93cdeb157612726f5170d31aa707bed27"
 dependencies = [
- "proc-macro-crate 1.1.0",
+ "proc-macro-crate 1.1.1",
  "proc-macro2",
  "quote",
  "syn",
@@ -7452,7 +7452,7 @@ name = "polkadot-overseer-gen-proc-macro"
 version = "0.9.16"
 source = "git+http://github.com/paritytech/polkadot.git?branch=release-v0.9.16#41ab002d7451766324a9f314fee11c9c53314350"
 dependencies = [
- "proc-macro-crate 1.1.0",
+ "proc-macro-crate 1.1.1",
  "proc-macro2",
  "quote",
  "syn",
@@ -8121,9 +8121,9 @@ dependencies = [
 
 [[package]]
 name = "proc-macro-crate"
-version = "1.1.0"
+version = "1.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1ebace6889caf889b4d3f76becee12e90353f2b8c7d875534a71e5742f8f6f83"
+checksum = "738b5123081e03ec93bdd0229f33e39891e6ee18745b72bfc8fdc04a080d5c38"
 dependencies = [
  "thiserror",
  "toml",
@@ -8231,9 +8231,9 @@ dependencies = [
 
 [[package]]
 name = "psm"
-version = "0.1.16"
+version = "0.1.17"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "cd136ff4382c4753fc061cb9e4712ab2af263376b95bbd5bd8cd50c020b78e69"
+checksum = "6eca0fa5dd7c4c96e184cec588f0b1db1ee3165e678db21c09793105acb17e6f"
 dependencies = [
  "cc",
 ]
@@ -8912,7 +8912,7 @@ name = "sc-chain-spec-derive"
 version = "4.0.0-dev"
 source = "git+http://github.com/paritytech/substrate.git?branch=polkadot-v0.9.16#4aeb95f7f38fcd519e2628f32f79044a8fef99d5"
 dependencies = [
- "proc-macro-crate 1.1.0",
+ "proc-macro-crate 1.1.1",
  "proc-macro2",
  "quote",
  "syn",
@@ -9732,7 +9732,7 @@ name = "sc-tracing-proc-macro"
 version = "4.0.0-dev"
 source = "git+http://github.com/paritytech/substrate.git?branch=polkadot-v0.9.16#4aeb95f7f38fcd519e2628f32f79044a8fef99d5"
 dependencies = [
- "proc-macro-crate 1.1.0",
+ "proc-macro-crate 1.1.1",
  "proc-macro2",
  "quote",
  "syn",
@@ -9811,7 +9811,7 @@ version = "1.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "baeb2780690380592f86205aa4ee49815feb2acad8c2f59e6dd207148c3f1fcd"
 dependencies = [
- "proc-macro-crate 1.1.0",
+ "proc-macro-crate 1.1.1",
  "proc-macro2",
  "quote",
  "syn",
@@ -10279,7 +10279,7 @@ version = "4.0.0-dev"
 source = "git+http://github.com/paritytech/substrate.git?branch=polkadot-v0.9.16#4aeb95f7f38fcd519e2628f32f79044a8fef99d5"
 dependencies = [
  "blake2-rfc",
- "proc-macro-crate 1.1.0",
+ "proc-macro-crate 1.1.1",
  "proc-macro2",
  "quote",
  "syn",
@@ -10843,7 +10843,7 @@ name = "sp-npos-elections-solution-type"
 version = "4.0.0-dev"
 source = "git+http://github.com/paritytech/substrate.git?branch=polkadot-v0.9.16#4aeb95f7f38fcd519e2628f32f79044a8fef99d5"
 dependencies = [
- "proc-macro-crate 1.1.0",
+ "proc-macro-crate 1.1.1",
  "proc-macro2",
  "quote",
  "syn",
@@ -10949,7 +10949,7 @@ version = "4.0.0-dev"
 source = "git+https://github.com/paritytech/substrate?branch=polkadot-v0.9.11#57346f6b24875f8935280dba51fa8ab0a9ba1e39"
 dependencies = [
  "Inflector",
- "proc-macro-crate 1.1.0",
+ "proc-macro-crate 1.1.1",
  "proc-macro2",
  "quote",
  "syn",
@@ -10961,7 +10961,7 @@ version = "4.0.0"
 source = "git+http://github.com/paritytech/substrate.git?branch=polkadot-v0.9.16#4aeb95f7f38fcd519e2628f32f79044a8fef99d5"
 dependencies = [
  "Inflector",
- "proc-macro-crate 1.1.0",
+ "proc-macro-crate 1.1.1",
  "proc-macro2",
  "quote",
  "syn",
@@ -12794,7 +12794,7 @@ dependencies = [
 [[package]]
 name = "xcm-emulator"
 version = "0.1.0"
-source = "git+https://github.com/pontem-network/xcm-simulator?branch=polkadot-v0.9.16#d4a700a345789d21423879caad4eb8107eda44e9"
+source = "git+https://github.com/pontem-network/xcm-simulator?branch=polkadot-v0.9.16#b91b7420bbd0337794e9295f7ca203afcdd16c8b"
 dependencies = [
  "cumulus-pallet-dmp-queue",
  "cumulus-pallet-parachain-system",

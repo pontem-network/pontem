@@ -76,7 +76,7 @@ pub type BlockNumber = u64;
 pub type Index = u64;
 
 parameter_types! {
-    pub const BlockHashCount: BlockNumber = 250;
+    pub const BlockHashCount: BlockNumber = 2400;
 }
 
 impl frame_system::Config for Runtime {

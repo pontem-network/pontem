@@ -124,6 +124,7 @@ pub fn para_ext(parachain_id: u32) -> TestExternalities {
 
 fn default_parachains_host_configuration() -> HostConfiguration<BlockNumber> {
     HostConfiguration {
+        minimum_validation_upgrade_delay: 5,
         validation_upgrade_cooldown: 10u32,
         validation_upgrade_delay: 10,
         code_retention_period: 1200,
@@ -132,7 +133,6 @@ fn default_parachains_host_configuration() -> HostConfiguration<BlockNumber> {
         max_head_data_size: 32 * 1024,
         group_rotation_frequency: 20,
         chain_availability_period: 4,
-        minimum_validation_upgrade_delay: 8,
         thread_availability_period: 4,
         max_upward_queue_count: 8,
         max_upward_queue_size: 1024 * 1024,

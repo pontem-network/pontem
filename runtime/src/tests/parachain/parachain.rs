@@ -171,9 +171,11 @@ fn send_relay_chain_asset_to_sibling() {
 }
 
 #[test]
+#[ignore]
 fn send_self_parachain_asset_to_sibling() {
     TestNet::reset();
 
+    // Send to paracahin B native currency from parachain A.
     ParaA::execute_with(|| {
         assert_ok!(ParaAXTokens::transfer(
             Some(Accounts::ALICE.account()).into(),
@@ -221,7 +223,7 @@ fn send_self_parachain_asset_to_sibling() {
                         Junction::Parachain(2000),
                         Junction::AccountId32 {
                             network: NetworkId::Any,
-                            id: Accounts::BOB.into(),
+                            id: Accounts::ALICE.into(),
                         }
                     )
                 )
@@ -238,7 +240,7 @@ fn send_self_parachain_asset_to_sibling() {
 
     ParaA::execute_with(|| {
         assert_eq!(
-            ParaABalances::free_balance(&Accounts::BOB.account()),
+            ParaABalances::free_balance(&Accounts::ALICE.account()),
             CurrencyId::NATIVE * 500 - 8
         );
     });
