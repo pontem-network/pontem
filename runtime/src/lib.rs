@@ -914,6 +914,11 @@ impl Convert<MultiLocation, Option<CurrencyId>> for CurrencyIdConvert {
                 parents: 1,
                 interior: X2(Parachain(_id), GeneralKey(key)),
             } if key.to_vec() == CurrencyId::NATIVE.symbol() => Some(CurrencyId::NATIVE),
+            // adapt for reanchor canonical location: https://github.com/paritytech/polkadot/pull/4470
+            MultiLocation {
+                parents: 0,
+                interior: X1(GeneralKey(key)),
+            } if key.to_vec() == CurrencyId::NATIVE.symbol() => Some(CurrencyId::NATIVE),
             _ => None,
         }
     }
