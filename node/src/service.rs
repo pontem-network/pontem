@@ -21,7 +21,9 @@ use sp_keystore::SyncCryptoStorePtr;
 use cumulus_client_consensus_common::ParachainConsensus;
 use cumulus_client_network::BlockAnnounceValidator;
 use nimbus_primitives::NimbusId;
-use nimbus_consensus::{BuildNimbusConsensusParams, NimbusConsensus};
+use nimbus_consensus::{
+    BuildNimbusConsensusParams, NimbusConsensus, NimbusManualSealConsensusDataProvider,
+};
 use primitives::Block;
 use sc_executor::NativeElseWasmExecutor;
 use sp_runtime::Percent;
@@ -446,7 +448,10 @@ pub fn new_dev(
                 pool: transaction_pool.clone(),
                 commands_stream,
                 select_chain,
-                consensus_data_provider: None,
+                consensus_data_provider: Some(Box::new(NimbusManualSealConsensusDataProvider {
+                    keystore: keystore_container.sync_keystore(),
+                    client: client.clone(),
+                })),
                 create_inherent_data_providers: move |block: H256, ()| {
                     let current_para_block = client_set_aside_for_cidp
                         .number(block)
