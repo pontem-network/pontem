@@ -171,7 +171,6 @@ fn send_relay_chain_asset_to_sibling() {
 }
 
 #[test]
-#[ignore]
 fn send_self_parachain_asset_to_sibling() {
     TestNet::reset();
 
@@ -223,7 +222,7 @@ fn send_self_parachain_asset_to_sibling() {
                         Junction::Parachain(2000),
                         Junction::AccountId32 {
                             network: NetworkId::Any,
-                            id: Accounts::ALICE.into(),
+                            id: Accounts::BOB.into(),
                         }
                     )
                 )
@@ -240,7 +239,7 @@ fn send_self_parachain_asset_to_sibling() {
 
     ParaA::execute_with(|| {
         assert_eq!(
-            ParaABalances::free_balance(&Accounts::ALICE.account()),
+            ParaABalances::free_balance(&Accounts::BOB.account()),
             CurrencyId::NATIVE * 500 - 8
         );
     });
