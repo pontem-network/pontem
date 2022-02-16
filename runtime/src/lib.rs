@@ -1278,29 +1278,30 @@ impl_runtime_apis! {
         }
     }
 
-    impl nimbus_primitives::AuthorFilterAPI<Block, NimbusId> for Runtime {
+    impl nimbus_primitives::NimbusApi<Block> for Runtime {
         fn can_author(
-            author: NimbusId,
+            author: nimbus_primitives::NimbusId,
             slot: u32,
             parent_header: &<Block as BlockT>::Header
         ) -> bool {
+            use nimbus_primitives::CanAuthor;
+            let block_number = parent_header.number + 1;
+
             // The Moonbeam runtimes use an entropy source that needs to do some accounting
             // work during block initialization. Therefore we initialize it here to match
             // the state it will be in when the next block is being executed.
             use frame_support::traits::OnInitialize;
-            use nimbus_primitives::CanAuthor;
-
             System::initialize(
-                &(parent_header.number + 1),
+                &block_number,
                 &parent_header.hash(),
                 &parent_header.digest,
             );
-            RandomnessCollectiveFlip::on_initialize(System::block_number());
+            RandomnessCollectiveFlip::on_initialize(block_number);
 
             // Because the staking solution calculates the next staking set at the beginning
             // of the first block in the new round, the only way to accurately predict the
             // authors is to compute the selection during prediction.
-            if parachain_staking::Pallet::<Self>::round().should_update(parent_header.number + 1) {
+            if parachain_staking::Pallet::<Self>::round().should_update(block_number) {
                 // get author account id
                 use nimbus_primitives::AccountLookup;
                 let author_account_id = if let Some(account) =
@@ -1320,6 +1321,13 @@ impl_runtime_apis! {
             } else {
                 AuthorInherent::can_author(&author, &slot)
             }
+        }
+    }
+
+    // We also implement the old AuthorFilterAPI to meet the trait bounds on the client side.
+    impl nimbus_primitives::AuthorFilterAPI<Block, NimbusId> for Runtime {
+        fn can_author(_: NimbusId, _: u32, _: &<Block as BlockT>::Header) -> bool {
+            panic!("AuthorFilterAPI is no longer supported. Please update your client.")
         }
     }
 

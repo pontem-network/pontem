@@ -10,7 +10,7 @@ use pontem_runtime::{
     GenesisConfig, SudoConfig, SystemConfig, BalancesConfig, WASM_BINARY, ParachainInfoConfig,
     VestingConfig, MvmConfig, TransactionPauseConfig, ParachainStakingConfig, InflationInfo,
     Range, AuthorFilterConfig, AuthorMappingConfig, TreasuryConfig, TokensConfig,
-    DemocracyConfig, PolkadotXcmConfig, SchedulerConfig,
+    DemocracyConfig, PolkadotXcmConfig,
 };
 use primitives::{currency::CurrencyId, AccountId, Signature, Balance, BlockNumber};
 use constants::SS58_PREFIX;
@@ -152,7 +152,7 @@ fn paused_extrinsics() -> Vec<(Vec<u8>, Vec<u8>)> {
                 "teleport_assets",
             ],
         ),
-        ("ParachainStaking", vec!["join_candidates", "nominate"]),
+        ("ParachainStaking", vec!["join_candidates", "delegate"]),
         ("Treasury", vec!["propose_spend"]),
         ("Mvm", vec!["execute", "publish_module", "publish_package"]),
         (
@@ -246,6 +246,8 @@ pub fn development_config() -> Result<ChainSpec, String> {
         None,
         // Protocol ID
         None,
+        // Fork ID
+        None,
         // Properties
         properties(),
         // Extensions
@@ -334,6 +336,8 @@ pub fn local_testnet_config() -> Result<ChainSpec, String> {
         None,
         // Protocol ID
         Some("pontem_testnet"),
+        // Fork ID
+        None,
         // Properties
         properties(),
         // Extensions
@@ -465,6 +469,8 @@ pub fn westend_config() -> Result<ChainSpec, String> {
         None,
         // Protocol ID
         Some("nox_westend"),
+        // Fork ID
+        None,
         // Properties
         properties(),
         // Extensions
@@ -709,6 +715,8 @@ pub fn nox_config() -> Result<ChainSpec, String> {
         None,
         // Protocol ID
         Some("nox_mainnet"),
+        // Fork ID
+        None,
         // Properties
         properties(),
         // Extensions
@@ -724,7 +732,7 @@ fn genesis(
     wasm_binary: &[u8],
     root_key: AccountId,
     candidates: Vec<(AccountId, NimbusId, Balance)>,
-    nominations: Vec<(AccountId, AccountId, Balance)>,
+    delegations: Vec<(AccountId, AccountId, Balance)>,
     balances: Vec<(AccountId, Balance)>,
     vesting: Vec<(AccountId, BlockNumber, BlockNumber, Balance)>,
     paused: Vec<(Vec<u8>, Vec<u8>)>,
@@ -754,7 +762,7 @@ fn genesis(
         parachain_info: ParachainInfoConfig { parachain_id: id },
         sudo: SudoConfig {
             // Assign network admin rights.
-            key: root_key,
+            key: Some(root_key),
         },
         parachain_staking: ParachainStakingConfig {
             candidates: candidates
@@ -762,7 +770,7 @@ fn genesis(
                 .cloned()
                 .map(|(account, _, bond)| (account, bond))
                 .collect(),
-            nominations,
+            delegations,
             inflation_config: pontem_inflation_config(),
         },
         author_filter: AuthorFilterConfig {
@@ -790,7 +798,6 @@ fn genesis(
         vesting: VestingConfig { vesting },
         treasury: TreasuryConfig {},
         democracy: DemocracyConfig::default(),
-        scheduler: SchedulerConfig {},
     }
 }
 
