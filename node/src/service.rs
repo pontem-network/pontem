@@ -433,8 +433,8 @@ pub fn new_dev(
         let client_set_aside_for_cidp = client.clone();
 
         // Create channels for mocked XCM messages.
-        let (downward_xcm_sender, downward_xcm_receiver) = flume::bounded::<Vec<u8>>(100);
-        let (hrmp_xcm_sender, hrmp_xcm_receiver) = flume::bounded::<(ParaId, Vec<u8>)>(100);
+        let (_downward_xcm_sender, downward_xcm_receiver) = flume::bounded::<Vec<u8>>(100);
+        let (_hrmp_xcm_sender, hrmp_xcm_receiver) = flume::bounded::<(ParaId, Vec<u8>)>(100);
 
         task_manager.spawn_essential_handle().spawn_blocking(
             "authorship_task",
