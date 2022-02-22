@@ -4,7 +4,7 @@ on:
     branches:
       - master
       - release-v?[0-9]+.[0-9]+.*
-      - * # just for test purposes
+      - "*" # just for test purposes
 
 jobs:
   push-tag:
