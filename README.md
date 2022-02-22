@@ -42,7 +42,7 @@ There are several options to launch Pontem local parachain:
 
 Install [polkadot-launch](https://github.com/paritytech/polkadot-launch).
 
-**Note:** you must have polkadot node `v0.9.13` compiled and built placed in `../polkadot/target/release/`.
+**Note:** you must have polkadot node `v0.9.16` compiled and built placed in `../polkadot/target/release/`.
 To use different localion you can modify `./launch-config.json`.
 
 Create keystore path for Pontem:
@@ -105,7 +105,7 @@ Build Polkadot:
 git clone https://github.com/paritytech/polkadot.git
 cd polkadot
 git fetch origin
-git checkout release-v0.9.13
+git checkout release-v0.9.16
 cargo build --release
 ```
 

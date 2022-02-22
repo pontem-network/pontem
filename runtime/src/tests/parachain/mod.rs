@@ -30,7 +30,7 @@ decl_test_parachain! {
 decl_test_relay_chain! {
     pub struct Relay {
         Runtime = kusama_runtime::Runtime,
-        XcmConfig = kusama_runtime::XcmConfig,
+        XcmConfig = kusama_runtime::xcm_config::XcmConfig,
         new_ext = relay_ext(),
     }
 }
@@ -124,8 +124,9 @@ pub fn para_ext(parachain_id: u32) -> TestExternalities {
 
 fn default_parachains_host_configuration() -> HostConfiguration<BlockNumber> {
     HostConfiguration {
-        validation_upgrade_frequency: 1u32,
-        validation_upgrade_delay: 1,
+        minimum_validation_upgrade_delay: 5,
+        validation_upgrade_cooldown: 10u32,
+        validation_upgrade_delay: 10,
         code_retention_period: 1200,
         max_code_size: MAX_CODE_SIZE,
         max_pov_size: MAX_POV_SIZE,

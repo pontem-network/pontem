@@ -22,12 +22,12 @@
 
 use frame_support::{
     ord_parameter_types, parameter_types,
-    traits::{Everything, GenesisBuild, Nothing},
+    traits::{Everything, GenesisBuild, Nothing, ConstU32},
     PalletId,
 };
 use orml_traits::parameter_type_with_key;
 use sp_core::{H256, crypto::Ss58Codec};
-use codec::{Decode, Encode};
+use codec::{Decode, Encode, MaxEncodedLen};
 
 use sp_runtime::{
     testing::Header,
@@ -43,7 +43,19 @@ use serde::{Deserialize, Serialize};
 use scale_info::TypeInfo;
 
 // Currencies id.
-#[derive(Encode, Decode, Eq, PartialEq, Copy, Clone, RuntimeDebug, PartialOrd, Ord, TypeInfo)]
+#[derive(
+    Encode,
+    Decode,
+    Eq,
+    PartialEq,
+    Copy,
+    Clone,
+    RuntimeDebug,
+    PartialOrd,
+    Ord,
+    TypeInfo,
+    MaxEncodedLen,
+)]
 #[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
 pub enum CurrencyId {
     // Relaychain's currency.
@@ -88,6 +100,7 @@ impl frame_system::Config for Runtime {
     type SystemWeightInfo = ();
     type SS58Prefix = ();
     type OnSetCode = ();
+    type MaxConsumers = ConstU32<12>;
 }
 
 type Balance = u128;
@@ -178,8 +191,8 @@ pub type UncheckedExtrinsic = frame_system::mocking::MockUncheckedExtrinsic<Runt
 frame_support::construct_runtime!(
     pub enum Runtime where
         Block = Block,
-    NodeBlock = Block,
-    UncheckedExtrinsic = UncheckedExtrinsic
+        NodeBlock = Block,
+        UncheckedExtrinsic = UncheckedExtrinsic
     {
         System: frame_system::{Pallet, Call, Config, Storage, Event<T>},
         Balances: pallet_balances::{Pallet, Call, Storage, Config<T>, Event<T>},

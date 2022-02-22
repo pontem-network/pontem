@@ -1,13 +1,15 @@
-use cumulus_client_network::build_block_announce_validator;
+use cumulus_relay_chain_local::build_relay_chain_interface;
 use crate::cli::Sealing;
-use cumulus_primitives_parachain_inherent::MockValidationDataInherentDataProvider;
+use cumulus_primitives_parachain_inherent::{MockValidationDataInherentDataProvider, MockXcmConfig};
 use futures::StreamExt;
 use sp_core::H256;
 use cumulus_client_service::{
     prepare_node_config, start_collator, start_full_node, StartCollatorParams,
     StartFullNodeParams,
 };
+use std::time::Duration;
 use sc_consensus_manual_seal::{run_manual_seal, EngineCommand, ManualSealParams};
+use cumulus_relay_chain_interface::RelayChainInterface;
 use cumulus_primitives_core::ParaId;
 use pontem_runtime::RuntimeApi;
 use sp_blockchain::HeaderBackend;
@@ -17,10 +19,14 @@ use std::sync::Arc;
 use substrate_prometheus_endpoint::Registry;
 use sp_keystore::SyncCryptoStorePtr;
 use cumulus_client_consensus_common::ParachainConsensus;
+use cumulus_client_network::BlockAnnounceValidator;
 use nimbus_primitives::NimbusId;
-use nimbus_consensus::{build_nimbus_consensus, BuildNimbusConsensusParams};
+use nimbus_consensus::{
+    BuildNimbusConsensusParams, NimbusConsensus, NimbusManualSealConsensusDataProvider,
+};
 use primitives::Block;
 use sc_executor::NativeElseWasmExecutor;
+use sp_runtime::Percent;
 
 type FullBackend = TFullBackend<Block>;
 type FullClient =
@@ -76,6 +82,7 @@ pub fn new_partial(
         config.wasm_method,
         config.default_heap_pages,
         config.max_runtime_instances,
+        config.runtime_cache_size,
     );
 
     let (client, backend, keystore_container, task_manager) =
@@ -122,6 +129,7 @@ pub fn new_partial(
             },
             &task_manager.spawn_essential_handle(),
             config.prometheus_registry().clone(),
+            !dev_service,
         )?
     };
 
@@ -162,30 +170,24 @@ async fn start_node_impl(
 
     let params = new_partial(&parachain_config, false)?;
     let (mut telemetry, telemetry_worker_handle) = params.other;
+    let mut task_manager = params.task_manager;
 
-    let relay_chain_full_node = cumulus_client_service::build_polkadot_full_node(
-        polkadot_config,
-        telemetry_worker_handle,
-    )
-    .map_err(|e| match e {
-        polkadot_service::Error::Sub(x) => x,
-        s => format!("{}", s).into(),
-    })?;
+    let (relay_chain_full_node, collator_key) =
+        build_relay_chain_interface(polkadot_config, telemetry_worker_handle, &mut task_manager)
+            .map_err(|e| match e {
+                polkadot_service::Error::Sub(x) => x,
+                s => format!("{}", s).into(),
+            })?;
 
     let client = params.client.clone();
     let backend = params.backend.clone();
-    let block_announce_validator = build_block_announce_validator(
-        relay_chain_full_node.client.clone(),
-        id,
-        Box::new(relay_chain_full_node.network.clone()),
-        relay_chain_full_node.backend.clone(),
-    );
+
+    let block_announce_validator = BlockAnnounceValidator::new(relay_chain_full_node.clone(), id);
 
     let is_validator = parachain_config.role.is_authority();
     let force_authoring = parachain_config.force_authoring;
     let prometheus_registry = parachain_config.prometheus_registry().cloned();
     let transaction_pool = params.transaction_pool.clone();
-    let mut task_manager = params.task_manager;
     let import_queue = cumulus_client_service::SharedImportQueue::new(params.import_queue);
     let (network, system_rpc_tx, start_network) =
         sc_service::build_network(sc_service::BuildNetworkParams {
@@ -195,7 +197,9 @@ async fn start_node_impl(
             spawn_handle: task_manager.spawn_handle(),
             import_queue: import_queue.clone(),
             warp_sync: None,
-            block_announce_validator_builder: Some(Box::new(|_| block_announce_validator)),
+            block_announce_validator_builder: Some(Box::new(|_| {
+                Box::new(block_announce_validator)
+            })),
         })?;
 
     let rpc_extensions_builder = {
@@ -232,6 +236,8 @@ async fn start_node_impl(
         Arc::new(move |hash, data| network.announce_block(hash, data))
     };
 
+    let relay_chain_slot_duration = Duration::from_secs(6);
+
     if is_validator {
         let parachain_consensus = build_consensus(
             id,
@@ -239,7 +245,7 @@ async fn start_node_impl(
             prometheus_registry.as_ref(),
             telemetry.as_ref().map(|t| t.handle()),
             &task_manager,
-            &relay_chain_full_node,
+            relay_chain_full_node.clone(),
             transaction_pool,
             params.keystore_container.sync_keystore(),
             force_authoring,
@@ -251,10 +257,12 @@ async fn start_node_impl(
             announce_block,
             client: client.clone(),
             task_manager: &mut task_manager,
-            relay_chain_full_node,
+            relay_chain_interface: relay_chain_full_node,
             spawner,
             parachain_consensus,
             import_queue,
+            collator_key,
+            relay_chain_slot_duration,
         };
 
         start_collator(params).await?;
@@ -264,7 +272,9 @@ async fn start_node_impl(
             announce_block,
             task_manager: &mut task_manager,
             para_id: id,
-            relay_chain_full_node,
+            relay_chain_interface: relay_chain_full_node,
+            relay_chain_slot_duration,
+            import_queue,
         };
 
         start_full_node(params)?;
@@ -281,32 +291,32 @@ fn build_consensus(
     prometheus_registry: Option<&Registry>,
     telemetry: Option<TelemetryHandle>,
     task_manager: &TaskManager,
-    relay_chain_node: &polkadot_service::NewFull<polkadot_service::Client>,
+    relay_chain_node: Arc<dyn RelayChainInterface>,
     transaction_pool: Arc<sc_transaction_pool::FullPool<Block, FullClient>>,
     keystore: SyncCryptoStorePtr,
     force_authoring: bool,
 ) -> Result<Box<dyn ParachainConsensus<Block>>, sc_service::Error> {
-    let proposer_factory = sc_basic_authorship::ProposerFactory::with_proof_recording(
+    let mut proposer_factory = sc_basic_authorship::ProposerFactory::with_proof_recording(
         task_manager.spawn_handle(),
         client.clone(),
         transaction_pool,
         prometheus_registry.clone(),
         telemetry.clone(),
     );
-
-    let relay_chain_backend = relay_chain_node.backend.clone();
-    let relay_chain_client = relay_chain_node.client.clone();
+    proposer_factory.set_soft_deadline(Percent::from_percent(100));
 
     let create_inherent_data_providers = move |_, (relay_parent, validation_data, author_id)| {
-        let parachain_inherent =
-            cumulus_primitives_parachain_inherent::ParachainInherentData::create_at_with_client(
-                relay_parent,
-                &relay_chain_client,
-                &*relay_chain_backend,
-                &validation_data,
-                id,
-            );
+        let relay_chain_node = relay_chain_node.clone();
         async move {
+            let parachain_inherent =
+                cumulus_primitives_parachain_inherent::ParachainInherentData::create_at(
+                    relay_parent,
+                    &relay_chain_node,
+                    &validation_data,
+                    id,
+                )
+                .await;
+
             let time = sp_timestamp::InherentDataProvider::from_system_time();
 
             let parachain_inherent = parachain_inherent.ok_or_else(|| {
@@ -321,12 +331,10 @@ fn build_consensus(
         }
     };
 
-    Ok(build_nimbus_consensus(BuildNimbusConsensusParams {
+    Ok(NimbusConsensus::build(BuildNimbusConsensusParams {
         para_id: id,
         proposer_factory,
         block_import: client.clone(),
-        relay_chain_client: relay_chain_node.client.clone(),
-        relay_chain_backend: relay_chain_node.backend.clone(),
         parachain_client: client.clone(),
         keystore,
         skip_prediction: force_authoring,
@@ -426,9 +434,13 @@ pub fn new_dev(
 
         let client_set_aside_for_cidp = client.clone();
 
+        // Create channels for mocked XCM messages.
+        let (_downward_xcm_sender, downward_xcm_receiver) = flume::bounded::<Vec<u8>>(100);
+        let (_hrmp_xcm_sender, hrmp_xcm_receiver) = flume::bounded::<(ParaId, Vec<u8>)>(100);
+
         task_manager.spawn_essential_handle().spawn_blocking(
             "authorship_task",
-            None,
+            Some("block-authoring"),
             run_manual_seal(ManualSealParams {
                 block_import: client.clone(),
                 env,
@@ -436,13 +448,20 @@ pub fn new_dev(
                 pool: transaction_pool.clone(),
                 commands_stream,
                 select_chain,
-                consensus_data_provider: None,
+                consensus_data_provider: Some(Box::new(NimbusManualSealConsensusDataProvider {
+                    keystore: keystore_container.sync_keystore(),
+                    client: client.clone(),
+                })),
                 create_inherent_data_providers: move |block: H256, ()| {
                     let current_para_block = client_set_aside_for_cidp
                         .number(block)
                         .expect("Header lookup should succeed")
                         .expect("Header passed in as parent should be present in backend.");
                     let author_id = author_id.clone();
+
+                    let client_for_xcm = client_set_aside_for_cidp.clone();
+                    let downward_xcm_receiver = downward_xcm_receiver.clone();
+                    let hrmp_xcm_receiver = hrmp_xcm_receiver.clone();
 
                     async move {
                         let time = sp_timestamp::InherentDataProvider::from_system_time();
@@ -451,6 +470,14 @@ pub fn new_dev(
                             current_para_block,
                             relay_offset: 1000,
                             relay_blocks_per_para_block: 2,
+                            xcm_config: MockXcmConfig::new(
+                                &*client_for_xcm,
+                                block,
+                                Default::default(),
+                                Default::default(),
+                            ),
+                            raw_downward_messages: downward_xcm_receiver.drain().collect(),
+                            raw_horizontal_messages: hrmp_xcm_receiver.drain().collect(),
                         };
 
                         let author =

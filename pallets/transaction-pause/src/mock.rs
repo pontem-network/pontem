@@ -3,7 +3,7 @@
 use super::*;
 use frame_support::{
     construct_runtime, ord_parameter_types, parameter_types,
-    traits::{Everything, Nothing},
+    traits::{Everything, Nothing, ConstU32},
 };
 use frame_system::{EnsureSignedBy};
 use orml_traits::parameter_type_with_key;
@@ -47,6 +47,7 @@ impl frame_system::Config for Runtime {
     type SystemWeightInfo = ();
     type SS58Prefix = ();
     type OnSetCode = ();
+    type MaxConsumers = ConstU32<12>;
 }
 
 parameter_types! {

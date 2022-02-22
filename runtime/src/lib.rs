@@ -51,7 +51,7 @@ pub use frame_support::{
     construct_runtime, parameter_types, StorageValue, match_type,
     traits::{
         KeyOwnerProofSystem, Randomness, IsInVec, Everything, Nothing, EnsureOrigin,
-        OnUnbalanced, Imbalance, Get, Contains, EqualPrivilegeOnly,
+        OnUnbalanced, Imbalance, Get, Contains, EqualPrivilegeOnly, ConstU32,
     },
     weights::{
         Weight, IdentityFee, DispatchClass,
@@ -107,6 +107,7 @@ pub const VERSION: RuntimeVersion = RuntimeVersion {
     impl_version: 1,
     apis: RUNTIME_API_VERSIONS,
     transaction_version: 1,
+    state_version: 0,
 };
 
 /// 1 in 4 blocks (on average) will be primary babe blocks
@@ -131,7 +132,7 @@ const NORMAL_DISPATCH_RATIO: Perbill = Perbill::from_percent(65);
 parameter_types! {
     pub const Version: RuntimeVersion = VERSION;
     pub const BlockHashCount: BlockNumber = 2400;
-    /// We allow for 2 seconds of compute with a 6 second average block time.
+    /// We allow for 2 seconds of compute with a 12 second average block time.
     pub RuntimeBlockWeights: BlockWeights = BlockWeights::builder()
         .base_block(BlockExecutionWeight::get())
         .for_class(DispatchClass::all(), |weights| {
@@ -206,6 +207,7 @@ impl frame_system::Config for Runtime {
     /// What to do if the user wants the code set to something. Just use `()` unless you are in
     /// cumulus.
     type OnSetCode = cumulus_pallet_parachain_system::ParachainSetCode<Self>;
+    type MaxConsumers = ConstU32<12>;
 }
 
 parameter_types! {
@@ -228,13 +230,20 @@ parameter_types! {
     // Allow emergency.
     pub const InstantAllowed: bool = true;
 }
+
 pub struct AssumeRootIsSudo();
 impl EnsureOrigin<Origin> for AssumeRootIsSudo {
     type Success = AccountId;
+
     fn try_origin(o: Origin) -> Result<Self::Success, Origin> {
+        use sp_core::Decode;
+
         let f: Result<_, _> = o.into();
         f.and_then(|t| match t {
-            RawOrigin::Root => Ok(Sudo::key()),
+            RawOrigin::Root => Ok(Sudo::key().unwrap_or(
+                AccountId::decode(&mut sp_runtime::traits::TrailingZeroInput::zeroes())
+                    .expect("infinite length input; no invalid inputs for type; qed"),
+            )),
             r => Err(Origin::from(r)),
         })
     }
@@ -288,6 +297,7 @@ parameter_types! {
     /// This value would be slashed if proposal rejected.
     pub const ProposalBond: Permill = Permill::from_percent(5);
     pub const ProposalBondMinimum: Balance = CurrencyId::NATIVE.times(100);
+    pub const ProposalBondMaximum: Balance = CurrencyId::NATIVE.times(1000);
     pub const MaxApprovals: u32 = 100;
 }
 
@@ -304,6 +314,7 @@ impl pallet_treasury::Config for Runtime {
     type OnSlash = Treasury;
     type ProposalBond = ProposalBond;
     type ProposalBondMinimum = ProposalBondMinimum;
+    type ProposalBondMaximum = ProposalBondMaximum;
     type SpendPeriod = SpendPeriod;
     // Not burning.
     type Burn = ();
@@ -315,6 +326,7 @@ impl pallet_treasury::Config for Runtime {
 parameter_types! {
     pub MaximumSchedulerWeight: Weight = Perbill::from_percent(80) * RuntimeBlockWeights::get().max_block;
     pub const MaxScheduledPerBlock: u32 = 50;
+    pub const NoPreimagePostponement: Option<u32> = None;
 }
 
 impl pallet_scheduler::Config for Runtime {
@@ -327,6 +339,8 @@ impl pallet_scheduler::Config for Runtime {
     type OriginPrivilegeCmp = EqualPrivilegeOnly;
     type MaxScheduledPerBlock = MaxScheduledPerBlock;
     type WeightInfo = pallet_scheduler::weights::SubstrateWeight<Runtime>;
+    type PreimageProvider = ();
+    type NoPreimagePostponement = NoPreimagePostponement;
 }
 
 parameter_types! {
@@ -426,7 +440,7 @@ parameter_types! {
 
 impl cumulus_pallet_parachain_system::Config for Runtime {
     type Event = Event;
-    type OnValidationData = ();
+    type OnSystemEvent = ();
     type SelfParaId = parachain_info::Pallet<Runtime>;
     type OutboundXcmpMessageSource = XcmpQueue;
     type XcmpMessageHandler = XcmpQueue;
@@ -444,18 +458,24 @@ parameter_types! {
     pub const DefaultBlocksPerRound: u32 = 300;
     /// Collator candidate exits are delayed by 2 hours (2 * 300 * block_time)
     pub const LeaveCandidatesDelay: u32 = 2;
+    // Rounds before the candidate bond increase/decrease can be executed.
+    pub const CandidateBondLessDelay: u32 = 2;
     /// Nominator exits are delayed by 2 hours (2 * 300 * block_time)
-    pub const LeaveNominatorsDelay: u32 = 2;
+    pub const LeaveDelegatorsDelay: u32 = 2;
     /// Nomination revocations are delayed by 2 hours (2 * 300 * block_time)
-    pub const RevokeNominationDelay: u32 = 2;
+    pub const RevokeDelegationDelay: u32 = 2;
+    /// Rounds before the delegator bond increase/decrease can be executed
+    pub const DelegationBondLessDelay: u32 = 2;
     /// Reward payments are delayed by 2 hours (2 * 300 * block_time)
     pub const RewardPaymentDelay: u32 = 2;
     /// Minimum 8 collators selected per round, default at genesis and minimum forever after
     pub const MinSelectedCandidates: u32 = 8;
-    /// Maximum 10 nominators per collator
-    pub const MaxNominatorsPerCollator: u32 = 10;
-    /// Maximum 25 collators per nominator
-    pub const MaxCollatorsPerNominator: u32 = 25;
+    /// Maximum top 10 delegators per collator metters
+    pub const MaxTopDelegationsPerCandidate: u32 = 10;
+    /// Maximum bottom delegations per candidate
+    pub const MaxBottomDelegationsPerCandidate: u32 = 50;
+    /// Maximum delegations per delegator
+    pub const MaxDelegationsPerDelegator: u32 = 25;
     /// Default fixed percent a collator takes off the top of due rewards is 20%
     pub const DefaultCollatorCommission: Perbill = Perbill::from_percent(20);
     /// Default percent of inflation set aside for parachain bond every round
@@ -463,9 +483,9 @@ parameter_types! {
     /// Minimum stake required to become a collator is 1_000
     pub const MinCollatorStk: Balance = CurrencyId::NATIVE.times(1000);
     /// Minimum stake required to be reserved to be a candidate is 100
-    pub const MinCollatorCandidateStk: Balance = CurrencyId::NATIVE.times(100);
-    /// Minimum stake required to be reserved to be a nominator is 5
-    pub const MinNominatorStk: Balance = CurrencyId::NATIVE.times(1);
+    pub const MinCandidateStk: Balance = CurrencyId::NATIVE.times(100);
+    /// Minimum stake required to be reserved to be a delegator is 1.
+    pub const MinDelegatorStk: Balance = CurrencyId::NATIVE.times(1);
 }
 impl parachain_staking::Config for Runtime {
     type Event = Event;
@@ -473,25 +493,27 @@ impl parachain_staking::Config for Runtime {
     type MonetaryGovernanceOrigin = EnsureRoot<AccountId>;
     type MinBlocksPerRound = MinBlocksPerRound;
     type DefaultBlocksPerRound = DefaultBlocksPerRound;
+    type CandidateBondLessDelay = CandidateBondLessDelay;
     type LeaveCandidatesDelay = LeaveCandidatesDelay;
-    type LeaveNominatorsDelay = LeaveNominatorsDelay;
-    type RevokeNominationDelay = RevokeNominationDelay;
+    type LeaveDelegatorsDelay = LeaveDelegatorsDelay;
+    type RevokeDelegationDelay = RevokeDelegationDelay;
+    type DelegationBondLessDelay = DelegationBondLessDelay;
     type RewardPaymentDelay = RewardPaymentDelay;
     type MinSelectedCandidates = MinSelectedCandidates;
-    type MaxNominatorsPerCollator = MaxNominatorsPerCollator;
-    type MaxCollatorsPerNominator = MaxCollatorsPerNominator;
+    type MaxTopDelegationsPerCandidate = MaxTopDelegationsPerCandidate;
+    type MaxBottomDelegationsPerCandidate = MaxBottomDelegationsPerCandidate;
+    type MaxDelegationsPerDelegator = MaxDelegationsPerDelegator;
     type DefaultCollatorCommission = DefaultCollatorCommission;
     type DefaultParachainBondReservePercent = DefaultParachainBondReservePercent;
     type MinCollatorStk = MinCollatorStk;
-    type MinCollatorCandidateStk = MinCollatorCandidateStk;
-    type MinNomination = MinNominatorStk;
-    type MinNominatorStk = MinNominatorStk;
+    type MinCandidateStk = MinCandidateStk;
+    type MinDelegatorStk = MinDelegatorStk;
+    type MinDelegation = MinDelegatorStk;
     type WeightInfo = parachain_staking::weights::SubstrateWeight<Runtime>;
 }
 
 // The pallet connect authors mapping, slots, and implement block executor for nimbus consensus.
 impl pallet_author_inherent::Config for Runtime {
-    type AuthorId = NimbusId;
     type SlotBeacon = RelaychainBlockNumberProvider<Self>;
     type AccountLookup = AuthorMapping;
     type EventHandler = ParachainStaking;
@@ -506,7 +528,6 @@ parameter_types! {
 // We need author mapping to connect Nimbus Ids with Account Ids, all collators should register his AuthorId.
 impl pallet_author_mapping::Config for Runtime {
     type Event = Event;
-    type AuthorId = NimbusId;
     type DepositCurrency = Balances;
     type DepositAmount = DepositAmount;
     type WeightInfo = pallet_author_mapping::weights::SubstrateWeight<Runtime>;
@@ -548,6 +569,7 @@ pub type LocalAssetTransactor = MultiCurrencyAdapter<
     LocationToAccountId,
     CurrencyId,
     CurrencyIdConvert,
+    (),
 >;
 
 /// This is the type we use to convert an (incoming) XCM origin into a local `Origin` instance,
@@ -746,6 +768,7 @@ impl cumulus_pallet_xcmp_queue::Config for Runtime {
     type XcmExecutor = XcmExecutor<XcmConfig>;
     type ChannelInfo = ParachainSystem;
     type VersionWrapper = PolkadotXcm;
+    type ExecuteOverweightOrigin = EnsureRoot<AccountId>;
 }
 
 impl cumulus_pallet_dmp_queue::Config for Runtime {
@@ -891,6 +914,11 @@ impl Convert<MultiLocation, Option<CurrencyId>> for CurrencyIdConvert {
                 parents: 1,
                 interior: X2(Parachain(_id), GeneralKey(key)),
             } if key.to_vec() == CurrencyId::NATIVE.symbol() => Some(CurrencyId::NATIVE),
+            // adapt for reanchor canonical location: https://github.com/paritytech/polkadot/pull/4470
+            MultiLocation {
+                parents: 0,
+                interior: X1(GeneralKey(key)),
+            } if key.to_vec() == CurrencyId::NATIVE.symbol() => Some(CurrencyId::NATIVE),
             _ => None,
         }
     }
@@ -964,6 +992,7 @@ impl Convert<AccountId, MultiLocation> for AccountIdToMultiLocation {
 parameter_types! {
     pub SelfLocation: MultiLocation = MultiLocation::new(1, X1(Parachain(ParachainInfo::get().into())));
     pub const BaseXcmWeight: Weight = 100_000_000;
+    pub const MaxAssetsForTransfer: usize = 2;
 }
 
 impl orml_xtokens::Config for Runtime {
@@ -977,6 +1006,7 @@ impl orml_xtokens::Config for Runtime {
     type Weigher = FixedWeightBounds<UnitWeightCost, Call, MaxInstructions>;
     type BaseXcmWeight = BaseXcmWeight;
     type LocationInverter = LocationInverter<Ancestry>;
+    type MaxAssetsForTransfer = MaxAssetsForTransfer;
 }
 
 impl orml_xcm::Config for Runtime {
@@ -1043,7 +1073,7 @@ construct_runtime!(
         AuthorMapping: pallet_author_mapping::{Pallet, Call, Config<T>, Storage, Event<T>} = 43,
 
         // Democracy
-        Scheduler: pallet_scheduler::{Pallet, Call, Storage, Config, Event<T>} = 50,
+        Scheduler: pallet_scheduler::{Pallet, Call, Storage, Event<T>} = 50,
         Treasury: pallet_treasury::{Pallet, Call, Storage, Config, Event<T>} = 51,
         Democracy: pallet_democracy::{Pallet, Call, Storage, Config<T>, Event<T>} = 52,
 
@@ -1096,7 +1126,7 @@ pub type Executive = frame_executive::Executive<
     Block,
     frame_system::ChainContext<Runtime>,
     Runtime,
-    AllPallets,
+    AllPalletsReversedWithSystemFirst,
 >;
 
 impl_runtime_apis! {
@@ -1158,8 +1188,8 @@ impl_runtime_apis! {
     }
 
     impl cumulus_primitives_core::CollectCollationInfo<Block> for Runtime {
-        fn collect_collation_info() -> cumulus_primitives_core::CollationInfo {
-            ParachainSystem::collect_collation_info()
+        fn collect_collation_info(header: &<Block as BlockT>::Header) -> cumulus_primitives_core::CollationInfo {
+            ParachainSystem::collect_collation_info(header)
         }
     }
 
@@ -1248,28 +1278,56 @@ impl_runtime_apis! {
         }
     }
 
-    impl nimbus_primitives::AuthorFilterAPI<Block, NimbusId> for Runtime {
+    impl nimbus_primitives::NimbusApi<Block> for Runtime {
         fn can_author(
-            author: NimbusId,
+            author: nimbus_primitives::NimbusId,
             slot: u32,
             parent_header: &<Block as BlockT>::Header
         ) -> bool {
+            use nimbus_primitives::CanAuthor;
+            let block_number = parent_header.number + 1;
+
             // The Moonbeam runtimes use an entropy source that needs to do some accounting
             // work during block initialization. Therefore we initialize it here to match
             // the state it will be in when the next block is being executed.
             use frame_support::traits::OnInitialize;
-            use nimbus_primitives::CanAuthor;
-
             System::initialize(
-                &(parent_header.number + 1),
+                &block_number,
                 &parent_header.hash(),
                 &parent_header.digest,
-                frame_system::InitKind::Inspection
             );
-            RandomnessCollectiveFlip::on_initialize(System::block_number());
+            RandomnessCollectiveFlip::on_initialize(block_number);
 
-            // And now the actual prediction call
-            AuthorInherent::can_author(&author, &slot)
+            // Because the staking solution calculates the next staking set at the beginning
+            // of the first block in the new round, the only way to accurately predict the
+            // authors is to compute the selection during prediction.
+            if parachain_staking::Pallet::<Self>::round().should_update(block_number) {
+                // get author account id
+                use nimbus_primitives::AccountLookup;
+                let author_account_id = if let Some(account) =
+                    pallet_author_mapping::Pallet::<Self>::lookup_account(&author) {
+                    account
+                } else {
+                    // return false if author mapping not registered like in can_author impl
+                    return false
+                };
+                // predict eligibility post-selection by computing selection results now
+                let (eligible, _) =
+                    pallet_author_slot_filter::compute_pseudo_random_subset::<Self>(
+                        parachain_staking::Pallet::<Self>::compute_top_candidates(),
+                        &slot
+                    );
+                eligible.contains(&author_account_id)
+            } else {
+                AuthorInherent::can_author(&author, &slot)
+            }
+        }
+    }
+
+    // We also implement the old AuthorFilterAPI to meet the trait bounds on the client side.
+    impl nimbus_primitives::AuthorFilterAPI<Block, NimbusId> for Runtime {
+        fn can_author(_: NimbusId, _: u32, _: &<Block as BlockT>::Header) -> bool {
+            panic!("AuthorFilterAPI is no longer supported. Please update your client.")
         }
     }
 

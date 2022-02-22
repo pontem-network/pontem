@@ -9,7 +9,7 @@ use parity_scale_codec::{Decode, Encode};
 use system::EnsureRoot;
 use frame_support::{
     PalletId, parameter_types,
-    traits::Everything,
+    traits::{Everything, ConstU32},
     weights::{Weight, constants::WEIGHT_PER_SECOND},
 };
 use sp_std::vec;
@@ -38,7 +38,7 @@ pub const MILLIUNIT: Balance = 1_000_000_000;
 pub const MICROUNIT: Balance = 1_000_000;
 
 // Implement signature just for test.
-#[derive(Eq, PartialEq, Clone, Default, Encode, Decode, TypeInfo, Debug)]
+#[derive(Eq, PartialEq, Clone, Encode, Decode, TypeInfo, Debug)]
 pub struct AnySignature(sr25519::Signature);
 
 impl Verify for AnySignature {
@@ -108,6 +108,7 @@ impl system::Config for Test {
     type SystemWeightInfo = ();
     type SS58Prefix = SS58Prefix;
     type OnSetCode = ();
+    type MaxConsumers = ConstU32<12>;
 }
 
 // --- gas --- //
