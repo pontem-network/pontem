@@ -11,7 +11,6 @@
 //!     * get_balance - get current balance of account.
 //!     * add - add tokens to account.
 //!     * sub - reduce account balance on amount.
-
 use core::convert::TryFrom;
 use core::convert::TryInto;
 use move_vm::io::traits::{Balance as VmBalance, BalanceAccess};
@@ -47,7 +46,7 @@ pub struct BalancesAdapter<AccountId, Currencies, CurrencyId> {
     _phantom: core::marker::PhantomData<(AccountId, Currencies, CurrencyId)>,
 }
 
-impl<AccountId: Encode + Decode + Default, Currencies, CurrencyId>
+impl<AccountId: Encode + Decode, Currencies, CurrencyId>
     BalancesAdapter<AccountId, Currencies, CurrencyId>
 {
     /// Create new instance of Balance Adapter.
@@ -74,7 +73,7 @@ impl<AccountId: Encode + Decode + Default, Currencies, CurrencyId>
 /// It's a trait required to Move VM and allows for poxy balances between Substrate and VM.
 /// Using deposit/withdraw to PalletId we are solving total issuance issue.
 impl<
-        AccountId: Encode + Decode + Default,
+        AccountId: Encode + Decode,
         Currencies: MultiCurrency<AccountId, CurrencyId = CurrencyId>
             + fungibles::Inspect<AccountId, AssetId = CurrencyId>,
         CurrencyId: FullCodec
@@ -247,7 +246,7 @@ pub mod boxed {
     }
 
     impl<
-            AccountId: Encode + Decode + Sized + Default + 'static,
+            AccountId: Encode + Decode + Sized + 'static,
             Currencies: MultiCurrency<AccountId, CurrencyId = CurrencyId>
                 + fungibles::Inspect<AccountId, AssetId = CurrencyId>
                 + 'static,
@@ -286,7 +285,7 @@ pub mod boxed {
     }
 
     impl<
-            AccountId: Encode + Decode + Sized + Default + 'static,
+            AccountId: Encode + Decode + Sized + 'static,
             Currencies: orml_traits::MultiCurrency<AccountId, CurrencyId = CurrencyId>
                 + fungibles::Inspect<AccountId, AssetId = CurrencyId>
                 + 'static,

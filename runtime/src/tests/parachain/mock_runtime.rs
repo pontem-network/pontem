@@ -11,7 +11,7 @@ use sp_runtime::{
 use serde::{Deserialize, Serialize};
 
 use sp_core::RuntimeDebug;
-use codec::{Decode, Encode};
+use codec::{Decode, Encode, MaxEncodedLen};
 use scale_info::TypeInfo;
 
 // Polkadot & XCM imports
@@ -43,7 +43,7 @@ pub use frame_support::{
     construct_runtime, parameter_types, StorageValue, match_type,
     traits::{
         KeyOwnerProofSystem, Randomness, IsInVec, Everything, Nothing, EnsureOrigin,
-        OnUnbalanced, Imbalance, Get,
+        OnUnbalanced, Imbalance, Get, ConstU32,
     },
     weights::{
         Weight, IdentityFee, DispatchClass,
@@ -76,7 +76,7 @@ pub type BlockNumber = u64;
 pub type Index = u64;
 
 parameter_types! {
-    pub const BlockHashCount: BlockNumber = 250;
+    pub const BlockHashCount: BlockNumber = 2400;
 }
 
 impl frame_system::Config for Runtime {
@@ -103,10 +103,23 @@ impl frame_system::Config for Runtime {
     type SS58Prefix = ();
     type OnSetCode = cumulus_pallet_parachain_system::ParachainSetCode<Self>;
     type Version = ();
+    type MaxConsumers = ConstU32<12>;
 }
 
 // Currencies id.
-#[derive(Encode, Decode, Eq, PartialEq, Copy, Clone, RuntimeDebug, PartialOrd, Ord, TypeInfo)]
+#[derive(
+    Encode,
+    Decode,
+    Eq,
+    PartialEq,
+    Copy,
+    Clone,
+    RuntimeDebug,
+    PartialOrd,
+    Ord,
+    TypeInfo,
+    MaxEncodedLen,
+)]
 #[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
 pub enum CurrencyId {
     // Relaychain's currency.
@@ -141,7 +154,7 @@ parameter_types! {
 
 impl cumulus_pallet_parachain_system::Config for Runtime {
     type Event = Event;
-    type OnValidationData = ();
+    type OnSystemEvent = ();
     type SelfParaId = parachain_info::Pallet<Runtime>;
     type OutboundXcmpMessageSource = XcmpQueue;
     type XcmpMessageHandler = XcmpQueue;
@@ -179,6 +192,7 @@ pub type LocalAssetTransactor = MultiCurrencyAdapter<
     LocationToAccountId,
     CurrencyId,
     CurrencyIdConvert,
+    (),
 >;
 
 /// This is the type we use to convert an (incoming) XCM origin into a local `Origin` instance,
@@ -381,6 +395,7 @@ impl cumulus_pallet_xcmp_queue::Config for Runtime {
     type XcmExecutor = XcmExecutor<XcmConfig>;
     type ChannelInfo = ParachainSystem;
     type VersionWrapper = PolkadotXcm;
+    type ExecuteOverweightOrigin = EnsureRoot<AccountId>;
 }
 
 impl cumulus_pallet_dmp_queue::Config for Runtime {
@@ -522,6 +537,7 @@ impl Convert<AccountId, MultiLocation> for AccountIdToMultiLocation {
 parameter_types! {
     pub SelfLocation: MultiLocation = MultiLocation::new(1, X1(Parachain(ParachainInfo::get().into())));
     pub const BaseXcmWeight: Weight = 100_000_000;
+    pub const MaxAssetsForTransfer: usize = 2;
 }
 
 impl orml_xtokens::Config for Runtime {
@@ -535,6 +551,7 @@ impl orml_xtokens::Config for Runtime {
     type Weigher = FixedWeightBounds<UnitWeightCost, Call, MaxInstructions>;
     type BaseXcmWeight = BaseXcmWeight;
     type LocationInverter = LocationInverter<Ancestry>;
+    type MaxAssetsForTransfer = MaxAssetsForTransfer;
 }
 
 impl orml_xcm::Config for Runtime {

@@ -8,7 +8,7 @@ services:
       dockerfile: launch.Dockerfile
       args:
         PONTEM_VERSION: v0.4.1
-        POLKADOT_VERSION: v0.9.13
+        POLKADOT_VERSION: v0.9.16
         NODE_VERSION: 16
     ports:
       - "9944:9944" # Alice relaychain

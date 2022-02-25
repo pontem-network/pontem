@@ -18,20 +18,21 @@
 use crate as pallet_author_mapping;
 use frame_support::{
     construct_runtime, parameter_types,
-    traits::{Everything, GenesisBuild},
+    traits::{Everything, GenesisBuild, ConstU32},
     weights::Weight,
 };
 use parity_scale_codec::{Decode, Encode};
 use scale_info::TypeInfo;
 #[cfg(feature = "std")]
 use serde::{Deserialize, Serialize};
-use sp_core::H256;
+use sp_core::{H256, ByteArray};
 use sp_io;
 use sp_runtime::{
     testing::Header,
     traits::{BlakeTwo256, IdentityLookup},
     Perbill, RuntimeDebug,
 };
+use nimbus_primitives::NimbusId;
 
 #[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
 #[derive(Eq, PartialEq, Clone, Copy, Encode, Decode, RuntimeDebug, TypeInfo)]
@@ -39,12 +40,19 @@ pub enum TestAuthor {
     Alice,
     Bob,
     Charlie,
-    Dave,
-    Eve,
 }
 impl Default for TestAuthor {
     fn default() -> TestAuthor {
         TestAuthor::Alice
+    }
+}
+impl Into<NimbusId> for TestAuthor {
+    fn into(self) -> NimbusId {
+        match self {
+            Self::Alice => NimbusId::from_slice(&[0u8; 32]).unwrap(),
+            Self::Bob => NimbusId::from_slice(&[1u8; 32]).unwrap(),
+            Self::Charlie => NimbusId::from_slice(&[2u8; 32]).unwrap(),
+        }
     }
 }
 pub type AccountId = u64;
@@ -97,6 +105,7 @@ impl frame_system::Config for Runtime {
     type BlockLength = ();
     type SS58Prefix = ();
     type OnSetCode = ();
+    type MaxConsumers = ConstU32<12>;
 }
 parameter_types! {
     pub const ExistentialDeposit: u128 = 1;
@@ -118,7 +127,6 @@ parameter_types! {
 }
 impl pallet_author_mapping::Config for Runtime {
     type Event = Event;
-    type AuthorId = TestAuthor;
     type DepositCurrency = Balances;
     type DepositAmount = DepositAmount;
     type WeightInfo = ();
@@ -130,7 +138,7 @@ pub(crate) struct ExtBuilder {
     /// Accounts endowed with balances
     balances: Vec<(AccountId, Balance)>,
     /// AuthorId -> AccoutId mappings
-    mappings: Vec<(TestAuthor, AccountId)>,
+    mappings: Vec<(NimbusId, AccountId)>,
 }
 
 impl Default for ExtBuilder {
@@ -148,7 +156,7 @@ impl ExtBuilder {
         self
     }
 
-    pub(crate) fn with_mappings(mut self, mappings: Vec<(TestAuthor, AccountId)>) -> Self {
+    pub(crate) fn with_mappings(mut self, mappings: Vec<(NimbusId, AccountId)>) -> Self {
         self.mappings = mappings;
         self
     }

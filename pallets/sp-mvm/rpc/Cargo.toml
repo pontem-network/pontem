@@ -13,13 +13,13 @@ targets = ["x86_64-unknown-linux-gnu"]
 jsonrpc-core = "18.0"
 jsonrpc-core-client = "18.0"
 jsonrpc-derive = "18.0"
-sp-rpc = { version = "4.0.0-dev", git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.13' }
-sp-runtime = { version = "4.0.0-dev", git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.13' }
-sp-api = { version = "4.0.0-dev", git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.13' }
-frame-support = { version = "4.0.0-dev", git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.13' }
-sp-blockchain = { version = "4.0.0-dev", git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.13' }
+sp-rpc = {  git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.16' }
+sp-runtime = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.16' }
+sp-api = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.16' }
+frame-support = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.16' }
+sp-blockchain = {  git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.16' }
 sp-mvm-rpc-runtime = { version = "0.2.2", path = "./runtime" }
-codec = { package = "parity-scale-codec", version = "2.3.0" }
+codec = { package = "parity-scale-codec", version = "2.3.1" }
 serde = { version = "1.0.119", features = [ "derive" ] } # / 1.0.101
 fc-rpc-core = { version = "1.0.0" }
 

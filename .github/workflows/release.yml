@@ -150,7 +150,7 @@ jobs:
 
       - name: Install Rust toolchain
         # uses: actions-rs/toolchain@v1
-        uses: zephraph/toolchain@support-toolchain-toml
+        uses: oxidecomputer/actions-rs_toolchain@oxide/master
         with:
           profile: minimal
           target: wasm32-unknown-unknown

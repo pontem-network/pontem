@@ -1,5 +1,5 @@
 #![allow(dead_code)]
-
+/// Mock runtime.
 use groupsign::weights::PontemWeights;
 use sp_mvm::gas;
 use sp_core::{H256, sr25519};
@@ -9,7 +9,7 @@ use parity_scale_codec::{Decode, Encode};
 use system::EnsureRoot;
 use frame_support::{
     PalletId, parameter_types,
-    traits::Everything,
+    traits::{Everything, ConstU32},
     weights::{Weight, constants::WEIGHT_PER_SECOND},
 };
 use sp_std::vec;
@@ -24,9 +24,6 @@ use scale_info::TypeInfo;
 pub use primitives::currency::CurrencyId;
 use module_currencies::BasicCurrencyAdapter;
 
-use super::addr::origin_ps_acc;
-use super::addr::root_ps_acc;
-use super::addr::alice_public_key;
 use super::vm_config::build as build_vm_config;
 
 type UncheckedExtrinsic = system::mocking::MockUncheckedExtrinsic<Test>;
@@ -41,7 +38,7 @@ pub const MILLIUNIT: Balance = 1_000_000_000;
 pub const MICROUNIT: Balance = 1_000_000;
 
 // Implement signature just for test.
-#[derive(Eq, PartialEq, Clone, Default, Encode, Decode, TypeInfo, Debug)]
+#[derive(Eq, PartialEq, Clone, Encode, Decode, TypeInfo, Debug)]
 pub struct AnySignature(sr25519::Signature);
 
 impl Verify for AnySignature {
@@ -111,6 +108,7 @@ impl system::Config for Test {
     type SystemWeightInfo = ();
     type SS58Prefix = SS58Prefix;
     type OnSetCode = ();
+    type MaxConsumers = ConstU32<12>;
 }
 
 // --- gas --- //
@@ -220,7 +218,7 @@ impl module_currencies::Config for Test {
     type OnDust = ();
 }
 
-// ----------------- //
+// -------- move vm pallet --------- //
 parameter_types! {
     pub const MVMPalletId: PalletId = PalletId(*b"_nox/mvm");
 }
@@ -253,45 +251,82 @@ pub type Sys = system::Pallet<Test>;
 pub type Time = timestamp::Pallet<Test>;
 pub type MoveEvent = sp_mvm::Event<Test>;
 
-/// Build genesis storage according to the mock runtime.
-pub fn new_test_ext() -> sp_io::TestExternalities {
-    let mut sys = system::GenesisConfig::default()
-        .build_storage::<Test>()
-        .expect("Frame system builds valid default genesis config");
-    balances::GenesisConfig::<Test> {
-        balances: vec![
-            (root_ps_acc(), INITIAL_BALANCE),
-            (origin_ps_acc(), INITIAL_BALANCE),
-            (alice_public_key(), INITIAL_BALANCE),
-        ],
-    }
-    .assimilate_storage(&mut sys)
-    .expect("Pallet balances storage can't be assimilated");
-
-    let vm_config = build_vm_config();
-
-    let move_stdlib =
-        include_bytes!("../assets/move-stdlib/build/MoveStdlib/bundles/MoveStdlib.pac").to_vec();
-    let pont_framework =
-        include_bytes!("../assets/pont-stdlib/build/PontStdlib/bundles/PontStdlib.pac").to_vec();
-
-    sp_mvm::GenesisConfig::<Test> {
-        move_stdlib,
-        pont_framework,
-        init_module: vm_config.0.clone(),
-        init_func: vm_config.1.clone(),
-        init_args: vm_config.2.clone(),
-        ..Default::default()
-    }
-    .assimilate_storage(&mut sys)
-    .expect("Pallet mvm storage can't be assimilated");
-
-    sys.into()
+/// Runtime builder.
+pub struct RuntimeBuilder {
+    balances: Vec<(AccountId, CurrencyId, Balance)>,
+    vesting: Vec<(AccountId, BlockNumber, u32, Balance)>,
 }
 
+impl RuntimeBuilder {
+    /// Create new Runtime builder instance.
+    pub fn new() -> Self {
+        Self {
+            balances: vec![],
+            vesting: vec![],
+        }
+    }
+
+    /// Set balances.
+    pub fn set_balances(mut self, balances: Vec<(AccountId, CurrencyId, Balance)>) -> Self {
+        self.balances = balances;
+        self
+    }
+
+    /// Set vesting.
+    pub fn set_vesting(mut self, vesting: Vec<(AccountId, BlockNumber, u32, Balance)>) -> Self {
+        self.vesting = vesting;
+        self
+    }
+
+    /// Build genesis storage according to the mock runtime.
+    pub fn build(self) -> sp_io::TestExternalities {
+        let mut sys = system::GenesisConfig::default()
+            .build_storage::<Test>()
+            .expect("Frame system builds valid default genesis config");
+
+        let native_currency_id = GetNativeCurrencyId::get();
+
+        balances::GenesisConfig::<Test> {
+            balances: self
+                .balances
+                .clone()
+                .into_iter()
+                .filter(|(_, currency_id, _)| *currency_id == native_currency_id)
+                .map(|(account_id, _, initial_balance)| (account_id, initial_balance))
+                .collect::<Vec<_>>(),
+        }
+        .assimilate_storage(&mut sys)
+        .expect("Pallet balances storage can't be assimilated");
+
+        let vm_config = build_vm_config();
+
+        let move_stdlib =
+            include_bytes!("../assets/move-stdlib/build/MoveStdlib/bundles/MoveStdlib.pac")
+                .to_vec();
+        let pont_framework =
+            include_bytes!("../assets/pont-stdlib/build/PontStdlib/bundles/PontStdlib.pac")
+                .to_vec();
+
+        sp_mvm::GenesisConfig::<Test> {
+            move_stdlib,
+            pont_framework,
+            init_module: vm_config.0.clone(),
+            init_func: vm_config.1.clone(),
+            init_args: vm_config.2.clone(),
+            ..Default::default()
+        }
+        .assimilate_storage(&mut sys)
+        .expect("Pallet mvm storage can't be assimilated");
+
+        sys.into()
+    }
+}
+
+/// Timestamp multiplier.
 pub const TIME_BLOCK_MULTIPLIER: u64 = 100;
+
+/// Roll next block.
 pub fn roll_next_block() {
-    // Stake::on_finalize(Sys::block_number());
     Balances::on_finalize(Sys::block_number());
     Mvm::on_finalize(Sys::block_number());
     Sys::on_finalize(Sys::block_number());
@@ -299,7 +334,6 @@ pub fn roll_next_block() {
     Sys::on_initialize(Sys::block_number());
     Mvm::on_initialize(Sys::block_number());
     Balances::on_initialize(Sys::block_number());
-    // Stake::on_initialize(Sys::block_number());
 
     // set time with multiplier `*MULTIPLIER` by block:
     Time::set_timestamp(Sys::block_number() * TIME_BLOCK_MULTIPLIER);
@@ -307,12 +341,14 @@ pub fn roll_next_block() {
     println!("now block: {}, time: {}", Sys::block_number(), Time::get());
 }
 
+/// Roll to block N.
 pub fn roll_block_to(n: u64) {
     while Sys::block_number() < n {
         roll_next_block()
     }
 }
 
+/// Get last event.
 pub fn last_event() -> Event {
     {
         let events = Sys::events();
@@ -321,6 +357,7 @@ pub fn last_event() -> Event {
     Sys::events().pop().expect("Event expected").event
 }
 
+/// If no events recently.
 pub fn have_no_events() -> bool {
     Sys::events().is_empty()
 }

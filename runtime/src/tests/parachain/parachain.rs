@@ -174,6 +174,7 @@ fn send_relay_chain_asset_to_sibling() {
 fn send_self_parachain_asset_to_sibling() {
     TestNet::reset();
 
+    // Send to paracahin B native currency from parachain A.
     ParaA::execute_with(|| {
         assert_ok!(ParaAXTokens::transfer(
             Some(Accounts::ALICE.account()).into(),
