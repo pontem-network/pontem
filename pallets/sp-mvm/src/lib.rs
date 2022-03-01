@@ -341,9 +341,21 @@ pub mod pallet {
 
     /// Clearing Move VM cache once block processed.
     #[pallet::hooks]
-    impl<T: Config> Hooks<BlockNumberFor<T>> for Pallet<T> {
+    impl<T: Config> Hooks<BlockNumberFor<T>> for Pallet<T>
+    // TODO: make it configurable:  where <T as Config>::ClearMvmCachePolicy = ...
+    {
         fn on_finalize(_: BlockNumberFor<T>) {
-            // TODO: check `is VM used`
+            // TODO: check `is VM used`:
+            {
+                if Self::is_move_vm_used() {
+                    if let Some(vm) = Self::get_move_vm_cell().get() {
+                        vm.clear();
+                        Self::set_move_vm_clean();
+                        trace!("VM cache cleared on finalize block");
+                    }
+                }
+                // Otherwise we are not requesting VM.
+            }
             if let Some(vm) = Self::get_move_vm_cell().get() {
                 vm.clear();
                 trace!("VM cache cleared on finalize block");
@@ -590,6 +602,27 @@ pub mod pallet {
                 trace!("Static VM initializing");
                 Self::try_create_move_vm_static().map(Into::into)
             })
+        }
+    }
+
+    /// Usage marker for the VM.
+    /// Draft impl. Move it to the `Mvm`.
+    impl<T: Config> Pallet<T> {
+        #[inline(never)]
+        fn get_move_vm_used() -> &'static mut bool {
+            // TODO: use no-std analog of RefCell here
+            todo!("unimplemented");
+        }
+
+        pub fn is_move_vm_used() -> bool {
+            *Self::get_move_vm_used()
+        }
+
+        pub fn set_move_vm_used() {
+            *Self::get_move_vm_used() = true;
+        }
+        pub fn set_move_vm_clean() {
+            *Self::get_move_vm_used() = false;
         }
     }
 
