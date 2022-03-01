@@ -220,7 +220,6 @@ where
     }
 }
 
-#[cfg(not(feature = "no-vm-static"))]
 pub mod boxed {
     use move_vm::io::{
         traits::{Balance as VmBalance, BalanceAccess},
@@ -237,7 +236,6 @@ pub mod boxed {
     pub type BalancesAdapter = BalancesBoxedAdapter;
 
     /// Vm storage boxed adapter for native storage
-    #[allow(clippy::type_complexity)]
     pub struct BalancesBoxedAdapter {
         pallet_id: PalletId,
         f_get: Box<dyn Fn(&AccountAddress, &[u8]) -> Option<VmBalance>>,

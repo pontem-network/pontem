@@ -55,11 +55,8 @@ pub mod pallet {
     use mvm::*;
     use weights::WeightInfo;
 
-    #[cfg(not(feature = "no-vm-static"))]
-    mod boxed {
-        pub use crate::storage::boxed::VmStorageBoxAdapter as StorageAdapter;
-        pub use crate::balance::boxed::BalancesAdapter;
-    }
+    use crate::storage::boxed::VmStorageBoxAdapter as StorageAdapter;
+    use crate::balance::boxed::BalancesAdapter;
 
     use core::convert::TryInto;
     use core::convert::TryFrom;
@@ -345,8 +342,8 @@ pub mod pallet {
     /// Clearing Move VM cache once block processed.
     #[pallet::hooks]
     impl<T: Config> Hooks<BlockNumberFor<T>> for Pallet<T> {
-        #[cfg(not(feature = "no-vm-static"))]
         fn on_finalize(_: BlockNumberFor<T>) {
+            // TODO: check `is VM used`
             if let Some(vm) = Self::get_move_vm_cell().get() {
                 vm.clear();
                 trace!("VM cache cleared on finalize block");
@@ -356,18 +353,8 @@ pub mod pallet {
 
     /// Get VM methods unification.
     impl<T: Config> Pallet<T> {
-        #[cfg(not(feature = "no-vm-static"))]
         fn get_vm() -> Result<&'static VmWrapperTy, Error<T>> {
             let vm = Self::try_get_or_create_move_vm()?;
-            Ok(vm)
-        }
-
-        #[cfg(feature = "no-vm-static")]
-        fn get_vm() -> Result<
-            DefaultVm<VMStorage<T>, event::DefaultEventHandler, oracle::DummyOracle, T>,
-            Error<T>,
-        > {
-            let vm = Self::try_create_move_vm()?;
             Ok(vm)
         }
     }
@@ -559,14 +546,7 @@ pub mod pallet {
     ///
     /// Supports both static (created at launch of chain), and dynamic one (usually we use regulated one);.
     impl<T: Config> mvm::TryCreateMoveVm<T> for Pallet<T> {
-        #[cfg(not(feature = "no-vm-static"))]
-        type Vm = Mvm<boxed::StorageAdapter, event::DefaultEventHandler, boxed::BalancesAdapter>;
-        #[cfg(feature = "no-vm-static")]
-        type Vm = Mvm<
-            StorageAdapter<VMStorage<T>>,
-            event::DefaultEventHandler,
-            balance::BalancesAdapter<T>,
-        >;
+        type Vm = Mvm<StorageAdapter, event::DefaultEventHandler, BalancesAdapter>;
         type Error = Error<T>;
 
         /// Try to create Move VM instance.
@@ -591,18 +571,16 @@ pub mod pallet {
         }
     }
 
-    #[cfg(not(feature = "no-vm-static"))]
     impl<T: Config> GetStaticMoveVmCell for Pallet<T> {
         type Vm = VmWrapper<<Self as mvm::TryCreateMoveVm<T>>::Vm>;
 
         #[inline(never)]
-        fn get_move_vm_cell() -> &'static OnceCell<VmWrapperTy> {
+        fn get_move_vm_cell() -> &'static OnceCell<Self::Vm> {
             static VM: OnceCell<VmWrapperTy> = OnceCell::new();
             &VM
         }
     }
 
-    #[cfg(not(feature = "no-vm-static"))]
     impl<T: Config> TryGetStaticMoveVm for Pallet<T> {
         type Vm = <Self as GetStaticMoveVmCell>::Vm;
         type Error = Error<T>;

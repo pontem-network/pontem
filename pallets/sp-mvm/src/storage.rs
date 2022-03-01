@@ -49,7 +49,6 @@ impl<T: StorageMap<Vec<u8>, Vec<u8>, Query = Option<Vec<u8>>>> Storage
     }
 }
 
-#[cfg(not(feature = "no-vm-static"))]
 pub mod boxed {
     use sp_std::prelude::*;
     pub type VmStorageAdapter = VmStorageBoxAdapter;

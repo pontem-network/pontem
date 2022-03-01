@@ -12,15 +12,7 @@ use crate::storage::*;
 pub type DefaultVm<S, E, AccountId, Currencies, CurrencyId> =
     Mvm<StorageAdapter<S>, E, BalancesAdapter<Currencies, AccountId, CurrencyId>>;
 
-// The trait to create Move VM (without possible errors).
-pub trait CreateMoveVm<T> {
-    type Vm: move_vm::Vm;
-
-    /// Create VM instance.
-    fn create_move_vm() -> Self::Vm;
-}
-
-// The trait to create Move VM (returns Result, possible with errors).
+/// The trait to create Move VM (returns Result, possible with errors).
 pub trait TryCreateMoveVm<T> {
     type Vm: move_vm::Vm;
     type Error;
@@ -29,9 +21,7 @@ pub trait TryCreateMoveVm<T> {
     fn try_create_move_vm() -> Result<Self::Vm, Self::Error>;
 }
 
-#[cfg(not(feature = "no-vm-static"))]
 pub use vm_static::*;
-#[cfg(not(feature = "no-vm-static"))]
 mod vm_static {
     use anyhow::Error;
     use move_vm::StateAccess;
@@ -49,6 +39,7 @@ mod vm_static {
     #[cfg(feature = "std")]
     pub use once_cell::sync::OnceCell;
 
+    // TODO: simplify this:
     /// Default type of Move VM implementation
     pub type DefaultVm<E> = Mvm<VmStorageAdapter, E, BalancesAdapter>;
     pub type VmWrapperTy = VmWrapper<DefaultVm<DefaultEventHandler>>;
