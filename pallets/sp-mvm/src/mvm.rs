@@ -161,4 +161,46 @@ mod vm_static {
     }
 
     impl<T, C: TryCreateMoveVm<T>> TryCreateMoveVmWrapped<T> for C {}
+
+    use core::sync::atomic::{AtomicBool, Ordering};
+
+    /// Usage marker for the VM.
+    pub trait MoveVmUsed {
+        #[inline(never)]
+        fn get_move_vm_used() -> &'static AtomicBool {
+            static USED: AtomicBool = AtomicBool::new(false);
+            &USED
+        }
+
+        fn is_move_vm_used() -> bool {
+            Self::get_move_vm_used().load(Ordering::Relaxed)
+        }
+
+        fn set_move_vm_used() {
+            Self::get_move_vm_used().store(true, Ordering::Relaxed);
+        }
+        fn set_move_vm_clean() {
+            Self::get_move_vm_used().store(false, Ordering::Relaxed);
+        }
+    }
+
+    #[cfg(test)]
+    mod tests {
+        use super::MoveVmUsed;
+
+        struct Vm;
+
+        impl MoveVmUsed for Vm {}
+
+        #[test]
+        fn usage_marker() {
+            assert_eq!(false, Vm::is_move_vm_used());
+
+            Vm::set_move_vm_used();
+            assert_eq!(true, Vm::is_move_vm_used());
+
+            Vm::set_move_vm_clean();
+            assert_eq!(false, Vm::is_move_vm_used());
+        }
+    }
 }
