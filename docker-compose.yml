@@ -7,7 +7,7 @@ services:
       context: .build
       dockerfile: launch.Dockerfile
       args:
-        PONTEM_VERSION: v0.4.1
+        PONTEM_VERSION: v0.5.1
         POLKADOT_VERSION: v0.9.16
         NODE_VERSION: 16
     ports:
