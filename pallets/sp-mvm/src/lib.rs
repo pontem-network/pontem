@@ -593,7 +593,6 @@ pub mod pallet {
         fn try_get_or_create_move_vm() -> Result<&'static Self::Vm, Self::Error> {
             Self::set_move_vm_used();
             Self::get_move_vm_cell().get_or_try_init(|| {
-                trace!("Static VM initializing");
                 Self::try_create_move_vm_static().map(Into::into)
             })
         }

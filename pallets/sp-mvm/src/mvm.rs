@@ -21,8 +21,8 @@ pub trait TryCreateMoveVm<T> {
     fn try_create_move_vm() -> Result<Self::Vm, Self::Error>;
 }
 
-pub use vm_static::*;
-mod vm_static {
+pub use boxed::*;
+mod boxed {
     use anyhow::Error;
     use move_vm::StateAccess;
     use move_vm::io::context::ExecutionContext;
@@ -39,7 +39,6 @@ mod vm_static {
     #[cfg(feature = "std")]
     pub use once_cell::sync::OnceCell;
 
-    // TODO: simplify this:
     /// Default type of Move VM implementation
     pub type DefaultVm<E> = Mvm<VmStorageAdapter, E, BalancesAdapter>;
     pub type VmWrapperTy = VmWrapper<DefaultVm<DefaultEventHandler>>;
@@ -49,6 +48,7 @@ mod vm_static {
     /// so it should only be used between threads.
     /// For thread-local usage or inside the `OnceCell`.
     pub struct VmWrapper<T: move_vm::Vm>(T);
+    #[allow(clippy::non_send_fields_in_send_ty)]
     unsafe impl<T: move_vm::Vm> Send for VmWrapper<T> {}
     unsafe impl<T: move_vm::Vm> Sync for VmWrapper<T> {}
 
