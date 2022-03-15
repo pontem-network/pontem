@@ -53,11 +53,15 @@ pub mod boxed {
     use sp_std::prelude::*;
     pub type VmStorageAdapter = VmStorageBoxAdapter;
 
+    type Get = dyn Fn(&[u8]) -> Option<Vec<u8>>;
+    type Insert = dyn Fn(&[u8], &[u8]);
+    type Remove = dyn Fn(&[u8]);
+
     /// Vm storage boxed adapter for native storage
     pub struct VmStorageBoxAdapter {
-        f_get: Box<dyn Fn(&[u8]) -> Option<Vec<u8>>>,
-        f_insert: Box<dyn Fn(&[u8], &[u8])>,
-        f_remove: Box<dyn Fn(&[u8])>,
+        f_get: Box<Get>,
+        f_insert: Box<Insert>,
+        f_remove: Box<Remove>,
     }
 
     pub fn into_boxfn_adapter<T>() -> VmStorageBoxAdapter
