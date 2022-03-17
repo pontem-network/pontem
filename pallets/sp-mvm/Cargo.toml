@@ -132,11 +132,6 @@ runtime-benchmarks = [
     "bcs-alt",
 ]
 
-# Optional feature `no-vm-static` that disables VM static initialization,
-# so Move VM will be initialized for each block when it used if this feature is enabled.
-# Otherwise when the feature is disabled VM initialization happens only once, but only cache cleaning for each block.
-no-vm-static = []
-
 # Note: frame-support `try-runtime` feature is released after v3.
 # Uncomment the following line when `frame-support` version > `3.0.0`.
 # try-runtime = ['frame-support/try-runtime']

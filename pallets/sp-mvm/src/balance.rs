@@ -220,7 +220,6 @@ where
     }
 }
 
-#[cfg(not(feature = "no-vm-static"))]
 pub mod boxed {
     use move_vm::io::{
         traits::{Balance as VmBalance, BalanceAccess},
@@ -235,14 +234,16 @@ pub mod boxed {
     use orml_traits::MultiCurrency;
 
     pub type BalancesAdapter = BalancesBoxedAdapter;
+    type Withdraw = dyn Fn(&PalletId, &AccountAddress, &[u8], VmBalance);
+    type Deposit = dyn Fn(&PalletId, &AccountAddress, &[u8], VmBalance);
+    type Get = dyn Fn(&AccountAddress, &[u8]) -> Option<VmBalance>;
 
     /// Vm storage boxed adapter for native storage
-    #[allow(clippy::type_complexity)]
     pub struct BalancesBoxedAdapter {
         pallet_id: PalletId,
-        f_get: Box<dyn Fn(&AccountAddress, &[u8]) -> Option<VmBalance>>,
-        f_deposit: Box<dyn Fn(&PalletId, &AccountAddress, &[u8], VmBalance)>,
-        f_withdraw: Box<dyn Fn(&PalletId, &AccountAddress, &[u8], VmBalance)>,
+        f_get: Box<Get>,
+        f_deposit: Box<Deposit>,
+        f_withdraw: Box<Withdraw>,
     }
 
     impl<

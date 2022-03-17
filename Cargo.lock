@@ -7969,7 +7969,7 @@ dependencies = [
 
 [[package]]
 name = "pontem-node"
-version = "0.5.0"
+version = "0.5.1"
 dependencies = [
  "async-io",
  "constants",
