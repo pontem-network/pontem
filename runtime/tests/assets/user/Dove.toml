@@ -1,0 +1,14 @@
+[package]
+name = "assets"
+dialect = "pont"
+dove_version = ">=1.5.5"
+
+# account_address = "0x0" # dev/null
+# account_address = "0x1" # std
+# account_address = "5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY" # Alice
+account_address = "gkNW9pAcCHxZrnoVkhLkEQtsLsW5NWTC75cdAdxAMs9LNYCYg" # Bob
+# account_address = "0x8eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a48" # Bob
+
+dependencies = [
+    { git = "https://github.com/pontem-network/pont-stdlib.git", rev = "e9bd26720c06705d2e222833a496fda7c67c8e32" }
+]
