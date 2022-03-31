@@ -25,10 +25,10 @@ jobs:
       fail-fast: false
       matrix:
         cfg:
-          - os: macos-latest
+          - os: self-hosted # ubuntu-latest
             dove: 1.5.5
-          - os: ubuntu-latest
-            dove: 1.5.5
+          # - os: macos-latest
+          #   dove: 1.5.5
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -76,7 +76,7 @@ jobs:
       fail-fast: false
       matrix:
         os:
-          - ubuntu-latest
+          - self-hosted # ubuntu-latest
         dove:
           - 1.5.5
     steps:
@@ -119,8 +119,8 @@ jobs:
       fail-fast: true
       matrix:
         os:
-          - macos-latest
-          - ubuntu-latest
+          - self-hosted # ubuntu-latest
+          # - macos-latest
         dove:
           - 1.5.5
 
@@ -168,7 +168,7 @@ jobs:
       fail-fast: true
       matrix:
         os:
-          - ubuntu-latest
+          - self-hosted # ubuntu-latest
         dove:
           - 1.5.5
         benchmark:
