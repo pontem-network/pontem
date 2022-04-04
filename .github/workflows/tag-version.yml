@@ -3,7 +3,7 @@ on:
   push:
     branches:
       - master
-      - release-v?[0-9]+.[0-9]+.*
+      - release-v?[0-9]+.[0-9]+**
 
 jobs:
   push-tag:
@@ -13,13 +13,21 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
+      - name: Install Rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly
+          profile: minimal
+          override: true
+
       - id: new_tag
-        name: try create tag
+        name: Try create tag
         uses: pontem-network/tag-crate-version@main
         with:
-          crate: pontem
+          crate: pontem-node
           version-to-tag: "v$1"
           token: ${{ secrets.GITHUB_TOKEN }}
+          pwd: ${{github.workspace}}
 
     outputs:
       crate: ${{ steps.new_tag.outputs.crate }}
