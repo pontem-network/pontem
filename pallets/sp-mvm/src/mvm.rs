@@ -12,15 +12,7 @@ use crate::storage::*;
 pub type DefaultVm<S, E, AccountId, Currencies, CurrencyId> =
     Mvm<StorageAdapter<S>, E, BalancesAdapter<Currencies, AccountId, CurrencyId>>;
 
-// The trait to create Move VM (without possible errors).
-pub trait CreateMoveVm<T> {
-    type Vm: move_vm::Vm;
-
-    /// Create VM instance.
-    fn create_move_vm() -> Self::Vm;
-}
-
-// The trait to create Move VM (returns Result, possible with errors).
+/// The trait to create Move VM (returns Result, possible with errors).
 pub trait TryCreateMoveVm<T> {
     type Vm: move_vm::Vm;
     type Error;
@@ -29,10 +21,8 @@ pub trait TryCreateMoveVm<T> {
     fn try_create_move_vm() -> Result<Self::Vm, Self::Error>;
 }
 
-#[cfg(not(feature = "no-vm-static"))]
-pub use vm_static::*;
-#[cfg(not(feature = "no-vm-static"))]
-mod vm_static {
+pub use boxed::*;
+mod boxed {
     use anyhow::Error;
     use move_vm::StateAccess;
     use move_vm::io::context::ExecutionContext;
@@ -58,6 +48,7 @@ mod vm_static {
     /// so it should only be used between threads.
     /// For thread-local usage or inside the `OnceCell`.
     pub struct VmWrapper<T: move_vm::Vm>(T);
+    #[allow(clippy::non_send_fields_in_send_ty)]
     unsafe impl<T: move_vm::Vm> Send for VmWrapper<T> {}
     unsafe impl<T: move_vm::Vm> Sync for VmWrapper<T> {}
 
@@ -170,4 +161,46 @@ mod vm_static {
     }
 
     impl<T, C: TryCreateMoveVm<T>> TryCreateMoveVmWrapped<T> for C {}
+
+    use core::sync::atomic::{AtomicBool, Ordering};
+
+    /// Usage marker for the VM.
+    pub trait MoveVmUsed {
+        #[inline(never)]
+        fn get_move_vm_used() -> &'static AtomicBool {
+            static USED: AtomicBool = AtomicBool::new(false);
+            &USED
+        }
+
+        fn is_move_vm_used() -> bool {
+            Self::get_move_vm_used().load(Ordering::Relaxed)
+        }
+
+        fn set_move_vm_used() {
+            Self::get_move_vm_used().store(true, Ordering::Relaxed);
+        }
+        fn set_move_vm_clean() {
+            Self::get_move_vm_used().store(false, Ordering::Relaxed);
+        }
+    }
+
+    #[cfg(test)]
+    mod tests {
+        use super::MoveVmUsed;
+
+        struct Vm;
+
+        impl MoveVmUsed for Vm {}
+
+        #[test]
+        fn usage_marker() {
+            assert_eq!(false, Vm::is_move_vm_used());
+
+            Vm::set_move_vm_used();
+            assert_eq!(true, Vm::is_move_vm_used());
+
+            Vm::set_move_vm_clean();
+            assert_eq!(false, Vm::is_move_vm_used());
+        }
+    }
 }
