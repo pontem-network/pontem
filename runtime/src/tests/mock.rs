@@ -1,8 +1,10 @@
 pub use crate::*;
 use frame_support::sp_io::TestExternalities;
 use frame_support::traits::GenesisBuild;
-use sp_core::crypto::Ss58Codec;
+use move_core_types::account_address::AccountAddress;
+use sp_core::{Encode, crypto::Ss58Codec};
 use frame_support::traits::Hooks;
+use sp_core::sr25519::Public;
 use std::include_bytes;
 use move_vm::genesis::GenesisConfig;
 
@@ -21,6 +23,9 @@ pub fn build_vm_config() -> (ModuleName, FunctionName, FunctionArgs) {
     )
 }
 
+/// Timestamp multiplier.
+pub const TIME_BLOCK_MULTIPLIER: u64 = 12000;
+
 /// User accounts.
 pub enum Accounts {
     ALICE,
@@ -28,18 +33,27 @@ pub enum Accounts {
 }
 
 impl Accounts {
+    fn ss58(&self) -> &'static str {
+        match self {
+            Accounts::ALICE => "5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY",
+            Accounts::BOB => "5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty",
+        }
+    }
+
     /// Convert account to AccountId.
     pub fn account(&self) -> AccountId {
-        match self {
-            Accounts::ALICE => {
-                AccountId::from_ss58check("5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY")
-                    .unwrap()
-            }
-            Accounts::BOB => {
-                AccountId::from_ss58check("5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty")
-                    .unwrap()
-            }
-        }
+        AccountId::from_ss58check(self.ss58()).unwrap()
+    }
+
+    pub fn public_key(&self) -> Public {
+        Public::from_ss58check_with_version(self.ss58()).unwrap().0
+    }
+
+    pub fn addr(&self) -> AccountAddress {
+        let key = self.public_key().encode();
+        let mut arr = [0; AccountAddress::LENGTH];
+        arr.copy_from_slice(&key);
+        AccountAddress::new(arr)
     }
 }
 
@@ -61,7 +75,7 @@ pub fn run_to_block(till: u32) {
         Scheduler::on_finalize(System::block_number());
         Balances::on_finalize(System::block_number());
         System::set_block_number(System::block_number() + 1);
-        Timestamp::set_timestamp(System::block_number() as u64 * 12000);
+        Timestamp::set_timestamp(System::block_number() as u64 * TIME_BLOCK_MULTIPLIER);
         Scheduler::on_initialize(System::block_number());
         ParachainStaking::on_initialize(System::block_number());
         TransactionPause::on_initialize(System::block_number());
