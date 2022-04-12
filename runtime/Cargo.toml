@@ -104,6 +104,8 @@ sp-io = { default-features = false, git = 'https://github.com/paritytech/substra
 assets = { path = '../assets', default-features = false }
 env_logger = "0.9.0"
 test-log = "0.2.8"
+move-core-types = { git = "https://github.com/pontem-network/sp-move-vm.git", rev = "c8ac6f91c7ec95e62afa3ee9ef9884eec113511c", default-features = false }
+bcs = { package = "bcs", version = "0.1" }
 
 [dependencies.move-vm]
 package = "mvm"

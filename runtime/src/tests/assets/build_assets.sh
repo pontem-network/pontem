@@ -17,6 +17,8 @@ popd
 pushd ./user
 dove clean
 dove build -b
+dove tx "store_system_block()"
+dove tx "store_system_timestamp()"
 dove tx "transfer<0x1::NOX::NOX>(Alice, 500000000000)" -o=transfer_pont.mvt
 dove tx "transfer<0x1::KSM::KSM>(Alice, 500000000000)" -o=transfer_ksm.mvt
 dove tx "deposit_bank<0x1::NOX::NOX>(500000000000)" -o=deposit_bank_pont.mvt
