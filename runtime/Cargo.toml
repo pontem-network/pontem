@@ -21,7 +21,7 @@ version = '3.0.0'
 
 [dependencies]
 hex-literal = { optional = true, version = '0.3.4' }
-serde = { version = "1.0", optional = true, features = [ "derive" ] } # / 1.0.101
+serde = { version = "1.0", optional = true, features = [ "derive" ] }
 smallvec = "1.6"
 
 # Substrate dependencies
