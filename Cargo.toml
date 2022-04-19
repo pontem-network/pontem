@@ -8,8 +8,5 @@ panic = 'unwind'
 rpath = false
 
 
-[patch.'https://github.com/pontem-network/xcm-simulator']
-xcm-emulator = { git = "https://github.com/shaunxw/xcm-simulator.git", rev = "22d94e7754b7d8b956b20855b51891928ed0a2f5" }
-# xcm-simulator = { git = "https://github.com/shaunxw/xcm-simulator.git", rev = "22d94e7754b7d8b956b20855b51891928ed0a2f5" }
-# xcm-emulator = { path = '../xcm-simulator/xcm-emulator' }
-# xcm-simulator = { path = '../xcm-simulator/xcm-simulator' }
+# [patch.'https://github.com/pontem-network/xcm-simulator']
+# xcm-emulator = { git = "https://github.com/shaunxw/xcm-simulator.git", rev = "22d94e7754b7d8b956b20855b51891928ed0a2f5" }

@@ -97,8 +97,7 @@ groupsign = { path = "../pallets/groupsign", default-features = false }
 transaction-pause = { path = "../pallets/transaction-pause", default-features = false }
 
 [dev-dependencies]
-# xcm-emulator = { git = 'https://github.com/pontem-network/xcm-simulator', branch = 'polkadot-v0.9.16' }
-xcm-emulator = { git = "https://github.com/shaunxw/xcm-simulator.git", rev = "22d94e7754b7d8b956b20855b51891928ed0a2f5" }
+xcm-emulator = { git = 'https://github.com/pontem-network/xcm-simulator', rev = "22d94e7754b7d8b956b20855b51891928ed0a2f5" }
 polkadot-runtime-parachains = { default-features = false, git = 'https://github.com/paritytech/polkadot.git', branch = 'release-v0.9.18' }
 kusama-runtime = { git = 'https://github.com/paritytech/polkadot.git', branch = 'release-v0.9.18' }
 sp-io = { default-features = false, git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.18' }
