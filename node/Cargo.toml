@@ -83,7 +83,6 @@ cumulus-client-service = { git = 'https://github.com/paritytech/cumulus', branch
 cumulus-client-cli = { git = 'https://github.com/paritytech/cumulus', branch = 'polkadot-v0.9.18' }
 cumulus-primitives-core = { git = 'https://github.com/paritytech/cumulus', branch = 'polkadot-v0.9.18' }
 cumulus-primitives-parachain-inherent = { git = 'https://github.com/paritytech/cumulus', branch = 'polkadot-v0.9.18' }
-# cumulus-relay-chain-local = { git = 'https://github.com/paritytech/cumulus', branch = 'polkadot-v0.9.18' }
 cumulus-relay-chain-interface = { git = 'https://github.com/paritytech/cumulus', branch = 'polkadot-v0.9.18' }
 
 # Polkadot dependencies

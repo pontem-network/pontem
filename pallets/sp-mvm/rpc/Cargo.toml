@@ -20,7 +20,7 @@ frame-support = { git = 'https://github.com/paritytech/substrate.git', branch = 
 sp-blockchain = {  git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.18' }
 sp-mvm-rpc-runtime = { version = "0.2.2", path = "./runtime" }
 codec = { package = "parity-scale-codec", version = "3.0.0" }
-serde = { version = "1.0.119", features = [ "derive" ] } # / 1.0.101
+serde = { version = "1.0", features = [ "derive" ] }
 fc-rpc-core = { version = "1.0.0" }
 
 [dependencies.move-core-types]
