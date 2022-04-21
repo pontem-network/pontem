@@ -954,6 +954,15 @@ parameter_type_with_key! {
     };
 }
 
+parameter_type_with_key! {
+    pub ParachainMinFee: |location: MultiLocation| -> u128 {
+        match (location.parents, location.first_interior()) {
+            (1, Some(Parachain(_id/* TODO:! */))) => todo!(),
+            _ => u128::MAX,
+        }
+    };
+}
+
 impl orml_tokens::Config for Runtime {
     type Event = Event;
     type Balance = Balance;
@@ -1015,8 +1024,9 @@ impl orml_xtokens::Config for Runtime {
     type LocationInverter = LocationInverter<Ancestry>;
     type MaxAssetsForTransfer = MaxAssetsForTransfer;
 
-    type MinXcmFee = (); // :GetByKey<MultiLocation, u128>
-    type MultiLocationsFilter = (); // :Contains<MultiLocation>  :Contains<xcm::v1::MultiLocation>
+    type MinXcmFee = ParachainMinFee; // :GetByKey<MultiLocation, u128>
+    // type MultiLocationsFilter = ParentOrParachains; // :Contains<MultiLocation>  :Contains<xcm::v1::MultiLocation>
+    type MultiLocationsFilter = Everything;
     type ReserveProvider = AbsoluteReserveProvider;
 }
 
