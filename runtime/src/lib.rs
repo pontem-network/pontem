@@ -34,8 +34,10 @@ use xcm_builder::{
 use xcm::latest::AssetId;
 use xcm_executor::{XcmExecutor, traits::WeightTrader, Assets};
 use pallet_xcm::XcmPassthrough;
-use orml_traits::parameter_type_with_key;
-use orml_traits::{location::AbsoluteReserveProvider, location::RelativeLocations, ConcreteFungibleAsset};
+use orml_traits::{
+    location::{AbsoluteReserveProvider, RelativeLocations},
+    ConcreteFungibleAsset, parameter_type_with_key,
+};
 use orml_xcm_support::{IsNativeConcrete, MultiCurrencyAdapter, MultiNativeAsset};
 
 // A few exports that help ease life for downstream crates.
@@ -539,6 +541,7 @@ impl pallet_author_slot_filter::Config for Runtime {
     type Event = Event;
     type RandomnessSource = RandomnessCollectiveFlip;
     type PotentialAuthors = ParachainStaking;
+    type WeightInfo = ();
 }
 
 impl pallet_randomness_collective_flip::Config for Runtime {}
@@ -718,7 +721,7 @@ impl xcm_executor::Config for XcmConfig {
     // How to withdraw and deposit an asset.
     type AssetTransactor = LocalAssetTransactor;
     type OriginConverter = XcmOriginToTransactDispatchOrigin;
-    type IsReserve = MultiNativeAsset<AbsoluteReserveProvider /* TODO: should be changed */>;
+    type IsReserve = MultiNativeAsset<AbsoluteReserveProvider>;
     type IsTeleporter = (); // Teleport disabled.
     type LocationInverter = LocationInverter<Ancestry>;
     type Barrier = Barrier;
@@ -770,6 +773,9 @@ impl cumulus_pallet_xcmp_queue::Config for Runtime {
     type ChannelInfo = ParachainSystem;
     type VersionWrapper = PolkadotXcm;
     type ExecuteOverweightOrigin = EnsureRoot<AccountId>;
+    // type ControllerOrigin = EnsureOrigin<Self::Origin>;
+    // type ControllerOriginConverter = ConvertOrigin<Self::Origin>;
+    type WeightInfo = ();
 }
 
 impl cumulus_pallet_dmp_queue::Config for Runtime {
@@ -1008,6 +1014,10 @@ impl orml_xtokens::Config for Runtime {
     type BaseXcmWeight = BaseXcmWeight;
     type LocationInverter = LocationInverter<Ancestry>;
     type MaxAssetsForTransfer = MaxAssetsForTransfer;
+
+    type MinXcmFee = (); // :GetByKey<MultiLocation, u128>
+    type MultiLocationsFilter = (); // :Contains<MultiLocation>  :Contains<xcm::v1::MultiLocation>
+    type ReserveProvider = AbsoluteReserveProvider;
 }
 
 impl orml_xcm::Config for Runtime {
