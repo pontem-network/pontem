@@ -1,6 +1,10 @@
 use cumulus_client_cli::CollatorOptions;
 // use cumulus_relay_chain_interface::build_relay_chain_interface;
 // use cumulus_relay_chain_local::build_relay_chain_interface;
+// use polkadot_collator::build_relay_chain_interface;
+// use cumulus_relay_chain_inprocess_interface::build_relay_chain_interface;
+use cumulus_relay_chain_inprocess_interface::build_inprocess_relay_chain;
+use cumulus_relay_chain_interface::{RelayChainError, RelayChainInterface, RelayChainResult};
 use crate::cli::Sealing;
 use cumulus_primitives_parachain_inherent::{MockValidationDataInherentDataProvider, MockXcmConfig};
 use futures::StreamExt;
@@ -11,7 +15,6 @@ use cumulus_client_service::{
 };
 use std::time::Duration;
 use sc_consensus_manual_seal::{run_manual_seal, EngineCommand, ManualSealParams};
-use cumulus_relay_chain_interface::RelayChainInterface;
 use cumulus_primitives_core::ParaId;
 use pontem_runtime::RuntimeApi;
 use sp_blockchain::HeaderBackend;
@@ -174,12 +177,17 @@ async fn start_node_impl(
     let (mut telemetry, telemetry_worker_handle) = params.other;
     let mut task_manager = params.task_manager;
 
-    let (relay_chain_full_node, collator_key) =
-        build_relay_chain_interface(polkadot_config, telemetry_worker_handle, &mut task_manager)
-            .map_err(|e| match e {
-                polkadot_service::Error::Sub(x) => x,
-                s => format!("{}", s).into(),
-            })?;
+    let (relay_chain_full_node, collator_key) = build_inprocess_relay_chain(
+        polkadot_config,
+        &parachain_config,
+        telemetry_worker_handle,
+        &mut task_manager,
+    )
+    .map_err(|e| match e {
+        // polkadot_service::Error::Sub(x) => x,
+        // RelayChainError::ServiceError(x) => x,
+        s => format!("{}", s).into(),
+    })?;
 
     let client = params.client.clone();
     let backend = params.backend.clone();

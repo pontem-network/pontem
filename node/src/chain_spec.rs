@@ -774,8 +774,9 @@ fn genesis(
             inflation_config: pontem_inflation_config(),
         },
         author_filter: AuthorFilterConfig {
-            eligible_ratio: sp_runtime::Percent::from_percent(50),
-            eligible_count: todo!(/* TODO:! */),
+            // eligible_count: EligibilityValue::default(),
+            // eligible_count: pallet_author_slot_filter::EligibilityValue::default(),
+            eligible_count: sp_runtime::Percent::from_percent(50),
         },
         author_mapping: AuthorMappingConfig {
             mappings: candidates

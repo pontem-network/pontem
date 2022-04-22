@@ -1,4 +1,5 @@
 use clap::Parser as Clap;
+use clap::{/* Subcommand, */ Args};
 use std::path::PathBuf;
 use sc_cli::SubstrateCli;
 
@@ -58,6 +59,7 @@ pub enum Subcommand {
     ExportGenesisWasm(ExportGenesisWasmCommand),
 
     /// Key management cli utilities
+    #[clap(subcommand)]
     Key(sc_cli::KeySubcommand),
     /// Build a chain specification.
     BuildSpec(sc_cli::BuildSpecCmd),
