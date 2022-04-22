@@ -1,4 +1,6 @@
-use cumulus_relay_chain_local::build_relay_chain_interface;
+use cumulus_client_cli::CollatorOptions;
+// use cumulus_relay_chain_interface::build_relay_chain_interface;
+// use cumulus_relay_chain_local::build_relay_chain_interface;
 use crate::cli::Sealing;
 use cumulus_primitives_parachain_inherent::{MockValidationDataInherentDataProvider, MockXcmConfig};
 use futures::StreamExt;
@@ -189,6 +191,12 @@ async fn start_node_impl(
     let prometheus_registry = parachain_config.prometheus_registry().cloned();
     let transaction_pool = params.transaction_pool.clone();
     let import_queue = cumulus_client_service::SharedImportQueue::new(params.import_queue);
+
+    let collator_options = CollatorOptions {
+        // relay_chain_rpc_url: polkadot_config.rpc_http.map(...),
+        relay_chain_rpc_url: None,
+    };
+
     let (network, system_rpc_tx, start_network) =
         sc_service::build_network(sc_service::BuildNetworkParams {
             config: &parachain_config,
@@ -275,6 +283,7 @@ async fn start_node_impl(
             relay_chain_interface: relay_chain_full_node,
             relay_chain_slot_duration,
             import_queue,
+            collator_options,
         };
 
         start_full_node(params)?;

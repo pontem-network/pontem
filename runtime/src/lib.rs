@@ -773,8 +773,9 @@ impl cumulus_pallet_xcmp_queue::Config for Runtime {
     type ChannelInfo = ParachainSystem;
     type VersionWrapper = PolkadotXcm;
     type ExecuteOverweightOrigin = EnsureRoot<AccountId>;
-    // type ControllerOrigin = EnsureOrigin<Self::Origin>;
-    // type ControllerOriginConverter = ConvertOrigin<Self::Origin>;
+    // type ControllerOrigin = EnsureRoot<Self::Origin>;
+    type ControllerOrigin = EnsureRoot<AccountId>;
+    type ControllerOriginConverter = XcmOriginToTransactDispatchOrigin;
     type WeightInfo = ();
 }
 
@@ -956,6 +957,7 @@ parameter_type_with_key! {
 
 parameter_type_with_key! {
     pub ParachainMinFee: |location: MultiLocation| -> u128 {
+        // #[allow(clippy::match_ref_pats)] // false positive
         match (location.parents, location.first_interior()) {
             (1, Some(Parachain(_id/* TODO:! */))) => todo!(),
             _ => u128::MAX,
@@ -1025,7 +1027,7 @@ impl orml_xtokens::Config for Runtime {
     type MaxAssetsForTransfer = MaxAssetsForTransfer;
 
     type MinXcmFee = ParachainMinFee; // :GetByKey<MultiLocation, u128>
-    // type MultiLocationsFilter = ParentOrParachains; // :Contains<MultiLocation>  :Contains<xcm::v1::MultiLocation>
+                                      // type MultiLocationsFilter = ParentOrParachains; // :Contains<MultiLocation>  :Contains<xcm::v1::MultiLocation>
     type MultiLocationsFilter = Everything;
     type ReserveProvider = AbsoluteReserveProvider;
 }

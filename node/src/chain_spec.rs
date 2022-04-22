@@ -775,6 +775,7 @@ fn genesis(
         },
         author_filter: AuthorFilterConfig {
             eligible_ratio: sp_runtime::Percent::from_percent(50),
+            eligible_count: todo!(/* TODO:! */),
         },
         author_mapping: AuthorMappingConfig {
             mappings: candidates
