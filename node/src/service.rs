@@ -4,7 +4,7 @@ use cumulus_client_cli::CollatorOptions;
 // use polkadot_collator::build_relay_chain_interface;
 // use cumulus_relay_chain_inprocess_interface::build_relay_chain_interface;
 use cumulus_relay_chain_inprocess_interface::build_inprocess_relay_chain;
-use cumulus_relay_chain_interface::{RelayChainError, RelayChainInterface, RelayChainResult};
+use cumulus_relay_chain_interface::{RelayChainError, RelayChainInterface};
 use crate::cli::Sealing;
 use cumulus_primitives_parachain_inherent::{MockValidationDataInherentDataProvider, MockXcmConfig};
 use futures::StreamExt;
@@ -184,9 +184,8 @@ async fn start_node_impl(
         &mut task_manager,
     )
     .map_err(|e| match e {
-        // polkadot_service::Error::Sub(x) => x,
-        // RelayChainError::ServiceError(x) => x,
-        s => format!("{}", s).into(),
+        RelayChainError::ServiceError(polkadot_service::Error::Sub(x)) => x,
+        s => s.to_string().into(),
     })?;
 
     let client = params.client.clone();
@@ -277,7 +276,9 @@ async fn start_node_impl(
             spawner,
             parachain_consensus,
             import_queue,
-            collator_key,
+            collator_key: collator_key.ok_or(sc_service::error::Error::Other(
+                "Collator Key is None".to_string(),
+            ))?,
             relay_chain_slot_duration,
         };
 

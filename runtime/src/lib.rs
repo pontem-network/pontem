@@ -34,10 +34,7 @@ use xcm_builder::{
 use xcm::latest::AssetId;
 use xcm_executor::{XcmExecutor, traits::WeightTrader, Assets};
 use pallet_xcm::XcmPassthrough;
-use orml_traits::{
-    location::{AbsoluteReserveProvider, RelativeLocations},
-    ConcreteFungibleAsset, parameter_type_with_key,
-};
+use orml_traits::{location::AbsoluteReserveProvider, parameter_type_with_key};
 use orml_xcm_support::{IsNativeConcrete, MultiCurrencyAdapter, MultiNativeAsset};
 
 // A few exports that help ease life for downstream crates.
@@ -74,6 +71,7 @@ use frame_system::{
 pub use sp_mvm::gas::{GasWeightMapping};
 pub use sp_mvm_rpc_runtime::types::MVMApiEstimation;
 pub use parachain_staking::{InflationInfo, Range};
+pub use pallet_author_slot_filter::EligibilityValue;
 
 use constants::{SS58_PREFIX, currency::*, time::*};
 use primitives::{*, currency::CurrencyId, Index};
