@@ -1,5 +1,6 @@
 /// Test balances in Runtime. Mostly currencies, balances, vesting functional.
 use crate::tests::mock::*;
+use sp_runtime::ModuleError;
 use frame_support::{assert_ok, assert_err_ignore_postinfo, dispatch::DispatchError};
 use orml_traits::currency::MultiCurrency;
 

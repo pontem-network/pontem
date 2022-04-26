@@ -1024,8 +1024,7 @@ impl orml_xtokens::Config for Runtime {
     type LocationInverter = LocationInverter<Ancestry>;
     type MaxAssetsForTransfer = MaxAssetsForTransfer;
 
-    type MinXcmFee = ParachainMinFee; // :GetByKey<MultiLocation, u128>
-                                      // type MultiLocationsFilter = ParentOrParachains; // :Contains<MultiLocation>  :Contains<xcm::v1::MultiLocation>
+    type MinXcmFee = ParachainMinFee;
     type MultiLocationsFilter = Everything;
     type ReserveProvider = AbsoluteReserveProvider;
 }

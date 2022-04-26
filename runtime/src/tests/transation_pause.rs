@@ -2,6 +2,7 @@
 use crate::tests::mock::*;
 use frame_support::{assert_ok, assert_err, assert_noop, dispatch::DispatchError};
 
+use sp_runtime::ModuleError;
 use sp_runtime::{MultiAddress::Id as MultiId, traits::Dispatchable};
 use orml_traits::currency::MultiCurrency;
 
