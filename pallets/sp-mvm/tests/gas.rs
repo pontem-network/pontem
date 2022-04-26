@@ -1,5 +1,5 @@
 /// Tests related to gas and out of gas cases.
-use sp_runtime::DispatchError;
+use sp_runtime::{DispatchError, ModuleError};
 
 mod common;
 use common::assets::{modules, transactions};
@@ -15,7 +15,7 @@ const MINIMAL_GAS_LIMIT: u64 = 1;
 
 /// Check status == out of gas.
 fn check_out_of_gas(error: DispatchError) {
-    if let DispatchError::Module { error, message, .. } = error {
+    if let DispatchError::Module(ModuleError { error, message, .. }) = error {
         assert_eq!(error, OUT_OF_GAS_ERROR_CODE); // OutOfGas
         assert_eq!(message, Some("OutOfGas"));
     } else {
