@@ -15,6 +15,8 @@ decl_test_parachain! {
     pub struct ParaA {
         Runtime = crate::Runtime,
         Origin = crate::Origin,
+        XcmpMessageHandler = mock_runtime::XcmpQueue,
+        DmpMessageHandler = mock_runtime::DmpQueue,
         new_ext = para_ext(2000),
     }
 }
@@ -23,6 +25,8 @@ decl_test_parachain! {
     pub struct ParaB {
         Runtime = mock_runtime::Runtime,
         Origin = mock_runtime::Origin,
+        XcmpMessageHandler = mock_runtime::XcmpQueue,
+        DmpMessageHandler = mock_runtime::DmpQueue,
         new_ext = mock_para_ext(2001),
     }
 }
