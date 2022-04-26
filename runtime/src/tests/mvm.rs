@@ -162,11 +162,11 @@ fn transfer_vested_balance_fails() {
                     transactions::TRANSFER_PONT.bytes().to_vec(),
                     GAS_LIMIT
                 ),
-                DispatchError::Module {
+                DispatchError::Module(ModuleError {
                     index: 67,
                     error: 155,
                     message: Some("Aborted")
-                },
+                }),
             );
 
             // Check balance is not changed.

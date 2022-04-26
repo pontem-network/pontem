@@ -46,11 +46,11 @@ fn transaction_pause_balance() {
             assert_err!(
                 call.clone()
                     .dispatch(Origin::signed(Accounts::ALICE.account())),
-                DispatchError::Module {
+                DispatchError::Module(ModuleError {
                     index: 0,
                     error: 5,
                     message: Some("CallFiltered")
-                },
+                }),
             );
 
             assert_eq!(
@@ -152,11 +152,11 @@ fn transaction_pause_genesis() {
                 mvm_call
                     .clone()
                     .dispatch(Origin::signed(Accounts::ALICE.account())),
-                DispatchError::Module {
+                DispatchError::Module(ModuleError {
                     index: 0,
                     error: 5,
                     message: Some("CallFiltered")
-                },
+                }),
             );
 
             let call = <Runtime as frame_system::Config>::Call::Balances(
@@ -171,11 +171,11 @@ fn transaction_pause_genesis() {
             assert_err!(
                 call.clone()
                     .dispatch(Origin::signed(Accounts::ALICE.account())),
-                DispatchError::Module {
+                DispatchError::Module(ModuleError {
                     index: 0,
                     error: 5,
                     message: Some("CallFiltered")
-                },
+                }),
             );
 
             assert_eq!(
