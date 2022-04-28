@@ -48,6 +48,17 @@
 					"flags": ["--keystore-path=~/.pontem/keystore-1", "--alice", "--", "--execution=wasm"]
 				}
 			]
+		},
+		{
+			"bin": "./target/release/pontem",
+			"chain": "local",
+			"nodes": [
+				{
+					"wsPort": 9947,
+					"port": 40336,
+					"flags": ["--keystore-path=~/.pontem/keystore-2", "--bob", "--", "--execution=wasm"]
+				}
+			]
 		}
 	],
 	"simpleParachains": [
