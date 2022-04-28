@@ -26,16 +26,12 @@ jobs:
       matrix:
         cfg:
           - os: self-hosted
-            grcov:
-              version: tags/v0.8.6
-              file: grcov-v0.8.6-x86_64-unknown-linux-gnu.tar.gz
+            tarpaulin: latest
             dove: 1.5.5
 
     env:
       SKIP_WASM_BUILD: 1
       CARGO_INCREMENTAL: 0
-      # RUSTFLAGS: "-Zprofile -Ccodegen-units=1 -Cinline-threshold=0 -Clink-dead-code -Coverflow-checks=off"
-      # RUSTDOCFLAGS: "-Cpanic=abort"
 
     steps:
       - name: Checkout repository
@@ -52,7 +48,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/.dove
-          key: ${{ matrix.cfg.os }}-dove-${{ matrix.cfg.dove }}
+          key: ${{ matrix.cfg.os }}-dove-${{ matrix.cfg.dove }}-tarpaulin-${{ matrix.cfg.tarpaulin }}
 
       - name: get Dove
         uses: pontem-network/get-dove@main
@@ -68,7 +64,7 @@ jobs:
         name: coverage analysis with tarpaulin
         uses: actions-rs/tarpaulin@v0.1
         with:
-          # version: 0.15.0 / latest
+          version: ${{ matrix.cfg.tarpaulin }}
           out-type: Xml
           run-types: Tests
           args: -- --test-threads=1 --workspace
