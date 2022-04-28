@@ -279,6 +279,10 @@ pub fn local_testnet_config() -> Result<ChainSpec, String> {
                     get_account_id_from_seed::<sr25519::Public>("Alice"),
                     get_from_seed::<NimbusId>("Alice"),
                     CurrencyId::NATIVE * 10_000,
+                ), (
+                    get_account_id_from_seed::<sr25519::Public>("Bob"),
+                    get_from_seed::<NimbusId>("Bob"),
+                    CurrencyId::NATIVE * 10_000,
                 )],
                 // Nominators
                 vec![],
