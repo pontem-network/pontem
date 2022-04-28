@@ -34,8 +34,8 @@ jobs:
     env:
       SKIP_WASM_BUILD: 1
       CARGO_INCREMENTAL: 0
-      RUSTFLAGS: "-Zprofile -Ccodegen-units=1 -Cinline-threshold=0 -Clink-dead-code -Coverflow-checks=off"
-      RUSTDOCFLAGS: "-Cpanic=abort"
+      # RUSTFLAGS: "-Zprofile -Ccodegen-units=1 -Cinline-threshold=0 -Clink-dead-code -Coverflow-checks=off"
+      # RUSTDOCFLAGS: "-Cpanic=abort"
 
     steps:
       - name: Checkout repository
@@ -48,25 +48,7 @@ jobs:
           profile: minimal
           override: true
 
-      - name: cargo clean
-        run: cargo clean
-
-      - name: get latest grcov binary
-        uses: dsaltares/fetch-gh-release-asset@0.0.7
-        with:
-          repo: mozilla/grcov
-          # TODO: use `version: "latest"` and wildcard in the `file`
-          version: ${{ matrix.cfg.grcov.version }}
-          file: ${{ matrix.cfg.grcov.file }}
-
-      - name: unpack grcov release binary
-        run: |
-          tar -xvf ${{ matrix.cfg.grcov.file }}
-          sudo chown runner ./grcov && chmod +x ./grcov
-          cp grcov ~/.cargo/bin/grcov
-          rm ${{ matrix.cfg.grcov.file }}
-
-      - name: cache Dove
+      - name: cache
         uses: actions/cache@v2
         with:
           path: ~/.dove
@@ -82,37 +64,35 @@ jobs:
       - name: Build test resources
         run: make assets
 
-      - name: cargo build tests +profile
-        uses: actions-rs/cargo@v1
-        with:
-          command: test
-          args: -p=sp-mvm --no-fail-fast -- --test-threads=1
-
-      - id: coverage_html
-        name: coverage analysis with grcov (html)
-        uses: actions-rs/grcov@v0.1
-        with:
-          config: .github/grcov+html.yml
-      - name: make report artifact
-        uses: actions/upload-artifact@v1
-        with:
-          name: code-coverage-report.html
-          path: ${{ steps.coverage_html.outputs.report }}
-
       - id: coverage
-        name: coverage analysis with grcov
-        uses: actions-rs/grcov@v0.1
+        name: coverage analysis with tarpaulin
+        uses: actions-rs/tarpaulin@v0.1
         with:
-          config: .github/grcov.yml
+          # version: 0.15.0 / latest
+          out-type: Xml
+          run-types: Tests
+          args: -- --test-threads=1 --workspace
 
-      - name: make report artifact
-        uses: actions/upload-artifact@v1
-        with:
-          name: code-coverage-report.lcov
-          path: ${{ steps.coverage.outputs.report }}
+      - name: debug
+        run: |
+          ls .
+          ls ./target/
+          ls ./target/release/
 
-      - name: upload report to Coveralls
-        uses: coverallsapp/github-action@v1.1.2
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          path-to-lcov: ${{ steps.coverage.outputs.report }}
+      # - name: make report artifact
+      #   uses: actions/upload-artifact@v1
+      #   with:
+      #     name: code-coverage-report.html
+      #     path: ${{ steps.coverage_html.outputs.report }}
+
+      # - name: make report artifact
+      #   uses: actions/upload-artifact@v1
+      #   with:
+      #     name: code-coverage-report.lcov
+      #     path: ${{ steps.coverage.outputs.report }}
+
+      # - name: upload report to Coveralls
+      #   uses: coverallsapp/github-action@v1.1.2
+      #   with:
+      #     github-token: ${{ secrets.GITHUB_TOKEN }}
+      #     path-to-lcov: ${{ steps.coverage.outputs.report }}
