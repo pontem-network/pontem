@@ -92,6 +92,12 @@ jobs:
           target: wasm32-unknown-unknown
           override: true
 
+      - name: Cache
+        uses: actions/cache@v2
+        with:
+          path: ~/.dove
+          key: ${{ matrix.os }}-dove-${{ matrix.dove }}
+
       - name: get dove
         uses: pontem-network/get-dove@main
         with:
@@ -136,6 +142,12 @@ jobs:
           target: wasm32-unknown-unknown
           override: true
 
+      - name: Cache
+        uses: actions/cache@v2
+        with:
+          path: ~/.dove
+          key: ${{ matrix.os }}-dove-${{ matrix.dove }}
+
       - name: get dove
         uses: pontem-network/get-dove@main
         with:
@@ -156,7 +168,7 @@ jobs:
           if-no-files-found: warn
           retention-days: 2
   bench:
-    name: Build
+    name: Runtime Benchmarks
     runs-on: ${{ matrix.os }}
     if: "contains(github.event.head_commit.message, '#benchme')"
 
@@ -186,6 +198,12 @@ jobs:
           profile: minimal
           target: wasm32-unknown-unknown
           override: true
+
+      - name: Cache
+        uses: actions/cache@v2
+        with:
+          path: ~/.dove
+          key: ${{ matrix.os }}-dove-${{ matrix.dove }}
 
       - name: get dove
         uses: pontem-network/get-dove@main
