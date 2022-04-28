@@ -25,7 +25,7 @@ use nimbus_primitives::NimbusId;
 use polkadot_parachain::primitives::Sibling;
 use xcm::latest::prelude::*;
 use xcm_builder::{
-    AccountId32Aliases, LocationInverter, ParentIsDefault, RelayChainAsNative,
+    AccountId32Aliases, LocationInverter, ParentIsPreset, RelayChainAsNative,
     SiblingParachainAsNative, SiblingParachainConvertsVia, SignedAccountId32AsNative,
     SovereignSignedViaLocation, EnsureXcmOrigin, AllowSubscriptionsFrom,
     AllowTopLevelPaidExecutionFrom, AllowKnownQueryResponses, TakeWeightCredit,
@@ -34,7 +34,7 @@ use xcm_builder::{
 use xcm::latest::AssetId;
 use xcm_executor::{XcmExecutor, traits::WeightTrader, Assets};
 use pallet_xcm::XcmPassthrough;
-use orml_traits::parameter_type_with_key;
+use orml_traits::{location::AbsoluteReserveProvider, parameter_type_with_key};
 use orml_xcm_support::{IsNativeConcrete, MultiCurrencyAdapter, MultiNativeAsset};
 
 // A few exports that help ease life for downstream crates.
@@ -71,6 +71,7 @@ use frame_system::{
 pub use sp_mvm::gas::{GasWeightMapping};
 pub use sp_mvm_rpc_runtime::types::MVMApiEstimation;
 pub use parachain_staking::{InflationInfo, Range};
+pub use pallet_author_slot_filter::EligibilityValue;
 
 use constants::{SS58_PREFIX, currency::*, time::*};
 use primitives::{*, currency::CurrencyId, Index};
@@ -538,6 +539,7 @@ impl pallet_author_slot_filter::Config for Runtime {
     type Event = Event;
     type RandomnessSource = RandomnessCollectiveFlip;
     type PotentialAuthors = ParachainStaking;
+    type WeightInfo = ();
 }
 
 impl pallet_randomness_collective_flip::Config for Runtime {}
@@ -554,7 +556,7 @@ parameter_types! {
 /// `Transact` in order to determine the dispatch Origin.
 pub type LocationToAccountId = (
     // The parent (Relay-chain) origin converts to the default `AccountId`.
-    ParentIsDefault<AccountId>,
+    ParentIsPreset<AccountId>,
     // Sibling parachain origins convert to AccountId via the `ParaId::into`.
     SiblingParachainConvertsVia<Sibling, AccountId>,
     // Straight up local `AccountId32` origins just alias directly to `AccountId`.
@@ -717,7 +719,7 @@ impl xcm_executor::Config for XcmConfig {
     // How to withdraw and deposit an asset.
     type AssetTransactor = LocalAssetTransactor;
     type OriginConverter = XcmOriginToTransactDispatchOrigin;
-    type IsReserve = MultiNativeAsset;
+    type IsReserve = MultiNativeAsset<AbsoluteReserveProvider>;
     type IsTeleporter = (); // Teleport disabled.
     type LocationInverter = LocationInverter<Ancestry>;
     type Barrier = Barrier;
@@ -769,6 +771,10 @@ impl cumulus_pallet_xcmp_queue::Config for Runtime {
     type ChannelInfo = ParachainSystem;
     type VersionWrapper = PolkadotXcm;
     type ExecuteOverweightOrigin = EnsureRoot<AccountId>;
+    // type ControllerOrigin = EnsureRoot<Self::Origin>;
+    type ControllerOrigin = EnsureRoot<AccountId>;
+    type ControllerOriginConverter = XcmOriginToTransactDispatchOrigin;
+    type WeightInfo = ();
 }
 
 impl cumulus_pallet_dmp_queue::Config for Runtime {
@@ -947,6 +953,13 @@ parameter_type_with_key! {
     };
 }
 
+parameter_type_with_key! {
+    pub ParachainMinFee: |_location: MultiLocation| -> u128 {
+        // TODO: configure fees for known parachains.
+        u128::MAX
+    };
+}
+
 impl orml_tokens::Config for Runtime {
     type Event = Event;
     type Balance = Balance;
@@ -1007,6 +1020,10 @@ impl orml_xtokens::Config for Runtime {
     type BaseXcmWeight = BaseXcmWeight;
     type LocationInverter = LocationInverter<Ancestry>;
     type MaxAssetsForTransfer = MaxAssetsForTransfer;
+
+    type MinXcmFee = ParachainMinFee;
+    type MultiLocationsFilter = Everything;
+    type ReserveProvider = AbsoluteReserveProvider;
 }
 
 impl orml_xcm::Config for Runtime {

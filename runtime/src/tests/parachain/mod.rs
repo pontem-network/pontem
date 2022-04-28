@@ -15,6 +15,8 @@ decl_test_parachain! {
     pub struct ParaA {
         Runtime = crate::Runtime,
         Origin = crate::Origin,
+        XcmpMessageHandler = crate::XcmpQueue,
+        DmpMessageHandler = crate::DmpQueue,
         new_ext = para_ext(2000),
     }
 }
@@ -23,6 +25,8 @@ decl_test_parachain! {
     pub struct ParaB {
         Runtime = mock_runtime::Runtime,
         Origin = mock_runtime::Origin,
+        XcmpMessageHandler = mock_runtime::XcmpQueue,
+        DmpMessageHandler = mock_runtime::DmpQueue,
         new_ext = mock_para_ext(2001),
     }
 }
@@ -57,7 +61,7 @@ pub type ParaAXTokens = orml_xtokens::Pallet<crate::Runtime>;
 pub type ParaBXTokens = orml_xtokens::Pallet<mock_runtime::Runtime>;
 
 pub fn mock_para_ext(para_id: u32) -> TestExternalities {
-    use mock_runtime::Runtime;
+    use mock_runtime::{Runtime, System};
 
     let mut t = frame_system::GenesisConfig::default()
         .build_storage::<Runtime>()
@@ -138,7 +142,7 @@ fn default_parachains_host_configuration() -> HostConfiguration<BlockNumber> {
         max_upward_queue_size: 1024 * 1024,
         max_downward_message_size: 1024,
         ump_service_total_weight: 4 * 1_000_000_000,
-        max_upward_message_size: 1024 * 1024,
+        max_upward_message_size: 50 * 1024,
         max_upward_message_num_per_candidate: 5,
         hrmp_sender_deposit: 0,
         hrmp_recipient_deposit: 0,

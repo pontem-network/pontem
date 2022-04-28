@@ -25,7 +25,8 @@ pub use pallet::*;
 pub mod pallet {
 
     use sp_std::prelude::Box;
-    use scale_info::TypeInfo;
+    // use scale_info::TypeInfo;
+    use frame_support::scale_info::TypeInfo;
     use frame_support::{
         dispatch::{DispatchResultWithPostInfo, Dispatchable, GetDispatchInfo, PostDispatchInfo},
         ensure,

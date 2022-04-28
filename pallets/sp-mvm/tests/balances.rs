@@ -2,6 +2,7 @@
 use frame_support::{
     traits::VestingSchedule, assert_ok, assert_err_ignore_postinfo, dispatch::DispatchError,
 };
+use sp_runtime::ModuleError;
 use serde::Deserialize;
 use move_core_types::identifier::Identifier;
 use move_core_types::language_storage::StructTag;
@@ -230,11 +231,11 @@ fn transfer_vested_fails() {
             let result = utils::execute_tx(bob, &transactions::TRANSFER, None);
             assert_err_ignore_postinfo!(
                 result,
-                DispatchError::Module {
+                DispatchError::Module(ModuleError {
                     index: 6,
                     error: 155,
                     message: Some("Aborted")
-                }
+                })
             );
         });
 }
@@ -270,11 +271,11 @@ fn transfer_token_vested_fails() {
             let result = utils::execute_tx(bob, &transactions::TRANSFER_TOKEN, None);
             assert_err_ignore_postinfo!(
                 result,
-                DispatchError::Module {
+                DispatchError::Module(ModuleError {
                     index: 6,
                     error: 155,
                     message: Some("Aborted")
-                }
+                })
             );
         });
 }

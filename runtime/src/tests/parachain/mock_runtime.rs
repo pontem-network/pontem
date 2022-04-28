@@ -18,7 +18,7 @@ use scale_info::TypeInfo;
 use polkadot_parachain::primitives::Sibling;
 use xcm::latest::prelude::*;
 use xcm_builder::{
-    AccountId32Aliases, LocationInverter, ParentIsDefault, RelayChainAsNative,
+    AccountId32Aliases, LocationInverter, ParentIsPreset, RelayChainAsNative,
     SiblingParachainAsNative, SiblingParachainConvertsVia, SignedAccountId32AsNative,
     SovereignSignedViaLocation, EnsureXcmOrigin, AllowSubscriptionsFrom,
     AllowTopLevelPaidExecutionFrom, AllowKnownQueryResponses, TakeWeightCredit,
@@ -29,6 +29,9 @@ use xcm_executor::{XcmExecutor, traits::WeightTrader, Assets};
 use pallet_xcm::XcmPassthrough;
 use orml_traits::parameter_type_with_key;
 use orml_xcm_support::{IsNativeConcrete, MultiCurrencyAdapter, MultiNativeAsset};
+use orml_traits::location::AbsoluteReserveProvider;
+
+use crate::ParachainMinFee;
 
 // A few exports that help ease life for downstream crates.
 #[cfg(any(feature = "std", test))]
@@ -177,7 +180,7 @@ parameter_types! {
 /// `Transact` in order to determine the dispatch Origin.
 pub type LocationToAccountId = (
     // The parent (Relay-chain) origin converts to the default `AccountId`.
-    ParentIsDefault<AccountId>,
+    ParentIsPreset<AccountId>,
     // Sibling parachain origins convert to AccountId via the `ParaId::into`.
     SiblingParachainConvertsVia<Sibling, AccountId>,
     // Straight up local `AccountId32` origins just alias directly to `AccountId`.
@@ -344,7 +347,7 @@ impl xcm_executor::Config for XcmConfig {
     // How to withdraw and deposit an asset.
     type AssetTransactor = LocalAssetTransactor;
     type OriginConverter = XcmOriginToTransactDispatchOrigin;
-    type IsReserve = MultiNativeAsset;
+    type IsReserve = MultiNativeAsset<AbsoluteReserveProvider>;
     type IsTeleporter = (); // Teleport disabled.
     type LocationInverter = LocationInverter<Ancestry>;
     type Barrier = Barrier;
@@ -396,6 +399,9 @@ impl cumulus_pallet_xcmp_queue::Config for Runtime {
     type ChannelInfo = ParachainSystem;
     type VersionWrapper = PolkadotXcm;
     type ExecuteOverweightOrigin = EnsureRoot<AccountId>;
+    type ControllerOrigin = EnsureRoot<AccountId>;
+    type ControllerOriginConverter = XcmOriginToTransactDispatchOrigin;
+    type WeightInfo = ();
 }
 
 impl cumulus_pallet_dmp_queue::Config for Runtime {
@@ -552,6 +558,10 @@ impl orml_xtokens::Config for Runtime {
     type BaseXcmWeight = BaseXcmWeight;
     type LocationInverter = LocationInverter<Ancestry>;
     type MaxAssetsForTransfer = MaxAssetsForTransfer;
+
+    type MinXcmFee = ParachainMinFee;
+    type MultiLocationsFilter = Everything;
+    type ReserveProvider = AbsoluteReserveProvider;
 }
 
 impl orml_xcm::Config for Runtime {
