@@ -8323,7 +8323,7 @@ dependencies = [
 
 [[package]]
 name = "pontem-node"
-version = "0.5.1"
+version = "0.5.2"
 dependencies = [
  "async-io",
  "clap",
