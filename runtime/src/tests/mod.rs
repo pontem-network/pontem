@@ -7,3 +7,9 @@ pub mod vesting;
 
 // Parachain tests.
 pub mod parachain;
+
+// MVM scripts tests
+pub mod scripts;
+
+// Root access tests
+pub mod ensure_root;

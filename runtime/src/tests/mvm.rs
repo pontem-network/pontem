@@ -1,5 +1,6 @@
 /// Test balances in Runtime. Mostly currencies, balances, vesting functional.
 use crate::tests::mock::*;
+use sp_runtime::ModuleError;
 use frame_support::{assert_ok, assert_err_ignore_postinfo, dispatch::DispatchError};
 use orml_traits::currency::MultiCurrency;
 
@@ -162,11 +163,11 @@ fn transfer_vested_balance_fails() {
                     transactions::TRANSFER_PONT.bytes().to_vec(),
                     GAS_LIMIT
                 ),
-                DispatchError::Module {
+                DispatchError::Module(ModuleError {
                     index: 67,
                     error: 155,
                     message: Some("Aborted")
-                },
+                }),
             );
 
             // Check balance is not changed.

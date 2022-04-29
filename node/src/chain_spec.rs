@@ -10,7 +10,7 @@ use pontem_runtime::{
     GenesisConfig, SudoConfig, SystemConfig, BalancesConfig, WASM_BINARY, ParachainInfoConfig,
     VestingConfig, MvmConfig, TransactionPauseConfig, ParachainStakingConfig, InflationInfo,
     Range, AuthorFilterConfig, AuthorMappingConfig, TreasuryConfig, TokensConfig,
-    DemocracyConfig, PolkadotXcmConfig,
+    DemocracyConfig, PolkadotXcmConfig, EligibilityValue,
 };
 use primitives::{currency::CurrencyId, AccountId, Signature, Balance, BlockNumber};
 use constants::SS58_PREFIX;
@@ -774,7 +774,7 @@ fn genesis(
             inflation_config: pontem_inflation_config(),
         },
         author_filter: AuthorFilterConfig {
-            eligible_ratio: sp_runtime::Percent::from_percent(50),
+            eligible_count: EligibilityValue::new_unchecked(50),
         },
         author_mapping: AuthorMappingConfig {
             mappings: candidates

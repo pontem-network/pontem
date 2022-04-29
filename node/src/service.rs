@@ -1,4 +1,10 @@
-use cumulus_relay_chain_local::build_relay_chain_interface;
+use cumulus_client_cli::CollatorOptions;
+// use cumulus_relay_chain_interface::build_relay_chain_interface;
+// use cumulus_relay_chain_local::build_relay_chain_interface;
+// use polkadot_collator::build_relay_chain_interface;
+// use cumulus_relay_chain_inprocess_interface::build_relay_chain_interface;
+use cumulus_relay_chain_inprocess_interface::build_inprocess_relay_chain;
+use cumulus_relay_chain_interface::{RelayChainError, RelayChainInterface};
 use crate::cli::Sealing;
 use cumulus_primitives_parachain_inherent::{MockValidationDataInherentDataProvider, MockXcmConfig};
 use futures::StreamExt;
@@ -9,7 +15,6 @@ use cumulus_client_service::{
 };
 use std::time::Duration;
 use sc_consensus_manual_seal::{run_manual_seal, EngineCommand, ManualSealParams};
-use cumulus_relay_chain_interface::RelayChainInterface;
 use cumulus_primitives_core::ParaId;
 use pontem_runtime::RuntimeApi;
 use sp_blockchain::HeaderBackend;
@@ -172,12 +177,16 @@ async fn start_node_impl(
     let (mut telemetry, telemetry_worker_handle) = params.other;
     let mut task_manager = params.task_manager;
 
-    let (relay_chain_full_node, collator_key) =
-        build_relay_chain_interface(polkadot_config, telemetry_worker_handle, &mut task_manager)
-            .map_err(|e| match e {
-                polkadot_service::Error::Sub(x) => x,
-                s => format!("{}", s).into(),
-            })?;
+    let (relay_chain_full_node, collator_key) = build_inprocess_relay_chain(
+        polkadot_config,
+        &parachain_config,
+        telemetry_worker_handle,
+        &mut task_manager,
+    )
+    .map_err(|e| match e {
+        RelayChainError::ServiceError(polkadot_service::Error::Sub(x)) => x,
+        s => s.to_string().into(),
+    })?;
 
     let client = params.client.clone();
     let backend = params.backend.clone();
@@ -189,6 +198,12 @@ async fn start_node_impl(
     let prometheus_registry = parachain_config.prometheus_registry().cloned();
     let transaction_pool = params.transaction_pool.clone();
     let import_queue = cumulus_client_service::SharedImportQueue::new(params.import_queue);
+
+    let collator_options = CollatorOptions {
+        // relay_chain_rpc_url: polkadot_config.rpc_http.map(...),
+        relay_chain_rpc_url: None,
+    };
+
     let (network, system_rpc_tx, start_network) =
         sc_service::build_network(sc_service::BuildNetworkParams {
             config: &parachain_config,
@@ -261,7 +276,9 @@ async fn start_node_impl(
             spawner,
             parachain_consensus,
             import_queue,
-            collator_key,
+            collator_key: collator_key.ok_or(sc_service::error::Error::Other(
+                "Collator Key is None".to_string(),
+            ))?,
             relay_chain_slot_duration,
         };
 
@@ -275,6 +292,7 @@ async fn start_node_impl(
             relay_chain_interface: relay_chain_full_node,
             relay_chain_slot_duration,
             import_queue,
+            collator_options,
         };
 
         start_full_node(params)?;

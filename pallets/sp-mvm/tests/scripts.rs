@@ -4,6 +4,7 @@ use move_core_types::identifier::Identifier;
 use move_core_types::language_storage::{StructTag, TypeTag};
 use frame_support::assert_err_ignore_postinfo;
 use frame_support::dispatch::DispatchError;
+use sp_runtime::ModuleError;
 use sp_mvm::Event;
 
 mod common;
@@ -35,10 +36,10 @@ fn check_stored_value(expected: u64) {
 /// If message does not exist, just panics with debug render of entire error.
 fn unwrap_move_err_in_dispatch_err(err: &sp_runtime::DispatchError) -> ! {
     match err {
-        sp_runtime::DispatchError::Module {
+        sp_runtime::DispatchError::Module(ModuleError {
             message: Some(message),
             ..
-        } => panic!("{}", message),
+        }) => panic!("{}", message),
         _ => panic!("{:?}", err),
     }
 }
@@ -100,11 +101,11 @@ fn execute_script_as_root() {
 
         assert_err_ignore_postinfo!(
             result,
-            DispatchError::Module {
+            DispatchError::Module(ModuleError {
                 index: 6,
                 error: 7,
                 message: Some("TransactionIsNotAllowedError")
-            }
+            })
         );
     });
 }

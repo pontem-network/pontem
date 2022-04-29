@@ -1,12 +1,12 @@
 [workspace]
 resolver = "2"
 
-members = [
-    'node',
-    'pallets/*',
-    'runtime',
-]
+members = ['node', 'pallets/*', 'runtime']
 
 [profile.release]
 panic = 'unwind'
 rpath = false
+
+
+# [patch.'https://github.com/pontem-network/xcm-simulator']
+# xcm-emulator = { git = "https://github.com/shaunxw/xcm-simulator.git", rev = "22d94e7754b7d8b956b20855b51891928ed0a2f5" }

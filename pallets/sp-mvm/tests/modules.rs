@@ -1,6 +1,7 @@
 /// Tests related to modules/packages publishing.
 use frame_support::assert_err_ignore_postinfo;
 use frame_support::dispatch::DispatchError;
+use sp_runtime::ModuleError;
 
 mod common;
 use common::assets::{modules, ROOT_PACKAGE, USER_PACKAGE};
@@ -24,11 +25,11 @@ fn publish_module_as_wrong_user() {
         let origin = bob_public_key();
         assert_err_ignore_postinfo!(
             utils::publish_module(origin, &modules::root::EVENT_PROXY, None),
-            DispatchError::Module {
+            DispatchError::Module(ModuleError {
                 index: 6,
                 error: 89,
                 message: Some("ModuleAddressDoesNotMatchSender")
-            }
+            })
         );
     });
 }

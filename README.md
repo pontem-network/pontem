@@ -5,7 +5,7 @@ Pontem parachain node with [Move VM pallet](/pallets/sp-mvm/) on board.
 * [Pontem docs](https://docs.pontem.network) - if you want to learn about Pontem network.
 * [Validator docs](https://docs.pontem.network/03.-staking/collator) - if you want to launch a validator node.
 * [Bootstrap](https://github.com/pontem-network/bootstrap) - if you want to up node quickly (not for development).
- 
+
 ## Local Relaychain & Parachain Launch
 
 Current version built with Nimbus consensus and Parachain Staking implementation.
@@ -42,7 +42,7 @@ There are several options to launch Pontem local parachain:
 
 Install [polkadot-launch](https://github.com/paritytech/polkadot-launch).
 
-**Note:** you must have polkadot node `v0.9.16` compiled and built placed in `../polkadot/target/release/`.
+**Note:** you must have polkadot node `v0.9.18` compiled and built placed in `../polkadot/target/release/`.
 To use different localion you can modify `./launch-config.json`.
 
 Create keystore path for Pontem:
@@ -105,7 +105,7 @@ Build Polkadot:
 git clone https://github.com/paritytech/polkadot.git
 cd polkadot
 git fetch origin
-git checkout release-v0.9.16
+git checkout release-v0.9.18
 cargo build --release
 ```
 
