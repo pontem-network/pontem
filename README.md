@@ -1,5 +1,7 @@
 # Pontem
 
+**Warning:** The repository contains a very out-of-date Move VM version. It can contain bugs or security issues. Use at your own risk.
+
 Pontem parachain node with [Move VM pallet](/pallets/sp-mvm/) on board.
 
 * [Pontem docs](https://docs.pontem.network) - if you want to learn about Pontem network.
