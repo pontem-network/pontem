@@ -197,6 +197,7 @@ pub mod pallet {
                     ));
                     post_info.actual_weight
                 }
+                // SPB review: shouldn't the error be returned (w/ groupsign call weight added) ?
                 Err(err) => err.post_info.actual_weight,
             };
 

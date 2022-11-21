@@ -537,6 +537,9 @@ impl pallet_author_mapping::Config for Runtime {
 // Filter slots between collators (in nutshell author slot filter pallet chooses who's producer for each slot).
 impl pallet_author_slot_filter::Config for Runtime {
     type Event = Event;
+    // SBP review: pallet-randomness-collective-flip does not provide a safe source of randomness.
+    // PParachains will have a reliable source of randomness from the relay chain consensus (see https://github.com/paritytech/cumulus/issues/463).
+    // 
     type RandomnessSource = RandomnessCollectiveFlip;
     type PotentialAuthors = ParachainStaking;
     type WeightInfo = ();
@@ -1067,7 +1070,7 @@ construct_runtime!(
         NodeBlock = generic::Block<Header, sp_runtime::OpaqueExtrinsic>,
         UncheckedExtrinsic = UncheckedExtrinsic
     {
-
+        // SBP review: specify an enum value for all variant
         System: frame_system::{Pallet, Call, Config, Storage, Event<T>},
         RandomnessCollectiveFlip: pallet_randomness_collective_flip::{Pallet, Storage},
         Timestamp: pallet_timestamp::{Pallet, Call, Storage, Inherent},
